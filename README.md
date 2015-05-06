@@ -1,31 +1,25 @@
-SmileEssence [![Build Status](https://travis-ci.org/laco0416/SmileEssence.svg)](https://travis-ci.org/laco0416/SmileEssence)
+*This is an unofficial fork of [SmileEssence](https://github.com/laco0416/SmileEssence)*
+
+SmileEssence
 ============
 
-![icon](https://raw.githubusercontent.com/laco0416/SmileEssence/master/icon_application.png)
+![icon](https://raw.githubusercontent.com/rhenium/SmileEssence/master/icon_application.png)
 
 [Official Web Site](http://smileessence.lacolaco.net)
 
-#How to Fork
+# Build
 
 + Clone this repository.
-+ Add file `app/tokens.properties` and write your application's API keys.
++ Add your application's API keys to `app/src/main/resources/twitter4j.properties` (for release builds) and `app/src/debug/resources/twitter4j.properties` (for debug builds / tests).
 
-```
-# tokens.properties
+  ```
+  oauth.consumerKey=YOUR_API_KEY
+  oauth.consumerSecret=YOUR_API_KEY_SECRET
+  ```
 
-consumerKey=YOUR_API_KEY
-consumerSecret=YOUR_API_KEY_SECRET
-```
++ Add an OAuth token pair (for tests) to `app/src/androidTest/assets/tokens.properties`.
 
-# Testing
-
-Give your `access_token` and `access_token_secret` of above consumer app.
-
-```
-# tokens.properties
-
-consumerKey=***
-consumerSecret=***
-accessToken=***
-accessTokenSecret=***
-```
+    ```
+    accessToken=YOUR_OAUTH_TOKEN
+    accessTokenSecret=YOUR_OAUTH_TOKEN_SECRET
+    ```

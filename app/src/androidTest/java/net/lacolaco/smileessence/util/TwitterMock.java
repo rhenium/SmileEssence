@@ -27,17 +27,17 @@ package net.lacolaco.smileessence.util;
 import android.content.Context;
 import android.content.res.AssetManager;
 
-import net.lacolaco.smileessence.BuildConfig;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.twitter.TwitterApi;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Properties;
 
 import twitter4j.DirectMessage;
 import twitter4j.JSONException;
-import twitter4j.JSONObject;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -72,6 +72,23 @@ public class TwitterMock {
         return null;
     }
 
+    private String getOAuthToken(String name) throws IOException {
+        String filename = "tokens.properties";
+        Properties props = new Properties();
+        InputStream is = null;
+        try {
+            is = assets.open(filename);
+            props.load(is);
+            return props.getProperty(name);
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (is != null) {
+                is.close();
+            }
+        }
+    }
+
     public Status getStatusMock() throws IOException, TwitterException {
         return TwitterObjectFactory.createStatus(getJson("status.json"));
     }
@@ -93,11 +110,11 @@ public class TwitterMock {
     }
 
     public String getAccessToken() throws IOException, JSONException {
-        return BuildConfig.ACCESS_TOKEN;
+        return getOAuthToken("accessToken");
     }
 
     public String getAccessTokenSecret() throws IOException, JSONException {
-        return BuildConfig.ACCESS_TOKEN_SECRET;
+        return getOAuthToken("accessTokenSecret");
     }
 
     public Twitter getTwitterMock() throws IOException, JSONException {

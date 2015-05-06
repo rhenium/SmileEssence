@@ -57,14 +57,6 @@ public class TwitterApi {
         this.tokenSecret = tokenSecret;
     }
 
-    public static Configuration getConf() {
-        ConfigurationBuilder conf = new ConfigurationBuilder();
-        conf.setOAuthConsumerKey(BuildConfig.CONSUMER_KEY);
-        conf.setOAuthConsumerSecret(BuildConfig.CONSUMER_SECRET);
-        conf.setDebugEnabled(true);
-        return conf.build();
-    }
-
     public static Twitter getTwitter(Account account) {
         return new TwitterApi(account).getTwitter();
     }
@@ -72,13 +64,13 @@ public class TwitterApi {
     // --------------------- GETTER / SETTER METHODS ---------------------
 
     public Twitter getTwitter() {
-        Twitter twitter = new TwitterFactory(getConf()).getInstance();
+        Twitter twitter = new TwitterFactory().getInstance();
         twitter.setOAuthAccessToken(new AccessToken(token, tokenSecret));
         return twitter;
     }
 
     public TwitterStream getTwitterStream() {
-        TwitterStream stream = new TwitterStreamFactory(getConf()).getInstance();
+        TwitterStream stream = new TwitterStreamFactory().getInstance();
         stream.setOAuthAccessToken(new AccessToken(token, tokenSecret));
         return stream;
     }

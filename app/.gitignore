@@ -1,1 +1,4 @@
 /build
+/src/main/resources/twitter4j.properties
+/src/debug/resources/twitter4j.properties
+/src/androidTest/assets/tokens.properties

@@ -51,7 +51,7 @@ public class OAuthSession {
     // --------------------- GETTER / SETTER METHODS ---------------------
 
     public String getAuthorizationURL() {
-        Twitter twitter = new TwitterFactory(TwitterApi.getConf()).getInstance();
+        Twitter twitter = new TwitterFactory().getInstance();
         RequestTokenTask task = new RequestTokenTask(twitter);
         task.execute();
         try {
@@ -67,7 +67,7 @@ public class OAuthSession {
     // -------------------------- OTHER METHODS --------------------------
 
     public AccessToken getAccessToken(String pinCode) {
-        Twitter twitter = new TwitterFactory(TwitterApi.getConf()).getInstance();
+        Twitter twitter = new TwitterFactory().getInstance();
         AccessTokenTask task = new AccessTokenTask(twitter, requestToken, pinCode);
         task.execute();
         try {
