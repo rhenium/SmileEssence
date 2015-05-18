@@ -40,10 +40,10 @@ import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 
-import twitter4j.Status;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import twitter4j.Status;
 
 public class QuoteDialogFragment extends MenuDialogFragment {
 

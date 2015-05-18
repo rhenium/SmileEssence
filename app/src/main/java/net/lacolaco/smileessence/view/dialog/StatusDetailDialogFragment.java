@@ -27,11 +27,14 @@ package net.lacolaco.smileessence.view.dialog;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.*;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
@@ -46,19 +49,20 @@ import net.lacolaco.smileessence.twitter.task.FavoriteTask;
 import net.lacolaco.smileessence.twitter.task.RetweetTask;
 import net.lacolaco.smileessence.twitter.task.UnfavoriteTask;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
+import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.adapter.PostState;
 import net.lacolaco.smileessence.view.adapter.StatusListAdapter;
 import net.lacolaco.smileessence.view.listener.ListItemClickListener;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
+
+import java.util.ArrayList;
 
 import twitter4j.MediaEntity;
 import twitter4j.Status;
 import twitter4j.URLEntity;
 import twitter4j.User;
 
-import java.util.ArrayList;
-
-public class StatusDetailDialogFragment extends DialogFragment implements View.OnClickListener {
+public class StatusDetailDialogFragment extends StackableDialogFragment implements View.OnClickListener {
 
     // ------------------------------ FIELDS ------------------------------
 
@@ -231,7 +235,6 @@ public class StatusDetailDialogFragment extends DialogFragment implements View.O
                 @Override
                 public void run() {
                     command.execute();
-                    dismiss();
                 }
             }));
             commandsLayout.addView(commandView);
@@ -284,7 +287,7 @@ public class StatusDetailDialogFragment extends DialogFragment implements View.O
     private void openMenu(MainActivity activity) {
         StatusMenuDialogFragment fragment = new StatusMenuDialogFragment();
         fragment.setStatusID(getStatusID());
-        DialogHelper.showDialog(activity, fragment, "statusMenuDialog");
+        DialogHelper.showDialog(activity, fragment);
     }
 
     private void replyToStatus(MainActivity activity, Account account, Status status) {
@@ -312,7 +315,6 @@ public class StatusDetailDialogFragment extends DialogFragment implements View.O
         } else {
             new FavoriteTask(TwitterApi.getTwitter(account), statusID, activity).execute();
         }
-        dismiss();
     }
 
     private void toggleRetweet(final MainActivity activity, final Account account, final Status status, final Long retweetID) {
@@ -324,7 +326,6 @@ public class StatusDetailDialogFragment extends DialogFragment implements View.O
                 } else {
                     new RetweetTask(TwitterApi.getTwitter(account), TwitterUtils.getOriginalStatus(status).getId(), activity).execute();
                 }
-                dismiss();
             }
         });
     }

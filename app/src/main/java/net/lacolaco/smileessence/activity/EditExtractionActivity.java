@@ -41,7 +41,7 @@ import net.lacolaco.smileessence.entity.ExtractionWord;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.util.Themes;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
-import net.lacolaco.smileessence.view.dialog.DialogHelper;
+import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.dialog.EditTextDialogFragment;
 
 import java.util.List;

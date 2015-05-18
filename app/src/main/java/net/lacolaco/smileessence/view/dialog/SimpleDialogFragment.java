@@ -26,7 +26,6 @@ package net.lacolaco.smileessence.view.dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -34,7 +33,7 @@ import android.view.View;
 
 import net.lacolaco.smileessence.R;
 
-public class SimpleDialogFragment extends DialogFragment {
+public class SimpleDialogFragment extends StackableDialogFragment {
 
     // ------------------------------ FIELDS ------------------------------
 

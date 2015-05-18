@@ -79,10 +79,8 @@ public class PostMenuDialogFragment extends MenuDialogFragment {
 
     @Override
     protected void executeCommand(Command command) {
-        if (command.execute()) {
-            dismiss();
-            DialogHelper.close(getActivity(), TAG);
-        }
+        dismiss();
+        command.execute();
     }
 
     // -------------------------- OTHER METHODS --------------------------

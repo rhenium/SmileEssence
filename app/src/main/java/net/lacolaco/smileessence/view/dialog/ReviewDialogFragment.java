@@ -26,7 +26,6 @@ package net.lacolaco.smileessence.view.dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
@@ -42,7 +41,7 @@ import net.lacolaco.smileessence.view.adapter.PostState;
 
 import twitter4j.Status;
 
-public class ReviewDialogFragment extends DialogFragment implements View.OnClickListener {
+public class ReviewDialogFragment extends StackableDialogFragment implements View.OnClickListener {
 
     // ------------------------------ FIELDS ------------------------------
 

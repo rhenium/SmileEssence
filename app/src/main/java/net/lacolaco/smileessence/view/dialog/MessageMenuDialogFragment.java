@@ -33,19 +33,22 @@ import android.widget.ListView;
 
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
-import net.lacolaco.smileessence.command.*;
+import net.lacolaco.smileessence.command.Command;
+import net.lacolaco.smileessence.command.CommandOpenHashtagDialog;
+import net.lacolaco.smileessence.command.CommandOpenURL;
+import net.lacolaco.smileessence.command.CommandOpenUserDetail;
+import net.lacolaco.smileessence.command.CommandSaveAsTemplate;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
-import net.lacolaco.smileessence.viewmodel.MessageViewModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import twitter4j.DirectMessage;
 import twitter4j.HashtagEntity;
 import twitter4j.MediaEntity;
 import twitter4j.URLEntity;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MessageMenuDialogFragment extends MenuDialogFragment {
 
@@ -69,10 +72,8 @@ public class MessageMenuDialogFragment extends MenuDialogFragment {
 
     @Override
     protected void executeCommand(Command command) {
-        if (command.execute()) {
-            dismiss();
-            DialogHelper.close(getActivity(), MessageViewModel.DETAIL_DIALOG);
-        }
+        dismiss();
+        command.execute();
     }
 
     @Override

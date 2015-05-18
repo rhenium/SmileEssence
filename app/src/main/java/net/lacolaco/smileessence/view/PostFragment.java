@@ -52,7 +52,6 @@ import net.lacolaco.smileessence.util.BitmapThumbnailTask;
 import net.lacolaco.smileessence.util.IntentUtils;
 import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.view.adapter.PostState;
-import net.lacolaco.smileessence.view.dialog.DialogHelper;
 import net.lacolaco.smileessence.view.dialog.PostMenuDialogFragment;
 import net.lacolaco.smileessence.view.dialog.SelectImageDialogFragment;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
@@ -335,7 +334,7 @@ public class PostFragment extends Fragment implements TextWatcher, View.OnFocusC
         setStateFromView();
         hideIME();
         PostMenuDialogFragment menuDialogFragment = new PostMenuDialogFragment();
-        DialogHelper.showDialog(getActivity(), menuDialogFragment, PostMenuDialogFragment.TAG);
+        DialogHelper.showDialog(getActivity(), menuDialogFragment);
     }
 
     private void removeImage() {

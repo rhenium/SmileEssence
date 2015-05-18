@@ -26,7 +26,6 @@ package net.lacolaco.smileessence.view.dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -46,7 +45,7 @@ import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
-public class TalkChainDialogFragment extends DialogFragment {
+public class TalkChainDialogFragment extends StackableDialogFragment {
 
     // ------------------------------ FIELDS ------------------------------
 

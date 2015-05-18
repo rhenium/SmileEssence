@@ -26,7 +26,6 @@ package net.lacolaco.smileessence.view.dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -40,8 +39,9 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import net.lacolaco.smileessence.R;
+import net.lacolaco.smileessence.view.DialogHelper;
 
-public class SearchOnGoogleDialogFragment extends DialogFragment implements TextWatcher, View.OnClickListener {
+public class SearchOnGoogleDialogFragment extends StackableDialogFragment implements TextWatcher, View.OnClickListener {
 
     // ------------------------------ FIELDS ------------------------------
 
@@ -127,6 +127,6 @@ public class SearchOnGoogleDialogFragment extends DialogFragment implements Text
         Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
         intent.putExtra(SearchManager.QUERY, editText.getText().toString());
         getActivity().startActivity(intent);
-        DialogHelper.closeAll(getActivity());
+        DialogHelper.closeAllDialogs(getActivity());
     }
 }

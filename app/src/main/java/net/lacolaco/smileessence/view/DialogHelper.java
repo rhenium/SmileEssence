@@ -22,43 +22,34 @@
  * SOFTWARE.
  */
 
-package net.lacolaco.smileessence.command.status;
+package net.lacolaco.smileessence.view;
 
 import android.app.Activity;
 
-import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.view.DialogHelper;
-import net.lacolaco.smileessence.view.dialog.SearchOnGoogleDialogFragment;
+import net.lacolaco.smileessence.view.dialog.StackableDialogFragment;
 
-import twitter4j.Status;
+import java.util.LinkedHashSet;
+import java.util.UUID;
 
-public class StatusCommandSearchOnGoogle extends StatusCommand {
+public class DialogHelper {
+    private static LinkedHashSet<String> dialogStack = new LinkedHashSet<>();
 
-    // --------------------------- CONSTRUCTORS ---------------------------
-
-    public StatusCommandSearchOnGoogle(Activity activity, Status status) {
-        super(R.id.key_command_status_search_on_google, activity, status);
+    public static void closeAllDialogs(Activity activity) {
+        for (String tag : new LinkedHashSet<String>(dialogStack)) {
+            StackableDialogFragment dialog = (StackableDialogFragment) activity.getFragmentManager().findFragmentByTag(tag);
+            if (dialog != null) {
+                dialog.dismiss();
+            }
+        }
     }
 
-    // --------------------- GETTER / SETTER METHODS ---------------------
-
-    @Override
-    public String getText() {
-        return getActivity().getString(R.string.command_search_on_google);
+    public static int showDialog(Activity activity, StackableDialogFragment dialogFragment) {
+        String tag = "stacking_dialog_" + dialogFragment.getClass().getSimpleName() + UUID.randomUUID().toString();
+        dialogStack.add(tag);
+        return dialogFragment.show(activity.getFragmentManager().beginTransaction(), tag);
     }
 
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
-    // -------------------------- OTHER METHODS --------------------------
-
-    @Override
-    public boolean execute() {
-        SearchOnGoogleDialogFragment dialogFragment = new SearchOnGoogleDialogFragment();
-        dialogFragment.setText(getOriginalStatus().getText());
-        DialogHelper.showDialog(getActivity(), dialogFragment);
-        return false;
+    public static void unregisterDialog(String tag) {
+        dialogStack.remove(tag);
     }
 }

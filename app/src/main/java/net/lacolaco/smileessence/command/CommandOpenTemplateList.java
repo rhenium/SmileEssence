@@ -29,7 +29,7 @@ import android.app.Activity;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.entity.Template;
 import net.lacolaco.smileessence.view.dialog.ChooseTemplateDialogFragment;
-import net.lacolaco.smileessence.view.dialog.DialogHelper;
+import net.lacolaco.smileessence.view.DialogHelper;
 
 public class CommandOpenTemplateList extends Command {
 

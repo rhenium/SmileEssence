@@ -26,7 +26,6 @@ package net.lacolaco.smileessence.view.dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
@@ -50,7 +49,7 @@ import net.lacolaco.smileessence.view.adapter.PostState;
 
 import twitter4j.Twitter;
 
-public class SendMessageDialogFragment extends DialogFragment implements TextWatcher, View.OnClickListener {
+public class SendMessageDialogFragment extends StackableDialogFragment implements TextWatcher, View.OnClickListener {
 
     // ------------------------------ FIELDS ------------------------------
 

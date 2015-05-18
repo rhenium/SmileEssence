@@ -27,19 +27,18 @@ package net.lacolaco.smileessence.view.dialog;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
+import net.lacolaco.smileessence.view.DialogHelper;
 
-public abstract class ConfirmDialogFragment extends DialogFragment {
+public abstract class ConfirmDialogFragment extends StackableDialogFragment {
 
     // ------------------------------ FIELDS ------------------------------
 
     public static final String ARG_TEXT = "text";
-    public static final String TAG = "confirmDialog";
     private final DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
@@ -47,7 +46,6 @@ public abstract class ConfirmDialogFragment extends DialogFragment {
             dialog.dismiss();
         }
     };
-    private int layoutResourceID;
     private String text;
 
     // -------------------------- STATIC METHODS --------------------------
@@ -72,14 +70,14 @@ public abstract class ConfirmDialogFragment extends DialogFragment {
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE: {
                         if (onOK != null) {
-                            this.dismiss();
+                            dismiss();
                             onOK.run();
                         }
                         break;
                     }
                     case DialogInterface.BUTTON_NEGATIVE: {
                         if (onCancel != null) {
-                            this.dismiss();
+                            dismiss();
                             onCancel.run();
                         }
                         break;
@@ -88,7 +86,7 @@ public abstract class ConfirmDialogFragment extends DialogFragment {
             }
         };
         fragment.setText(text);
-        DialogHelper.showDialog(activity, fragment, TAG);
+        DialogHelper.showDialog(activity, fragment);
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------

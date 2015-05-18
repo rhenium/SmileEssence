@@ -46,7 +46,6 @@ import net.lacolaco.smileessence.twitter.TwitterApi;
 import net.lacolaco.smileessence.twitter.task.UserListStatusesTask;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.util.UIHandler;
-import net.lacolaco.smileessence.view.dialog.DialogHelper;
 import net.lacolaco.smileessence.view.dialog.SelectUserListDialogFragment;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 import net.lacolaco.smileessence.viewmodel.UserListListAdapter;

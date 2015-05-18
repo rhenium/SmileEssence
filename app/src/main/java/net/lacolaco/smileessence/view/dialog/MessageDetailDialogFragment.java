@@ -27,7 +27,6 @@ package net.lacolaco.smileessence.view.dialog;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
@@ -47,19 +46,20 @@ import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.TwitterApi;
 import net.lacolaco.smileessence.twitter.task.DeleteMessageTask;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
+import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.adapter.MessageListAdapter;
 import net.lacolaco.smileessence.view.listener.ListItemClickListener;
 import net.lacolaco.smileessence.viewmodel.MessageViewModel;
-
-import twitter4j.DirectMessage;
-import twitter4j.MediaEntity;
-import twitter4j.URLEntity;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class MessageDetailDialogFragment extends DialogFragment implements View.OnClickListener {
+import twitter4j.DirectMessage;
+import twitter4j.MediaEntity;
+import twitter4j.URLEntity;
+
+public class MessageDetailDialogFragment extends StackableDialogFragment implements View.OnClickListener {
 
     // ------------------------------ FIELDS ------------------------------
 
@@ -239,7 +239,6 @@ public class MessageDetailDialogFragment extends DialogFragment implements View.
                 @Override
                 public void run() {
                     command.execute();
-                    dismiss();
                 }
             }));
             commandsLayout.addView(commandView);
@@ -259,6 +258,6 @@ public class MessageDetailDialogFragment extends DialogFragment implements View.
     private void openMenu(MainActivity activity) {
         MessageMenuDialogFragment fragment = new MessageMenuDialogFragment();
         fragment.setMessageID(getMessageID());
-        DialogHelper.showDialog(activity, fragment, "messageMenuDialog");
+        DialogHelper.showDialog(activity, fragment);
     }
 }

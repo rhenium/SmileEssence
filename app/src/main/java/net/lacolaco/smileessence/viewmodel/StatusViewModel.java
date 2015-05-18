@@ -47,7 +47,7 @@ import net.lacolaco.smileessence.util.Morse;
 import net.lacolaco.smileessence.util.NameStyles;
 import net.lacolaco.smileessence.util.StringUtils;
 import net.lacolaco.smileessence.util.Themes;
-import net.lacolaco.smileessence.view.dialog.DialogHelper;
+import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.dialog.StatusDetailDialogFragment;
 import net.lacolaco.smileessence.view.dialog.UserDetailDialogFragment;
 import net.lacolaco.smileessence.view.listener.ListItemClickListener;
@@ -62,7 +62,6 @@ public class StatusViewModel implements IViewModel {
 
     // ------------------------------ FIELDS ------------------------------
 
-    public static final String STATUS_DIALOG = "statusDialog";
     private long id;
     private long userID;
     private String screenName;
@@ -408,11 +407,10 @@ public class StatusViewModel implements IViewModel {
     private void onClick(Activity activity) {
         StatusDetailDialogFragment fragment = new StatusDetailDialogFragment();
         fragment.setStatusID(getID());
-        DialogHelper.showDialog(activity, fragment, STATUS_DIALOG);
+        DialogHelper.showDialog(activity, fragment);
     }
 
     private void onIconClick(Activity activity) {
-        DialogHelper.close(activity, STATUS_DIALOG);
         UserDetailDialogFragment dialogFragment = new UserDetailDialogFragment();
         dialogFragment.setUserID(isRetweet() ? getRetweetedStatus().userID : userID);
         DialogHelper.showDialog(activity, dialogFragment);

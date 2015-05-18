@@ -26,7 +26,7 @@ package net.lacolaco.smileessence.command;
 
 import android.app.Activity;
 
-import net.lacolaco.smileessence.view.dialog.DialogHelper;
+import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.dialog.HashtagDialogFragment;
 
 import twitter4j.HashtagEntity;

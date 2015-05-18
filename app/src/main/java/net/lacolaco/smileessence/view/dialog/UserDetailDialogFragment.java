@@ -27,14 +27,17 @@ package net.lacolaco.smileessence.view.dialog;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
-import android.widget.*;
+import android.widget.AbsListView;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TabHost;
+import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
@@ -55,6 +58,7 @@ import net.lacolaco.smileessence.twitter.task.UserTimelineTask;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.util.Themes;
 import net.lacolaco.smileessence.util.UIHandler;
+import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 import net.lacolaco.smileessence.view.adapter.StatusListAdapter;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
@@ -64,12 +68,11 @@ import twitter4j.Relationship;
 import twitter4j.Twitter;
 import twitter4j.User;
 
-public class UserDetailDialogFragment extends DialogFragment implements View.OnClickListener,
+public class UserDetailDialogFragment extends StackableDialogFragment implements View.OnClickListener,
         PullToRefreshBase.OnRefreshListener2<ListView> {
 
     // ------------------------------ FIELDS ------------------------------
 
-    public static final String USER_MENU_DIALOG = "userMenuDialog";
     private static final String KEY_USER_ID = "userID";
     private static final int ADAPTER_INDEX = 100;
     private TextView textViewScreenName;
@@ -362,7 +365,7 @@ public class UserDetailDialogFragment extends DialogFragment implements View.OnC
             }
         };
         menuFragment.setUserID(user.getId());
-        DialogHelper.showDialog(activity, menuFragment, USER_MENU_DIALOG);
+        DialogHelper.showDialog(activity, menuFragment);
     }
 
     private void setFollowButtonState(boolean isFollowing, Drawable unfollowColor, Drawable followColor) {

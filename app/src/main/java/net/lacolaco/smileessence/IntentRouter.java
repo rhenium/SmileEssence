@@ -37,7 +37,7 @@ import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.view.adapter.PostState;
-import net.lacolaco.smileessence.view.dialog.DialogHelper;
+import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.dialog.StatusDetailDialogFragment;
 
 import twitter4j.Status;

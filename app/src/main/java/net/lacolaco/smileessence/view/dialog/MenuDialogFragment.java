@@ -24,7 +24,6 @@
 
 package net.lacolaco.smileessence.view.dialog;
 
-import android.app.DialogFragment;
 import android.view.View;
 import android.widget.AdapterView;
 
@@ -32,7 +31,7 @@ import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.IConfirmable;
 
-public abstract class MenuDialogFragment extends DialogFragment {
+public abstract class MenuDialogFragment extends StackableDialogFragment{
 
     // ------------------------------ FIELDS ------------------------------
 
@@ -44,10 +43,8 @@ public abstract class MenuDialogFragment extends DialogFragment {
     };
 
     protected void executeCommand(Command command) {
-        if (command.execute()) {
-            dismiss();
-            DialogHelper.closeAll(getActivity());
-        }
+        dismiss();
+        command.execute();
     }
 
     protected void onItemClick(AdapterView<?> adapterView, int i) {

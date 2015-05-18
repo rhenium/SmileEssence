@@ -27,7 +27,7 @@ package net.lacolaco.smileessence.command.message;
 import android.app.Activity;
 
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.view.dialog.DialogHelper;
+import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.dialog.SearchOnGoogleDialogFragment;
 
 import twitter4j.DirectMessage;

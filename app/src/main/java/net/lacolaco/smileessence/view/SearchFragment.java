@@ -52,7 +52,6 @@ import net.lacolaco.smileessence.twitter.TwitterApi;
 import net.lacolaco.smileessence.twitter.task.SearchTask;
 import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.view.adapter.SearchListAdapter;
-import net.lacolaco.smileessence.view.dialog.DialogHelper;
 import net.lacolaco.smileessence.view.dialog.SelectSearchQueryDialogFragment;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 
@@ -319,7 +318,7 @@ public class SearchFragment extends CustomListFragment implements View.OnClickLi
                 editText.setText(query.query);
                 hideIME();
             }
-        }, SEARCH_QUERY_DIALOG);
+        });
     }
 
     private void saveQuery() {

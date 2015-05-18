@@ -40,10 +40,10 @@ import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 
-import twitter4j.User;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import twitter4j.User;
 
 public class UserMenuDialogFragment extends MenuDialogFragment {
 
@@ -100,8 +100,8 @@ public class UserMenuDialogFragment extends MenuDialogFragment {
 
     @Override
     protected void onItemClick(AdapterView<?> adapterView, int i) {
-        super.onItemClick(adapterView, i);
         dismiss();
+        super.onItemClick(adapterView, i);
     }
 
     // -------------------------- OTHER METHODS --------------------------

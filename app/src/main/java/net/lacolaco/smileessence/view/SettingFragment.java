@@ -39,7 +39,6 @@ import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.view.dialog.ConfirmDialogFragment;
-import net.lacolaco.smileessence.view.dialog.DialogHelper;
 import net.lacolaco.smileessence.view.dialog.SimpleDialogFragment;
 
 import static android.content.SharedPreferences.OnSharedPreferenceChangeListener;
