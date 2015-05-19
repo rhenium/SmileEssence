@@ -342,24 +342,22 @@ public class StatusViewModel implements IViewModel {
                 onClick(activity);
             }
         }));
+
         final ViewGroup embeddedStatus = (ViewGroup) convertedView.findViewById(R.id.view_status_embedded_status);
         embeddedStatus.removeAllViews();
         if (extendStatusURL) {
-            if (containsStatusURL()) {
+            List<Long> embeddedStatusIDs = getEmbeddedStatusIDs();
+            if (embeddedStatusIDs.size() > 0) {
                 embeddedStatus.setVisibility(View.VISIBLE);
                 final Account account = ((MainActivity) activity).getCurrentAccount();
-                List<Long> embeddedStatusIDs = getEmbeddedStatusIDs();
-                for (int i = 0; i < embeddedStatusIDs.size(); i++) {
-                    long id = embeddedStatusIDs.get(i);
-                    final int index = i;
-                    final View finalConvertedView = convertedView;
+                for (long id : embeddedStatusIDs) {
                     TwitterUtils.tryGetStatus(account, id, new TwitterUtils.StatusCallback() {
                         @Override
                         public void success(Status status) {
                             StatusViewModel viewModel = new StatusViewModel(status, account);
                             View embeddedHolder = viewModel.getView(activity, inflater, null, false);
                             embeddedStatus.addView(embeddedHolder);
-                            finalConvertedView.invalidate();
+                            embeddedStatus.invalidate();
                         }
 
                         @Override
@@ -394,10 +392,6 @@ public class StatusViewModel implements IViewModel {
 
     public boolean isRetweetOfMe(long userID) {
         return retweetedStatus != null && retweetedStatus.getUserID() == userID;
-    }
-
-    private boolean containsStatusURL() {
-        return getEmbeddedStatusIDs().size() > 0;
     }
 
     private boolean isReadMorseEnabled(MainActivity activity) {
