@@ -39,6 +39,7 @@ import net.lacolaco.smileessence.twitter.task.ShowDirectMessageTask;
 import net.lacolaco.smileessence.twitter.task.ShowStatusTask;
 import net.lacolaco.smileessence.twitter.task.ShowUserTask;
 
+import net.lacolaco.smileessence.twitter.task.TwitterTask;
 import twitter4j.*;
 
 import java.util.ArrayList;
@@ -61,15 +62,15 @@ public class TwitterUtils {
     /**
      * Get status from api if not cached
      */
-    public static void tryGetStatus(Account account, long statusID, final StatusCallback callback) {
+    public static TwitterTask tryGetStatus(Account account, long statusID, final StatusCallback callback) {
         Status status = StatusCache.getInstance().get(statusID);
+        ShowStatusTask task;
         if (status != null) {
             callback.success(status);
             //update cache
-            ShowStatusTask task = new ShowStatusTask(new TwitterApi(account).getTwitter(), statusID);
-            task.execute();
+            task = new ShowStatusTask(new TwitterApi(account).getTwitter(), statusID);
         } else {
-            ShowStatusTask task = new ShowStatusTask(new TwitterApi(account).getTwitter(), statusID) {
+            task = new ShowStatusTask(new TwitterApi(account).getTwitter(), statusID) {
                 @Override
                 protected void onPostExecute(twitter4j.Status status) {
                     super.onPostExecute(status);
@@ -80,8 +81,9 @@ public class TwitterUtils {
                     }
                 }
             };
-            task.execute();
         }
+        task.execute();
+        return task;
     }
 
     /**

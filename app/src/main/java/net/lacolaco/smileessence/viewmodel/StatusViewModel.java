@@ -26,6 +26,7 @@ package net.lacolaco.smileessence.viewmodel;
 
 import android.app.Activity;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -81,6 +82,8 @@ public class StatusViewModel implements IViewModel {
     private boolean isMention;
     private boolean isRetweetOfMe;
 
+    private ArrayList<AsyncTask> lastTasks; // internal
+
     // --------------------------- CONSTRUCTORS ---------------------------
 
     public StatusViewModel(Status status, Account account) {
@@ -106,6 +109,8 @@ public class StatusViewModel implements IViewModel {
         setMention(isMention(account.screenName));
         setMyStatus(isMyStatus(account.userID));
         setRetweetOfMe(isRetweetOfMe(account.userID));
+
+        lastTasks = new ArrayList<>();
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------
@@ -288,6 +293,11 @@ public class StatusViewModel implements IViewModel {
     // -------------------------- OTHER METHODS --------------------------
 
     public View getView(final Activity activity, final LayoutInflater inflater, View convertedView, boolean extendStatusURL) {
+        for (AsyncTask task : lastTasks) {
+            task.cancel(true);
+        }
+        lastTasks.clear();
+
         if (convertedView == null) {
             convertedView = inflater.inflate(R.layout.list_item_status, null);
         }
@@ -351,7 +361,7 @@ public class StatusViewModel implements IViewModel {
                 embeddedStatus.setVisibility(View.VISIBLE);
                 final Account account = ((MainActivity) activity).getCurrentAccount();
                 for (long id : embeddedStatusIDs) {
-                    TwitterUtils.tryGetStatus(account, id, new TwitterUtils.StatusCallback() {
+                    AsyncTask task = TwitterUtils.tryGetStatus(account, id, new TwitterUtils.StatusCallback() {
                         @Override
                         public void success(Status status) {
                             StatusViewModel viewModel = new StatusViewModel(status, account);
@@ -362,9 +372,9 @@ public class StatusViewModel implements IViewModel {
 
                         @Override
                         public void error() {
-
                         }
                     });
+                    lastTasks.add(task);
                 }
 
             }
