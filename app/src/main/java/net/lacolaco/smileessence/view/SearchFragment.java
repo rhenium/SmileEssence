@@ -301,17 +301,6 @@ public class SearchFragment extends CustomListFragment implements View.OnClickLi
         }
         DialogHelper.showDialog(mainActivity, new SelectSearchQueryDialogFragment() {
             @Override
-            protected void deleteQuery(CommandOpenSearch command) {
-                super.deleteQuery(command);
-                if (editText.getText().toString().contentEquals(command.getQuery().query)) {
-                    editText.setText("");
-                    mainActivity.setLastSearch("");
-                } else {
-                    mainActivity.setLastSearch(editText.getText().toString());
-                }
-            }
-
-            @Override
             protected void executeCommand(Command command) {
                 super.executeCommand(command);
                 SearchQuery query = ((CommandOpenSearch) command).getQuery();

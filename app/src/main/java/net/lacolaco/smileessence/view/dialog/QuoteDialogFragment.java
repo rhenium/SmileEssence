@@ -25,13 +25,8 @@
 package net.lacolaco.smileessence.view.dialog;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.ListView;
 
-import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.status.StatusCommandTextQuote;
@@ -66,17 +61,11 @@ public class QuoteDialogFragment extends MenuDialogFragment {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    protected void setMenuItems(final CustomListAdapter<Command> adapter) {
         final MainActivity activity = (MainActivity) getActivity();
+        final Account account = activity.getCurrentAccount();
 
-        View body = activity.getLayoutInflater().inflate(R.layout.dialog_menu_list, null);
-        ListView listView = (ListView) body.findViewById(R.id.listview_dialog_menu_list);
-        final CustomListAdapter<Command> adapter = new CustomListAdapter<>(activity, Command.class);
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(onItemClickListener);
-        Account account = activity.getCurrentAccount();
-        long statusID = getStatusID();
-        TwitterUtils.tryGetStatus(account, statusID, new TwitterUtils.StatusCallback() {
+        TwitterUtils.tryGetStatus(account, getStatusID(), new TwitterUtils.StatusCallback() {
             @Override
             public void success(Status status) {
                 List<Command> commands = getCommands(activity, status);
@@ -92,7 +81,6 @@ public class QuoteDialogFragment extends MenuDialogFragment {
                 dismiss();
             }
         });
-        return new AlertDialog.Builder(activity).setView(body).setCancelable(true).create();
     }
 
     // -------------------------- OTHER METHODS --------------------------

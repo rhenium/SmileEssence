@@ -25,14 +25,8 @@
 package net.lacolaco.smileessence.view.dialog;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 
-import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.CommandSearchOnTwitter;
@@ -66,14 +60,9 @@ public class UserMenuDialogFragment extends MenuDialogFragment {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    protected void setMenuItems(final CustomListAdapter<Command> adapter) {
         final MainActivity activity = (MainActivity) getActivity();
         final Account account = activity.getCurrentAccount();
-        View body = activity.getLayoutInflater().inflate(R.layout.dialog_menu_list, null);
-        ListView listView = (ListView) body.findViewById(R.id.listview_dialog_menu_list);
-        final CustomListAdapter<Command> adapter = new CustomListAdapter<>(activity, Command.class);
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(onItemClickListener);
 
         TwitterUtils.tryGetUser(account, getUserID(), new TwitterUtils.UserCallback() {
             @Override
@@ -91,17 +80,6 @@ public class UserMenuDialogFragment extends MenuDialogFragment {
                 dismiss();
             }
         });
-
-        return new AlertDialog.Builder(activity)
-                .setView(body)
-                .setCancelable(true)
-                .create();
-    }
-
-    @Override
-    protected void onItemClick(AdapterView<?> adapterView, int i) {
-        dismiss();
-        super.onItemClick(adapterView, i);
     }
 
     // -------------------------- OTHER METHODS --------------------------

@@ -24,20 +24,16 @@
 
 package net.lacolaco.smileessence.view.dialog;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.view.View;
-import android.widget.ListView;
 
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.Command;
-import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.util.IntentUtils;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 
@@ -49,21 +45,22 @@ public class SelectImageDialogFragment extends MenuDialogFragment {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        MainActivity activity = (MainActivity) getActivity();
-        Account account = activity.getCurrentAccount();
+    protected void setMenuItems(final CustomListAdapter<Command> adapter) {
+        final MainActivity activity = (MainActivity) getActivity();
+
         List<Command> commands = getCommands(activity);
-        View body = activity.getLayoutInflater().inflate(R.layout.dialog_menu_list, null);
-        ListView listView = (ListView) body.findViewById(R.id.listview_dialog_menu_list);
-        CustomListAdapter<Command> adapter = new CustomListAdapter<>(activity, Command.class);
-        listView.setAdapter(adapter);
+        Command.filter(commands);
         for (Command command : commands) {
             adapter.addToBottom(command);
         }
         adapter.update();
-        listView.setOnItemClickListener(onItemClickListener);
+    }
 
-        return new AlertDialog.Builder(activity).setView(body).setTitle(R.string.dialog_title_select_image).setCancelable(true).create();
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        dialog.setTitle(R.string.dialog_title_select_image);
+        return dialog;
     }
 
     // -------------------------- OTHER METHODS --------------------------

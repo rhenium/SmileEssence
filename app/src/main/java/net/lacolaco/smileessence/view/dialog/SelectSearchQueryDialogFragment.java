@@ -35,7 +35,6 @@ import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.CommandOpenSearch;
-import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.SearchQuery;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
@@ -45,43 +44,60 @@ import java.util.List;
 
 public class SelectSearchQueryDialogFragment extends MenuDialogFragment implements AdapterView.OnItemLongClickListener {
 
-    // ------------------------ INTERFACE METHODS ------------------------
-
-
     // --------------------- Interface OnItemLongClickListener ---------------------
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         final CommandOpenSearch command = (CommandOpenSearch) parent.getItemAtPosition(position);
+        final CustomListAdapter<Command> adapter = (CustomListAdapter<Command>) parent.getAdapter();
+
         ConfirmDialogFragment.show(getActivity(), getString(R.string.dialog_confirm_delete_query), new Runnable() {
             @Override
             public void run() {
-                deleteQuery(command);
+                adapter.removeItem(command);
+                adapter.update();
+
+                command.getQuery().delete();
+                Notificator.publish(getActivity(), R.string.notice_search_query_deleted);
             }
         }, false);
+
         return true;
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        MainActivity activity = (MainActivity) getActivity();
-        Account account = activity.getCurrentAccount();
+    protected void setMenuItems(final CustomListAdapter<Command> adapter) {
+        final MainActivity activity = (MainActivity) getActivity();
+
         List<Command> commands = getCommands(activity);
         Command.filter(commands);
-        View body = activity.getLayoutInflater().inflate(R.layout.dialog_menu_list, null);
-        ListView listView = (ListView) body.findViewById(R.id.listview_dialog_menu_list);
-        CustomListAdapter<Command> adapter = new CustomListAdapter<>(activity, Command.class);
-        listView.setAdapter(adapter);
         for (Command command : commands) {
             adapter.addToBottom(command);
         }
         adapter.update();
+    }
+
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        final MainActivity activity = (MainActivity) getActivity();
+        View body = activity.getLayoutInflater().inflate(R.layout.dialog_menu_list, null);
+        ListView listView = (ListView) body.findViewById(R.id.listview_dialog_menu_list);
+        final CustomListAdapter<Command> adapter = new CustomListAdapter<>(activity, Command.class);
+        listView.setAdapter(adapter);
         listView.setOnItemClickListener(onItemClickListener);
+
+        // addition
         listView.setOnItemLongClickListener(this);
 
-        return new AlertDialog.Builder(activity).setView(body).setTitle(R.string.dialog_title_select_search_query).setCancelable(true).create();
+        setMenuItems(adapter);
+
+        // addition
+        return new AlertDialog.Builder(activity)
+                .setView(body)
+                .setTitle(R.string.dialog_title_select_search_query)
+                .create();
     }
 
     // -------------------------- OTHER METHODS --------------------------
@@ -95,12 +111,5 @@ public class SelectSearchQueryDialogFragment extends MenuDialogFragment implemen
             }
         }
         return commands;
-    }
-
-    protected void deleteQuery(CommandOpenSearch command) {
-        command.getQuery().delete();
-        Notificator.publish(getActivity(), R.string.notice_search_query_deleted);
-        ((MainActivity) getActivity()).openSearchPage("");
-        dismiss();
     }
 }

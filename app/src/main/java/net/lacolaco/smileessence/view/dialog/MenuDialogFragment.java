@@ -24,16 +24,35 @@
 
 package net.lacolaco.smileessence.view.dialog;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ListView;
 
 import net.lacolaco.smileessence.R;
+import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.IConfirmable;
+import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 
-public abstract class MenuDialogFragment extends StackableDialogFragment{
+public abstract class MenuDialogFragment extends StackableDialogFragment {
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        final MainActivity activity = (MainActivity) getActivity();
+        View body = activity.getLayoutInflater().inflate(R.layout.dialog_menu_list, null);
+        ListView listView = (ListView) body.findViewById(R.id.listview_dialog_menu_list);
+        final CustomListAdapter<Command> adapter = new CustomListAdapter<>(activity, Command.class);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(onItemClickListener);
 
-    // ------------------------------ FIELDS ------------------------------
+        setMenuItems(adapter);
+
+        return new AlertDialog.Builder(activity).setView(body).create();
+    }
+
+    protected abstract void setMenuItems(final CustomListAdapter<Command> adapter);
 
     protected final AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
