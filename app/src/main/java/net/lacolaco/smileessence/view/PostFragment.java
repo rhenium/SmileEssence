@@ -327,7 +327,7 @@ public class PostFragment extends Fragment implements TextWatcher, View.OnFocusC
 
     private void hideIME() {
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+        imm.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
     }
 
     private void openPostMenu() {
@@ -367,7 +367,7 @@ public class PostFragment extends Fragment implements TextWatcher, View.OnFocusC
                 @Override
                 public void run() {
                     InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.showSoftInput(editText, 0);
+                    imm.showSoftInput(editText, InputMethodManager.RESULT_UNCHANGED_SHOWN);
                 }
             }.postDelayed(100);
         }

@@ -82,11 +82,11 @@ public class MainActivity extends Activity {
     public static final int REQUEST_GET_PICTURE_FROM_GALLERY = 11;
     public static final int REQUEST_GET_PICTURE_FROM_CAMERA = 12;
     public static final int PAGE_GONE = -1;
-    public static final int PAGE_POST = 0;
-    public static final int ADAPTER_HOME = 1;
-    public static final int ADAPTER_MENTIONS = 2;
-    public static final int ADAPTER_MESSAGES = 3;
-    public static final int ADAPTER_HISTORY = 4;
+    public static final int ADAPTER_HISTORY = 0;
+    public static final int PAGE_POST = 1;
+    public static final int ADAPTER_HOME = 2;
+    public static final int ADAPTER_MENTIONS = 3;
+    public static final int ADAPTER_MESSAGES = 4;
     public static final int ADAPTER_SEARCH = 5;
     public static final int ADAPTER_USERLIST = 6;
     private static final String KEY_LAST_USED_SEARCH_QUERY = "lastUsedSearchQuery";
@@ -665,11 +665,11 @@ public class MainActivity extends Activity {
     }
 
     private void initializePages() {
+        addHistoryPage();
         addPostPage();
         addHomePage();
         addMentionsPage();
         addMessagesPage();
-        addHistoryPage();
         addSearchPage();
         addUserListPage();
         pagerAdapter.refreshListNavigation();
