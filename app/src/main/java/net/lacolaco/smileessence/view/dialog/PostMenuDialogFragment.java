@@ -41,8 +41,6 @@ import java.util.List;
 
 public class PostMenuDialogFragment extends MenuDialogFragment {
 
-    public static final String TAG = "postMenu";
-
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
@@ -52,7 +50,7 @@ public class PostMenuDialogFragment extends MenuDialogFragment {
         List<Command> commands = getCommands(activity);
         Command.filter(commands);
         if (commands.isEmpty()) {
-            Notificator.publish(getActivity(), R.string.notice_no_command_exists);
+            Notificator.publish(getActivity(), R.string.notice_no_commands_available);
             dismiss();
         }
         for (Command command : commands) {
