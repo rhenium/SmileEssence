@@ -29,7 +29,9 @@ import android.os.Bundle;
 import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.method.ArrowKeyMovementMethod;
+import android.util.Log;
 import android.view.*;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -66,7 +68,6 @@ public class SearchFragment extends CustomListFragment implements View.OnClickLi
 
     // ------------------------------ FIELDS ------------------------------
 
-    public static final String SEARCH_QUERY_DIALOG = "searchQueryDialog";
     private EditText editText;
 
     // --------------------- GETTER / SETTER METHODS ---------------------
@@ -248,6 +249,18 @@ public class SearchFragment extends CustomListFragment implements View.OnClickLi
         editText = getEditText(page);
         editText.setOnFocusChangeListener(this);
         editText.setText(adapter.getQuery());
+        editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if (i == EditorInfo.IME_ACTION_SEARCH ||
+                        keyEvent != null &&
+                        keyEvent.getAction() == KeyEvent.ACTION_DOWN &&
+                        keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                    search();
+                }
+                return true;
+            }
+        });
         editText.setMovementMethod(new ArrowKeyMovementMethod() {
             @Override
             protected boolean right(TextView widget, Spannable buffer) {

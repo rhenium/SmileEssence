@@ -55,6 +55,7 @@
             android:layout_height="match_parent"
             android:layout_toLeftOf="@+id/button_search_execute"
             android:layout_toRightOf="@+id/button_search_queries"
+            android:imeOptions="actionSearch"
             android:inputType="text" />
 
         <ImageButton
