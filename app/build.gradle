@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 17
-    buildToolsVersion "22.0.1"
+    compileSdkVersion 21
+    buildToolsVersion "23"
 
     defaultConfig {
         applicationId "jp.rhe.smileessence"
-        minSdkVersion 17
-        targetSdkVersion 19
+        minSdkVersion 21
+        targetSdkVersion 21
         versionCode 25
         versionName "1.0.11.1"
     }
@@ -35,25 +35,25 @@ repositories {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:support-v13:22.1.1'
+    compile 'com.android.support:support-v13:+'
     //    compile 'com.android.support:appcompat-v7:22.1.0'
     // volley
-    compile 'com.mcxiaoke.volley:library:1.0.+@aar'
+    compile 'com.mcxiaoke.volley:library:+@aar'
     // ActiveAndroid
-    compile 'com.michaelpardo:activeandroid:3.1.0-SNAPSHOT'
+    compile 'com.michaelpardo:activeandroid:+'
     // crouton
-    compile('de.keyboardsurfer.android.widget:crouton:1.8.5@aar') {
+    compile('de.keyboardsurfer.android.widget:crouton:+@aar') {
         // exclusion is not necessary, but generally a good idea.
         exclude group: 'com.google.android', module: 'support-v4'
     }
     // pull to refresh
-    compile 'com.navercorp.pulltorefresh:library:3.2.3@aar'
+    compile 'com.navercorp.pulltorefresh:library:+@aar'
     // t4j
-    compile 'org.twitter4j:twitter4j-core:4.0.3'
-    compile 'org.twitter4j:twitter4j-media-support:4.0.3'
-    compile 'org.twitter4j:twitter4j-stream:4.0.3'
+    compile 'org.twitter4j:twitter4j-core:+'
+    compile 'org.twitter4j:twitter4j-media-support:+'
+    compile 'org.twitter4j:twitter4j-stream:+'
     // twitter-text
-    compile 'com.twitter:twitter-text:1.6.1'
+    compile 'com.twitter:twitter-text:+'
     // guava
-    compile 'com.google.guava:guava:18.0'
+    compile 'com.google.guava:guava:+'
 }

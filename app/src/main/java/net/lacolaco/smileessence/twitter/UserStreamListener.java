@@ -258,6 +258,18 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
         }
     }
 
+    @Override
+    public void onRetweetedRetweet(User source, User target, Status retweetedStatus) {
+    }
+
+    @Override
+    public void onFavoritedRetweet(User source, User target, Status favoritedRetweeet) {
+    }
+
+    @Override
+    public void onQuotedTweet(User source, User target, Status quotingTweet) {
+    }
+
     private void addToHistory(EventViewModel mentioned) {
         EventListAdapter history = (EventListAdapter) activity.getListAdapter(MainActivity.ADAPTER_HISTORY);
         Notificator.publish(activity, mentioned.getFormattedString(activity));
