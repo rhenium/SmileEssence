@@ -22,7 +22,8 @@
   ~ SOFTWARE.
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools"
+           tools:ignore="MissingTranslation">
     <string-array name="setting_namestyle_names">
         <item>@string/namestyle_s_n</item>
         <item>@string/namestyle_n_s</item>

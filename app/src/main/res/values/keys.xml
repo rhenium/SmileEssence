@@ -22,7 +22,8 @@
   ~ SOFTWARE.
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools"
+           tools:ignore="MissingTranslation">
     <string name="key_test_preference">testPreference</string>
     <string name="key_setting_text_size">textSize</string>
     <string name="key_setting_back_to_home">onSubmit</string>

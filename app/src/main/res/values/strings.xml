@@ -230,7 +230,6 @@
     <string name="command_select_image_from_gallery">From gallery</string>
     <string name="command_select_image_from_camera">From camera</string>
     <string name="command_save_as_template">Save as template</string>
-    <string name="command_create_search_page_dialog">Search page</string>
     <string name="command_paste_to_post">Paste to post</string>
     <string name="command_search_on_twitter">Search on Twitter</string>
     <string name="command_search_on_google">Search on Google</string>
