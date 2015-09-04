@@ -118,6 +118,6 @@ public class HomeFragment extends CustomListFragment {
     }
 
     private StatusListAdapter getListAdapter(MainActivity activity) {
-        return (StatusListAdapter) activity.getListAdapter(MainActivity.ADAPTER_HOME);
+        return (StatusListAdapter) activity.getListAdapter(MainActivity.AdapterID.Home);
     }
 }

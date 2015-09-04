@@ -49,7 +49,7 @@ public class CustomListFragment extends Fragment implements AbsListView.OnScroll
     public static final String ADAPTER_INDEX = "fragmentIndex";
     public static final int SCROLL_DURATION = 1500;
 
-    private int fragmentIndex;
+    private MainActivity.AdapterID fragmentIndex;
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 
@@ -77,7 +77,7 @@ public class CustomListFragment extends Fragment implements AbsListView.OnScroll
     @Override
     public void onScrollStateChanged(AbsListView absListView, int scrollState) {
         Bundle args = getArguments();
-        fragmentIndex = args.getInt(ADAPTER_INDEX);
+        fragmentIndex = MainActivity.AdapterID.get(args.getInt(ADAPTER_INDEX));
         CustomListAdapter<?> adapter = getListAdapter(fragmentIndex);
         adapter.setNotifiable(false);
 
@@ -98,14 +98,14 @@ public class CustomListFragment extends Fragment implements AbsListView.OnScroll
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
-        fragmentIndex = args.getInt(ADAPTER_INDEX);
+        fragmentIndex = MainActivity.AdapterID.get(args.getInt(ADAPTER_INDEX));
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View page = inflater.inflate(R.layout.fragment_list, container, false);
         Bundle args = getArguments();
-        int fragmentIndex = args.getInt(ADAPTER_INDEX);
+        MainActivity.AdapterID fragmentIndex = MainActivity.AdapterID.get(args.getInt(ADAPTER_INDEX));
         PullToRefreshListView listView = getListView(page);
         ListAdapter adapter = getListAdapter(fragmentIndex);
         listView.setAdapter(adapter);
@@ -118,18 +118,18 @@ public class CustomListFragment extends Fragment implements AbsListView.OnScroll
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(ADAPTER_INDEX, fragmentIndex);
+        outState.putInt(ADAPTER_INDEX, fragmentIndex.ordinal());
     }
 
     @Override
     public void onViewStateRestored(Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
         if (savedInstanceState != null) {
-            fragmentIndex = savedInstanceState.getInt(ADAPTER_INDEX);
+            fragmentIndex = MainActivity.AdapterID.get(savedInstanceState.getInt(ADAPTER_INDEX));
         }
     }
 
-    protected CustomListAdapter<?> getListAdapter(int fragmentIndex) {
+    protected CustomListAdapter<?> getListAdapter(MainActivity.AdapterID fragmentIndex) {
         return ((MainActivity) getActivity()).getListAdapter(fragmentIndex);
     }
 

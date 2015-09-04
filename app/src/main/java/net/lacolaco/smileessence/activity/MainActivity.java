@@ -38,6 +38,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
+import android.widget.Adapter;
 import android.widget.ImageView;
 
 import net.lacolaco.smileessence.Application;
@@ -53,9 +54,7 @@ import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.preference.AppPreferenceHelper;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
-import net.lacolaco.smileessence.twitter.OAuthSession;
-import net.lacolaco.smileessence.twitter.StatusFilter;
-import net.lacolaco.smileessence.twitter.TwitterApi;
+import net.lacolaco.smileessence.twitter.*;
 import net.lacolaco.smileessence.twitter.UserStreamListener;
 import net.lacolaco.smileessence.twitter.task.*;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
@@ -63,11 +62,8 @@ import net.lacolaco.smileessence.util.*;
 import net.lacolaco.smileessence.view.*;
 import net.lacolaco.smileessence.view.adapter.*;
 import net.lacolaco.smileessence.view.dialog.ConfirmDialogFragment;
-import net.lacolaco.smileessence.viewmodel.MessageViewModel;
-import net.lacolaco.smileessence.viewmodel.StatusViewModel;
-import net.lacolaco.smileessence.viewmodel.UserListListAdapter;
+import net.lacolaco.smileessence.viewmodel.*;
 import net.lacolaco.smileessence.viewmodel.menu.MainActivityMenuHelper;
-
 import twitter4j.*;
 
 import java.util.Collection;
@@ -78,30 +74,38 @@ public class MainActivity extends Activity {
 
     // ------------------------------ FIELDS ------------------------------
 
+    public enum AdapterID {
+        Home,
+        Mentions,
+        History,
+        Messages,
+        Search,
+        UserList;
+
+        public static AdapterID get(int ordinal) {
+            return values()[ordinal];
+        }
+    }
+
     public static final int REQUEST_OAUTH = 10;
     public static final int REQUEST_GET_PICTURE_FROM_GALLERY = 11;
     public static final int REQUEST_GET_PICTURE_FROM_CAMERA = 12;
-    public static final int PAGE_GONE = -1;
-    public static final int PAGE_POST = 0;
-    public static final int ADAPTER_HOME = 1;
-    public static final int ADAPTER_MENTIONS = 2;
-    public static final int ADAPTER_HISTORY = 3;
-    public static final int ADAPTER_MESSAGES = 4;
-    public static final int ADAPTER_SEARCH = 5;
-    public static final int ADAPTER_USERLIST = 6;
     private static final String KEY_LAST_USED_SEARCH_QUERY = "lastUsedSearchQuery";
     private static final String KEY_LAST_USED_ACCOUNT_ID = "lastUsedAccountID";
     private static final String KEY_LAST_USER_LIST = "lastUsedUserList";
-    private int pageIndexMessages;
+    public static final int PAGE_INDEX_GONE = -1;
+    private int pageIndexPost;
+    private int pageIndexHome;
+    private int pageIndexMentions;
     private int pageIndexHistory;
+    private int pageIndexMessages;
     private int pageIndexSearch;
     private int pageIndexUserlist;
     private ViewPager viewPager;
     private PageListAdapter pagerAdapter;
-    private OAuthSession oauthSession;
     private Account currentAccount;
     private TwitterStream stream;
-    private HashMap<Integer, CustomListAdapter<?>> adapterMap = new HashMap<>();
+    private HashMap<AdapterID, CustomListAdapter<?>> adapterMap = new HashMap<>();
     private boolean streaming = false;
     private Uri cameraTempFilePath;
 
@@ -138,7 +142,7 @@ public class MainActivity extends Activity {
     private long getLastUsedAccountID() {
         String id = getAppPreferenceHelper().getValue(KEY_LAST_USED_ACCOUNT_ID, "");
         if (TextUtils.isEmpty(id)) {
-            return PAGE_GONE;
+            return -1;
         } else {
             return Long.parseLong(id);
         }
@@ -156,8 +160,8 @@ public class MainActivity extends Activity {
         return adapterMap.values();
     }
 
-    public int getPageHome() {
-        return ADAPTER_HOME;
+    public int getPageIndexHome() {
+        return pageIndexHome;
     }
 
     public int getPageIndexHistory() {
@@ -174,14 +178,6 @@ public class MainActivity extends Activity {
 
     public int getPageIndexUserlist() {
         return pageIndexUserlist;
-    }
-
-    public int getPageMentions() {
-        return ADAPTER_MENTIONS;
-    }
-
-    public int getPagePost() {
-        return PAGE_POST;
     }
 
     public PageListAdapter getPagerAdapter() {
@@ -249,8 +245,8 @@ public class MainActivity extends Activity {
     public void finish() {
         if (viewPager == null) {
             forceFinish();
-        } else if (viewPager.getCurrentItem() != ADAPTER_HOME) {
-            viewPager.setCurrentItem(ADAPTER_HOME, true);
+        } else if (viewPager.getCurrentItem() != getPageIndexHome()) {
+            viewPager.setCurrentItem(getPageIndexHome(), true);
         } else {
             ConfirmDialogFragment.show(this, getString(R.string.dialog_confirm_finish_app), new Runnable() {
 
@@ -336,37 +332,36 @@ public class MainActivity extends Activity {
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public int addListPage(String name, Class<? extends CustomListFragment> fragmentClass, CustomListAdapter<?> adapter, int adapterIndex, boolean visible) {
+    public int addListPage(String name, Class<? extends CustomListFragment> fragmentClass, CustomListAdapter<?> adapter, AdapterID adapterId, boolean visible) {
         if (visible) {
             Bundle args = new Bundle();
-            args.putInt(CustomListFragment.ADAPTER_INDEX, adapterIndex);
-            addPage(name, fragmentClass, args, false);
-            adapterMap.put(adapterIndex, adapter);
-            return pagerAdapter.getCount() - 1;
+            args.putInt(CustomListFragment.ADAPTER_INDEX, adapterId.ordinal());
+            adapterMap.put(adapterId, adapter);
+            return addPage(name, fragmentClass, args, false);
         } else {
-            adapterMap.put(adapterIndex, adapter);
-            return PAGE_GONE;
+            return PAGE_INDEX_GONE;
         }
     }
 
-    public boolean addPage(String name, Class<? extends Fragment> fragmentClass, Bundle args, boolean withNotify) {
+    public int addPage(String name, Class<? extends Fragment> fragmentClass, Bundle args, boolean withNotify) {
         if (withNotify) {
-            return this.pagerAdapter.addPage(name, fragmentClass, args);
+            pagerAdapter.addPage(name, fragmentClass, args);
         } else {
-            return this.pagerAdapter.addPageWithoutNotify(name, fragmentClass, args);
+            pagerAdapter.addPageWithoutNotify(name, fragmentClass, args);
         }
+        return pagerAdapter.getCount() - 1;
     }
 
     public void forceFinish() {
         super.finish();
     }
 
-    public CustomListAdapter<?> getListAdapter(int i) {
-        return adapterMap.get(i);
+    public CustomListAdapter<?> getListAdapter(AdapterID adapterId) {
+        return adapterMap.get(adapterId);
     }
 
     public void openPostPage() {
-        setSelectedPageIndex(MainActivity.PAGE_POST);
+        setSelectedPageIndex(pageIndexPost);
     }
 
     public void openPostPageWithImage(Uri uri) {
@@ -409,10 +404,6 @@ public class MainActivity extends Activity {
         getAppPreferenceHelper().putValue(KEY_LAST_USER_LIST, lastUserList);
     }
 
-    public void setListAdapter(int adapterIndex, CustomListAdapter<?> adapter) {
-        adapterMap.put(adapterIndex, adapter);
-    }
-
     public void setSelectedPageIndex(final int position, final boolean smooth) {
         new UIHandler() {
             @Override
@@ -431,7 +422,7 @@ public class MainActivity extends Activity {
     public void startNewSearch(final Twitter twitter, final String query) {
         setLastSearch(query);
         if (!TextUtils.isEmpty(query)) {
-            final SearchListAdapter adapter = (SearchListAdapter) getListAdapter(ADAPTER_SEARCH);
+            final SearchListAdapter adapter = (SearchListAdapter) getListAdapter(AdapterID.Search);
             adapter.initSearch(query);
             adapter.clear();
             adapter.updateForce();
@@ -507,46 +498,46 @@ public class MainActivity extends Activity {
         userTask.execute();
     }
 
-    private void addHistoryPage() {
-        boolean visible = getUserPreferenceHelper().getValue(R.string.key_page_history_visibility, true);
-        getUserPreferenceHelper().putValue(R.string.key_page_history_visibility, visible);
-        EventListAdapter historyAdapter = new EventListAdapter(this);
-        pageIndexHistory = addListPage(getString(R.string.page_name_history), HistoryFragment.class, historyAdapter, ADAPTER_HISTORY, visible);
+    private void addPostPage() {
+        pageIndexPost = addPage(getString(R.string.page_name_post), PostFragment.class, null, true);
     }
 
     private void addHomePage() {
         StatusListAdapter homeAdapter = new StatusListAdapter(this);
-        addListPage(getString(R.string.page_name_home), HomeFragment.class, homeAdapter, ADAPTER_HOME, true);
+        pageIndexHome = addListPage(getString(R.string.page_name_home), HomeFragment.class, homeAdapter, AdapterID.Home, true);
     }
 
     private void addMentionsPage() {
         StatusListAdapter mentionsAdapter = new StatusListAdapter(this);
-        addListPage(getString(R.string.page_name_mentions), MentionsFragment.class, mentionsAdapter, ADAPTER_MENTIONS, true);
+        pageIndexMentions = addListPage(getString(R.string.page_name_mentions), MentionsFragment.class, mentionsAdapter, AdapterID.Mentions, true);
+    }
+
+    private void addHistoryPage() {
+        boolean visible = getUserPreferenceHelper().getValue(R.string.key_page_history_visibility, true);
+        getUserPreferenceHelper().putValue(R.string.key_page_history_visibility, visible);
+        EventListAdapter historyAdapter = new EventListAdapter(this);
+        pageIndexHistory = addListPage(getString(R.string.page_name_history), HistoryFragment.class, historyAdapter, AdapterID.History, visible);
     }
 
     private void addMessagesPage() {
         boolean visible = getUserPreferenceHelper().getValue(R.string.key_page_messages_visibility, true);
         getUserPreferenceHelper().putValue(R.string.key_page_messages_visibility, visible);
         MessageListAdapter messagesAdapter = new MessageListAdapter(this);
-        pageIndexMessages = addListPage(getString(R.string.page_name_messages), MessagesFragment.class, messagesAdapter, ADAPTER_MESSAGES, visible);
-    }
-
-    private void addPostPage() {
-        addPage(getString(R.string.page_name_post), PostFragment.class, null, true);
+        pageIndexMessages = addListPage(getString(R.string.page_name_messages), MessagesFragment.class, messagesAdapter, AdapterID.Messages, visible);
     }
 
     private void addSearchPage() {
         boolean visible = getUserPreferenceHelper().getValue(R.string.key_page_search_visibility, true);
         getUserPreferenceHelper().putValue(R.string.key_page_search_visibility, visible);
         SearchListAdapter searchAdapter = new SearchListAdapter(this);
-        pageIndexSearch = addListPage(getString(R.string.page_name_search), SearchFragment.class, searchAdapter, ADAPTER_SEARCH, visible);
+        pageIndexSearch = addListPage(getString(R.string.page_name_search), SearchFragment.class, searchAdapter, AdapterID.Search, visible);
     }
 
     private void addUserListPage() {
         boolean visible = getUserPreferenceHelper().getValue(R.string.key_page_list_visibility, true);
         getUserPreferenceHelper().putValue(R.string.key_page_list_visibility, visible);
         UserListListAdapter userListAdapter = new UserListListAdapter(this);
-        pageIndexUserlist = addListPage(getString(R.string.page_name_list), UserListFragment.class, userListAdapter, ADAPTER_USERLIST, visible);
+        pageIndexUserlist = addListPage(getString(R.string.page_name_list), UserListFragment.class, userListAdapter, AdapterID.UserList, visible);
     }
 
     private void getImageUri(int requestCode, int resultCode, Intent data) {
@@ -577,7 +568,7 @@ public class MainActivity extends Activity {
             @Override
             protected void onPostExecute(twitter4j.Status[] statuses) {
                 super.onPostExecute(statuses);
-                StatusListAdapter adapter = (StatusListAdapter) getListAdapter(ADAPTER_HOME);
+                StatusListAdapter adapter = (StatusListAdapter) getListAdapter(AdapterID.Home);
                 for (twitter4j.Status status : statuses) {
                     StatusViewModel statusViewModel = new StatusViewModel(status, currentAccount);
                     adapter.addToBottom(statusViewModel);
@@ -598,7 +589,7 @@ public class MainActivity extends Activity {
             @Override
             protected void onPostExecute(twitter4j.Status[] statuses) {
                 super.onPostExecute(statuses);
-                StatusListAdapter adapter = (StatusListAdapter) getListAdapter(ADAPTER_MENTIONS);
+                StatusListAdapter adapter = (StatusListAdapter) getListAdapter(AdapterID.Mentions);
                 for (twitter4j.Status status : statuses) {
                     adapter.addToBottom(new StatusViewModel(status, currentAccount));
                 }
@@ -608,14 +599,14 @@ public class MainActivity extends Activity {
     }
 
     private void initMessages(final Twitter twitter, final Paging paging) {
-        if (pageIndexMessages == PAGE_GONE) {
+        if (pageIndexMessages == PAGE_INDEX_GONE) {
             return;
         }
         new DirectMessagesTask(twitter, this, paging) {
             @Override
             protected void onPostExecute(DirectMessage[] directMessages) {
                 super.onPostExecute(directMessages);
-                MessageListAdapter adapter = (MessageListAdapter) getListAdapter(ADAPTER_MESSAGES);
+                MessageListAdapter adapter = (MessageListAdapter) getListAdapter(AdapterID.Messages);
                 for (DirectMessage message : directMessages) {
                     adapter.addToBottom(new MessageViewModel(message, currentAccount));
                 }
@@ -626,7 +617,7 @@ public class MainActivity extends Activity {
             @Override
             protected void onPostExecute(DirectMessage[] directMessages) {
                 super.onPostExecute(directMessages);
-                MessageListAdapter adapter = (MessageListAdapter) getListAdapter(ADAPTER_MESSAGES);
+                MessageListAdapter adapter = (MessageListAdapter) getListAdapter(AdapterID.Messages);
                 for (DirectMessage message : directMessages) {
                     adapter.addToBottom(new MessageViewModel(message, currentAccount));
                 }
@@ -640,7 +631,7 @@ public class MainActivity extends Activity {
     }
 
     private void initSearch(Twitter twitter) {
-        if (pageIndexSearch == PAGE_GONE) {
+        if (pageIndexSearch == PAGE_INDEX_GONE) {
             return;
         }
         String lastUsedSearchQuery = getLastSearch();
@@ -650,7 +641,7 @@ public class MainActivity extends Activity {
     }
 
     private void initUserList(Twitter twitter) {
-        if (pageIndexUserlist == PAGE_GONE) {
+        if (pageIndexUserlist == PAGE_INDEX_GONE) {
             return;
         }
         String lastUserList = getLastUserList();
@@ -675,7 +666,7 @@ public class MainActivity extends Activity {
         pagerAdapter.refreshListNavigation();
         viewPager.setOffscreenPageLimit(pagerAdapter.getCount());
         initPostState();
-        setSelectedPageIndex(ADAPTER_HOME, false);
+        setSelectedPageIndex(pageIndexHome, false);
     }
 
     public void initializeView() {
@@ -725,7 +716,7 @@ public class MainActivity extends Activity {
 
     private void startUserList(Twitter twitter, String listFullName) {
         saveLastUserList(listFullName);
-        final UserListListAdapter adapter = (UserListListAdapter) getListAdapter(ADAPTER_USERLIST);
+        final UserListListAdapter adapter = (UserListListAdapter) getListAdapter(AdapterID.UserList);
         adapter.setListFullName(listFullName);
         adapter.clear();
         adapter.updateForce();

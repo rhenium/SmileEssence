@@ -186,7 +186,7 @@ public class UserListFragment extends CustomListFragment implements View.OnClick
     }
 
     private UserListListAdapter getListAdapter(MainActivity activity) {
-        return (UserListListAdapter) getListAdapter(MainActivity.ADAPTER_USERLIST);
+        return (UserListListAdapter) getListAdapter(MainActivity.AdapterID.UserList);
     }
 
     private TextView getTextListName(View page) {

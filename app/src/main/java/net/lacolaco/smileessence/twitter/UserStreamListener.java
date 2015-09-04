@@ -140,7 +140,7 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
 
     @Override
     public void onDeletionNotice(long directMessageId, long userId) {
-        MessageListAdapter messages = (MessageListAdapter) activity.getListAdapter(MainActivity.ADAPTER_MESSAGES);
+        MessageListAdapter messages = (MessageListAdapter) activity.getListAdapter(MainActivity.AdapterID.Messages);
         messages.removeByMessageID(directMessageId);
         messages.updateForce();
         DirectMessageCache.getInstance().remove(directMessageId);
@@ -158,8 +158,8 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
         }
         if (isMe(source)) {
             FavoriteCache.getInstance().put(favoritedStatus, true);
-            activity.getListAdapter(MainActivity.ADAPTER_HOME).update();
-            activity.getListAdapter(MainActivity.ADAPTER_MENTIONS).update();
+            activity.getListAdapter(MainActivity.AdapterID.Home).update();
+            activity.getListAdapter(MainActivity.AdapterID.Mentions).update();
         }
     }
 
@@ -172,8 +172,8 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
         }
         if (isMe(source)) {
             FavoriteCache.getInstance().put(unfavoritedStatus, false);
-            activity.getListAdapter(MainActivity.ADAPTER_HOME).update();
-            activity.getListAdapter(MainActivity.ADAPTER_MENTIONS).update();
+            activity.getListAdapter(MainActivity.AdapterID.Home).update();
+            activity.getListAdapter(MainActivity.AdapterID.Mentions).update();
         }
     }
 
@@ -271,26 +271,26 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
     }
 
     private void addToHistory(EventViewModel mentioned) {
-        EventListAdapter history = (EventListAdapter) activity.getListAdapter(MainActivity.ADAPTER_HISTORY);
+        EventListAdapter history = (EventListAdapter) activity.getListAdapter(MainActivity.AdapterID.History);
         Notificator.publish(activity, mentioned.getFormattedString(activity));
         history.addToTop(mentioned);
         history.update();
     }
 
     private void addToHome(StatusViewModel viewModel) {
-        StatusListAdapter home = (StatusListAdapter) activity.getListAdapter(MainActivity.ADAPTER_HOME);
+        StatusListAdapter home = (StatusListAdapter) activity.getListAdapter(MainActivity.AdapterID.Home);
         home.addToTop(viewModel);
         home.update();
     }
 
     private void addToMentions(StatusViewModel viewModel) {
-        StatusListAdapter mentions = (StatusListAdapter) activity.getListAdapter(MainActivity.ADAPTER_MENTIONS);
+        StatusListAdapter mentions = (StatusListAdapter) activity.getListAdapter(MainActivity.AdapterID.Mentions);
         mentions.addToTop(viewModel);
         mentions.update();
     }
 
     private void addToMessages(MessageViewModel message) {
-        MessageListAdapter messages = (MessageListAdapter) activity.getListAdapter(MainActivity.ADAPTER_MESSAGES);
+        MessageListAdapter messages = (MessageListAdapter) activity.getListAdapter(MainActivity.AdapterID.Messages);
         messages.addToTop(message);
         messages.update();
     }

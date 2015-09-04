@@ -75,6 +75,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
 
     private static final String KEY_USER_ID = "userID";
     private static final int ADAPTER_INDEX = 100;
+    private StatusListAdapter adapter;
     private TextView textViewScreenName;
     private TextView textViewName;
     private TextView textViewURL;
@@ -171,7 +172,6 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
         Twitter twitter = TwitterApi.getTwitter(currentAccount);
-        final StatusListAdapter adapter = getListAdapter(activity);
         Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount(activity));
         if (adapter.getCount() > 0) {
             paging.setSinceId(adapter.getTopID());
@@ -195,7 +195,6 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
         Twitter twitter = TwitterApi.getTwitter(currentAccount);
-        final StatusListAdapter adapter = getListAdapter(activity);
         Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount(activity));
         if (adapter.getCount() > 0) {
             paging.setMaxId(adapter.getLastID() - 1);
@@ -302,10 +301,6 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         return html;
     }
 
-    private StatusListAdapter getListAdapter(MainActivity activity) {
-        return (StatusListAdapter) activity.getListAdapter(ADAPTER_INDEX);
-    }
-
     private void initUserData(User user, final Account account) {
         textViewName.setText(user.getName());
         textViewScreenName.setText(user.getScreenName());
@@ -330,10 +325,9 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         ImageCache.getInstance().setImageToView(user.getBiggerProfileImageURL(), imageViewIcon);
         ImageCache.getInstance().setImageToView(user.getProfileBannerURL(), imageViewHeader);
         MainActivity activity = (MainActivity) getActivity();
-        final StatusListAdapter adapter = new StatusListAdapter(activity);
+        adapter = new StatusListAdapter(activity);
         listViewTimeline.setAdapter(adapter);
         listViewTimeline.setOnRefreshListener(this);
-        activity.setListAdapter(ADAPTER_INDEX, adapter);
         executeUserTimelineTask(user, account, adapter);
         updateRelationship(activity, user.getId());
     }

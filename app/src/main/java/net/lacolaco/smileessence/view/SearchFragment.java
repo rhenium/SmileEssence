@@ -72,8 +72,8 @@ public class SearchFragment extends CustomListFragment implements View.OnClickLi
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 
-    private int getAdapterIndex() {
-        return getArguments().getInt(ADAPTER_INDEX);
+    private MainActivity.AdapterID getAdapterIndex() {
+        return MainActivity.AdapterID.get(getArguments().getInt(ADAPTER_INDEX));
     }
 
     private MainActivity getMainActivity() {
@@ -233,7 +233,7 @@ public class SearchFragment extends CustomListFragment implements View.OnClickLi
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View page = inflater.inflate(R.layout.fragment_search, container, false);
-        int fragmentIndex = getAdapterIndex();
+        MainActivity.AdapterID fragmentIndex = getAdapterIndex();
         PullToRefreshListView listView = getListView(page);
         SearchListAdapter adapter = (SearchListAdapter) getListAdapter(fragmentIndex);
         listView.setAdapter(adapter);
@@ -287,7 +287,7 @@ public class SearchFragment extends CustomListFragment implements View.OnClickLi
     }
 
     private SearchListAdapter getListAdapter(MainActivity activity) {
-        return (SearchListAdapter) activity.getListAdapter(MainActivity.ADAPTER_SEARCH);
+        return (SearchListAdapter) activity.getListAdapter(MainActivity.AdapterID.Search);
     }
 
     private ImageButton getQueriesButton(View page) {

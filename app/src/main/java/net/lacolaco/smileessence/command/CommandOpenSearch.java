@@ -56,7 +56,7 @@ public class CommandOpenSearch extends Command {
     @Override
     public boolean isEnabled() {
         MainActivity activity = (MainActivity) getActivity();
-        return activity.getPageIndexSearch() != MainActivity.PAGE_GONE;
+        return activity.getPageIndexSearch() != MainActivity.PAGE_INDEX_GONE;
     }
 
     // -------------------------- OTHER METHODS --------------------------
