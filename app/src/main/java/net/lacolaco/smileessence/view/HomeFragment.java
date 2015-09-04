@@ -46,6 +46,11 @@ public class HomeFragment extends CustomListFragment {
     // --------------------- GETTER / SETTER METHODS ---------------------
 
     @Override
+    protected MainActivity.AdapterID getAdapterIndex() {
+        return MainActivity.AdapterID.Home;
+    }
+
+    @Override
     protected PullToRefreshBase.Mode getRefreshMode() {
         return PullToRefreshBase.Mode.BOTH;
     }
@@ -62,7 +67,7 @@ public class HomeFragment extends CustomListFragment {
             new UIHandler() {
                 @Override
                 public void run() {
-                    StatusListAdapter adapter = getListAdapter(activity);
+                    StatusListAdapter adapter = (StatusListAdapter) getListAdapter();
                     updateListViewWithNotice(refreshView.getRefreshableView(), adapter, true);
                     refreshView.onRefreshComplete();
                 }
@@ -71,7 +76,7 @@ public class HomeFragment extends CustomListFragment {
         }
         final Account currentAccount = activity.getCurrentAccount();
         Twitter twitter = TwitterApi.getTwitter(currentAccount);
-        final StatusListAdapter adapter = getListAdapter(activity);
+        final StatusListAdapter adapter = (StatusListAdapter) getListAdapter();
         Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount(activity));
         if (adapter.getCount() > 0) {
             paging.setSinceId(adapter.getTopID());
@@ -97,7 +102,7 @@ public class HomeFragment extends CustomListFragment {
         final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
         Twitter twitter = TwitterApi.getTwitter(currentAccount);
-        final StatusListAdapter adapter = getListAdapter(activity);
+        final StatusListAdapter adapter = (StatusListAdapter) getListAdapter();
         Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount(activity));
         if (adapter.getCount() > 0) {
             paging.setMaxId(adapter.getLastID() - 1);
@@ -115,9 +120,5 @@ public class HomeFragment extends CustomListFragment {
                 refreshView.onRefreshComplete();
             }
         }.execute();
-    }
-
-    private StatusListAdapter getListAdapter(MainActivity activity) {
-        return (StatusListAdapter) activity.getListAdapter(MainActivity.AdapterID.Home);
     }
 }

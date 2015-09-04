@@ -48,6 +48,11 @@ public class MessagesFragment extends CustomListFragment {
     // --------------------- GETTER / SETTER METHODS ---------------------
 
     @Override
+    protected MainActivity.AdapterID getAdapterIndex() {
+        return MainActivity.AdapterID.Messages;
+    }
+
+    @Override
     protected PullToRefreshBase.Mode getRefreshMode() {
         return PullToRefreshBase.Mode.BOTH;
     }
@@ -62,7 +67,7 @@ public class MessagesFragment extends CustomListFragment {
         final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
         Twitter twitter = TwitterApi.getTwitter(currentAccount);
-        final MessageListAdapter adapter = getListAdapter(activity);
+        final MessageListAdapter adapter = (MessageListAdapter) getListAdapter();
         Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount(activity));
         if (adapter.getCount() > 0) {
             paging.setSinceId(adapter.getTopID());
@@ -85,7 +90,7 @@ public class MessagesFragment extends CustomListFragment {
         final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
         Twitter twitter = TwitterApi.getTwitter(currentAccount);
-        final MessageListAdapter adapter = getListAdapter(activity);
+        final MessageListAdapter adapter = (MessageListAdapter) getListAdapter();
         Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount(activity));
         if (adapter.getCount() > 0) {
             paging.setMaxId(adapter.getLastID() - 1);
@@ -101,9 +106,5 @@ public class MessagesFragment extends CustomListFragment {
                 refreshView.onRefreshComplete();
             }
         }.execute();
-    }
-
-    private MessageListAdapter getListAdapter(MainActivity activity) {
-        return (MessageListAdapter) activity.getListAdapter(MainActivity.AdapterID.Messages);
     }
 }

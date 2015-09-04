@@ -335,7 +335,6 @@ public class MainActivity extends Activity {
     public int addListPage(String name, Class<? extends CustomListFragment> fragmentClass, CustomListAdapter<?> adapter, AdapterID adapterId, boolean visible) {
         if (visible) {
             Bundle args = new Bundle();
-            args.putInt(CustomListFragment.ADAPTER_INDEX, adapterId.ordinal());
             adapterMap.put(adapterId, adapter);
             return addPage(name, fragmentClass, args, false);
         } else {

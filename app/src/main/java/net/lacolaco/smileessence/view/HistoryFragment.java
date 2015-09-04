@@ -27,6 +27,7 @@ package net.lacolaco.smileessence.view;
 import android.widget.ListView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import net.lacolaco.smileessence.activity.MainActivity;
 
 /**
  * Fragment for notice history
@@ -34,6 +35,11 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 public class HistoryFragment extends CustomListFragment {
 
     // --------------------- GETTER / SETTER METHODS ---------------------
+
+    @Override
+    protected MainActivity.AdapterID getAdapterIndex() {
+        return MainActivity.AdapterID.History;
+    }
 
     @Override
     protected PullToRefreshBase.Mode getRefreshMode() {

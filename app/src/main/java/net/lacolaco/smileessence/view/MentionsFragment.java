@@ -44,6 +44,11 @@ public class MentionsFragment extends CustomListFragment {
     // --------------------- GETTER / SETTER METHODS ---------------------
 
     @Override
+    protected MainActivity.AdapterID getAdapterIndex() {
+        return MainActivity.AdapterID.Mentions;
+    }
+
+    @Override
     protected PullToRefreshBase.Mode getRefreshMode() {
         return PullToRefreshBase.Mode.BOTH;
     }
@@ -58,7 +63,7 @@ public class MentionsFragment extends CustomListFragment {
         final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
         Twitter twitter = TwitterApi.getTwitter(currentAccount);
-        final StatusListAdapter adapter = getListAdapter(activity);
+        final StatusListAdapter adapter = (StatusListAdapter) getListAdapter();
         Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount(activity));
         if (adapter.getCount() > 0) {
             paging.setSinceId(adapter.getTopID());
@@ -82,7 +87,7 @@ public class MentionsFragment extends CustomListFragment {
         final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
         Twitter twitter = TwitterApi.getTwitter(currentAccount);
-        final StatusListAdapter adapter = getListAdapter(activity);
+        final StatusListAdapter adapter = (StatusListAdapter) getListAdapter();
         Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount(activity));
         if (adapter.getCount() > 0) {
             paging.setMaxId(adapter.getLastID() - 1);
@@ -98,9 +103,5 @@ public class MentionsFragment extends CustomListFragment {
                 refreshView.onRefreshComplete();
             }
         }.execute();
-    }
-
-    private StatusListAdapter getListAdapter(MainActivity activity) {
-        return (StatusListAdapter) activity.getListAdapter(MainActivity.AdapterID.Mentions);
     }
 }

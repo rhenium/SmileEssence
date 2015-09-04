@@ -74,7 +74,6 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
     // ------------------------------ FIELDS ------------------------------
 
     private static final String KEY_USER_ID = "userID";
-    private static final int ADAPTER_INDEX = 100;
     private StatusListAdapter adapter;
     private TextView textViewScreenName;
     private TextView textViewName;

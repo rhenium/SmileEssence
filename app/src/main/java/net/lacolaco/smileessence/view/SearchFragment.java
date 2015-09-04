@@ -72,12 +72,9 @@ public class SearchFragment extends CustomListFragment implements View.OnClickLi
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 
-    private MainActivity.AdapterID getAdapterIndex() {
-        return MainActivity.AdapterID.get(getArguments().getInt(ADAPTER_INDEX));
-    }
-
-    private MainActivity getMainActivity() {
-        return (MainActivity) getActivity();
+    @Override
+    protected MainActivity.AdapterID getAdapterIndex() {
+        return MainActivity.AdapterID.Search;
     }
 
     @Override
@@ -94,7 +91,7 @@ public class SearchFragment extends CustomListFragment implements View.OnClickLi
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button_search_queries: {
-                openSearchQueryDialog(getMainActivity());
+                openSearchQueryDialog((MainActivity) getActivity());
                 break;
             }
             case R.id.button_search_execute: {
@@ -129,7 +126,7 @@ public class SearchFragment extends CustomListFragment implements View.OnClickLi
 
     @Override
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
-        final MainActivity activity = getMainActivity();
+        final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
         Twitter twitter = TwitterApi.getTwitter(currentAccount);
         final SearchListAdapter adapter = getListAdapter(activity);
@@ -172,7 +169,7 @@ public class SearchFragment extends CustomListFragment implements View.OnClickLi
 
     @Override
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
-        final MainActivity activity = getMainActivity();
+        final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
         Twitter twitter = TwitterApi.getTwitter(currentAccount);
         final SearchListAdapter adapter = getListAdapter(activity);
@@ -233,9 +230,8 @@ public class SearchFragment extends CustomListFragment implements View.OnClickLi
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View page = inflater.inflate(R.layout.fragment_search, container, false);
-        MainActivity.AdapterID fragmentIndex = getAdapterIndex();
         PullToRefreshListView listView = getListView(page);
-        SearchListAdapter adapter = (SearchListAdapter) getListAdapter(fragmentIndex);
+        SearchListAdapter adapter = (SearchListAdapter) getListAdapter();
         listView.setAdapter(adapter);
         listView.setOnScrollListener(this);
         listView.setOnRefreshListener(this);
@@ -326,10 +322,10 @@ public class SearchFragment extends CustomListFragment implements View.OnClickLi
     private void saveQuery() {
         String text = editText.getText().toString();
         if (TextUtils.isEmpty(text)) {
-            Notificator.publish(getMainActivity(), R.string.notice_query_is_empty, NotificationType.ALERT);
+            Notificator.publish(getActivity(), R.string.notice_query_is_empty, NotificationType.ALERT);
         } else {
             SearchQuery.saveIfNotFound(text);
-            Notificator.publish(getMainActivity(), R.string.notice_query_saved);
+            Notificator.publish(getActivity(), R.string.notice_query_saved);
         }
     }
 
@@ -337,9 +333,9 @@ public class SearchFragment extends CustomListFragment implements View.OnClickLi
         if (editText != null) {
             String text = editText.getText().toString();
             if (TextUtils.isEmpty(text)) {
-                Notificator.publish(getMainActivity(), R.string.notice_query_is_empty, NotificationType.ALERT);
+                Notificator.publish(getActivity(), R.string.notice_query_is_empty, NotificationType.ALERT);
             } else {
-                getMainActivity().openSearchPage(text);
+                ((MainActivity) getActivity()).openSearchPage(text);
                 hideIME();
             }
         }

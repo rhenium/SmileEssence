@@ -66,6 +66,11 @@ public class UserListFragment extends CustomListFragment implements View.OnClick
     }
 
     @Override
+    protected MainActivity.AdapterID getAdapterIndex() {
+        return MainActivity.AdapterID.UserList;
+    }
+
+    @Override
     protected PullToRefreshBase.Mode getRefreshMode() {
         return PullToRefreshBase.Mode.BOTH;
     }
@@ -93,7 +98,7 @@ public class UserListFragment extends CustomListFragment implements View.OnClick
         final MainActivity activity = getMainActivity();
         final Account currentAccount = activity.getCurrentAccount();
         Twitter twitter = TwitterApi.getTwitter(currentAccount);
-        final UserListListAdapter adapter = getListAdapter(activity);
+        final UserListListAdapter adapter = (UserListListAdapter) getListAdapter();
         String listFullName = adapter.getListFullName();
         if (TextUtils.isEmpty(listFullName)) {
             new UIHandler() {
@@ -130,7 +135,7 @@ public class UserListFragment extends CustomListFragment implements View.OnClick
         final MainActivity activity = getMainActivity();
         final Account currentAccount = activity.getCurrentAccount();
         Twitter twitter = TwitterApi.getTwitter(currentAccount);
-        final UserListListAdapter adapter = getListAdapter(activity);
+        final UserListListAdapter adapter = (UserListListAdapter) getListAdapter();
         String listFullName = adapter.getListFullName();
         if (TextUtils.isEmpty(listFullName)) {
             new UIHandler() {
@@ -173,7 +178,7 @@ public class UserListFragment extends CustomListFragment implements View.OnClick
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View page = inflater.inflate(R.layout.fragment_userlist, container, false);
         PullToRefreshListView listView = getListView(page);
-        UserListListAdapter adapter = getListAdapter((MainActivity) getActivity());
+        UserListListAdapter adapter = (UserListListAdapter) getListAdapter();
         listView.setAdapter(adapter);
         listView.setOnScrollListener(this);
         listView.setOnRefreshListener(this);
@@ -183,10 +188,6 @@ public class UserListFragment extends CustomListFragment implements View.OnClick
         textListName = getTextListName(page);
         textListName.setText(adapter.getListFullName());
         return page;
-    }
-
-    private UserListListAdapter getListAdapter(MainActivity activity) {
-        return (UserListListAdapter) getListAdapter(MainActivity.AdapterID.UserList);
     }
 
     private TextView getTextListName(View page) {
@@ -206,7 +207,7 @@ public class UserListFragment extends CustomListFragment implements View.OnClick
             @Override
             public void onDismiss(DialogInterface dialog) {
                 super.onDismiss(dialog);
-                textListName.setText(getListAdapter(mainActivity).getListFullName());
+                textListName.setText(((UserListListAdapter) getListAdapter()).getListFullName());
             }
         });
     }

@@ -41,17 +41,20 @@ import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 
-public class CustomListFragment extends Fragment implements AbsListView.OnScrollListener,
+public abstract class CustomListFragment extends Fragment implements AbsListView.OnScrollListener,
         PullToRefreshBase.OnRefreshListener2<ListView> {
 
     // ------------------------------ FIELDS ------------------------------
 
-    public static final String ADAPTER_INDEX = "fragmentIndex";
     public static final int SCROLL_DURATION = 1500;
 
-    private MainActivity.AdapterID fragmentIndex;
-
     // --------------------- GETTER / SETTER METHODS ---------------------
+
+    protected abstract MainActivity.AdapterID getAdapterIndex();
+
+    protected CustomListAdapter<?> getListAdapter() {
+        return ((MainActivity) getActivity()).getListAdapter(getAdapterIndex());
+    }
 
     protected PullToRefreshBase.Mode getRefreshMode() {
         return PullToRefreshBase.Mode.DISABLED;
@@ -76,9 +79,7 @@ public class CustomListFragment extends Fragment implements AbsListView.OnScroll
 
     @Override
     public void onScrollStateChanged(AbsListView absListView, int scrollState) {
-        Bundle args = getArguments();
-        fragmentIndex = MainActivity.AdapterID.get(args.getInt(ADAPTER_INDEX));
-        CustomListAdapter<?> adapter = getListAdapter(fragmentIndex);
+        CustomListAdapter<?> adapter = getListAdapter();
         adapter.setNotifiable(false);
 
         if (absListView.getFirstVisiblePosition() == 0 && absListView.getChildAt(0) != null && absListView.getChildAt(0).getTop() == 0) {
@@ -97,17 +98,13 @@ public class CustomListFragment extends Fragment implements AbsListView.OnScroll
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle args = getArguments();
-        fragmentIndex = MainActivity.AdapterID.get(args.getInt(ADAPTER_INDEX));
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View page = inflater.inflate(R.layout.fragment_list, container, false);
-        Bundle args = getArguments();
-        MainActivity.AdapterID fragmentIndex = MainActivity.AdapterID.get(args.getInt(ADAPTER_INDEX));
         PullToRefreshListView listView = getListView(page);
-        ListAdapter adapter = getListAdapter(fragmentIndex);
+        ListAdapter adapter = getListAdapter();
         listView.setAdapter(adapter);
         listView.setOnScrollListener(this);
         listView.setOnRefreshListener(this);
@@ -118,19 +115,13 @@ public class CustomListFragment extends Fragment implements AbsListView.OnScroll
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(ADAPTER_INDEX, fragmentIndex.ordinal());
     }
 
     @Override
     public void onViewStateRestored(Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
         if (savedInstanceState != null) {
-            fragmentIndex = MainActivity.AdapterID.get(savedInstanceState.getInt(ADAPTER_INDEX));
         }
-    }
-
-    protected CustomListAdapter<?> getListAdapter(MainActivity.AdapterID fragmentIndex) {
-        return ((MainActivity) getActivity()).getListAdapter(fragmentIndex);
     }
 
     protected PullToRefreshListView getListView(View page) {
