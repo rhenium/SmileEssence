@@ -44,18 +44,15 @@ public class CustomListAdapter<T extends IViewModel> extends BaseAdapter {
     // ------------------------------ FIELDS ------------------------------
 
     protected final Object LOCK = new Object();
-    protected Class<T> clss;
     protected ArrayList<T> list = new ArrayList<>();
-    protected T[] array;
-    protected int count;
+    protected List<T> frozenList = new ArrayList<>();
     protected boolean isNotifiable = true;
     protected Activity activity;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public CustomListAdapter(Activity activity, Class<T> clss) {
+    public CustomListAdapter(Activity activity) {
         this.activity = activity;
-        this.clss = clss;
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------
@@ -66,7 +63,7 @@ public class CustomListAdapter<T extends IViewModel> extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return count;
+        return frozenList.size();
     }
 
     public boolean isNotifiable() {
@@ -88,7 +85,7 @@ public class CustomListAdapter<T extends IViewModel> extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-        return array[position];
+        return frozenList.get(position);
     }
 
     @Override
@@ -106,8 +103,7 @@ public class CustomListAdapter<T extends IViewModel> extends BaseAdapter {
     @Override
     public void notifyDataSetChanged() {
         sort();
-        array = Iterables.toArray(list, clss);
-        count = array.length;
+        frozenList = Collections.unmodifiableList((ArrayList) list.clone());
         super.notifyDataSetChanged();
     }
 

@@ -38,7 +38,7 @@ public class StatusListAdapter extends CustomListAdapter<StatusViewModel> {
     // --------------------------- CONSTRUCTORS ---------------------------
 
     public StatusListAdapter(Activity activity) {
-        super(activity, StatusViewModel.class);
+        super(activity);
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------

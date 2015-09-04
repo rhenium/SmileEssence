@@ -201,7 +201,7 @@ public class EditTemplateActivity extends Activity implements AdapterView.OnItem
 
     private void initializeViews() {
         ListView listView = getListView();
-        adapter = new CustomListAdapter<>(this, Template.class);
+        adapter = new CustomListAdapter<>(this);
         listView.setAdapter(adapter);
         adapter.addToTop(getTemplates());
         adapter.update();

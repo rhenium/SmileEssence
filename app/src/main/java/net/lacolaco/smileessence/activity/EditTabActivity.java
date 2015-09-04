@@ -144,7 +144,7 @@ public class EditTabActivity extends Activity {
 
     private void initializeViews() {
         ListView listView = getListView();
-        adapter = new CustomListAdapter<>(this, EditableCheckBoxModel.class);
+        adapter = new CustomListAdapter<>(this);
         listView.setAdapter(adapter);
         adapter.addToTop(getCheckBoxItems());
         adapter.update();

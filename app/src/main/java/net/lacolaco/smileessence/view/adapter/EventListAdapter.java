@@ -33,6 +33,6 @@ public class EventListAdapter extends CustomListAdapter<EventViewModel> {
     // --------------------------- CONSTRUCTORS ---------------------------
 
     public EventListAdapter(Activity activity) {
-        super(activity, EventViewModel.class);
+        super(activity);
     }
 }

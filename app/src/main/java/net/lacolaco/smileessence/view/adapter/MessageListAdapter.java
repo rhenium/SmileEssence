@@ -37,7 +37,7 @@ public class MessageListAdapter extends CustomListAdapter<MessageViewModel> {
     // --------------------------- CONSTRUCTORS ---------------------------
 
     public MessageListAdapter(Activity activity) {
-        super(activity, MessageViewModel.class);
+        super(activity);
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------

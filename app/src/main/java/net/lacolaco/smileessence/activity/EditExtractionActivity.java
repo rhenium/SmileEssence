@@ -201,7 +201,7 @@ public class EditExtractionActivity extends Activity implements AdapterView.OnIt
 
     private void initializeViews() {
         ListView listView = getListView();
-        adapter = new CustomListAdapter<>(this, ExtractionWord.class);
+        adapter = new CustomListAdapter<>(this);
         listView.setAdapter(adapter);
         adapter.addToTop(getExtractionWords());
         adapter.update();
