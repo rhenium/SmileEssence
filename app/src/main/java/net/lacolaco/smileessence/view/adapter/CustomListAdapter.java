@@ -152,7 +152,7 @@ public class CustomListAdapter<T extends IViewModel> extends BaseAdapter {
         }
     }
 
-    public void sort() {
+    protected void sort() {
     }
 
     public void update() {

@@ -38,7 +38,6 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
-import android.widget.Adapter;
 import android.widget.ImageView;
 
 import net.lacolaco.smileessence.Application;
@@ -100,7 +99,7 @@ public class MainActivity extends Activity {
     private int pageIndexHistory;
     private int pageIndexMessages;
     private int pageIndexSearch;
-    private int pageIndexUserlist;
+    private int pageIndexUserList;
     private ViewPager viewPager;
     private PageListAdapter pagerAdapter;
     private Account currentAccount;
@@ -164,6 +163,10 @@ public class MainActivity extends Activity {
         return pageIndexHome;
     }
 
+    public int getPageIndexMentions() {
+        return pageIndexMentions;
+    }
+
     public int getPageIndexHistory() {
         return pageIndexHistory;
     }
@@ -176,8 +179,8 @@ public class MainActivity extends Activity {
         return pageIndexSearch;
     }
 
-    public int getPageIndexUserlist() {
-        return pageIndexUserlist;
+    public int getPageIndexUserList() {
+        return pageIndexUserList;
     }
 
     public PageListAdapter getPagerAdapter() {
@@ -536,7 +539,7 @@ public class MainActivity extends Activity {
         boolean visible = getUserPreferenceHelper().getValue(R.string.key_page_list_visibility, true);
         getUserPreferenceHelper().putValue(R.string.key_page_list_visibility, visible);
         UserListListAdapter userListAdapter = new UserListListAdapter(this);
-        pageIndexUserlist = addListPage(getString(R.string.page_name_list), UserListFragment.class, userListAdapter, AdapterID.UserList, visible);
+        pageIndexUserList = addListPage(getString(R.string.page_name_list), UserListFragment.class, userListAdapter, AdapterID.UserList, visible);
     }
 
     private void getImageUri(int requestCode, int resultCode, Intent data) {
@@ -640,7 +643,7 @@ public class MainActivity extends Activity {
     }
 
     private void initUserList(Twitter twitter) {
-        if (pageIndexUserlist == PAGE_INDEX_GONE) {
+        if (pageIndexUserList == PAGE_INDEX_GONE) {
             return;
         }
         String lastUserList = getLastUserList();
@@ -679,7 +682,7 @@ public class MainActivity extends Activity {
     }
 
     private void openUserListPage() {
-        setSelectedPageIndex(pageIndexUserlist);
+        setSelectedPageIndex(pageIndexUserList);
     }
 
     private void receiveOAuth(int requestCode, int resultCode, Intent data) {

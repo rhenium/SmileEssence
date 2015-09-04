@@ -44,7 +44,7 @@ public class CustomListAdapterTest extends ActivityInstrumentationTestCase2<Main
     @Override
     public void setUp() throws Exception {
         mock = new TwitterMock(getInstrumentation().getContext());
-        adapter = new CustomListAdapter<>(getActivity(), StatusViewModel.class);
+        adapter = new CustomListAdapter<>(getActivity());
         account = mock.getAccount();
     }
 

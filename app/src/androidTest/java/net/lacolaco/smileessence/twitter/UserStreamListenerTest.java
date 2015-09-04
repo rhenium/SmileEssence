@@ -68,7 +68,7 @@ public class UserStreamListenerTest extends ActivityInstrumentationTestCase2<Mai
 
     public void testOnStatus() throws Exception {
         final Status status = mock.getStatusMock();
-        CustomListAdapter<?> home = getActivity().getListAdapter(MainActivity.ADAPTER_HOME);
+        CustomListAdapter<?> home = getActivity().getListAdapter(MainActivity.AdapterID.Home);
         listener.onStatus(status);
         home.updateForce();
         Thread.sleep(500);
@@ -96,7 +96,7 @@ public class UserStreamListenerTest extends ActivityInstrumentationTestCase2<Mai
 
     public void testOnMention() throws Exception {
         final Status status = mock.getReplyMock();
-        CustomListAdapter<?> mentions = getActivity().getListAdapter(MainActivity.ADAPTER_MENTIONS);
+        CustomListAdapter<?> mentions = getActivity().getListAdapter(MainActivity.AdapterID.Mentions);
         listener.onStatus(status);
         mentions.updateForce();
         Thread.sleep(500);
@@ -106,7 +106,7 @@ public class UserStreamListenerTest extends ActivityInstrumentationTestCase2<Mai
     public void testOnRetweeted() throws Exception {
         final Status status = mock.getRetweetMock();
         listener.onStatus(status);
-        CustomListAdapter<?> home = getActivity().getListAdapter(MainActivity.ADAPTER_HOME);
+        CustomListAdapter<?> home = getActivity().getListAdapter(MainActivity.AdapterID.Home);
         home.updateForce();
         Thread.sleep(500);
         assertEquals(1, home.getCount());
@@ -115,7 +115,7 @@ public class UserStreamListenerTest extends ActivityInstrumentationTestCase2<Mai
     public void testOnFavorited() throws Exception {
         final Status status = mock.getReplyMock();
         final User source = status.getUser();
-        CustomListAdapter<?> history = getActivity().getListAdapter(MainActivity.ADAPTER_HISTORY);
+        CustomListAdapter<?> history = getActivity().getListAdapter(MainActivity.AdapterID.History);
         listener.onFavorite(source, user, status);
         history.updateForce();
         Thread.sleep(500);
@@ -128,7 +128,7 @@ public class UserStreamListenerTest extends ActivityInstrumentationTestCase2<Mai
 
     public void testOnFollow() throws Exception {
         final User source = mock.getUserMock();
-        CustomListAdapter<?> history = getActivity().getListAdapter(MainActivity.ADAPTER_HISTORY);
+        CustomListAdapter<?> history = getActivity().getListAdapter(MainActivity.AdapterID.History);
         listener.onFollow(source, user);
         history.updateForce();
         Thread.sleep(500);
@@ -137,7 +137,7 @@ public class UserStreamListenerTest extends ActivityInstrumentationTestCase2<Mai
 
     public void testOnBlock() throws Exception {
         final User source = mock.getUserMock();
-        CustomListAdapter<?> history = getActivity().getListAdapter(MainActivity.ADAPTER_HISTORY);
+        CustomListAdapter<?> history = getActivity().getListAdapter(MainActivity.AdapterID.History);
         listener.onBlock(source, user);
         listener.onUnblock(source, user);
         history.updateForce();
@@ -147,7 +147,7 @@ public class UserStreamListenerTest extends ActivityInstrumentationTestCase2<Mai
 
     public void testOnDirectMessage() throws Exception {
         final DirectMessage message = mock.getDirectMessageMock();
-        CustomListAdapter<?> messages = getActivity().getListAdapter(MainActivity.ADAPTER_MESSAGES);
+        CustomListAdapter<?> messages = getActivity().getListAdapter(MainActivity.AdapterID.Messages);
         listener.onDirectMessage(message);
         messages.updateForce();
         Thread.sleep(500);

@@ -74,10 +74,10 @@ public class StatusListAdapter extends CustomListAdapter<StatusViewModel> {
     }
 
     /**
-     * Sort list by Status#createdAt
+     * Sort list by Status ID
      */
     @Override
-    public void sort() {
+    protected void sort() {
         synchronized (LOCK) {
             Collections.sort(list, new Comparator<StatusViewModel>() {
                 @Override
