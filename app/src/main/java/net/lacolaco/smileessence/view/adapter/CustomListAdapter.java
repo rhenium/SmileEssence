@@ -111,8 +111,7 @@ public class CustomListAdapter<T extends IViewModel> extends BaseAdapter {
 
     public void addToBottom(T... items) {
         synchronized (LOCK) {
-            List<T> buffer = Arrays.asList(items);
-            for (T item : buffer) {
+            for (T item : items) {
                 if (list.contains(item)) {
                     list.remove(item);
                 }

@@ -68,24 +68,19 @@ public class StatusMenuDialogFragment extends MenuDialogFragment {
     @Override
     protected void setMenuItems(final CustomListAdapter<Command> adapter) {
         final MainActivity activity = (MainActivity) getActivity();
-        final Account account = activity.getCurrentAccount();
+        Account account = activity.getCurrentAccount();
+        Tweet tweet = Tweet.fetch(getStatusID());
 
-        TwitterUtils.tryGetStatus(account, getStatusID(), new TwitterUtils.StatusCallback() {
-            @Override
-            public void success(Tweet tweet) {
-                List<Command> commands = getCommands(activity, tweet, account);
-                Command.filter(commands);
-                for (Command command : commands) {
-                    adapter.addToBottom(command);
-                }
-                adapter.update();
+        if (tweet != null) {
+            List<Command> commands = getCommands(activity, tweet, account);
+            Command.filter(commands);
+            for (Command command : commands) {
+                adapter.addToBottom(command);
             }
-
-            @Override
-            public void error() {
-                dismiss();
-            }
-        });
+            adapter.update();
+        } else {
+            dismiss();
+        }
     }
 
     // -------------------------- OTHER METHODS --------------------------

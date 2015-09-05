@@ -66,6 +66,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
     // ------------------------------ FIELDS ------------------------------
 
     private static final String KEY_STATUS_ID = "statusID";
+    private Tweet tweet;
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 
@@ -88,43 +89,34 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
     public void onClick(final View v) {
         final MainActivity activity = (MainActivity) getActivity();
         final Account account = activity.getCurrentAccount();
-        TwitterUtils.tryGetStatus(account, getStatusID(), new TwitterUtils.StatusCallback() {
-            @Override
-            public void success(Tweet tweet) {
-                switch (v.getId()) {
-                    case R.id.button_status_detail_reply: {
-                        replyToStatus(activity, account, tweet);
-                        break;
-                    }
-                    case R.id.button_status_detail_retweet: {
-                        final Long retweetID = (Long) v.getTag();
-                        toggleRetweet(activity, account, tweet, retweetID);
-                        break;
-                    }
-                    case R.id.button_status_detail_favorite: {
-                        Boolean isFavorited = (Boolean) v.getTag();
-                        toggleFavorite(activity, account, tweet, isFavorited);
-                        break;
-                    }
-                    case R.id.button_status_detail_delete: {
-                        deleteStatus(activity, account, tweet);
-                        break;
-                    }
-                    case R.id.button_status_detail_menu: {
-                        openMenu(activity);
-                        break;
-                    }
-                    default: {
-                        dismiss();
-                    }
-                }
-            }
 
-            @Override
-            public void error() {
-
+        switch (v.getId()) {
+            case R.id.button_status_detail_reply: {
+                replyToStatus(activity, account, tweet);
+                break;
             }
-        });
+            case R.id.button_status_detail_retweet: {
+                final Long retweetID = (Long) v.getTag();
+                toggleRetweet(activity, account, tweet, retweetID);
+                break;
+            }
+            case R.id.button_status_detail_favorite: {
+                Boolean isFavorited = (Boolean) v.getTag();
+                toggleFavorite(activity, account, tweet, isFavorited);
+                break;
+            }
+            case R.id.button_status_detail_delete: {
+                deleteStatus(activity, account, tweet);
+                break;
+            }
+            case R.id.button_status_detail_menu: {
+                openMenu(activity);
+                break;
+            }
+            default: {
+                dismiss();
+            }
+        }
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
@@ -134,7 +126,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         final MainActivity activity = (MainActivity) getActivity();
         final Account account = activity.getCurrentAccount();
 
-        final Tweet tweet = Tweet.fetch(getStatusID());
+        tweet = Tweet.fetch(getStatusID());
         final StatusViewModel status = new StatusViewModel(tweet);
         View header = getTitleView(activity, account, status);
         ListView listView = (ListView) header.findViewById(R.id.listview_status_detail_reply_to);
@@ -153,7 +145,6 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
 
                 @Override
                 public void error() {
-
                 }
             });
         }
