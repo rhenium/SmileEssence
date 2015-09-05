@@ -26,54 +26,52 @@ package net.lacolaco.smileessence.twitter.task;
 
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.data.FavoriteCache;
-import net.lacolaco.smileessence.data.StatusCache;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 
 import twitter4j.*;
 
-public class UserListStatusesTask extends TwitterTask<Status[]> {
+import java.util.Collections;
+import java.util.List;
+
+public class UserListStatusesTask extends TwitterTask<List<Tweet>> {
 
     // ------------------------------ FIELDS ------------------------------
 
     private final String listFullName;
-    private final MainActivity activity;
     private final Paging paging;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public UserListStatusesTask(Twitter twitter, String listFullName, MainActivity activity) {
-        this(twitter, listFullName, activity, TwitterUtils.getPaging(TwitterUtils.getPagingCount(activity)));
+    public UserListStatusesTask(Twitter twitter, MainActivity activity, String listFullName) {
+        this(twitter, activity, listFullName, TwitterUtils.getPaging(TwitterUtils.getPagingCount(activity)));
     }
 
-    public UserListStatusesTask(Twitter twitter, String listFullName, MainActivity activity, Paging paging) {
+    public UserListStatusesTask(Twitter twitter, MainActivity activity, String listFullName, Paging paging) {
         super(twitter);
         this.listFullName = listFullName;
-        this.activity = activity;
         this.paging = paging;
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected void onPostExecute(twitter4j.Status[] statuses) {
-        for (twitter4j.Status status : statuses) {
-            StatusCache.getInstance().put(status);
-            FavoriteCache.getInstance().put(status);
+    protected void onPostExecute(List<Tweet> tweets) {
+        for (Tweet tweet : tweets) {
+            // FavoriteCache.getInstance().put(tweet);
         }
     }
 
     @Override
-    protected twitter4j.Status[] doInBackground(Void... params) {
-        ResponseList<twitter4j.Status> responseList;
+    protected List<Tweet> doInBackground(Void... params) {
         try {
             String[] strings = listFullName.split("/");
-            responseList = twitter.list().getUserListStatuses(strings[0], strings[1], paging);
+            return Tweet.fromTwitter(twitter.list().getUserListStatuses(strings[0], strings[1], paging));
         } catch (TwitterException e) {
             e.printStackTrace();
             Logger.error(e.toString());
-            return new twitter4j.Status[0];
+            return Collections.emptyList();
         }
-        return responseList.toArray(new twitter4j.Status[responseList.size()]);
     }
 }

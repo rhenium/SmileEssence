@@ -30,17 +30,19 @@ import com.twitter.Validator;
 
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
-import net.lacolaco.smileessence.data.DirectMessageCache;
-import net.lacolaco.smileessence.data.StatusCache;
-import net.lacolaco.smileessence.data.UserCache;
 import net.lacolaco.smileessence.entity.Account;
+import net.lacolaco.smileessence.entity.Tweet;
+import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.twitter.TwitterApi;
 import net.lacolaco.smileessence.twitter.task.ShowDirectMessageTask;
 import net.lacolaco.smileessence.twitter.task.ShowStatusTask;
 import net.lacolaco.smileessence.twitter.task.ShowUserTask;
 
 import net.lacolaco.smileessence.twitter.task.TwitterTask;
-import twitter4j.*;
+import net.lacolaco.smileessence.entity.DirectMessage;
+import twitter4j.Paging;
+import twitter4j.URLEntity;
+import twitter4j.UserMentionEntity;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -62,35 +64,33 @@ public class TwitterUtils {
     /**
      * Get status from api if not cached
      */
-    public static TwitterTask tryGetStatus(Account account, long statusID, final StatusCallback callback) {
-        Status status = StatusCache.getInstance().get(statusID);
+    public static TwitterTask<Tweet> tryGetStatus(Account account, long statusID, final StatusCallback callback) {
         ShowStatusTask task;
-        if (status != null) {
-            callback.success(status);
+        Tweet tweet = Tweet.fetch(statusID);
+        if (tweet != null) {
+            callback.success(tweet);
             //update cache
             task = new ShowStatusTask(new TwitterApi(account).getTwitter(), statusID);
         } else {
             task = new ShowStatusTask(new TwitterApi(account).getTwitter(), statusID) {
                 @Override
-                protected void onPostExecute(twitter4j.Status status) {
-                    super.onPostExecute(status);
-                    if (status != null) {
-                        callback.success(status);
+                protected void onPostExecute(Tweet tweet) {
+                    if (tweet != null) {
+                        callback.success(tweet);
                     } else {
                         callback.error();
                     }
                 }
             };
         }
-        task.execute();
-        return task;
+        return (TwitterTask<Tweet>) task.execute();
     }
 
     /**
      * Get status from api if not cached
      */
     public static void tryGetUser(Account account, long userID, final UserCallback callback) {
-        User user = UserCache.getInstance().get(userID);
+        User user = User.fetch(userID);
         if (user != null) {
             callback.success(user);
             ShowUserTask task = new ShowUserTask(new TwitterApi(account).getTwitter(), userID);
@@ -116,11 +116,9 @@ public class TwitterUtils {
      * Get direct message from api if not cached
      */
     public static void tryGetMessage(Account account, long messageID, final MessageCallback callback) {
-        DirectMessage message = DirectMessageCache.getInstance().get(messageID);
+        DirectMessage message = DirectMessage.fetch(messageID);
         if (message != null) {
             callback.success(message);
-            ShowDirectMessageTask task = new ShowDirectMessageTask(new TwitterApi(account).getTwitter(), messageID);
-            task.execute();
         } else {
             ShowDirectMessageTask task = new ShowDirectMessageTask(new TwitterApi(account).getTwitter(), messageID) {
                 @Override
@@ -140,15 +138,15 @@ public class TwitterUtils {
     /**
      * Get array of screenName in own text
      *
-     * @param status            status
+     * @param tweet            tweet
      * @param excludeScreenName
      * @return
      */
-    public static Collection<String> getScreenNames(Status status, String excludeScreenName) {
+    public static Collection<String> getScreenNames(Tweet tweet, String excludeScreenName) {
         ArrayList<String> names = new ArrayList<>();
-        names.add(status.getUser().getScreenName());
-        if (status.getUserMentionEntities() != null) {
-            for (UserMentionEntity entity : status.getUserMentionEntities()) {
+        names.add(tweet.getUser().getScreenName());
+        if (tweet.getMentions() != null) {
+            for (UserMentionEntity entity : tweet.getMentions()) {
                 if (names.contains(entity.getScreenName())) {
                     continue;
                 }
@@ -163,12 +161,12 @@ public class TwitterUtils {
 
     public static Collection<String> getScreenNames(DirectMessage message, String excludeScreenName) {
         ArrayList<String> names = new ArrayList<>();
-        names.add(message.getSenderScreenName());
-        if (!message.getRecipientScreenName().equals(message.getSenderScreenName())) {
-            names.add(message.getRecipientScreenName());
+        names.add(message.getSender().getScreenName());
+        if (!message.getRecipient().getScreenName().equals(message.getSender().getScreenName())) {
+            names.add(message.getRecipient().getScreenName());
         }
-        if (message.getUserMentionEntities() != null) {
-            for (UserMentionEntity entity : message.getUserMentionEntities()) {
+        if (message.getMentions() != null) {
+            for (UserMentionEntity entity : message.getMentions()) {
                 if (names.contains(entity.getScreenName())) {
                     continue;
                 }
@@ -198,26 +196,6 @@ public class TwitterUtils {
     }
 
     /**
-     * Get twitter status permalink
-     *
-     * @param status status
-     * @return url string
-     */
-    public static String getStatusURL(Status status) {
-        return String.format("https://twitter.com/%s/status/%s", getOriginalStatus(status).getUser().getScreenName(), getOriginalStatus(status).getId());
-    }
-
-    /**
-     * Get "@screen_name: text" format text
-     *
-     * @param status status
-     * @return summary string
-     */
-    public static String getStatusSummary(Status status) {
-        return String.format("@%s: %s", status.getUser().getScreenName(), status.getText());
-    }
-
-    /**
      * Replace urls by entities
      *
      * @param text     raw text
@@ -240,26 +218,12 @@ public class TwitterUtils {
         return text;
     }
 
-    /**
-     * Return original status text. If status is not retweet, value is same to a given.
-     *
-     * @param status
-     * @return
-     */
-    public static String getOriginalStatusText(Status status) {
-        return status.isRetweet() ? status.getRetweetedStatus().getText() : status.getText();
-    }
-
     public static Paging getPaging(int count) {
         return new Paging(1).count(count);
     }
 
     public static int getPagingCount(MainActivity activity) {
         return activity.getUserPreferenceHelper().getValue(R.string.key_setting_timelines, 20);
-    }
-
-    public static Status getOriginalStatus(Status status) {
-        return StatusCache.getInstance().get((status.isRetweet() ? status.getRetweetedStatus() : status).getId());
     }
 
     public static String getMessageSummary(DirectMessage message) {
@@ -270,7 +234,7 @@ public class TwitterUtils {
 
     public interface StatusCallback {
 
-        void success(Status status);
+        void success(Tweet status);
 
         void error();
     }

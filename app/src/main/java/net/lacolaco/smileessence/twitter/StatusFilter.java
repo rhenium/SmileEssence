@@ -40,13 +40,13 @@ public class StatusFilter {
     }
 
     private static void extract(MainActivity activity, StatusViewModel status) {
-        if (status.isRetweet()) {
+        if (status.getTweet().isRetweet()) {
             return;
         }
         Pattern pattern;
         for (ExtractionWord word : ExtractionWord.getAll()) {
             pattern = Pattern.compile(word.text);
-            if (pattern.matcher(status.getText()).find()) {
+            if (pattern.matcher(status.getTweet().getText()).find()) {
                 addToMentions(activity, status);
             }
         }

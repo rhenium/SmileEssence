@@ -28,6 +28,7 @@ import android.app.Activity;
 
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.view.adapter.PostState;
 
@@ -37,8 +38,8 @@ public class StatusCommandURLQuote extends StatusCommand {
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public StatusCommandURLQuote(Activity activity, Status status) {
-        super(-1, activity, status);
+    public StatusCommandURLQuote(Activity activity, Tweet tweet) {
+        super(-1, activity, tweet);
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------
@@ -57,7 +58,7 @@ public class StatusCommandURLQuote extends StatusCommand {
 
     @Override
     public boolean execute() {
-        String statusURL = TwitterUtils.getStatusURL(getOriginalStatus());
+        String statusURL = getOriginalStatus().getTwitterUrl();
         PostState.newState().beginTransaction()
                 .setText(statusURL)
                 .commitWithOpen((MainActivity) getActivity());

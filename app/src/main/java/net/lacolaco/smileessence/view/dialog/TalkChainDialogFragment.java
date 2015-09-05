@@ -26,24 +26,20 @@ package net.lacolaco.smileessence.view.dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
-import net.lacolaco.smileessence.data.StatusCache;
 import net.lacolaco.smileessence.entity.Account;
-import net.lacolaco.smileessence.logging.Logger;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.twitter.TwitterApi;
-import net.lacolaco.smileessence.twitter.util.TwitterUtils;
+import net.lacolaco.smileessence.twitter.task.GetTalkTask;
 import net.lacolaco.smileessence.view.adapter.StatusListAdapter;
-import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 
-import twitter4j.Status;
+import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 import twitter4j.Twitter;
-import twitter4j.TwitterException;
 
 public class TalkChainDialogFragment extends StackableDialogFragment {
 
@@ -69,69 +65,25 @@ public class TalkChainDialogFragment extends StackableDialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         MainActivity activity = (MainActivity) getActivity();
         final Account account = activity.getCurrentAccount();
-
+        Twitter twitter = TwitterApi.getTwitter(account);
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_talk_list, null);
         ListView listView = (ListView) view.findViewById(R.id.listview_dialog_talk_list);
         final StatusListAdapter adapter = new StatusListAdapter(getActivity());
         listView.setAdapter(adapter);
-        TwitterUtils.tryGetStatus(account, getStatusID(), new TwitterUtils.StatusCallback() {
-            @Override
-            public void success(Status status) {
-                adapter.addToTop(new StatusViewModel(status, account));
-                adapter.updateForce();
-                Twitter twitter = TwitterApi.getTwitter(account);
-                new GetTalkTask(twitter, account, adapter, status.getInReplyToStatusId()).execute();
-            }
 
+        new GetTalkTask(twitter, getStatusID()) {
             @Override
-            public void error() {
-                dismiss();
+            protected void onProgressUpdate(Tweet... tweets) {
+                Tweet tweet = tweets[0];
+                adapter.addToBottom(new StatusViewModel(tweet));
+                adapter.updateForce();
             }
-        });
+        }.execute();
 
         return new AlertDialog.Builder(activity)
                 .setTitle(R.string.dialog_title_talk_chain)
                 .setView(view)
                 .setCancelable(true)
                 .create();
-    }
-
-    // -------------------------- INNER CLASSES --------------------------
-
-    private class GetTalkTask extends AsyncTask<Void, Void, Void> {
-
-        private final Twitter twitter;
-        private final Account account;
-        private final StatusListAdapter adapter;
-        private final long inReplyToStatusId;
-
-        public GetTalkTask(Twitter twitter, Account account, StatusListAdapter adapter, long inReplyToStatusId) {
-            this.twitter = twitter;
-            this.account = account;
-            this.adapter = adapter;
-            this.inReplyToStatusId = inReplyToStatusId;
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            try {
-                long id = inReplyToStatusId;
-                while (id != -1) {
-                    final twitter4j.Status status = twitter.showStatus(id);
-                    if (status != null) {
-                        StatusCache.getInstance().put(status);
-                        adapter.addToBottom(new StatusViewModel(status, account));
-                        adapter.updateForce();
-                        id = status.getInReplyToStatusId();
-                    } else {
-                        break;
-                    }
-                }
-            } catch (TwitterException e) {
-                e.printStackTrace();
-                Logger.error(e);
-            }
-            return null;
-        }
     }
 }

@@ -33,13 +33,13 @@ import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.command.message.*;
 import net.lacolaco.smileessence.command.status.*;
 import net.lacolaco.smileessence.command.user.*;
-import net.lacolaco.smileessence.data.CommandSettingCache;
 import net.lacolaco.smileessence.entity.Account;
+import net.lacolaco.smileessence.entity.CommandSetting;
+import net.lacolaco.smileessence.entity.Tweet;
+import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.viewmodel.IViewModel;
 
-import twitter4j.DirectMessage;
-import twitter4j.Status;
-import twitter4j.User;
+import net.lacolaco.smileessence.entity.DirectMessage;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -81,23 +81,23 @@ public abstract class Command implements IViewModel {
         return commands;
     }
 
-    public static List<Command> getStatusCommands(Activity activity, Status status, Account account) {
+    public static List<Command> getStatusCommands(Activity activity, Tweet tweet, Account account) {
         List<Command> commands = new ArrayList<>();
-        commands.add(new StatusCommandAddToReply(activity, status));
-        commands.add(new StatusCommandOpenTalkView(activity, status, account));
-        commands.add(new StatusCommandFavAndRT(activity, status, account));
-        commands.add(new StatusCommandOpenQuoteDialog(activity, status));
-        commands.add(new StatusCommandShare(activity, status));
-        commands.add(new StatusCommandOpenInBrowser(activity, status));
-        commands.add(new StatusCommandCopyTextToClipboard(activity, status));
-        commands.add(new StatusCommandCopyURLToClipboard(activity, status));
-        commands.add(new StatusCommandCopy(activity, status));
-        commands.add(new StatusCommandSearchOnGoogle(activity, status));
-        commands.add(new StatusCommandTofuBuster(activity, status));
-        commands.add(new StatusCommandNanigaja(activity, status, account));
-        commands.add(new StatusCommandMakeAnonymous(activity, status, account));
-        commands.add(new StatusCommandCongratulate(activity, status, account));
-        commands.add(new StatusCommandReview(activity, status));
+        commands.add(new StatusCommandAddToReply(activity, tweet));
+        commands.add(new StatusCommandOpenTalkView(activity, tweet, account));
+        commands.add(new StatusCommandFavAndRT(activity, tweet, account));
+        commands.add(new StatusCommandOpenQuoteDialog(activity, tweet));
+        commands.add(new StatusCommandShare(activity, tweet));
+        commands.add(new StatusCommandOpenInBrowser(activity, tweet));
+        commands.add(new StatusCommandCopyTextToClipboard(activity, tweet));
+        commands.add(new StatusCommandCopyURLToClipboard(activity, tweet));
+        commands.add(new StatusCommandCopy(activity, tweet));
+        commands.add(new StatusCommandSearchOnGoogle(activity, tweet));
+        commands.add(new StatusCommandTofuBuster(activity, tweet));
+        commands.add(new StatusCommandNanigaja(activity, tweet, account));
+        commands.add(new StatusCommandMakeAnonymous(activity, tweet, account));
+        commands.add(new StatusCommandCongratulate(activity, tweet, account));
+        commands.add(new StatusCommandReview(activity, tweet));
         return commands;
     }
 
@@ -119,8 +119,7 @@ public abstract class Command implements IViewModel {
             if (!command.isEnabled()) {
                 iterator.remove();
             } else if (command.getKey() >= 0) {
-                boolean visibility = CommandSettingCache.getInstance().get(command.getKey());
-                if (!visibility) {
+                if (!CommandSetting.isVisible(command.getKey())) {
                     iterator.remove();
                 }
             }

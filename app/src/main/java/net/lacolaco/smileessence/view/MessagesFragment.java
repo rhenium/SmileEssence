@@ -36,9 +36,11 @@ import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.view.adapter.MessageListAdapter;
 import net.lacolaco.smileessence.viewmodel.MessageViewModel;
 
-import twitter4j.DirectMessage;
+import net.lacolaco.smileessence.entity.DirectMessage;
 import twitter4j.Paging;
 import twitter4j.Twitter;
+
+import java.util.List;
 
 /**
  * Fragment of messages list
@@ -74,10 +76,10 @@ public class MessagesFragment extends CustomListFragment {
         }
         new DirectMessagesTask(twitter, activity, paging) {
             @Override
-            protected void onPostExecute(DirectMessage[] directMessages) {
+            protected void onPostExecute(List<DirectMessage> directMessages) {
                 super.onPostExecute(directMessages);
-                for (int i = directMessages.length - 1; i >= 0; i--) {
-                    adapter.addToTop(new MessageViewModel(directMessages[i], currentAccount));
+                for (int i = directMessages.size() - 1; i >= 0; i--) {
+                    adapter.addToTop(new MessageViewModel(directMessages.get(i)));
                 }
                 updateListViewWithNotice(refreshView.getRefreshableView(), adapter, true);
                 refreshView.onRefreshComplete();
@@ -97,10 +99,10 @@ public class MessagesFragment extends CustomListFragment {
         }
         new DirectMessagesTask(twitter, activity, paging) {
             @Override
-            protected void onPostExecute(DirectMessage[] directMessages) {
+            protected void onPostExecute(List<DirectMessage> directMessages) {
                 super.onPostExecute(directMessages);
                 for (DirectMessage directMessage : directMessages) {
-                    adapter.addToBottom(new MessageViewModel(directMessage, currentAccount));
+                    adapter.addToBottom(new MessageViewModel(directMessage));
                 }
                 updateListViewWithNotice(refreshView.getRefreshableView(), adapter, false);
                 refreshView.onRefreshComplete();

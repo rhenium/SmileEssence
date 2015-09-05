@@ -29,6 +29,7 @@ import android.app.Activity;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.command.IConfirmable;
 import net.lacolaco.smileessence.entity.Account;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.twitter.TweetBuilder;
 import net.lacolaco.smileessence.twitter.TwitterApi;
 import net.lacolaco.smileessence.twitter.task.FavoriteTask;
@@ -46,8 +47,8 @@ public class StatusCommandNanigaja extends StatusCommand implements IConfirmable
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public StatusCommandNanigaja(Activity activity, Status status, Account account) {
-        super(R.id.key_command_status_nanigaja, activity, status);
+    public StatusCommandNanigaja(Activity activity, Tweet tweet, Account account) {
+        super(R.id.key_command_status_nanigaja, activity, tweet);
         this.account = account;
     }
 
@@ -66,15 +67,14 @@ public class StatusCommandNanigaja extends StatusCommand implements IConfirmable
     // -------------------------- OTHER METHODS --------------------------
 
     public String build() {
-        Status status = getOriginalStatus();
-        String str = status.getText();
+        String str = getOriginalStatus().getText();
         String header = "";
         if (str.startsWith(".")) {
             str = str.replaceFirst(".", "");
         }
         if (str.startsWith(String.format("@%s", account.screenName))) {
             str = str.replaceFirst(String.format("@%s", account.screenName), "").trim();
-            header = "@" + status.getUser().getScreenName();
+            header = "@" + getOriginalStatus().getUser().getScreenName();
         }
         str = String.format("%s %s", header, String.format(getFormatString(getActivity()), str)).trim();
         return str;
@@ -82,13 +82,12 @@ public class StatusCommandNanigaja extends StatusCommand implements IConfirmable
 
     @Override
     public boolean execute() {
-        Status status = getOriginalStatus();
         StatusUpdate update = new TweetBuilder().setText(build())
-                .setInReplyToStatusID(status.getId())
+                .setInReplyToStatusID(getOriginalStatus().getId())
                 .build();
         Twitter twitter = new TwitterApi(account).getTwitter();
         new TweetTask(twitter, update, getActivity()).execute();
-        new FavoriteTask(twitter, status.getId(), getActivity()).execute();
+        new FavoriteTask(twitter, getOriginalStatus().getId(), getActivity()).execute();
         return true;
     }
 

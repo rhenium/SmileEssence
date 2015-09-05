@@ -29,6 +29,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 
 import net.lacolaco.smileessence.R;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.notification.Notificator;
 
 import twitter4j.Status;
@@ -37,8 +38,8 @@ public class StatusCommandTofuBuster extends StatusCommand {
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public StatusCommandTofuBuster(Activity activity, Status status) {
-        super(R.id.key_command_status_tofubuster, activity, status);
+    public StatusCommandTofuBuster(Activity activity, Tweet tweet) {
+        super(R.id.key_command_status_tofubuster, activity, tweet);
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------

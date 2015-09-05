@@ -27,6 +27,7 @@ package net.lacolaco.smileessence.command.status;
 import android.app.Activity;
 
 import net.lacolaco.smileessence.R;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.dialog.SearchOnGoogleDialogFragment;
 
@@ -36,8 +37,8 @@ public class StatusCommandSearchOnGoogle extends StatusCommand {
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public StatusCommandSearchOnGoogle(Activity activity, Status status) {
-        super(R.id.key_command_status_search_on_google, activity, status);
+    public StatusCommandSearchOnGoogle(Activity activity, Tweet tweet) {
+        super(R.id.key_command_status_search_on_google, activity, tweet);
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------

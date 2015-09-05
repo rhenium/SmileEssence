@@ -24,12 +24,15 @@
 
 package net.lacolaco.smileessence.twitter.task;
 
-import net.lacolaco.smileessence.data.StatusCache;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.logging.Logger;
 
 import twitter4j.*;
 
-public class UserTimelineTask extends TwitterTask<Status[]> {
+import java.util.Collections;
+import java.util.List;
+
+public class UserTimelineTask extends TwitterTask<List<Tweet>> {
 
     // ------------------------------ FIELDS ------------------------------
 
@@ -51,27 +54,23 @@ public class UserTimelineTask extends TwitterTask<Status[]> {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected void onPostExecute(twitter4j.Status[] statuses) {
-        for (twitter4j.Status status : statuses) {
-            StatusCache.getInstance().put(status);
+    protected void onPostExecute(List<Tweet> tweets) {
+        for (Tweet tweet : tweets) {
         }
-
     }
 
     @Override
-    protected twitter4j.Status[] doInBackground(Void... params) {
-        ResponseList<twitter4j.Status> responseList;
+    protected List<Tweet> doInBackground(Void... params) {
         try {
             if (paging == null) {
-                responseList = twitter.timelines().getUserTimeline(userID);
+                return Tweet.fromTwitter(twitter.timelines().getUserTimeline(userID));
             } else {
-                responseList = twitter.timelines().getUserTimeline(userID, paging);
+                return Tweet.fromTwitter(twitter.timelines().getUserTimeline(userID, paging));
             }
         } catch (TwitterException e) {
             e.printStackTrace();
             Logger.error(e.toString());
-            return new twitter4j.Status[0];
+            return Collections.emptyList();
         }
-        return responseList.toArray(new twitter4j.Status[responseList.size()]);
     }
 }

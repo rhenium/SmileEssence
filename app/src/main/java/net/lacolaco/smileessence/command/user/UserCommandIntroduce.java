@@ -30,7 +30,7 @@ import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.view.adapter.PostState;
 
-import twitter4j.User;
+import net.lacolaco.smileessence.entity.User;
 
 public class UserCommandIntroduce extends UserCommand {
 

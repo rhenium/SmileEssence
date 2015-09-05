@@ -30,6 +30,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Account;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.twitter.TwitterApi;
 import net.lacolaco.smileessence.twitter.task.MentionsTimelineTask;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
@@ -38,6 +39,8 @@ import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 
 import twitter4j.Paging;
 import twitter4j.Twitter;
+
+import java.util.List;
 
 public class MentionsFragment extends CustomListFragment {
 
@@ -70,11 +73,10 @@ public class MentionsFragment extends CustomListFragment {
         }
         new MentionsTimelineTask(twitter, activity, paging) {
             @Override
-            protected void onPostExecute(twitter4j.Status[] statuses) {
-                super.onPostExecute(statuses);
-                for (int i = statuses.length - 1; i >= 0; i--) {
-                    twitter4j.Status status = statuses[i];
-                    adapter.addToTop(new StatusViewModel(status, currentAccount));
+            protected void onPostExecute(List<Tweet> tweets) {
+                super.onPostExecute(tweets);
+                for (int i = tweets.size() - 1; i >= 0; i--) {
+                    adapter.addToTop(new StatusViewModel(tweets.get(i)));
                 }
                 updateListViewWithNotice(refreshView.getRefreshableView(), adapter, true);
                 refreshView.onRefreshComplete();
@@ -94,10 +96,10 @@ public class MentionsFragment extends CustomListFragment {
         }
         new MentionsTimelineTask(twitter, activity, paging) {
             @Override
-            protected void onPostExecute(twitter4j.Status[] statuses) {
-                super.onPostExecute(statuses);
-                for (twitter4j.Status status : statuses) {
-                    adapter.addToBottom(new StatusViewModel(status, currentAccount));
+            protected void onPostExecute(List<Tweet> tweets) {
+                super.onPostExecute(tweets);
+                for (Tweet tweet : tweets) {
+                    adapter.addToBottom(new StatusViewModel(tweet));
                 }
                 updateListViewWithNotice(refreshView.getRefreshableView(), adapter, false);
                 refreshView.onRefreshComplete();

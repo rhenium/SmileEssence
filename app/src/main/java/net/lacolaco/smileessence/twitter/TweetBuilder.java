@@ -26,6 +26,7 @@ package net.lacolaco.smileessence.twitter;
 
 import android.text.TextUtils;
 
+import net.lacolaco.smileessence.entity.Tweet;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
 
@@ -54,8 +55,8 @@ public class TweetBuilder {
         return this;
     }
 
-    public TweetBuilder setQuotation(Status status) {
-        return setText(String.format(" RT @%s: %s", status.getUser().getScreenName(), status.getText()));
+    public TweetBuilder setQuotation(Tweet tweet) {
+        return setText(String.format(" RT @%s: %s", tweet.getUser().getScreenName(), tweet.getText()));
     }
 
     public TweetBuilder setText(String text) {

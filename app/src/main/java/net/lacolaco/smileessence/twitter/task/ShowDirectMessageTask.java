@@ -24,10 +24,9 @@
 
 package net.lacolaco.smileessence.twitter.task;
 
-import net.lacolaco.smileessence.data.DirectMessageCache;
 import net.lacolaco.smileessence.logging.Logger;
 
-import twitter4j.DirectMessage;
+import net.lacolaco.smileessence.entity.DirectMessage;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
@@ -48,15 +47,12 @@ public class ShowDirectMessageTask extends TwitterTask<DirectMessage> {
 
     @Override
     protected void onPostExecute(DirectMessage directMessage) {
-        if (directMessage != null) {
-            DirectMessageCache.getInstance().put(directMessage);
-        }
     }
 
     @Override
     protected DirectMessage doInBackground(Void... params) {
         try {
-            return twitter.directMessages().showDirectMessage(messageID);
+            return DirectMessage.fromTwitter(twitter.directMessages().showDirectMessage(messageID));
         } catch (TwitterException e) {
             e.printStackTrace();
             Logger.error(e.toString());

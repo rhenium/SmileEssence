@@ -30,6 +30,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Account;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.twitter.StatusFilter;
 import net.lacolaco.smileessence.twitter.TwitterApi;
 import net.lacolaco.smileessence.twitter.task.HomeTimelineTask;
@@ -40,6 +41,9 @@ import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 
 import twitter4j.Paging;
 import twitter4j.Twitter;
+
+import java.util.List;
+import java.util.ListIterator;
 
 public class HomeFragment extends CustomListFragment {
 
@@ -83,11 +87,11 @@ public class HomeFragment extends CustomListFragment {
         }
         new HomeTimelineTask(twitter, activity, paging) {
             @Override
-            protected void onPostExecute(twitter4j.Status[] statuses) {
-                super.onPostExecute(statuses);
-                for (int i = statuses.length - 1; i >= 0; i--) {
-                    twitter4j.Status status = statuses[i];
-                    StatusViewModel viewModel = new StatusViewModel(status, currentAccount);
+            protected void onPostExecute(List<Tweet> tweets) {
+                super.onPostExecute(tweets);
+                ListIterator<Tweet> li = tweets.listIterator(tweets.size());
+                while (li.hasPrevious()) {
+                    StatusViewModel viewModel = new StatusViewModel(li.previous());
                     adapter.addToTop(viewModel);
                     StatusFilter.filter(activity, viewModel);
                 }
@@ -109,10 +113,10 @@ public class HomeFragment extends CustomListFragment {
         }
         new HomeTimelineTask(twitter, activity, paging) {
             @Override
-            protected void onPostExecute(twitter4j.Status[] statuses) {
-                super.onPostExecute(statuses);
-                for (twitter4j.Status status : statuses) {
-                    StatusViewModel viewModel = new StatusViewModel(status, currentAccount);
+            protected void onPostExecute(List<Tweet> tweets) {
+                super.onPostExecute(tweets);
+                for (Tweet tweet : tweets) {
+                    StatusViewModel viewModel = new StatusViewModel(tweet);
                     adapter.addToBottom(viewModel);
                     StatusFilter.filter(activity, viewModel);
                 }

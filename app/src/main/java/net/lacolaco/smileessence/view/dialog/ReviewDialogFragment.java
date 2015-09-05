@@ -35,11 +35,10 @@ import android.widget.RatingBar;
 
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
-import net.lacolaco.smileessence.data.StatusCache;
-import net.lacolaco.smileessence.twitter.util.TwitterUtils;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.view.adapter.PostState;
 
-import twitter4j.Status;
+import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 
 public class ReviewDialogFragment extends StackableDialogFragment implements View.OnClickListener {
 
@@ -100,7 +99,8 @@ public class ReviewDialogFragment extends StackableDialogFragment implements Vie
 
     private void execute() {
         hideIME();
-        Status status = StatusCache.getInstance().get(statusID);
+        Tweet tweet = Tweet.fetch(statusID).getOriginalTweet();
+        StatusViewModel status = new StatusViewModel(tweet);
         int star = (int) ratingBar.getRating();
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < 5; i++) {
@@ -113,8 +113,8 @@ public class ReviewDialogFragment extends StackableDialogFragment implements Vie
         String formatString = getFormatString();
         String str = String.format(formatString,
                 builder.toString(),
-                TwitterUtils.getOriginalStatus(status).getUser().getScreenName(),
-                TwitterUtils.getStatusURL(status));
+                tweet.getUser().getScreenName(),
+                tweet.getTwitterUrl());
         PostState.newState().beginTransaction()
                 .setText(str)
                 .setInReplyToStatusID(statusID)

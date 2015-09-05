@@ -47,7 +47,7 @@ public class CommandsTest extends ActivityInstrumentationTestCase2<MainActivity>
 //        final Activity activity = getActivity();
 //        final Account account = new Account(mock.getAccessToken(), mock.getAccessTokenSecret(), mock.getUserMock().getId(), mock.getUserMock().getScreenName());
 //        final Status status = mock.getStatusMock();
-//        StatusCache.getInstance().put(status);
+//        Tweet.fromTwitter(status);
 //        getActivity().runOnUiThread(new Runnable()
 //        {
 //            @Override

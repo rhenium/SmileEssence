@@ -40,6 +40,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Account;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.StatusFilter;
 import net.lacolaco.smileessence.twitter.TwitterApi;
@@ -52,6 +53,8 @@ import net.lacolaco.smileessence.viewmodel.UserListListAdapter;
 
 import twitter4j.Paging;
 import twitter4j.Twitter;
+
+import java.util.List;
 
 public class UserListFragment extends CustomListFragment implements View.OnClickListener {
 
@@ -114,13 +117,12 @@ public class UserListFragment extends CustomListFragment implements View.OnClick
         if (adapter.getCount() > 0) {
             paging.setSinceId(adapter.getTopID());
         }
-        new UserListStatusesTask(twitter, listFullName, activity, paging) {
+        new UserListStatusesTask(twitter, activity, listFullName, paging) {
             @Override
-            protected void onPostExecute(twitter4j.Status[] statuses) {
-                super.onPostExecute(statuses);
-                for (int i = statuses.length - 1; i >= 0; i--) {
-                    twitter4j.Status status = statuses[i];
-                    StatusViewModel statusViewModel = new StatusViewModel(status, activity.getCurrentAccount());
+            protected void onPostExecute(List<Tweet> tweets) {
+                super.onPostExecute(tweets);
+                for (int i = tweets.size() - 1; i >= 0; i--) {
+                    StatusViewModel statusViewModel = new StatusViewModel(tweets.get(i));
                     adapter.addToTop(statusViewModel);
                     StatusFilter.filter(activity, statusViewModel);
                 }
@@ -151,13 +153,12 @@ public class UserListFragment extends CustomListFragment implements View.OnClick
         if (adapter.getCount() > 0) {
             paging.setMaxId(adapter.getLastID() - 1);
         }
-        new UserListStatusesTask(twitter, listFullName, activity, paging) {
+        new UserListStatusesTask(twitter, activity, listFullName, paging) {
             @Override
-            protected void onPostExecute(twitter4j.Status[] statuses) {
-                super.onPostExecute(statuses);
-                for (int i = 0; i < statuses.length; i++) {
-                    twitter4j.Status status = statuses[i];
-                    StatusViewModel statusViewModel = new StatusViewModel(status, activity.getCurrentAccount());
+            protected void onPostExecute(List<Tweet> tweets) {
+                super.onPostExecute(tweets);
+                for (int i = 0; i < tweets.size(); i++) {
+                    StatusViewModel statusViewModel = new StatusViewModel(tweets.get(i));
                     adapter.addToBottom(statusViewModel);
                     StatusFilter.filter(activity, statusViewModel);
                 }

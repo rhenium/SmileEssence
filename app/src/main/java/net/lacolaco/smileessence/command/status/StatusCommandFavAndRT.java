@@ -29,12 +29,12 @@ import android.app.Activity;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.command.IConfirmable;
 import net.lacolaco.smileessence.entity.Account;
+import net.lacolaco.smileessence.entity.Tweet;
+import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.twitter.TwitterApi;
 import net.lacolaco.smileessence.twitter.task.FavoriteTask;
 import net.lacolaco.smileessence.twitter.task.RetweetTask;
 
-import twitter4j.Status;
-import twitter4j.User;
 
 public class StatusCommandFavAndRT extends StatusCommand implements IConfirmable {
 
@@ -44,8 +44,8 @@ public class StatusCommandFavAndRT extends StatusCommand implements IConfirmable
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public StatusCommandFavAndRT(Activity activity, Status status, Account account) {
-        super(R.id.key_command_status_fav_and_rt, activity, status);
+    public StatusCommandFavAndRT(Activity activity, Tweet tweet, Account account) {
+        super(R.id.key_command_status_fav_and_rt, activity, tweet);
         this.account = account;
     }
 

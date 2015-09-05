@@ -31,7 +31,7 @@ import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.dialog.SendMessageDialogFragment;
 
-import twitter4j.User;
+import net.lacolaco.smileessence.entity.User;
 
 public class UserCommandSendMessage extends UserCommand {
 

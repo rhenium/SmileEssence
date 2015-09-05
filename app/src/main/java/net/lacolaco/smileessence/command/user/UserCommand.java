@@ -28,7 +28,7 @@ import android.app.Activity;
 
 import net.lacolaco.smileessence.command.Command;
 
-import twitter4j.User;
+import net.lacolaco.smileessence.entity.User;
 
 public abstract class UserCommand extends Command {
 

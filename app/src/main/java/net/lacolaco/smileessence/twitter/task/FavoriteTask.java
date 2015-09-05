@@ -27,7 +27,7 @@ package net.lacolaco.smileessence.twitter.task;
 import android.app.Activity;
 
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.data.StatusCache;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
@@ -36,7 +36,7 @@ import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
-public class FavoriteTask extends TwitterTask<Status> {
+public class FavoriteTask extends TwitterTask<Tweet> {
 
     // ------------------------------ FIELDS ------------------------------
 
@@ -54,9 +54,8 @@ public class FavoriteTask extends TwitterTask<Status> {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected void onPostExecute(twitter4j.Status status) {
-        if (status != null) {
-            StatusCache.getInstance().put(status);
+    protected void onPostExecute(Tweet tweet) {
+        if (tweet != null) {
             new Notificator(activity, R.string.notice_favorite_succeeded).publish();
         } else {
             new Notificator(activity, R.string.notice_favorite_failed, NotificationType.ALERT).publish();
@@ -64,9 +63,9 @@ public class FavoriteTask extends TwitterTask<Status> {
     }
 
     @Override
-    protected twitter4j.Status doInBackground(Void... params) {
+    protected Tweet doInBackground(Void... params) {
         try {
-            return twitter.favorites().createFavorite(statusID);
+            return Tweet.fromTwitter(twitter.favorites().createFavorite(statusID));
         } catch (TwitterException e) {
             e.printStackTrace();
             Logger.error(e.toString());

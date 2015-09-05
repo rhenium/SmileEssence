@@ -29,7 +29,7 @@ import android.test.InstrumentationTestCase;
 import net.lacolaco.smileessence.util.TwitterMock;
 
 import twitter4j.Status;
-import twitter4j.User;
+import net.lacolaco.smileessence.entity.User;
 
 public class TweetBuilderTest extends InstrumentationTestCase {
 

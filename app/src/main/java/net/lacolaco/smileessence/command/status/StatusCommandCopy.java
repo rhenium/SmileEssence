@@ -28,6 +28,7 @@ import android.app.Activity;
 
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.view.adapter.PostState;
 
 import twitter4j.Status;
@@ -36,8 +37,8 @@ public class StatusCommandCopy extends StatusCommand {
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public StatusCommandCopy(Activity activity, Status status) {
-        super(R.id.key_command_status_copy, activity, status);
+    public StatusCommandCopy(Activity activity, Tweet tweet) {
+        super(R.id.key_command_status_copy, activity, tweet);
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------

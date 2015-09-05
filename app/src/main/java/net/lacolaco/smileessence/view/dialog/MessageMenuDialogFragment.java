@@ -40,7 +40,7 @@ import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-import twitter4j.DirectMessage;
+import net.lacolaco.smileessence.entity.DirectMessage;
 import twitter4j.HashtagEntity;
 import twitter4j.MediaEntity;
 import twitter4j.URLEntity;
@@ -100,12 +100,12 @@ public class MessageMenuDialogFragment extends MenuDialogFragment {
             commands.add(command);
         }
         // Media
-        if (message.getURLEntities() != null) {
-            for (URLEntity urlEntity : message.getURLEntities()) {
+        if (message.getUrls() != null) {
+            for (URLEntity urlEntity : message.getUrls()) {
                 commands.add(new CommandOpenURL(activity, urlEntity.getExpandedURL()));
             }
         }
-        for (MediaEntity mediaEntity : message.getExtendedMediaEntities().length == 0 ? message.getMediaEntities() : message.getExtendedMediaEntities()) {
+        for (MediaEntity mediaEntity : message.getMedia()) {
             commands.add(new CommandOpenURL(activity, mediaEntity.getMediaURL()));
         }
     }
@@ -123,8 +123,8 @@ public class MessageMenuDialogFragment extends MenuDialogFragment {
 
     private ArrayList<Command> getHashtagCommands(Activity activity, DirectMessage status) {
         ArrayList<Command> commands = new ArrayList<>();
-        if (status.getHashtagEntities() != null) {
-            for (HashtagEntity hashtagEntity : status.getHashtagEntities()) {
+        if (status.getHashtags() != null) {
+            for (HashtagEntity hashtagEntity : status.getHashtags()) {
                 commands.add(new CommandOpenHashtagDialog(activity, hashtagEntity));
             }
         }

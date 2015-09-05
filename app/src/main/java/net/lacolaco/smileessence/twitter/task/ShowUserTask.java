@@ -24,12 +24,11 @@
 
 package net.lacolaco.smileessence.twitter.task;
 
-import net.lacolaco.smileessence.data.UserCache;
+import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.logging.Logger;
 
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
-import twitter4j.User;
 
 public class ShowUserTask extends TwitterTask<User> {
 
@@ -56,18 +55,15 @@ public class ShowUserTask extends TwitterTask<User> {
 
     @Override
     protected void onPostExecute(User user) {
-        if (user != null) {
-            UserCache.getInstance().put(user);
-        }
     }
 
     @Override
     protected User doInBackground(Void... params) {
         try {
             if (screenName != null) {
-                return twitter.users().showUser(screenName);
+                return User.fromTwitter(twitter.users().showUser(screenName));
             } else {
-                return twitter.users().showUser(userID);
+                return User.fromTwitter(twitter.users().showUser(userID));
             }
         } catch (TwitterException e) {
             e.printStackTrace();

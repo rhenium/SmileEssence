@@ -36,6 +36,7 @@ import com.android.volley.toolbox.NetworkImageView;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.data.ImageCache;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.util.StringUtils;
 import net.lacolaco.smileessence.util.Themes;
@@ -44,7 +45,7 @@ import net.lacolaco.smileessence.view.dialog.UserDetailDialogFragment;
 import net.lacolaco.smileessence.view.listener.ListItemClickListener;
 
 import twitter4j.Status;
-import twitter4j.User;
+import net.lacolaco.smileessence.entity.User;
 
 import java.util.Date;
 
@@ -67,21 +68,21 @@ public class EventViewModel implements IViewModel {
         this(event, source, null);
     }
 
-    public EventViewModel(EnumEvent event, User source, Status status) {
+    public EventViewModel(EnumEvent event, User source, Tweet tweet) {
         this.event = event;
         this.createdAt = new Date();
         this.sourceUserID = source.getId();
         this.sourceScreenName = source.getScreenName();
         this.sourceName = source.getName();
-        this.iconURL = source.getProfileImageURL();
+        this.iconURL = source.getProfileImageUrl();
 
-        if (status != null) {
+        if (tweet != null) {
             if (event == EnumEvent.RETWEETED) {
-                this.targetStatusID = status.getRetweetedStatus().getId();
-                this.targetText = status.getRetweetedStatus().getText();
+                this.targetStatusID = tweet.getRetweetedTweet().getId();
+                this.targetText = tweet.getRetweetedTweet().getText();
             } else {
-                this.targetStatusID = status.getId();
-                this.targetText = status.getText();
+                this.targetStatusID = tweet.getId();
+                this.targetText = tweet.getText();
             }
         } else {
             this.targetStatusID = -1L;

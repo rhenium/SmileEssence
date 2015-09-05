@@ -28,14 +28,17 @@ import android.app.Activity;
 
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.data.FavoriteCache;
-import net.lacolaco.smileessence.data.StatusCache;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 
 import twitter4j.*;
 
-public class MentionsTimelineTask extends TwitterTask<Status[]> {
+import java.util.Collections;
+import java.util.List;
+
+public class MentionsTimelineTask extends TwitterTask<List<Tweet>> {
 
     // ------------------------------ FIELDS ------------------------------
 
@@ -43,10 +46,6 @@ public class MentionsTimelineTask extends TwitterTask<Status[]> {
     private final Paging paging;
 
     // --------------------------- CONSTRUCTORS ---------------------------
-
-    protected MentionsTimelineTask(Twitter twitter, Activity activity) {
-        this(twitter, activity, null);
-    }
 
     public MentionsTimelineTask(Twitter twitter, Activity activity, Paging paging) {
         super(twitter);
@@ -57,24 +56,16 @@ public class MentionsTimelineTask extends TwitterTask<Status[]> {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected void onPostExecute(twitter4j.Status[] statuses) {
-        if (statuses.length != 0) {
-            for (twitter4j.Status status : statuses) {
-                StatusCache.getInstance().put(status);
-                FavoriteCache.getInstance().put(status);
-            }
+    protected void onPostExecute(List<Tweet> tweets) {
+        for (Tweet tweet : tweets) {
+            //FavoriteCache.getInstance().put(tweet);
         }
     }
 
     @Override
-    protected twitter4j.Status[] doInBackground(Void... params) {
-        ResponseList<twitter4j.Status> responseList;
+    protected List<Tweet> doInBackground(Void... params) {
         try {
-            if (paging == null) {
-                responseList = twitter.timelines().getMentionsTimeline();
-            } else {
-                responseList = twitter.timelines().getMentionsTimeline(paging);
-            }
+            return Tweet.fromTwitter(twitter.timelines().getMentionsTimeline(paging));
         } catch (TwitterException e) {
             e.printStackTrace();
             Logger.error(e.toString());
@@ -83,8 +74,7 @@ public class MentionsTimelineTask extends TwitterTask<Status[]> {
             } else {
                 Notificator.publish(activity, R.string.notice_error_get_mentions, NotificationType.ALERT);
             }
-            return new twitter4j.Status[0];
+            return Collections.emptyList();
         }
-        return responseList.toArray(new twitter4j.Status[responseList.size()]);
     }
 }

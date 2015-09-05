@@ -26,7 +26,7 @@ package net.lacolaco.smileessence.view.adapter;
 
 import android.app.Activity;
 
-import net.lacolaco.smileessence.data.UserCache;
+import net.lacolaco.smileessence.entity.MuteUserIds;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 
 import java.util.Collections;
@@ -44,11 +44,11 @@ public class StatusListAdapter extends CustomListAdapter<StatusViewModel> {
     // --------------------- GETTER / SETTER METHODS ---------------------
 
     public long getLastID() {
-        return ((StatusViewModel) getItem(getCount() - 1)).getID();
+        return ((StatusViewModel) getItem(getCount() - 1)).getTweet().getId();
     }
 
     public long getTopID() {
-        return ((StatusViewModel) getItem(0)).getID();
+        return ((StatusViewModel) getItem(0)).getTweet().getId();
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
@@ -82,7 +82,7 @@ public class StatusListAdapter extends CustomListAdapter<StatusViewModel> {
             Collections.sort(list, new Comparator<StatusViewModel>() {
                 @Override
                 public int compare(StatusViewModel lhs, StatusViewModel rhs) {
-                    return Long.valueOf(rhs.getID()).compareTo(lhs.getID());
+                    return Long.valueOf(rhs.getTweet().getId()).compareTo(lhs.getTweet().getId());
                 }
             });
         }
@@ -95,7 +95,7 @@ public class StatusListAdapter extends CustomListAdapter<StatusViewModel> {
             Iterator<StatusViewModel> iterator = this.list.iterator();
             while (iterator.hasNext()) {
                 StatusViewModel statusViewModel = iterator.next();
-                if (statusViewModel.getID() == statusID || statusViewModel.getOriginal().getID() == statusID) {
+                if (statusViewModel.getTweet().getOriginalTweet().getId() == statusID) {
                     iterator.remove();
                 }
             }
@@ -103,11 +103,11 @@ public class StatusListAdapter extends CustomListAdapter<StatusViewModel> {
     }
 
     private boolean isBlockUser(StatusViewModel item) {
-        return UserCache.getInstance().isInvisibleUserID(item.getOriginalUserID());
+        return MuteUserIds.isMuted(item.getTweet().getOriginalTweet().getUser().getId());
     }
 
     private boolean preAdd(StatusViewModel item) {
-        removeByStatusID(item.getID());
+        removeByStatusID(item.getTweet().getId());
         return !isBlockUser(item);
     }
 }

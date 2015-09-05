@@ -35,8 +35,8 @@ import com.android.volley.toolbox.NetworkImageView;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.data.ImageCache;
-import net.lacolaco.smileessence.data.UserCache;
 import net.lacolaco.smileessence.entity.Account;
+import net.lacolaco.smileessence.entity.DirectMessage;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.util.NameStyles;
 import net.lacolaco.smileessence.util.StringUtils;
@@ -46,86 +46,35 @@ import net.lacolaco.smileessence.view.dialog.MessageDetailDialogFragment;
 import net.lacolaco.smileessence.view.dialog.UserDetailDialogFragment;
 import net.lacolaco.smileessence.view.listener.ListItemClickListener;
 
-import twitter4j.DirectMessage;
-
-import java.util.Date;
-
 public class MessageViewModel implements IViewModel {
 
     // ------------------------------ FIELDS ------------------------------
 
     public static final String DETAIL_DIALOG = "messageDetail";
-    private final long id;
-    private final long senderID;
-    private final String senderScreenName;
-    private final String senderName;
-    private final String senderIconURL;
-    private final long recipientId;
-    private final String recipientScreenName;
-    private final String text;
-    private final Date createdAt;
+
+    private final DirectMessage directMessage;
     private final boolean myMessage;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public MessageViewModel(DirectMessage directMessage, Account account) {
-        id = directMessage.getId();
-        UserCache.getInstance().put(directMessage.getSender());
-        senderID = directMessage.getSenderId();
-        senderScreenName = directMessage.getSenderScreenName();
-        senderName = directMessage.getSender().getName();
-        senderIconURL = directMessage.getSender().getProfileImageURL();
-        recipientId = directMessage.getRecipientId();
-        recipientScreenName = directMessage.getRecipientScreenName();
-        text = directMessage.getText();
-        createdAt = directMessage.getCreatedAt();
-        myMessage = isMyMessage(account);
+    public MessageViewModel(DirectMessage mes) {
+        directMessage = mes;
+        //myMessage = isMyMessage(account);
+        myMessage = true; // :wTODO
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 
-    public Date getCreatedAt() {
-        return createdAt;
-    }
 
+    public DirectMessage getDirectMessage() {
+        return directMessage;
+    }
     private String getFooterText() {
-        String s = StringUtils.dateToString(getCreatedAt());
+        String s = StringUtils.dateToString(directMessage.getCreatedAt());
         if (isMyMessage()) {
-            s = String.format("%s to @%s", s, recipientScreenName);
+            s = String.format("%s to @%s", s, directMessage.getRecipient().getScreenName());
         }
         return s;
-    }
-
-    public long getID() {
-        return id;
-    }
-
-    public long getRecipientId() {
-        return recipientId;
-    }
-
-    public String getRecipientScreenName() {
-        return recipientScreenName;
-    }
-
-    public String getSenderIconURL() {
-        return senderIconURL;
-    }
-
-    public long getSenderID() {
-        return senderID;
-    }
-
-    public String getSenderName() {
-        return senderName;
-    }
-
-    public String getSenderScreenName() {
-        return senderScreenName;
-    }
-
-    public String getText() {
-        return text;
     }
 
     public boolean isMyMessage() {
@@ -147,12 +96,12 @@ public class MessageViewModel implements IViewModel {
         int nameStyle = preferenceHelper.getValue(R.string.key_setting_namestyle, 0);
         int theme = ((MainActivity) activity).getThemeIndex();
         NetworkImageView icon = (NetworkImageView) convertedView.findViewById(R.id.imageview_status_icon);
-        ImageCache.getInstance().setImageToView(getSenderIconURL(), icon);
+        ImageCache.getInstance().setImageToView(directMessage.getSender().getProfileImageUrl(), icon);
         icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 UserDetailDialogFragment dialogFragment = new UserDetailDialogFragment();
-                dialogFragment.setUserID(senderID);
+                dialogFragment.setUserID(directMessage.getSender().getId());
                 DialogHelper.showDialog(activity, dialogFragment);
             }
         });
@@ -165,7 +114,7 @@ public class MessageViewModel implements IViewModel {
         content.setTextSize(textSize);
         int colorNormal = Themes.getStyledColor(activity, theme, R.attr.color_status_text_normal, 0);
         content.setTextColor(colorNormal);
-        content.setText(getText());
+        content.setText(directMessage.getText());
         TextView footer = (TextView) convertedView.findViewById(R.id.textview_status_footer);
         footer.setTextSize(textSize - 2);
         int colorFooter = Themes.getStyledColor(activity, theme, R.attr.color_status_text_footer, 0);
@@ -179,7 +128,7 @@ public class MessageViewModel implements IViewModel {
             @Override
             public void run() {
                 MessageDetailDialogFragment dialogFragment = new MessageDetailDialogFragment();
-                dialogFragment.setMessageID(getID());
+                dialogFragment.setMessageID(directMessage.getId());
                 DialogHelper.showDialog(activity, dialogFragment);
             }
         }));
@@ -187,10 +136,10 @@ public class MessageViewModel implements IViewModel {
     }
 
     private String getNameString(int nameStyle) {
-        return NameStyles.getNameString(nameStyle, getSenderScreenName(), getSenderName());
+        return NameStyles.getNameString(nameStyle, directMessage.getSender().getScreenName(), directMessage.getSender().getName());
     }
 
     private boolean isMyMessage(Account account) {
-        return senderID == account.userID;
+        return directMessage.getSender().getId() == account.userID;
     }
 }

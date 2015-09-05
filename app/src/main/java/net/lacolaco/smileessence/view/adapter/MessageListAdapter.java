@@ -43,11 +43,11 @@ public class MessageListAdapter extends CustomListAdapter<MessageViewModel> {
     // --------------------- GETTER / SETTER METHODS ---------------------
 
     public long getLastID() {
-        return ((MessageViewModel) getItem(getCount() - 1)).getID();
+        return ((MessageViewModel) getItem(getCount() - 1)).getDirectMessage().getId();
     }
 
     public long getTopID() {
-        return ((MessageViewModel) getItem(0)).getID();
+        return ((MessageViewModel) getItem(0)).getDirectMessage().getId();
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
@@ -78,7 +78,7 @@ public class MessageListAdapter extends CustomListAdapter<MessageViewModel> {
             Collections.sort(list, new Comparator<MessageViewModel>() {
                 @Override
                 public int compare(MessageViewModel lhs, MessageViewModel rhs) {
-                    return rhs.getCreatedAt().compareTo(lhs.getCreatedAt());
+                    return rhs.getDirectMessage().getCreatedAt().compareTo(lhs.getDirectMessage().getCreatedAt());
                 }
             });
         }
@@ -91,7 +91,7 @@ public class MessageListAdapter extends CustomListAdapter<MessageViewModel> {
             Iterator<MessageViewModel> iterator = this.list.iterator();
             while (iterator.hasNext()) {
                 MessageViewModel message = iterator.next();
-                if (message.getID() == messageID) {
+                if (message.getDirectMessage().getId() == messageID) {
                     iterator.remove();
                     return message;
                 }
@@ -101,7 +101,7 @@ public class MessageListAdapter extends CustomListAdapter<MessageViewModel> {
     }
 
     private boolean preAdd(MessageViewModel item) {
-        removeByMessageID(item.getID());
+        removeByMessageID(item.getDirectMessage().getId());
         return true;
     }
 }

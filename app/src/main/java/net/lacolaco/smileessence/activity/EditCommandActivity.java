@@ -37,7 +37,6 @@ import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.status.StatusCommand;
 import net.lacolaco.smileessence.command.user.UserCommand;
-import net.lacolaco.smileessence.data.CommandSettingCache;
 import net.lacolaco.smileessence.entity.CommandSetting;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
@@ -60,7 +59,6 @@ public class EditCommandActivity extends Activity {
     private CheckBoxModel[] getCheckBoxItems() {
         editedCommands = new ArrayList<>();
         List<CheckBoxModel> checkBoxModels = new ArrayList<>();
-        List<CommandSetting> commandSettings = CommandSetting.getAll();
         List<Command> commands = Command.getAllCommands(this);
         for (Command command : commands) {
             if (command.getKey() < 0) {
@@ -75,17 +73,7 @@ public class EditCommandActivity extends Activity {
                 continue;
             }
             editedCommands.add(command);
-            CommandSetting setting = null;
-            for (CommandSetting s : commandSettings) {
-                if (command.getKey() == s.commandKey) {
-                    setting = s;
-                }
-            }
-            if (setting == null) {
-                setting = new CommandSetting(command.getKey(), true);
-                setting.save();
-            }
-            CheckBoxModel checkBoxModel = new CheckBoxModel(text, setting.visibility);
+            CheckBoxModel checkBoxModel = new CheckBoxModel(text, CommandSetting.isVisible(command.getKey()));
             checkBoxModels.add(checkBoxModel);
         }
         return checkBoxModels.toArray(new CheckBoxModel[checkBoxModels.size()]);
@@ -122,10 +110,7 @@ public class EditCommandActivity extends Activity {
         for (int i = 0; i < adapter.getCount(); i++) {
             CheckBoxModel checkBoxModel = (CheckBoxModel) adapter.getItem(i);
             Command command = editedCommands.get(i);
-            CommandSetting commandSetting = CommandSetting.selectByKey(command.getKey());
-            commandSetting.visibility = checkBoxModel.isChecked();
-            commandSetting.save();
-            CommandSettingCache.getInstance().put(commandSetting);
+            CommandSetting.setVisible(command.getKey(), checkBoxModel.isChecked());
         }
         super.onDestroy();
     }

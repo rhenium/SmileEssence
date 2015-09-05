@@ -28,28 +28,29 @@ import android.app.Activity;
 
 import net.lacolaco.smileessence.command.Command;
 
+import net.lacolaco.smileessence.entity.Tweet;
 import twitter4j.Status;
 
 public abstract class StatusCommand extends Command {
 
     // ------------------------------ FIELDS ------------------------------
 
-    private final Status status;
+    private final Tweet tweet;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public StatusCommand(int key, Activity activity, Status status) {
+    public StatusCommand(int key, Activity activity, Tweet tweet) {
         super(key, activity);
-        this.status = status;
+        this.tweet = tweet;
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 
-    protected final Status getOriginalStatus() {
-        return status.isRetweet() ? status.getRetweetedStatus() : status;
+    protected final Tweet getOriginalStatus() {
+        return tweet.getOriginalTweet();
     }
 
-    protected final Status getStatus() {
-        return status;
+    protected final Tweet getStatus() {
+        return tweet;
     }
 }

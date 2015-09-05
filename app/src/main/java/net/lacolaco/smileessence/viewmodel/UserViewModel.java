@@ -24,7 +24,7 @@
 
 package net.lacolaco.smileessence.viewmodel;
 
-import twitter4j.User;
+import net.lacolaco.smileessence.entity.User;
 
 public class UserViewModel {
 
@@ -53,13 +53,13 @@ public class UserViewModel {
         name = user.getName();
         description = user.getDescription();
         location = user.getLocation();
-        url = user.getURL();
-        iconURL = user.getBiggerProfileImageURL();
-        bannerURL = user.getProfileBannerURL();
+        url = user.getUrl();
+        iconURL = user.getProfileImageUrlOriginal();
+        bannerURL = user.getProfileBannerUrl();
         statusesCount = user.getStatusesCount();
         friendsCount = user.getFriendsCount();
         followersCount = user.getFollowersCount();
-        favoritesCount = user.getFavouritesCount();
+        favoritesCount = user.getFavoritesCount();
         isProtected = user.isProtected();
         isVerified = user.isVerified();
     }

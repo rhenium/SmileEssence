@@ -47,6 +47,7 @@ import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.CommandOpenSearch;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.SearchQuery;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.StatusFilter;
@@ -154,7 +155,7 @@ public class SearchFragment extends CustomListFragment implements View.OnClickLi
                     for (int i = tweets.size() - 1; i >= 0; i--) {
                         twitter4j.Status status = tweets.get(i);
                         if (!status.isRetweet()) {
-                            StatusViewModel viewModel = new StatusViewModel(status, currentAccount);
+                            StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status));
                             adapter.addToTop(viewModel);
                             StatusFilter.filter(activity, viewModel);
                         }
@@ -196,7 +197,7 @@ public class SearchFragment extends CustomListFragment implements View.OnClickLi
                     List<twitter4j.Status> tweets = queryResult.getTweets();
                     for (twitter4j.Status status : tweets) {
                         if (!status.isRetweet()) {
-                            StatusViewModel viewModel = new StatusViewModel(status, currentAccount);
+                            StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status));
                             adapter.addToBottom(viewModel);
                             StatusFilter.filter(activity, viewModel);
                         }

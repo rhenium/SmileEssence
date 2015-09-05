@@ -24,19 +24,10 @@
 
 package net.lacolaco.smileessence.twitter.task;
 
-import android.os.AsyncTask;
-
 import twitter4j.Twitter;
 
-public abstract class TwitterTask<T> extends AsyncTask<Void, Void, T> {
-
-    // ------------------------------ FIELDS ------------------------------
-
-    protected Twitter twitter;
-
-    // --------------------------- CONSTRUCTORS ---------------------------
-
+public abstract class TwitterTask<T> extends TwitterTaskWithProgress<T, Void> {
     protected TwitterTask(Twitter twitter) {
-        this.twitter = twitter;
+        super(twitter);
     }
 }

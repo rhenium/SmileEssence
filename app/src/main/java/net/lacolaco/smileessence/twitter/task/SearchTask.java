@@ -29,7 +29,7 @@ import android.content.res.Configuration;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.data.FavoriteCache;
-import net.lacolaco.smileessence.data.StatusCache;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
@@ -76,7 +76,7 @@ public class SearchTask extends TwitterTask<QueryResult> {
     protected void onPostExecute(QueryResult queryResult) {
         if (queryResult != null) {
             for (twitter4j.Status status : queryResult.getTweets()) {
-                StatusCache.getInstance().put(status);
+                Tweet.fromTwitter(status);
                 FavoriteCache.getInstance().put(status);
             }
         }

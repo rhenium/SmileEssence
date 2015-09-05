@@ -24,14 +24,14 @@
 
 package net.lacolaco.smileessence.twitter.task;
 
-import net.lacolaco.smileessence.data.StatusCache;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.logging.Logger;
 
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
-public class ShowStatusTask extends TwitterTask<Status> {
+public class ShowStatusTask extends TwitterTask<Tweet> {
 
     // ------------------------------ FIELDS ------------------------------
 
@@ -47,16 +47,10 @@ public class ShowStatusTask extends TwitterTask<Status> {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected void onPostExecute(twitter4j.Status status) {
-        if (status != null) {
-            StatusCache.getInstance().put(status);
-        }
-    }
-
-    @Override
-    protected twitter4j.Status doInBackground(Void... params) {
+    protected Tweet doInBackground(Void... params) {
         try {
-            return twitter.tweets().showStatus(id);
+            twitter4j.Status status = twitter.tweets().showStatus(id);
+            return Tweet.fromTwitter(status);
         } catch (TwitterException e) {
             e.printStackTrace();
             Logger.error(e.toString());

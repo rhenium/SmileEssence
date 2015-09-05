@@ -24,7 +24,7 @@
 
 package net.lacolaco.smileessence.twitter.task;
 
-import net.lacolaco.smileessence.data.UserCache;
+import net.lacolaco.smileessence.entity.MuteUserIds;
 import net.lacolaco.smileessence.logging.Logger;
 
 import twitter4j.IDs;
@@ -32,9 +32,10 @@ import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public class BlockIDsTask extends TwitterTask<Long[]> {
+public class BlockIDsTask extends TwitterTask<List<Long>> {
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
@@ -45,14 +46,14 @@ public class BlockIDsTask extends TwitterTask<Long[]> {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected void onPostExecute(Long[] blockIDs) {
+    protected void onPostExecute(List<Long> blockIDs) {
         for (Long blockID : blockIDs) {
-            UserCache.getInstance().putInvisibleUser(blockID);
+            MuteUserIds.add(blockID);
         }
     }
 
     @Override
-    protected Long[] doInBackground(Void... params) {
+    protected List<Long> doInBackground(Void... params) {
         try {
             List<Long> idList = new ArrayList<>();
             long cursor = -1;
@@ -65,10 +66,10 @@ public class BlockIDsTask extends TwitterTask<Long[]> {
             }
             while (cursor != 0);
 
-            return idList.toArray(new Long[idList.size()]);
+            return idList;
         } catch (TwitterException e) {
             Logger.error(e);
-            return new Long[0];
+            return Collections.emptyList();
         }
     }
 }

@@ -29,6 +29,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 
 import net.lacolaco.smileessence.R;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 
@@ -38,8 +39,8 @@ public class StatusCommandCopyURLToClipboard extends StatusCommand {
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public StatusCommandCopyURLToClipboard(Activity activity, Status status) {
-        super(R.id.key_command_status_copy_url_to_clipboard, activity, status);
+    public StatusCommandCopyURLToClipboard(Activity activity, Tweet tweet) {
+        super(R.id.key_command_status_copy_url_to_clipboard, activity, tweet);
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------
@@ -58,7 +59,7 @@ public class StatusCommandCopyURLToClipboard extends StatusCommand {
 
     @Override
     public boolean execute() {
-        String statusURL = TwitterUtils.getStatusURL(getOriginalStatus());
+        String statusURL = getOriginalStatus().getTwitterUrl();
         ClipboardManager manager = (ClipboardManager) getActivity().getSystemService(Activity.CLIPBOARD_SERVICE);
         manager.setPrimaryClip(ClipData.newPlainText("tweet url", statusURL));
         Notificator.publish(getActivity(), R.string.notice_copy_clipboard);

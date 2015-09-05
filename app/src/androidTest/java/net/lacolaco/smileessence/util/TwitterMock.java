@@ -36,13 +36,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Properties;
 
-import twitter4j.DirectMessage;
+import net.lacolaco.smileessence.entity.DirectMessage;
 import twitter4j.JSONException;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterObjectFactory;
-import twitter4j.User;
+import net.lacolaco.smileessence.entity.User;
 
 public class TwitterMock {
 

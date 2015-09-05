@@ -29,7 +29,7 @@ import android.test.InstrumentationTestCase;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.util.TwitterMock;
 
-import twitter4j.DirectMessage;
+import net.lacolaco.smileessence.entity.DirectMessage;
 
 public class MessageViewModelTest extends InstrumentationTestCase {
 

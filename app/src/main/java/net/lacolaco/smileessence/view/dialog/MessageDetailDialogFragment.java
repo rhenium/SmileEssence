@@ -34,13 +34,10 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
-import com.google.common.collect.Lists;
-
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.CommandOpenURL;
-import net.lacolaco.smileessence.data.DirectMessageCache;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.TwitterApi;
@@ -52,10 +49,8 @@ import net.lacolaco.smileessence.view.listener.ListItemClickListener;
 import net.lacolaco.smileessence.viewmodel.MessageViewModel;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
-import twitter4j.DirectMessage;
+import net.lacolaco.smileessence.entity.DirectMessage;
 import twitter4j.MediaEntity;
 import twitter4j.URLEntity;
 
@@ -122,7 +117,7 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
         MainActivity activity = (MainActivity) getActivity();
         final Account account = activity.getCurrentAccount();
 
-        DirectMessage selectedMessage = DirectMessageCache.getInstance().get(getMessageID());
+        DirectMessage selectedMessage = DirectMessage.fetch(getMessageID());
         if (selectedMessage == null) {
             Notificator.publish(getActivity(), R.string.notice_error_get_messages);
             return new DisposeDialog(getActivity());
@@ -132,42 +127,43 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
         final MessageListAdapter adapter = new MessageListAdapter(getActivity());
         listView.setAdapter(adapter);
         long replyToMessageId = -1;
-        ArrayList<DirectMessage> allMessages = Lists.newArrayList(DirectMessageCache.getInstance().all());
-        Collections.sort(allMessages, new Comparator<DirectMessage>() {
-            @Override
-            public int compare(DirectMessage lhs, DirectMessage rhs) {
-                return rhs.getCreatedAt().compareTo(lhs.getCreatedAt());
-            }
-        });
-        for (DirectMessage directMessage : allMessages) {
-            if (selectedMessage.getId() == directMessage.getId()) {
-                continue;
-            }
-            if (directMessage.getCreatedAt().getTime() > selectedMessage.getCreatedAt().getTime()) {
-                continue;
-            }
-            if (directMessage.getSenderId() == selectedMessage.getRecipientId() && directMessage.getRecipientId() == selectedMessage.getSenderId()) {
-                replyToMessageId = directMessage.getId();
-                break;
-            }
-        }
+        // ArrayList<DirectMessage> allMessages = Lists.newArrayList(DirectMessageCache.getInstance().all());
+        // Collections.sort(allMessages, new Comparator<DirectMessage>() {
+        //     @Override
+        //     public int compare(DirectMessage lhs, DirectMessage rhs) {
+        //         return rhs.getCreatedAt().compareTo(lhs.getCreatedAt());
+        //     }
+        // });
+        // for (DirectMessage directMessage : allMessages) {
+        //     if (selectedMessage.getId() == directMessage.getId()) {
+        //         continue;
+        //     }
+        //     if (directMessage.getCreatedAt().getTime() > selectedMessage.getCreatedAt().getTime()) {
+        //         continue;
+        //     }
+        //     if (directMessage.getSender().getId() == selectedMessage.getRecipient().getId() &&
+        //             directMessage.getRecipient().getId() == selectedMessage.getSender().getId()) {
+        //         replyToMessageId = directMessage.getId();
+        //         break;
+        //     }
+        // }
 
-        if (replyToMessageId == -1) {
-            listView.setVisibility(View.GONE);
-        } else {
-            TwitterUtils.tryGetMessage(account, replyToMessageId, new TwitterUtils.MessageCallback() {
-                @Override
-                public void success(DirectMessage message) {
-                    adapter.addToTop(new MessageViewModel(message, account));
-                    adapter.updateForce();
-                }
+        // if (replyToMessageId == -1) {
+        listView.setVisibility(View.GONE);
+        // } else {
+        //     TwitterUtils.tryGetMessage(account, replyToMessageId, new TwitterUtils.MessageCallback() {
+        //         @Override
+        //         public void success(DirectMessage message) {
+        //             adapter.addToTop(new MessageViewModel(message));
+        //             adapter.updateForce();
+        //         }
 
-                @Override
-                public void error() {
+        //         @Override
+        //         public void error() {
 
-                }
-            });
-        }
+        //         }
+        //     });
+        // }
         return new AlertDialog.Builder(getActivity()).setView(header).create();
     }
 
@@ -185,15 +181,15 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
 
     public void openSendMessageDialog(DirectMessage message) {
         SendMessageDialogFragment dialogFragment = new SendMessageDialogFragment();
-        dialogFragment.setScreenName(message.getSenderScreenName());
+        dialogFragment.setScreenName(message.getSender().getScreenName());
         DialogHelper.showDialog(getActivity(), dialogFragment);
     }
 
     private ArrayList<Command> getCommands(Activity activity, DirectMessage message, Account account) {
         ArrayList<Command> commands = new ArrayList<>();
         // URL
-        if (message.getURLEntities() != null) {
-            for (URLEntity urlEntity : message.getURLEntities()) {
+        if (message.getUrls() != null) {
+            for (URLEntity urlEntity : message.getUrls()) {
                 commands.add(new CommandOpenURL(activity, urlEntity.getExpandedURL()));
             }
         }
@@ -204,18 +200,18 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
     }
 
     private MediaEntity[] getMediaEntities(DirectMessage message) {
-        if (message.getExtendedMediaEntities().length == 0) {
+        if (message.getMedia().length == 0) {
             // direct message's media is contained also in url entities.
             return new MediaEntity[0];
         } else {
-            return message.getExtendedMediaEntities();
+            return message.getMedia();
         }
     }
 
     private View getTitleView(MainActivity activity, Account account, DirectMessage message) {
         View view = activity.getLayoutInflater().inflate(R.layout.dialog_status_detail, null);
         View messageHeader = view.findViewById(R.id.layout_status_header);
-        MessageViewModel statusViewModel = new MessageViewModel(message, account);
+        MessageViewModel statusViewModel = new MessageViewModel(message);
         messageHeader = statusViewModel.getView(activity, activity.getLayoutInflater(), messageHeader);
         messageHeader.setClickable(false);
         int background = ((ColorDrawable) messageHeader.getBackground()).getColor();
@@ -252,7 +248,7 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
     }
 
     private boolean isDeletable(Account account, DirectMessage message) {
-        return message.getSenderId() == account.userID;
+        return message.getSender().getId() == account.userID;
     }
 
     private void openMenu(MainActivity activity) {

@@ -29,6 +29,7 @@ import android.app.Activity;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.command.IConfirmable;
 import net.lacolaco.smileessence.entity.Account;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.twitter.TweetBuilder;
 import net.lacolaco.smileessence.twitter.TwitterApi;
 import net.lacolaco.smileessence.twitter.task.FavoriteTask;
@@ -46,15 +47,15 @@ public class StatusCommandMakeAnonymous extends StatusCommand implements IConfir
 
     // -------------------------- STATIC METHODS --------------------------
 
-    public StatusCommandMakeAnonymous(Activity activity, Status status, Account account) {
-        super(R.id.key_command_status_make_anonymous, activity, status);
+    public StatusCommandMakeAnonymous(Activity activity, Tweet tweet, Account account) {
+        super(R.id.key_command_status_make_anonymous, activity, tweet);
         this.account = account;
     }
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public static String build(Activity activity, Status status, Account account) {
-        String str = status.getText();
+    public static String build(Activity activity, Tweet tweet, Account account) {
+        String str = tweet.getText();
         String header = "";
         if (str.startsWith(".")) {
             str = str.replaceFirst(".", "");

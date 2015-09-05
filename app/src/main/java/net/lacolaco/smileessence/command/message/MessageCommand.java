@@ -28,7 +28,7 @@ import android.app.Activity;
 
 import net.lacolaco.smileessence.command.Command;
 
-import twitter4j.DirectMessage;
+import net.lacolaco.smileessence.entity.DirectMessage;
 
 public abstract class MessageCommand extends Command {
 

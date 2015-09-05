@@ -32,7 +32,7 @@ import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.util.TwitterMock;
 
 import twitter4j.Status;
-import twitter4j.User;
+import net.lacolaco.smileessence.entity.User;
 
 import java.util.Locale;
 

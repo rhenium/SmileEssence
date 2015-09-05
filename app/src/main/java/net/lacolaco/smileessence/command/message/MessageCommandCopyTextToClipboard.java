@@ -31,7 +31,7 @@ import android.content.ClipboardManager;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.notification.Notificator;
 
-import twitter4j.DirectMessage;
+import net.lacolaco.smileessence.entity.DirectMessage;
 
 public class MessageCommandCopyTextToClipboard extends MessageCommand {
 

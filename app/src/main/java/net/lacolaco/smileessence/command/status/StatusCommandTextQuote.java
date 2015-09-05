@@ -28,6 +28,7 @@ import android.app.Activity;
 
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.twitter.TweetBuilder;
 import net.lacolaco.smileessence.view.adapter.PostState;
 
@@ -37,8 +38,8 @@ public class StatusCommandTextQuote extends StatusCommand {
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public StatusCommandTextQuote(Activity activity, Status status) {
-        super(-1, activity, status);
+    public StatusCommandTextQuote(Activity activity, Tweet tweet) {
+        super(-1, activity, tweet);
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------

@@ -44,10 +44,8 @@ import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.BuildConfig;
 import net.lacolaco.smileessence.IntentRouter;
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.data.CommandSettingCache;
 import net.lacolaco.smileessence.data.UserListCache;
-import net.lacolaco.smileessence.entity.Account;
-import net.lacolaco.smileessence.entity.CommandSetting;
+import net.lacolaco.smileessence.entity.*;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
@@ -63,7 +61,10 @@ import net.lacolaco.smileessence.view.adapter.*;
 import net.lacolaco.smileessence.view.dialog.ConfirmDialogFragment;
 import net.lacolaco.smileessence.viewmodel.*;
 import net.lacolaco.smileessence.viewmodel.menu.MainActivityMenuHelper;
-import twitter4j.*;
+import twitter4j.Paging;
+import twitter4j.QueryResult;
+import twitter4j.Twitter;
+import twitter4j.TwitterStream;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -417,7 +418,7 @@ public class MainActivity extends Activity {
 
     public void startMainLogic() {
         initializeView();
-        initCommandSetting();
+        CommandSetting.initialize();
         startTwitter();
     }
 
@@ -437,7 +438,7 @@ public class MainActivity extends Activity {
                         for (int i = tweets.size() - 1; i >= 0; i--) {
                             twitter4j.Status status = tweets.get(i);
                             if (!status.isRetweet()) {
-                                StatusViewModel viewModel = new StatusViewModel(status, getCurrentAccount());
+                                StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status));
                                 adapter.addToTop(viewModel);
                                 StatusFilter.filter(MainActivity.this, viewModel);
                             }
@@ -491,7 +492,7 @@ public class MainActivity extends Activity {
             protected void onPostExecute(User user) {
                 super.onPostExecute(user);
                 if (user != null) {
-                    String urlHttps = user.getProfileImageURLHttps();
+                    String urlHttps = user.getProfileImageUrl();
                     homeIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
                     new BitmapURLTask(urlHttps, homeIcon).execute();
                 }
@@ -558,21 +559,14 @@ public class MainActivity extends Activity {
         openPostPageWithImage(uri);
     }
 
-    private void initCommandSetting() {
-        List<CommandSetting> commandSettings = CommandSetting.getAll();
-        for (CommandSetting setting : commandSettings) {
-            CommandSettingCache.getInstance().put(setting);
-        }
-    }
-
     private void initHome(final Twitter twitter, final Paging paging) {
         new HomeTimelineTask(twitter, this, paging) {
             @Override
-            protected void onPostExecute(twitter4j.Status[] statuses) {
-                super.onPostExecute(statuses);
+            protected void onPostExecute(List<Tweet> tweets) {
+                super.onPostExecute(tweets);
                 StatusListAdapter adapter = (StatusListAdapter) getListAdapter(AdapterID.Home);
-                for (twitter4j.Status status : statuses) {
-                    StatusViewModel statusViewModel = new StatusViewModel(status, currentAccount);
+                for (Tweet tweet : tweets) {
+                    StatusViewModel statusViewModel = new StatusViewModel(tweet);
                     adapter.addToBottom(statusViewModel);
                     StatusFilter.filter(MainActivity.this, statusViewModel);
                 }
@@ -589,11 +583,11 @@ public class MainActivity extends Activity {
     private void initMentions(final Twitter twitter, final Paging paging) {
         new MentionsTimelineTask(twitter, this, paging) {
             @Override
-            protected void onPostExecute(twitter4j.Status[] statuses) {
-                super.onPostExecute(statuses);
+            protected void onPostExecute(List<Tweet> tweets) {
+                super.onPostExecute(tweets);
                 StatusListAdapter adapter = (StatusListAdapter) getListAdapter(AdapterID.Mentions);
-                for (twitter4j.Status status : statuses) {
-                    adapter.addToBottom(new StatusViewModel(status, currentAccount));
+                for (Tweet tweet : tweets) {
+                    adapter.addToBottom(new StatusViewModel(tweet));
                 }
                 adapter.updateForce();
             }
@@ -606,22 +600,22 @@ public class MainActivity extends Activity {
         }
         new DirectMessagesTask(twitter, this, paging) {
             @Override
-            protected void onPostExecute(DirectMessage[] directMessages) {
+            protected void onPostExecute(List<DirectMessage> directMessages) {
                 super.onPostExecute(directMessages);
                 MessageListAdapter adapter = (MessageListAdapter) getListAdapter(AdapterID.Messages);
                 for (DirectMessage message : directMessages) {
-                    adapter.addToBottom(new MessageViewModel(message, currentAccount));
+                    adapter.addToBottom(new MessageViewModel(message));
                 }
                 adapter.notifyDataSetChanged();
             }
         }.execute();
         new SentDirectMessagesTask(twitter, this, paging) {
             @Override
-            protected void onPostExecute(DirectMessage[] directMessages) {
+            protected void onPostExecute(List<DirectMessage> directMessages) {
                 super.onPostExecute(directMessages);
                 MessageListAdapter adapter = (MessageListAdapter) getListAdapter(AdapterID.Messages);
                 for (DirectMessage message : directMessages) {
-                    adapter.addToBottom(new MessageViewModel(message, currentAccount));
+                    adapter.addToBottom(new MessageViewModel(message));
                 }
                 adapter.notifyDataSetChanged();
             }
@@ -722,12 +716,12 @@ public class MainActivity extends Activity {
         adapter.setListFullName(listFullName);
         adapter.clear();
         adapter.updateForce();
-        new UserListStatusesTask(twitter, listFullName, this) {
+        new UserListStatusesTask(twitter, this, listFullName) {
             @Override
-            protected void onPostExecute(twitter4j.Status[] statuses) {
-                super.onPostExecute(statuses);
-                for (twitter4j.Status status : statuses) {
-                    StatusViewModel statusViewModel = new StatusViewModel(status, getCurrentAccount());
+            protected void onPostExecute(List<Tweet> tweets) {
+                super.onPostExecute(tweets);
+                for (Tweet tweet : tweets) {
+                    StatusViewModel statusViewModel = new StatusViewModel(tweet);
                     adapter.addToBottom(statusViewModel);
                     StatusFilter.filter(MainActivity.this, statusViewModel);
                 }

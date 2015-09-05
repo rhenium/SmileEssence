@@ -31,7 +31,7 @@ import android.os.Environment;
 import android.text.TextUtils;
 
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.data.StatusCache;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
@@ -47,7 +47,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class TweetTask extends TwitterTask<Status> {
+public class TweetTask extends TwitterTask<Tweet> {
 
     // ------------------------------ FIELDS ------------------------------
 
@@ -109,9 +109,8 @@ public class TweetTask extends TwitterTask<Status> {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected void onPostExecute(twitter4j.Status status) {
-        if (status != null) {
-            StatusCache.getInstance().put(status);
+    protected void onPostExecute(Tweet tweet) {
+        if (tweet != null) {
             new Notificator(activity, R.string.notice_tweet_succeeded).publish();
         } else {
             new Notificator(activity, R.string.notice_tweet_failed, NotificationType.ALERT).publish();
@@ -119,21 +118,19 @@ public class TweetTask extends TwitterTask<Status> {
     }
 
     @Override
-    protected twitter4j.Status doInBackground(Void... params) {
+    protected Tweet doInBackground(Void... params) {
         try {
-            if (TextUtils.isEmpty(mediaPath)) {
-                return twitter.tweets().updateStatus(update);
-            } else {
+            if (!TextUtils.isEmpty(mediaPath)) {
                 File mediaFile = getMediaFile();
                 if (mediaFile.exists()) {
                     update.setMedia(mediaFile);
                 }
-                twitter4j.Status status = twitter.tweets().updateStatus(update);
-                if (tempFilePath != null) {
-                    new File(tempFilePath).delete();
-                }
-                return status;
             }
+            Tweet tweet = Tweet.fromTwitter(twitter.tweets().updateStatus(update));
+            if (tempFilePath != null) {
+                new File(tempFilePath).delete();
+            }
+            return tweet;
         } catch (TwitterException e) {
             e.printStackTrace();
             Logger.error(e.toString());

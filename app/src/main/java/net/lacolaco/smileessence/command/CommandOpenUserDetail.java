@@ -28,14 +28,13 @@ import android.app.Activity;
 
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.entity.Account;
+import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.TwitterApi;
 import net.lacolaco.smileessence.twitter.task.ShowUserTask;
 import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.dialog.UserDetailDialogFragment;
-
-import twitter4j.User;
 
 public class CommandOpenUserDetail extends Command {
 

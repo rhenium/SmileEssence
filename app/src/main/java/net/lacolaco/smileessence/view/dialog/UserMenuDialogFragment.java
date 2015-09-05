@@ -31,13 +31,12 @@ import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.CommandSearchOnTwitter;
 import net.lacolaco.smileessence.entity.Account;
+import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import twitter4j.User;
 
 public class UserMenuDialogFragment extends MenuDialogFragment {
 

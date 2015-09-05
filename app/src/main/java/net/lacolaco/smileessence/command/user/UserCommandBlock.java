@@ -32,7 +32,7 @@ import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.twitter.TwitterApi;
 import net.lacolaco.smileessence.twitter.task.BlockTask;
 
-import twitter4j.User;
+import net.lacolaco.smileessence.entity.User;
 
 public class UserCommandBlock extends UserCommand implements IConfirmable {
 

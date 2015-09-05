@@ -31,7 +31,7 @@ import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.util.IntentUtils;
 
-import twitter4j.DirectMessage;
+import net.lacolaco.smileessence.entity.DirectMessage;
 
 public class MessageCommandShare extends MessageCommand {
 

@@ -24,42 +24,65 @@
 
 package net.lacolaco.smileessence.entity;
 
-import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
-@Table(name = "Commands")
-public class CommandSetting extends Model {
+public class CommandSetting {
+    public static ConcurrentHashMap<Integer, Boolean> cache;
 
-    // ------------------------------ FIELDS ------------------------------
-
-    @Column(name = "CommandKey")
-    public int commandKey;
-    @Column(name = "Visibility")
-    public boolean visibility;
-
-    // -------------------------- STATIC METHODS --------------------------
-
-    public CommandSetting() {
-        super();
+    public static boolean isVisible(int key) {
+        if (cache == null) {
+            throw new IllegalStateException("Call .initialize first");
+        }
+        Boolean result = cache.get(key);
+        if (result == null) {
+            result = true; // default value
+        }
+        return result;
     }
 
-    public CommandSetting(int commandKey, boolean visibility) {
-        super();
-        this.commandKey = commandKey;
-        this.visibility = visibility;
+    public static void setVisible(int key, boolean value) {
+        if (cache == null) {
+            throw new IllegalStateException("Call .initialize first");
+        }
+        Model model = new Select().from(Model.class).where("CommandKey = ?", key).executeSingle();
+        if (model == null) {
+            model = new Model();
+        }
+        model.commandKey = key;
+        model.visibility = value;
+        model.save();
+        cache.put(key, value);
     }
 
-    // --------------------------- CONSTRUCTORS ---------------------------
-
-    public static List<CommandSetting> getAll() {
-        return new Select().from(CommandSetting.class).execute();
+    public static void initialize() {
+        cache = new ConcurrentHashMap<>();
+        List<Model> all = new Select().from(Model.class).execute();
+        for(Model model : all) {
+            cache.put(model.commandKey, model.visibility);
+        }
     }
 
-    public static CommandSetting selectByKey(int key) {
-        return new Select().from(CommandSetting.class).where("CommandKey = ?", key).executeSingle();
+    @Table(name = "Commands")
+    private static class Model extends com.activeandroid.Model {
+        // ------------------------------ FIELDS ------------------------------
+        @Column(name = "CommandKey")
+        public int commandKey; // R.id はいってるらしいけどいいのこれ？（しらない）
+        @Column(name = "Visibility")
+        public boolean visibility;
+
+        public Model() {
+            super();
+        }
+
+        public Model(int commandKey, boolean visibility) {
+            super();
+            this.commandKey = commandKey;
+            this.visibility = visibility;
+        }
     }
 }

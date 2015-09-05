@@ -28,6 +28,7 @@ import android.app.Activity;
 
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.command.CommandOpenURL;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 
 import twitter4j.Status;
@@ -36,8 +37,8 @@ public class StatusCommandOpenInBrowser extends StatusCommand {
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public StatusCommandOpenInBrowser(Activity activity, Status status) {
-        super(R.id.key_command_status_open_in_browser, activity, status);
+    public StatusCommandOpenInBrowser(Activity activity, Tweet tweet) {
+        super(R.id.key_command_status_open_in_browser, activity, tweet);
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------
@@ -56,6 +57,6 @@ public class StatusCommandOpenInBrowser extends StatusCommand {
 
     @Override
     public boolean execute() {
-        return new CommandOpenURL(getActivity(), TwitterUtils.getStatusURL(getOriginalStatus())).execute();
+        return new CommandOpenURL(getActivity(), getOriginalStatus().getTwitterUrl()).execute();
     }
 }

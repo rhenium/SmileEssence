@@ -43,6 +43,7 @@ import com.twitter.Validator;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Account;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.twitter.TwitterApi;
@@ -149,9 +150,9 @@ public class PostFragment extends Fragment implements TextWatcher, View.OnFocusC
                 final Account account = activity.getCurrentAccount();
                 TwitterUtils.tryGetStatus(account, postState.getInReplyToStatusID(), new TwitterUtils.StatusCallback() {
                     @Override
-                    public void success(Status status) {
+                    public void success(Tweet tweet) {
                         View header = viewGroupReply.findViewById(R.id.layout_post_reply_status);
-                        header = new StatusViewModel(status, account).getView(activity, activity.getLayoutInflater(), header);
+                        header = new StatusViewModel(tweet).getView(activity, activity.getLayoutInflater(), header);
                         header.setBackgroundColor(getResources().getColor(R.color.transparent));
                         header.setClickable(false);
                     }

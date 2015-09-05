@@ -28,6 +28,7 @@ import android.app.Activity;
 import android.content.Intent;
 
 import net.lacolaco.smileessence.R;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.util.IntentUtils;
 
@@ -37,8 +38,8 @@ public class StatusCommandShare extends StatusCommand {
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public StatusCommandShare(Activity activity, Status status) {
-        super(R.id.key_command_status_share, activity, status);
+    public StatusCommandShare(Activity activity, Tweet tweet) {
+        super(R.id.key_command_status_share, activity, tweet);
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------
@@ -57,10 +58,12 @@ public class StatusCommandShare extends StatusCommand {
 
     @Override
     public boolean execute() {
+        String summary = String.format("@%s: %s", getOriginalStatus().getUser().getScreenName(), getOriginalStatus().getText());
+
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_SEND);
         intent.setType("text/plain");
-        intent.putExtra(Intent.EXTRA_TEXT, TwitterUtils.getStatusSummary(getOriginalStatus()));
+        intent.putExtra(Intent.EXTRA_TEXT, summary);
         IntentUtils.startActivityIfFound(getActivity(), intent);
         return true;
     }

@@ -27,14 +27,13 @@ package net.lacolaco.smileessence.twitter.task;
 import android.app.Activity;
 
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.data.UserCache;
+import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
-import twitter4j.User;
 
 public class UnfollowTask extends TwitterTask<User> {
 
@@ -56,7 +55,6 @@ public class UnfollowTask extends TwitterTask<User> {
     @Override
     protected void onPostExecute(User user) {
         if (user != null) {
-            UserCache.getInstance().put(user);
             new Notificator(activity, R.string.notice_unfollow_succeeded).publish();
         } else {
             new Notificator(activity, R.string.notice_unfollow_failed, NotificationType.ALERT).publish();
@@ -66,7 +64,7 @@ public class UnfollowTask extends TwitterTask<User> {
     @Override
     protected User doInBackground(Void... params) {
         try {
-            return twitter.friendsFollowers().destroyFriendship(userID);
+            return User.fromTwitter(twitter.friendsFollowers().destroyFriendship(userID));
         } catch (TwitterException e) {
             e.printStackTrace();
             Logger.error(e.toString());

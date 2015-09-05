@@ -27,14 +27,19 @@ package net.lacolaco.smileessence.twitter.task;
 import android.app.Activity;
 
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.data.DirectMessageCache;
+import net.lacolaco.smileessence.entity.DirectMessage;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 
-import twitter4j.*;
+import twitter4j.Paging;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
 
-public class DirectMessagesTask extends TwitterTask<DirectMessage[]> {
+import java.util.Collections;
+import java.util.List;
+
+public class DirectMessagesTask extends TwitterTask<List<DirectMessage>> {
 
     // ------------------------------ FIELDS ------------------------------
 
@@ -42,10 +47,6 @@ public class DirectMessagesTask extends TwitterTask<DirectMessage[]> {
     private final Paging paging;
 
     // --------------------------- CONSTRUCTORS ---------------------------
-
-    protected DirectMessagesTask(Twitter twitter, Activity activity) {
-        this(twitter, activity, null);
-    }
 
     public DirectMessagesTask(Twitter twitter, Activity activity, Paging paging) {
         super(twitter);
@@ -56,23 +57,13 @@ public class DirectMessagesTask extends TwitterTask<DirectMessage[]> {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected void onPostExecute(DirectMessage[] directMessages) {
-        if (directMessages.length != 0) {
-            for (DirectMessage message : directMessages) {
-                DirectMessageCache.getInstance().put(message);
-            }
-        }
+    protected void onPostExecute(List<DirectMessage> directMessages) {
     }
 
     @Override
-    protected DirectMessage[] doInBackground(Void... params) {
-        ResponseList<DirectMessage> responseList;
+    protected List<DirectMessage> doInBackground(Void... params) {
         try {
-            if (paging == null) {
-                responseList = twitter.directMessages().getDirectMessages();
-            } else {
-                responseList = twitter.directMessages().getDirectMessages(paging);
-            }
+            return DirectMessage.fromTwitter(twitter.directMessages().getDirectMessages(paging));
         } catch (TwitterException e) {
             e.printStackTrace();
             Logger.error(e.toString());
@@ -81,8 +72,7 @@ public class DirectMessagesTask extends TwitterTask<DirectMessage[]> {
             } else {
                 Notificator.publish(activity, R.string.notice_error_get_messages, NotificationType.ALERT);
             }
-            return new DirectMessage[0];
+            return Collections.emptyList();
         }
-        return responseList.toArray(new DirectMessage[responseList.size()]);
     }
 }

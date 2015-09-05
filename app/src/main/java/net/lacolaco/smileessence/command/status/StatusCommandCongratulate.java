@@ -29,6 +29,7 @@ import android.app.Activity;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.command.IConfirmable;
 import net.lacolaco.smileessence.entity.Account;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.twitter.TweetBuilder;
 import net.lacolaco.smileessence.twitter.TwitterApi;
 import net.lacolaco.smileessence.twitter.task.FavoriteTask;
@@ -48,8 +49,8 @@ public class StatusCommandCongratulate extends StatusCommand implements IConfirm
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public StatusCommandCongratulate(Activity activity, Status status, Account account) {
-        super(R.id.key_command_status_congratulate, activity, status);
+    public StatusCommandCongratulate(Activity activity, Tweet tweet, Account account) {
+        super(R.id.key_command_status_congratulate, activity, tweet);
         this.account = account;
     }
 
@@ -68,7 +69,6 @@ public class StatusCommandCongratulate extends StatusCommand implements IConfirm
     // -------------------------- OTHER METHODS --------------------------
 
     public String build() {
-        Status status = getOriginalStatus();
         int favCount;
         Random rand = new Random();
         int r = rand.nextInt(100);
@@ -84,18 +84,17 @@ public class StatusCommandCongratulate extends StatusCommand implements IConfirm
             favCount = 10000;
         }
         return String.format("@%s Congrats on your %s ★ tweet! http://favstar.fm/t/%s",
-                status.getUser().getScreenName(), favCount, status.getId());
+                getOriginalStatus().getUser().getScreenName(), favCount, getOriginalStatus().getId());
     }
 
     @Override
     public boolean execute() {
-        Status status = getOriginalStatus();
         StatusUpdate update = new TweetBuilder().setText(build())
-                .setInReplyToStatusID(status.getId())
+                .setInReplyToStatusID(getOriginalStatus().getId())
                 .build();
         Twitter twitter = new TwitterApi(account).getTwitter();
         new TweetTask(twitter, update, getActivity()).execute();
-        new FavoriteTask(twitter, status.getId(), getActivity()).execute();
+        new FavoriteTask(twitter, getOriginalStatus().getId(), getActivity()).execute();
         return true;
     }
 }

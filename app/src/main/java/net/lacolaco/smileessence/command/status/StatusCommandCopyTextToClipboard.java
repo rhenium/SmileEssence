@@ -29,6 +29,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 
 import net.lacolaco.smileessence.R;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.notification.Notificator;
 
 import twitter4j.Status;
@@ -37,8 +38,8 @@ public class StatusCommandCopyTextToClipboard extends StatusCommand {
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public StatusCommandCopyTextToClipboard(Activity activity, Status status) {
-        super(R.id.key_command_status_copy_text_to_clipboard, activity, status);
+    public StatusCommandCopyTextToClipboard(Activity activity, Tweet tweet) {
+        super(R.id.key_command_status_copy_text_to_clipboard, activity, tweet);
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------

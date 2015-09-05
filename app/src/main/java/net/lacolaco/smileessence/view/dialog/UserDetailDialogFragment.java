@@ -49,6 +49,8 @@ import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.CommandOpenURL;
 import net.lacolaco.smileessence.data.ImageCache;
 import net.lacolaco.smileessence.entity.Account;
+import net.lacolaco.smileessence.entity.Tweet;
+import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.twitter.TwitterApi;
 import net.lacolaco.smileessence.twitter.task.FollowTask;
@@ -66,7 +68,8 @@ import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 import twitter4j.Paging;
 import twitter4j.Relationship;
 import twitter4j.Twitter;
-import twitter4j.User;
+
+import java.util.List;
 
 public class UserDetailDialogFragment extends StackableDialogFragment implements View.OnClickListener,
         PullToRefreshBase.OnRefreshListener2<ListView> {
@@ -122,7 +125,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
                         break;
                     }
                     case R.id.imageview_user_detail_icon: {
-                        openUrl(user.getBiggerProfileImageURLHttps());
+                        openUrl(user.getProfileImageUrlOriginal());
                         break;
                     }
                     case R.id.textview_user_detail_screenname: {
@@ -177,11 +180,10 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         }
         new UserTimelineTask(twitter, getUserID(), paging) {
             @Override
-            protected void onPostExecute(twitter4j.Status[] statuses) {
-                super.onPostExecute(statuses);
-                for (int i = statuses.length - 1; i >= 0; i--) {
-                    twitter4j.Status status = statuses[i];
-                    adapter.addToTop(new StatusViewModel(status, currentAccount));
+            protected void onPostExecute(List<Tweet> tweets) {
+                super.onPostExecute(tweets);
+                for (int i = tweets.size()- 1; i >= 0; i--) {
+                    adapter.addToTop(new StatusViewModel(tweets.get(i)));
                 }
                 updateListView(refreshView.getRefreshableView(), adapter, true);
                 refreshView.onRefreshComplete();
@@ -200,10 +202,10 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         }
         new UserTimelineTask(twitter, getUserID(), paging) {
             @Override
-            protected void onPostExecute(twitter4j.Status[] statuses) {
-                super.onPostExecute(statuses);
-                for (twitter4j.Status status : statuses) {
-                    adapter.addToBottom(new StatusViewModel(status, currentAccount));
+            protected void onPostExecute(List<Tweet> tweets) {
+                super.onPostExecute(tweets);
+                for (Tweet tweet : tweets) {
+                    adapter.addToBottom(new StatusViewModel(tweet));
                 }
                 updateListView(refreshView.getRefreshableView(), adapter, false);
                 refreshView.onRefreshComplete();
@@ -278,10 +280,10 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         Twitter twitter = TwitterApi.getTwitter(account);
         new UserTimelineTask(twitter, user.getId()) {
             @Override
-            protected void onPostExecute(twitter4j.Status[] statuses) {
-                super.onPostExecute(statuses);
-                for (twitter4j.Status status : statuses) {
-                    adapter.addToBottom(new StatusViewModel(status, account));
+            protected void onPostExecute(List<Tweet> tweets) {
+                super.onPostExecute(tweets);
+                for (Tweet tweet : tweets) {
+                    adapter.addToBottom(new StatusViewModel(tweet));
                 }
                 adapter.updateForce();
                 tabHost.getTabWidget().getChildTabViewAt(1).setVisibility(View.VISIBLE);
@@ -308,21 +310,21 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         } else {
             textViewLocate.setText(user.getLocation());
         }
-        if (TextUtils.isEmpty(user.getURL())) {
+        if (TextUtils.isEmpty(user.getUrl())) {
             textViewURL.setVisibility(View.GONE);
         } else {
-            textViewURL.setText(user.getURL());
+            textViewURL.setText(user.getUrl());
         }
         textViewTweetCount.setText(String.valueOf(user.getStatusesCount()));
         textViewFriendCount.setText(String.valueOf(user.getFriendsCount()));
         textViewFollowerCount.setText(String.valueOf(user.getFollowersCount()));
-        textViewFavoriteCount.setText(String.valueOf(user.getFavouritesCount()));
+        textViewFavoriteCount.setText(String.valueOf(user.getFavoritesCount()));
         textViewProtected.setVisibility(user.isProtected() ? View.VISIBLE : View.GONE);
         String htmlDescription = getHtmlDescription(user.getDescription());
         textViewDescription.setText(Html.fromHtml(htmlDescription));
         textViewDescription.setMovementMethod(LinkMovementMethod.getInstance());
-        ImageCache.getInstance().setImageToView(user.getBiggerProfileImageURL(), imageViewIcon);
-        ImageCache.getInstance().setImageToView(user.getProfileBannerURL(), imageViewHeader);
+        ImageCache.getInstance().setImageToView(user.getProfileImageUrlOriginal(), imageViewIcon);
+        ImageCache.getInstance().setImageToView(user.getProfileBannerUrl(), imageViewHeader);
         MainActivity activity = (MainActivity) getActivity();
         adapter = new StatusListAdapter(activity);
         listViewTimeline.setAdapter(adapter);

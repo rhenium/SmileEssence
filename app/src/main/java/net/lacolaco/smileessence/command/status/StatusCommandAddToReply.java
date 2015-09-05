@@ -27,6 +27,7 @@ package net.lacolaco.smileessence.command.status;
 import android.app.Activity;
 
 import net.lacolaco.smileessence.R;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.view.adapter.PostState;
 
@@ -36,8 +37,8 @@ public class StatusCommandAddToReply extends StatusCommand {
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public StatusCommandAddToReply(Activity activity, Status status) {
-        super(R.id.key_command_status_add_to_reply, activity, status);
+    public StatusCommandAddToReply(Activity activity, Tweet tweet) {
+        super(R.id.key_command_status_add_to_reply, activity, tweet);
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------

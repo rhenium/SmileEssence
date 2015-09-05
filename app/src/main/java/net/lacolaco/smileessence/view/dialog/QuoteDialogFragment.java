@@ -32,6 +32,7 @@ import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.status.StatusCommandTextQuote;
 import net.lacolaco.smileessence.command.status.StatusCommandURLQuote;
 import net.lacolaco.smileessence.entity.Account;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 
@@ -67,8 +68,8 @@ public class QuoteDialogFragment extends MenuDialogFragment {
 
         TwitterUtils.tryGetStatus(account, getStatusID(), new TwitterUtils.StatusCallback() {
             @Override
-            public void success(Status status) {
-                List<Command> commands = getCommands(activity, status);
+            public void success(Tweet tweet) {
+                List<Command> commands = getCommands(activity, tweet);
                 Command.filter(commands);
                 for (Command command : commands) {
                     adapter.addToBottom(command);
@@ -85,10 +86,10 @@ public class QuoteDialogFragment extends MenuDialogFragment {
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public List<Command> getCommands(Activity activity, Status status) {
+    public List<Command> getCommands(Activity activity, Tweet tweet) {
         ArrayList<Command> commands = new ArrayList<>();
-        commands.add(new StatusCommandTextQuote(activity, status));
-        commands.add(new StatusCommandURLQuote(activity, status));
+        commands.add(new StatusCommandTextQuote(activity, tweet));
+        commands.add(new StatusCommandURLQuote(activity, tweet));
         return commands;
     }
 }

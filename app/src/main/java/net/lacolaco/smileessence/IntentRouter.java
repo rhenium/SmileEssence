@@ -31,6 +31,7 @@ import android.text.TextUtils;
 
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.CommandOpenUserDetail;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
@@ -191,9 +192,9 @@ public class IntentRouter {
         if (id != -1) {
             TwitterUtils.tryGetStatus(activity.getCurrentAccount(), id, new TwitterUtils.StatusCallback() {
                 @Override
-                public void success(Status status) {
+                public void success(Tweet tweet) {
                     StatusDetailDialogFragment fragment = new StatusDetailDialogFragment();
-                    fragment.setStatusID(status.getId());
+                    fragment.setStatusID(tweet.getId());
                     DialogHelper.showDialog(activity, fragment);
                 }
 

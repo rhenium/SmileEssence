@@ -30,7 +30,7 @@ import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.command.CommandOpenURL;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 
-import twitter4j.User;
+import net.lacolaco.smileessence.entity.User;
 
 public class UserCommandOpenAclog extends UserCommand {
 

@@ -31,10 +31,10 @@ import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.util.TwitterMock;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 
-import twitter4j.DirectMessage;
+import net.lacolaco.smileessence.entity.DirectMessage;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
-import twitter4j.User;
+import net.lacolaco.smileessence.entity.User;
 
 public class UserStreamListenerTest extends ActivityInstrumentationTestCase2<MainActivity> {
 
