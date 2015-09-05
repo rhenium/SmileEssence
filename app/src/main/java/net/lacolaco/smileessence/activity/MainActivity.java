@@ -289,7 +289,7 @@ public class MainActivity extends Activity {
         } else {
             startOAuthActivity();
         }
-        Logger.debug("MainActivity:onCreate");
+        Logger.debug("onCreate");
     }
 
     @Override
@@ -304,7 +304,7 @@ public class MainActivity extends Activity {
         if (stream != null) {
             stream.shutdown();
         }
-        Logger.debug("MainActivity:onDestroy");
+        Logger.debug("onDestroy");
     }
 
     @Override
@@ -321,7 +321,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        Logger.debug("MainActivity:onPause");
+        Logger.debug("onPause");
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         Notificator.stopNotification();
     }
@@ -329,7 +329,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        Logger.debug("MainActivity:onResume");
+        Logger.debug("onResume");
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         Notificator.startNotification();
     }

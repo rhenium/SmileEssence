@@ -120,7 +120,7 @@ public class EditExtractionActivity extends Activity implements AdapterView.OnIt
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         initializeViews();
-        Logger.debug("EditExtractionWordActivity:onCreate");
+        Logger.debug("onCreate");
     }
 
     @Override

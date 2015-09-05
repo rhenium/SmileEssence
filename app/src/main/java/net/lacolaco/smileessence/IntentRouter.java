@@ -57,7 +57,7 @@ public class IntentRouter {
     // -------------------------- STATIC METHODS --------------------------
 
     public static void onNewIntent(MainActivity activity, Intent intent) {
-        Logger.debug("IntentRouter:onNewIntent");
+        Logger.debug("onNewIntent");
         Uri uri = intent.getData();
         if (uri != null) {
             onUriIntent(activity, uri);

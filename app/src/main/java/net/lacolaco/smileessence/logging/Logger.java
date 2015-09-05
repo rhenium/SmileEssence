@@ -35,22 +35,32 @@ public class Logger {
     // -------------------------- STATIC METHODS --------------------------
 
     public static void debug(Object message) {
-        Log.d(TAG, String.valueOf(message));
+        Log.d(getTag(), String.valueOf(message));
     }
 
     public static void info(Object message) {
-        Log.i(TAG, String.valueOf(message));
+        Log.i(getTag(), String.valueOf(message));
     }
 
     public static void error(Object message) {
-        Log.e(TAG, String.valueOf(message));
+        Log.e(getTag(), String.valueOf(message));
     }
 
     public static void warn(Object message) {
-        Log.w(TAG, String.valueOf(message));
+        Log.w(getTag(), String.valueOf(message));
     }
 
     public static void verbose(Object message) {
-        Log.v(TAG, String.valueOf(message));
+        Log.v(getTag(), String.valueOf(message));
+    }
+
+    private static String getTag() {
+        StackTraceElement[] st = Thread.currentThread().getStackTrace();
+        for (int i = 0; i < st.length; ++i) {
+            if (st[i].getMethodName().equals("getTag")) {
+                return st[i + 2].getClassName() + "." + st[i + 2].getMethodName();
+            }
+        }
+        return TAG;
     }
 }

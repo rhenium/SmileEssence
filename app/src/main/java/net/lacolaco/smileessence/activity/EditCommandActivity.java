@@ -94,7 +94,7 @@ public class EditCommandActivity extends Activity {
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         initializeViews();
-        Logger.debug("EditCommandActivity:onCreate");
+        Logger.debug("onCreate");
     }
 
     @Override

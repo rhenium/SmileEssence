@@ -120,7 +120,7 @@ public class EditTemplateActivity extends Activity implements AdapterView.OnItem
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         initializeViews();
-        Logger.debug("EditTemplateActivity:onCreate");
+        Logger.debug("onCreate");
     }
 
     @Override

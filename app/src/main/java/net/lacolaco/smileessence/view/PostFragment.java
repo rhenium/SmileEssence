@@ -128,7 +128,7 @@ public class PostFragment extends Fragment implements TextWatcher, View.OnFocusC
 
     @Override
     public void onPostStateChange(final PostState postState) {
-        Logger.debug("PostFragment PostStateChange");
+        Logger.debug("onPostStateChange");
         final MainActivity activity = (MainActivity) getActivity();
         if (editText != null) {
             final int start = postState.getSelectionStart();
@@ -218,7 +218,7 @@ public class PostFragment extends Fragment implements TextWatcher, View.OnFocusC
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Logger.debug("PostFragment Create");
+        Logger.debug("onCreate");
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
@@ -231,7 +231,7 @@ public class PostFragment extends Fragment implements TextWatcher, View.OnFocusC
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Logger.debug("PostFragment CreateView");
+        Logger.debug("onCreateView");
         MainActivity activity = (MainActivity) getActivity();
         PostState.getState().setListener(this);
         UserPreferenceHelper preferenceHelper = new UserPreferenceHelper(activity);
@@ -273,7 +273,7 @@ public class PostFragment extends Fragment implements TextWatcher, View.OnFocusC
 
     @Override
     public void onDestroyView() {
-        Logger.debug("PostFragment DestroyView");
+        Logger.debug("onDestroyView");
         super.onDestroyView();
         setStateFromView();
         PostState.getState().removeListener();
@@ -281,7 +281,7 @@ public class PostFragment extends Fragment implements TextWatcher, View.OnFocusC
 
     @Override
     public void onViewStateRestored(Bundle savedInstanceState) {
-        Logger.debug("PostFragment ViewStateRestored");
+        Logger.debug("onViewStateRestored");
         super.onViewStateRestored(savedInstanceState);
         PostState state = PostState.getState();
         onPostStateChange(state);

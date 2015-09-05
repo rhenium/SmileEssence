@@ -30,6 +30,7 @@ import net.lacolaco.smileessence.data.*;
 import net.lacolaco.smileessence.entity.DirectMessage;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.entity.User;
+import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 import net.lacolaco.smileessence.view.adapter.EventListAdapter;
@@ -134,7 +135,7 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
 
     @Override
     public void onException(Exception ex) {
-        net.lacolaco.smileessence.logging.Logger.error(ex.toString());
+        Logger.error(ex.toString());
     }
 
     // --------------------- Interface UserStreamListener ---------------------
