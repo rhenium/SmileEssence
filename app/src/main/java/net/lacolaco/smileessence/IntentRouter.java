@@ -40,8 +40,7 @@ import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.view.adapter.PostState;
 import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.dialog.StatusDetailDialogFragment;
-
-import twitter4j.Status;
+import org.w3c.dom.Text;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -51,6 +50,9 @@ public class IntentRouter {
     // ------------------------------ FIELDS ------------------------------
 
     public static final String TWITTER_HOST = "twitter.com";
+    private static final Pattern TWITTER_STATUS_PATTERN = Pattern.compile("\\A/(?:#!)/?(?:\\w{1,15})/status(es)?/(\\d+)\\z", Pattern.CASE_INSENSITIVE);
+    private static final Pattern TWITTER_USER_PATTERN = Pattern.compile("\\A/(?:#!/)?(\\w{1,15})/?\\z", Pattern.CASE_INSENSITIVE);
+    private static final Pattern TWITTER_POST_PATTERN = Pattern.compile("\\A/(intent/tweet|share)\\z", Pattern.CASE_INSENSITIVE);
 
     // -------------------------- STATIC METHODS --------------------------
 
@@ -68,12 +70,9 @@ public class IntentRouter {
                             String text = getText(extra);
                             openPostPage(activity, text);
                         }
-                    } else {
-                        Matcher matcher = Pattern.compile("image/.+").matcher(intent.getType());
-                        if (matcher.find()) {
-                            Uri imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-                            openPostPageWithImage(activity, imageUri);
-                        }
+                    } else if (intent.getType().startsWith("image/")) {
+                        Uri imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                        openPostPageWithImage(activity, imageUri);
                     }
                     break;
                 }
@@ -83,15 +82,23 @@ public class IntentRouter {
 
     private static void onUriIntent(MainActivity activity, Uri uri) {
         Logger.debug(uri.toString());
-        if (isPostIntent(uri)) {
-            String str = getText(uri);
-            openPostPage(activity, str);
-        } else if (isStatusIntent(uri)) {
-            long id = getStatusID(uri);
-            showStatusDialog(activity, id);
-        } else if (isUserIntent(uri)) {
-            String screenName = getScreenName(uri);
-            showUserDialog(activity, screenName);
+
+        if (uri.getHost().equals(TWITTER_HOST)) {
+            Matcher postMatcher = TWITTER_POST_PATTERN.matcher(uri.getPath()); // /share and /intent/tweet: don't accept status parameter
+            if (postMatcher.find()) {
+                openPostPage(activity, extractText(uri));
+                return;
+            }
+            Matcher statusMatcher = TWITTER_STATUS_PATTERN.matcher(uri.getPath());
+            if (statusMatcher.find()) {
+                showStatusDialog(activity, Long.getLong(statusMatcher.group(0)));
+                return;
+            }
+            Matcher userMatcher = TWITTER_USER_PATTERN.matcher(uri.getPath());
+            if (userMatcher.find()) {
+                showUserDialog(activity, statusMatcher.group(0));
+                return;
+            }
         }
     }
 
@@ -104,107 +111,35 @@ public class IntentRouter {
         return builder.toString();
     }
 
-    private static String getText(Uri uri) {
+    private static String extractText(Uri uri) {
         String result = "";
-        if (!TextUtils.isEmpty(uri.getQueryParameter("text"))) {
-            result += uri.getQueryParameter("text").replaceAll("\\+", " ");
-        } else if (!TextUtils.isEmpty(uri.getQueryParameter("status"))) {
-            result += uri.getQueryParameter("status").replaceAll("\\+", " ");
-        }
-        if (!TextUtils.isEmpty(uri.getQueryParameter("url"))) {
-            result += " " + uri.getQueryParameter("url");
-        }
+        String text = uri.getQueryParameter("text");
+        String url = uri.getQueryParameter("url");
+        String via = uri.getQueryParameter("via");
+        String hashtags = uri.getQueryParameter("hashtags");
+
+        if (!TextUtils.isEmpty(text)) result += text;
+        if (!TextUtils.isEmpty(url)) result += " " + url;
+        if (!TextUtils.isEmpty(hashtags)) result += " " + hashtags.trim().replaceAll(",", " #");
+        if (!TextUtils.isEmpty(via)) result += " via @" + via;
 
         return result;
     }
 
-    private static String getScreenName(Uri uri) {
-        String screenName;
-        if (uri.getQueryParameter("screen_name") != null) {
-            screenName = uri.getQueryParameter("screen_name");
-        } else {
-            String[] arrayOfString = uri.toString().split("/");
-            screenName = arrayOfString[arrayOfString.length - 1];
-        }
-        return screenName;
-    }
-
-    private static long getStatusID(Uri uri) {
-        String str = "-1";
-        String[] arrayOfString = uri.getPath().toString().split("/");
-        for (int i = 0; i < arrayOfString.length; i++) {
-            if (arrayOfString[i].startsWith("status")) {
-                str = arrayOfString[(i + 1)];
-                break;
-            }
-        }
-        return Long.parseLong(str);
-    }
-
-    private static boolean isPostIntent(Uri uri) {
-        if (uri.getHost().equals(TWITTER_HOST)) {
-            if (uri.getPath().equals("/share")) {
-                return true;
-            } else {
-                String[] arr = uri.toString().split("/");
-                for (String s : arr) {
-                    if (s.startsWith("tweet") || s.startsWith("home")) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    private static boolean isStatusIntent(Uri uri) {
-        if (uri.getHost().equals(TWITTER_HOST)) {
-            String[] arr = uri.toString().split("/");
-            for (String s : arr) {
-                if (s.equals("status") || s.equals("statuses")) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private static boolean isUserIntent(Uri uri) {
-        if (uri.getHost().equals(TWITTER_HOST)) {
-            if (uri.getQueryParameter("screen_name") != null) {
-                return true;
-            }
-
-            String[] arrayOfString = uri.toString().split("/");
-            if (arrayOfString.length == 4 && uri.getQuery() == null) {
-                return true;
-            } else if (arrayOfString.length > 4) {
-                if (arrayOfString[3].equals("#!") && uri.getQuery() == null) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     private static void showStatusDialog(final MainActivity activity, long id) {
-        if (id != -1) {
-            TwitterUtils.tryGetStatus(activity.getCurrentAccount(), id, new TwitterUtils.StatusCallback() {
-                @Override
-                public void success(Tweet tweet) {
-                    StatusDetailDialogFragment fragment = new StatusDetailDialogFragment();
-                    fragment.setStatusID(tweet.getId());
-                    DialogHelper.showDialog(activity, fragment);
-                }
+        TwitterUtils.tryGetStatus(activity.getCurrentAccount(), id, new TwitterUtils.StatusCallback() {
+            @Override
+            public void success(Tweet tweet) {
+                StatusDetailDialogFragment fragment = new StatusDetailDialogFragment();
+                fragment.setStatusID(tweet.getId());
+                DialogHelper.showDialog(activity, fragment);
+            }
 
-                @Override
-                public void error() {
-                    Notificator.publish(activity, R.string.error_intent_status_cannot_load, NotificationType.ALERT);
-                }
-            });
-        } else {
-            Notificator.publish(activity, R.string.error_intent_status_cannot_load, NotificationType.ALERT);
-        }
+            @Override
+            public void error() {
+                Notificator.publish(activity, R.string.error_intent_status_cannot_load, NotificationType.ALERT);
+            }
+        });
     }
 
     private static void showUserDialog(MainActivity activity, String screenName) {
