@@ -81,30 +81,6 @@ public class IntentRouter {
         }
     }
 
-    private static String getText(Bundle extra) {
-        StringBuilder builder = new StringBuilder();
-        if (!TextUtils.isEmpty(extra.getCharSequence(Intent.EXTRA_SUBJECT))) {
-            builder.append(extra.getCharSequence(Intent.EXTRA_SUBJECT)).append(" ");
-        }
-        builder.append(extra.getCharSequence(Intent.EXTRA_TEXT));
-        return builder.toString();
-    }
-
-    private static String getText(Uri uri) {
-        String text = "";
-        String url = "";
-        if (uri.getQueryParameter("text") != null) {
-            text = uri.getQueryParameter("text").replaceAll("\\+", " ");
-        } else if (uri.getQueryParameter("status") != null) {
-            text = uri.getQueryParameter("status").replaceAll("\\+", " ");
-        }
-
-        if (uri.getQueryParameter("url") != null) {
-            url = uri.getQueryParameter("url");
-        }
-        return text + " " + url;
-    }
-
     private static void onUriIntent(MainActivity activity, Uri uri) {
         Logger.debug(uri.toString());
         if (isPostIntent(uri)) {
@@ -117,6 +93,29 @@ public class IntentRouter {
             String screenName = getScreenName(uri);
             showUserDialog(activity, screenName);
         }
+    }
+
+    private static String getText(Bundle extra) {
+        StringBuilder builder = new StringBuilder();
+        if (!TextUtils.isEmpty(extra.getCharSequence(Intent.EXTRA_SUBJECT))) {
+            builder.append(extra.getCharSequence(Intent.EXTRA_SUBJECT)).append(" ");
+        }
+        builder.append(extra.getCharSequence(Intent.EXTRA_TEXT));
+        return builder.toString();
+    }
+
+    private static String getText(Uri uri) {
+        String result = "";
+        if (!TextUtils.isEmpty(uri.getQueryParameter("text"))) {
+            result += uri.getQueryParameter("text").replaceAll("\\+", " ");
+        } else if (!TextUtils.isEmpty(uri.getQueryParameter("status"))) {
+            result += uri.getQueryParameter("status").replaceAll("\\+", " ");
+        }
+        if (!TextUtils.isEmpty(uri.getQueryParameter("url"))) {
+            result += " " + uri.getQueryParameter("url");
+        }
+
+        return result;
     }
 
     private static String getScreenName(Uri uri) {
