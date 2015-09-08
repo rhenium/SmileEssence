@@ -50,8 +50,8 @@ public class IntentRouter {
     // ------------------------------ FIELDS ------------------------------
 
     public static final String TWITTER_HOST = "twitter.com";
-    private static final Pattern TWITTER_STATUS_PATTERN = Pattern.compile("\\A/(?:#!/)?(?:\\w{1,15})/status(es)?/(\\d+)\\z", Pattern.CASE_INSENSITIVE);
-    private static final Pattern TWITTER_USER_PATTERN = Pattern.compile("\\A/(?:#!/)?(\\w{1,15})/?\\z", Pattern.CASE_INSENSITIVE);
+    private static final Pattern TWITTER_STATUS_PATTERN = Pattern.compile("\\A(?:/#!)?/(?:\\w{1,15})/status(?:es)?/(\\d+)\\z", Pattern.CASE_INSENSITIVE);
+    private static final Pattern TWITTER_USER_PATTERN = Pattern.compile("\\A(?:/#!)?/(\\w{1,15})/?\\z", Pattern.CASE_INSENSITIVE);
     private static final Pattern TWITTER_POST_PATTERN = Pattern.compile("\\A/(intent/tweet|share)\\z", Pattern.CASE_INSENSITIVE);
 
     // -------------------------- STATIC METHODS --------------------------

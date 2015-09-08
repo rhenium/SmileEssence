@@ -41,7 +41,7 @@ import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 
-public abstract class CustomListFragment extends Fragment implements AbsListView.OnScrollListener,
+public abstract class CustomListFragment extends PageFragment implements AbsListView.OnScrollListener,
         PullToRefreshBase.OnRefreshListener2<ListView> {
 
     // ------------------------------ FIELDS ------------------------------

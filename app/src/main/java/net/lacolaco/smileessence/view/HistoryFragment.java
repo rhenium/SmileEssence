@@ -27,12 +27,18 @@ package net.lacolaco.smileessence.view;
 import android.widget.ListView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 
 /**
  * Fragment for notice history
  */
 public class HistoryFragment extends CustomListFragment {
+
+    @Override
+    public String getName() {
+        return getString(R.string.page_name_history);
+    }
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 

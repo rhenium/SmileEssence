@@ -62,8 +62,12 @@ import twitter4j.StatusUpdate;
 
 import java.io.File;
 
-public class PostFragment extends Fragment implements TextWatcher, View.OnFocusChangeListener, View.OnClickListener,
+public class PostFragment extends PageFragment implements TextWatcher, View.OnFocusChangeListener, View.OnClickListener,
         PostState.OnPostStateChangeListener {
+    @Override
+    public String getName() {
+        return getString(R.string.page_name_post);
+    }
 
     // ------------------------------ FIELDS ------------------------------
 

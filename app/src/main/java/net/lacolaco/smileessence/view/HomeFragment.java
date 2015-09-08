@@ -28,6 +28,7 @@ import android.widget.ListView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 
+import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
@@ -46,6 +47,10 @@ import java.util.List;
 import java.util.ListIterator;
 
 public class HomeFragment extends CustomListFragment {
+    @Override
+    public String getName() {
+        return getString(R.string.page_name_home);
+    }
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 

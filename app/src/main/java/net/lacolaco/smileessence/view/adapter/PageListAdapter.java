@@ -27,35 +27,36 @@ package net.lacolaco.smileessence.view.adapter;
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.os.Bundle;
-import android.support.v13.app.FragmentStatePagerAdapter;
+import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.widget.ArrayAdapter;
 
+import android.widget.ArrayAdapter;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.logging.Logger;
+import net.lacolaco.smileessence.view.PageFragment;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class PageListAdapter extends FragmentStatePagerAdapter implements ViewPager.OnPageChangeListener,
-        ActionBar.OnNavigationListener {
+public class PageListAdapter extends FragmentPagerAdapter implements ViewPager.OnPageChangeListener, ActionBar.OnNavigationListener {
 
     // ------------------------------ FIELDS ------------------------------
 
     private final MainActivity context;
     private final ActionBar actionBar;
     private final ViewPager viewPager;
-    private final ArrayList<PageInfo> pages = new ArrayList<>();
+    private final List<PageInfo> pages = new ArrayList<>();
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public PageListAdapter(MainActivity activity, ViewPager viewPager) {
-        super(activity.getFragmentManager());
-        this.context = activity;
-        this.actionBar = activity.getActionBar();
-        this.viewPager = viewPager;
+    public PageListAdapter(MainActivity _activity, ViewPager _viewPager) {
+        super(_activity.getFragmentManager());
+        context = _activity;
+        actionBar = _activity.getActionBar();
+        viewPager = _viewPager;
         viewPager.setAdapter(this);
-        viewPager.setOnPageChangeListener(this);
+        viewPager.addOnPageChangeListener(this);
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------
@@ -95,87 +96,51 @@ public class PageListAdapter extends FragmentStatePagerAdapter implements ViewPa
 
     // -------------------------- OTHER METHODS --------------------------
 
-    /**
-     * Add new tab and new page
-     *
-     * @param name Page name
-     * @param clss Fragment class
-     * @param args Bundle for Fragment instantiate
-     * @return True if adding is complete successfully
-     */
-    public synchronized boolean addPage(String name, Class<? extends Fragment> clss, Bundle args) {
-        if (addPageWithoutNotify(name, clss, args)) {
-            refreshListNavigation();
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Add new tab and new page without notify.
-     * You must call notifyDataSetChanged after adding tab.
-     *
-     * @param name Page name
-     * @param clss Fragment class
-     * @param args Bundle for Fragment instantiate
-     * @return True if adding is complete successfully
-     */
-    public synchronized boolean addPageWithoutNotify(String name, Class<? extends Fragment> clss, Bundle args) {
-        PageInfo info = new PageInfo(name, clss, args);
-        return pages.add(info);
-    }
-
     @Override
     public synchronized Fragment getItem(int position) {
         PageInfo info = pages.get(position);
-        return Fragment.instantiate(context, info.fragmentClass.getName(), info.args);
+        return Fragment.instantiate(context, info.getFragmentClass().getName(), info.getArgs());
     }
 
-    public synchronized PageInfo getPage(int position) {
-        return pages.get(position);
+    public void addPage(Class<? extends PageFragment> klass, Bundle args) {
+        this.addPage(klass, args, true);
     }
 
-    public synchronized void refreshListNavigation() {
-        ArrayList<String> itemList = new ArrayList<>();
-        for (PageInfo page : pages) {
-            itemList.add(page.name);
-        }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(context, R.layout.navigation_list_item, R.id.navigation_list_item_text, itemList);
-        actionBar.setListNavigationCallbacks(adapter, this);
-        notifyDataSetChanged();
+    public void addPage(Class<? extends PageFragment> klass, Bundle args, boolean notifyChanged) {
+        PageInfo info = new PageInfo(klass, args);
+        pages.add(info);
+        if (notifyChanged) notifyDataSetChanged();
     }
 
     public synchronized boolean removePage(int position) {
-        if (removePageWithoutNotify(position)) {
-            refreshListNavigation();
-            return true;
+        //if (removePageWithoutNotify(position)) {
+        //    refreshListNavigation();
+        //    return true;
+        //}
+        return pages.remove(position) != null; // TODO
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        ArrayList<String> itemList = new ArrayList<>();
+        for (PageInfo f : pages) {
+            itemList.add(f.getFragmentClass().getName()); //TODO
         }
-        return false;
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(context, R.layout.navigation_list_item, R.id.navigation_list_item_text, itemList);
+        actionBar.setListNavigationCallbacks(adapter, this);
+        super.notifyDataSetChanged();
     }
 
-    private synchronized boolean removePageWithoutNotify(int position) {
-        return pages.remove(position) != null;
-    }
-
-    // -------------------------- INNER CLASSES --------------------------
-
-    public static final class PageInfo {
-
-        private final String name;
-        private final Class<? extends Fragment> fragmentClass;
+    private static final class PageInfo {
+        private final Class<? extends PageFragment> fragmentClass;
         private final Bundle args;
 
-        PageInfo(String name, Class<? extends Fragment> clss, Bundle args) {
-            this.name = name;
-            this.fragmentClass = clss;
-            this.args = args;
+        PageInfo(Class<? extends PageFragment> _fragmentClass, Bundle _args) {
+            fragmentClass = _fragmentClass;
+            args = _args;
         }
 
-        public String getName() {
-            return name;
-        }
-
-        public Class<? extends Fragment> getFragmentClass() {
+        public Class<? extends PageFragment> getFragmentClass() {
             return fragmentClass;
         }
 

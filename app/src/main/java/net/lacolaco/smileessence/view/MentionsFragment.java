@@ -28,6 +28,7 @@ import android.widget.ListView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 
+import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
@@ -43,6 +44,10 @@ import twitter4j.Twitter;
 import java.util.List;
 
 public class MentionsFragment extends CustomListFragment {
+    @Override
+    public String getName() {
+        return getString(R.string.page_name_mentions);
+    }
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 

@@ -28,6 +28,7 @@ import android.widget.ListView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 
+import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.twitter.TwitterApi;
@@ -46,6 +47,10 @@ import java.util.List;
  * Fragment of messages list
  */
 public class MessagesFragment extends CustomListFragment {
+    @Override
+    public String getName() {
+        return getString(R.string.page_name_messages);
+    }
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 
