@@ -381,6 +381,6 @@ public class PostFragment extends PageFragment implements TextWatcher, View.OnFo
         TweetTask tweetTask = new TweetTask(TwitterApi.getTwitter(mainActivity.getCurrentAccount()), statusUpdate, state.getMediaFilePath(), resizeFlag);
         tweetTask.execute();
         PostState.newState().beginTransaction().commit();
-        mainActivity.setSelectedPageIndex(mainActivity.getPageIndexHome());
+        mainActivity.openHomePage();
     }
 }

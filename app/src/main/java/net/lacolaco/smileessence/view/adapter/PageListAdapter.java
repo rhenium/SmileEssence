@@ -34,6 +34,7 @@ import android.widget.ArrayAdapter;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.logging.Logger;
+import net.lacolaco.smileessence.view.HomeFragment;
 import net.lacolaco.smileessence.view.PageFragment;
 
 import java.lang.reflect.InvocationTargetException;
@@ -130,6 +131,16 @@ public class PageListAdapter extends FragmentPagerAdapter implements ViewPager.O
         ArrayAdapter<String> adapter = new ArrayAdapter<>(context, R.layout.navigation_list_item, R.id.navigation_list_item_text, itemList);
         actionBar.setListNavigationCallbacks(adapter, this);
         super.notifyDataSetChanged();
+    }
+
+    @Deprecated
+    public int getIndex(Class<? extends PageFragment> fragmentClass) {
+        for (int i = 0; i < pages.size(); ++i) {
+            if (pages.get(i).getFragmentClass() == fragmentClass) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private static final class PageInfo {

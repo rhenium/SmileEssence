@@ -51,7 +51,7 @@ public class CommandSearchOnTwitter extends Command {
 
     @Override
     public boolean isEnabled() {
-        return ((MainActivity) getActivity()).getPageIndexSearch() != MainActivity.PAGE_INDEX_GONE;
+        return ((MainActivity) getActivity()).getUserPreferenceHelper().getValue(R.string.key_page_search_visibility, true);
     }
 
     // -------------------------- OTHER METHODS --------------------------

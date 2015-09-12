@@ -26,6 +26,7 @@ package net.lacolaco.smileessence.command;
 
 import android.app.Activity;
 
+import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.SearchQuery;
 
@@ -55,8 +56,7 @@ public class CommandOpenSearch extends Command {
 
     @Override
     public boolean isEnabled() {
-        MainActivity activity = (MainActivity) getActivity();
-        return activity.getPageIndexSearch() != MainActivity.PAGE_INDEX_GONE;
+        return ((MainActivity) getActivity()).getUserPreferenceHelper().getValue(R.string.key_page_search_visibility, true);
     }
 
     // -------------------------- OTHER METHODS --------------------------

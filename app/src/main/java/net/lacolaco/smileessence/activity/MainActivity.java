@@ -91,14 +91,6 @@ public class MainActivity extends Activity {
     private static final String KEY_LAST_USED_SEARCH_QUERY = "lastUsedSearchQuery";
     private static final String KEY_LAST_USED_ACCOUNT_ID = "lastUsedAccountID";
     private static final String KEY_LAST_USER_LIST = "lastUsedUserList";
-    public static final int PAGE_INDEX_GONE = -1;
-    private int pageIndexPost;
-    private int pageIndexHome;
-    private int pageIndexMentions;
-    private int pageIndexHistory;
-    private int pageIndexMessages;
-    private int pageIndexSearch;
-    private int pageIndexUserList;
     private ViewPager viewPager;
     private PageListAdapter pagerAdapter;
     private Account currentAccount;
@@ -156,30 +148,6 @@ public class MainActivity extends Activity {
 
     public Collection<CustomListAdapter<?>> getListAdapters() {
         return adapterMap.values();
-    }
-
-    public int getPageIndexHome() {
-        return pageIndexHome;
-    }
-
-    public int getPageIndexMentions() {
-        return pageIndexMentions;
-    }
-
-    public int getPageIndexHistory() {
-        return pageIndexHistory;
-    }
-
-    public int getPageIndexMessages() {
-        return pageIndexMessages;
-    }
-
-    public int getPageIndexSearch() {
-        return pageIndexSearch;
-    }
-
-    public int getPageIndexUserList() {
-        return pageIndexUserList;
     }
 
     public int getThemeIndex() {
@@ -243,8 +211,11 @@ public class MainActivity extends Activity {
     public void finish() {
         if (viewPager == null) {
             forceFinish();
-        } else if (viewPager.getCurrentItem() != getPageIndexHome()) {
-            viewPager.setCurrentItem(getPageIndexHome(), true);
+            return;
+        }
+        int homeIndex = pagerAdapter.getIndex(HomeFragment.class);
+        if (viewPager.getCurrentItem() != homeIndex) {
+            viewPager.setCurrentItem(homeIndex, true);
         } else {
             ConfirmDialogFragment.show(this, getString(R.string.dialog_confirm_finish_app), new Runnable() {
 
@@ -332,20 +303,18 @@ public class MainActivity extends Activity {
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public int addListPage(Class<? extends CustomListFragment> fragmentClass, String name, CustomListAdapter<?> adapter, AdapterID adapterId, boolean visible) {
+    @Deprecated // visible is 何
+    public void addListPage(Class<? extends CustomListFragment> fragmentClass, String name, CustomListAdapter<?> adapter, AdapterID adapterId, boolean visible) {
         if (visible) {
             Bundle args = new Bundle();
             adapterMap.put(adapterId, adapter);
-            return addPage(fragmentClass, name, args, false);
-        } else {
-            return PAGE_INDEX_GONE;
+            addPage(fragmentClass, name, args, false);
         }
     }
 
     @Deprecated
-    public int addPage(Class<? extends PageFragment> fragmentClass, String name, Bundle args, boolean withNotify) {
+    public void addPage(Class<? extends PageFragment> fragmentClass, String name, Bundle args, boolean withNotify) {
         pagerAdapter.addPage(fragmentClass, name, args, withNotify);
-        return pagerAdapter.getCount() - 1;
     }
 
     public void forceFinish() {
@@ -356,8 +325,12 @@ public class MainActivity extends Activity {
         return adapterMap.get(adapterId);
     }
 
+    public void openHomePage() {
+        setSelectedPageIndex(pagerAdapter.getIndex(HomeFragment.class));
+    }
+
     public void openPostPage() {
-        setSelectedPageIndex(pageIndexPost);
+        setSelectedPageIndex(pagerAdapter.getIndex(PostFragment.class));
     }
 
     public void openPostPageWithImage(Uri uri) {
@@ -380,7 +353,7 @@ public class MainActivity extends Activity {
      * Open search page
      */
     public void openSearchPage() {
-        setSelectedPageIndex(pageIndexSearch);
+        setSelectedPageIndex(pagerAdapter.getIndex(SearchFragment.class));
     }
 
     /**
@@ -499,41 +472,41 @@ public class MainActivity extends Activity {
     }
 
     private void addPostPage() {
-        pageIndexPost = addPage(PostFragment.class, getString(R.string.page_name_post), null, true);
+        addPage(PostFragment.class, getString(R.string.page_name_post), null, true);
     }
 
     private void addHomePage() {
         StatusListAdapter homeAdapter = new StatusListAdapter(this);
-        pageIndexHome = addListPage( HomeFragment.class, getString(R.string.page_name_home), homeAdapter, AdapterID.Home, true);
+        addListPage( HomeFragment.class, getString(R.string.page_name_home), homeAdapter, AdapterID.Home, true);
     }
 
     private void addMentionsPage() {
         StatusListAdapter mentionsAdapter = new StatusListAdapter(this);
-        pageIndexMentions = addListPage(MentionsFragment.class, getString(R.string.page_name_mentions), mentionsAdapter, AdapterID.Mentions, true);
+        addListPage(MentionsFragment.class, getString(R.string.page_name_mentions), mentionsAdapter, AdapterID.Mentions, true);
     }
 
     private void addHistoryPage() {
         boolean visible = getUserPreferenceHelper().getValue(R.string.key_page_history_visibility, true);
         EventListAdapter historyAdapter = new EventListAdapter(this);
-        pageIndexHistory = addListPage(HistoryFragment.class, getString(R.string.page_name_history), historyAdapter, AdapterID.History, visible);
+        addListPage(HistoryFragment.class, getString(R.string.page_name_history), historyAdapter, AdapterID.History, visible);
     }
 
     private void addMessagesPage() {
         boolean visible = getUserPreferenceHelper().getValue(R.string.key_page_messages_visibility, true);
         MessageListAdapter messagesAdapter = new MessageListAdapter(this);
-        pageIndexMessages = addListPage(MessagesFragment.class, getString(R.string.page_name_messages), messagesAdapter, AdapterID.Messages, visible);
+        addListPage(MessagesFragment.class, getString(R.string.page_name_messages), messagesAdapter, AdapterID.Messages, visible);
     }
 
     private void addSearchPage() {
         boolean visible = getUserPreferenceHelper().getValue(R.string.key_page_search_visibility, true);
         SearchListAdapter searchAdapter = new SearchListAdapter(this);
-        pageIndexSearch = addListPage(SearchFragment.class, getString(R.string.page_name_search), searchAdapter, AdapterID.Search, visible);
+        addListPage(SearchFragment.class, getString(R.string.page_name_search), searchAdapter, AdapterID.Search, visible);
     }
 
     private void addUserListPage() {
         boolean visible = getUserPreferenceHelper().getValue(R.string.key_page_list_visibility, true);
         UserListListAdapter userListAdapter = new UserListListAdapter(this);
-        pageIndexUserList = addListPage(UserListFragment.class, getString(R.string.page_name_list), userListAdapter, AdapterID.UserList, visible);
+        addListPage(UserListFragment.class, getString(R.string.page_name_list), userListAdapter, AdapterID.UserList, visible);
     }
 
     private void getImageUri(int requestCode, int resultCode, Intent data) {
@@ -588,7 +561,7 @@ public class MainActivity extends Activity {
     }
 
     private void initMessages(final Twitter twitter, final Paging paging) {
-        if (pageIndexMessages == PAGE_INDEX_GONE) {
+        if (pagerAdapter.getIndex(MessagesFragment.class) == -1) {
             return;
         }
         new DirectMessagesTask(twitter, paging) {
@@ -620,7 +593,7 @@ public class MainActivity extends Activity {
     }
 
     private void initSearch(Twitter twitter) {
-        if (pageIndexSearch == PAGE_INDEX_GONE) {
+        if (pagerAdapter.getIndex(SearchFragment.class) == -1) {
             return;
         }
         String lastUsedSearchQuery = getLastSearch();
@@ -630,7 +603,7 @@ public class MainActivity extends Activity {
     }
 
     private void initUserList(Twitter twitter) {
-        if (pageIndexUserList == PAGE_INDEX_GONE) {
+        if (pagerAdapter.getIndex(UserListFragment.class) == -1) {
             return;
         }
         String lastUserList = getLastUserList();
@@ -655,7 +628,7 @@ public class MainActivity extends Activity {
         pagerAdapter.notifyDataSetChanged();
         viewPager.setOffscreenPageLimit(pagerAdapter.getCount());
         initPostState();
-        setSelectedPageIndex(pageIndexHome, false);
+        setSelectedPageIndex(pagerAdapter.getIndex(HomeFragment.class), false);
     }
 
     public void initializeView() {
@@ -669,7 +642,7 @@ public class MainActivity extends Activity {
     }
 
     private void openUserListPage() {
-        setSelectedPageIndex(pageIndexUserList);
+        setSelectedPageIndex(pagerAdapter.getIndex(UserListFragment.class));
     }
 
     private void receiveOAuth(int requestCode, int resultCode, Intent data) {
