@@ -62,11 +62,6 @@ import java.io.File;
 
 public class PostFragment extends PageFragment implements TextWatcher, View.OnFocusChangeListener, View.OnClickListener,
         PostState.OnPostStateChangeListener {
-    @Override
-    public String getName() {
-        return getString(R.string.page_name_post);
-    }
-
     // ------------------------------ FIELDS ------------------------------
 
     private EditText editText;

@@ -47,10 +47,6 @@ import java.util.List;
 import java.util.ListIterator;
 
 public class HomeFragment extends CustomListFragment {
-    @Override
-    public String getName() {
-        return getString(R.string.page_name_home);
-    }
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 

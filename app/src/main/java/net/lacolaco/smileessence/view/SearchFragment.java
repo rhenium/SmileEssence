@@ -66,10 +66,6 @@ import java.util.List;
 
 public class SearchFragment extends CustomListFragment implements View.OnClickListener, View.OnFocusChangeListener,
         SearchListAdapter.OnQueryChangeListener {
-    @Override
-    public String getName() {
-        return getString(R.string.page_name_search);
-    }
 
     // ------------------------------ FIELDS ------------------------------
 

@@ -36,6 +36,8 @@ import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.view.PageFragment;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,13 +104,12 @@ public class PageListAdapter extends FragmentPagerAdapter implements ViewPager.O
         return Fragment.instantiate(context, info.getFragmentClass().getName(), info.getArgs());
     }
 
-    public void addPage(Class<? extends PageFragment> klass, Bundle args) {
-        this.addPage(klass, args, true);
+    public void addPage(Class<? extends PageFragment> klass, String name, Bundle args) {
+        this.addPage(klass, name, args, true);
     }
 
-    public void addPage(Class<? extends PageFragment> klass, Bundle args, boolean notifyChanged) {
-        PageInfo info = new PageInfo(klass, args);
-        pages.add(info);
+    public void addPage(Class<? extends PageFragment> klass, String name, Bundle args, boolean notifyChanged) {
+        pages.add(new PageInfo(klass, name, args));
         if (notifyChanged) notifyDataSetChanged();
     }
 
@@ -124,7 +125,7 @@ public class PageListAdapter extends FragmentPagerAdapter implements ViewPager.O
     public void notifyDataSetChanged() {
         ArrayList<String> itemList = new ArrayList<>();
         for (PageInfo f : pages) {
-            itemList.add(f.getFragmentClass().getName()); //TODO
+            itemList.add(f.getName());
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(context, R.layout.navigation_list_item, R.id.navigation_list_item_text, itemList);
         actionBar.setListNavigationCallbacks(adapter, this);
@@ -134,15 +135,19 @@ public class PageListAdapter extends FragmentPagerAdapter implements ViewPager.O
     private static final class PageInfo {
         private final Class<? extends PageFragment> fragmentClass;
         private final Bundle args;
+        private final String name;
 
-        PageInfo(Class<? extends PageFragment> _fragmentClass, Bundle _args) {
+        PageInfo(Class<? extends PageFragment> _fragmentClass, String _name, Bundle _args) {
             fragmentClass = _fragmentClass;
+            name = _name;
             args = _args;
         }
 
         public Class<? extends PageFragment> getFragmentClass() {
             return fragmentClass;
         }
+
+        public String getName() { return name; }
 
         public Bundle getArgs() {
             return args;

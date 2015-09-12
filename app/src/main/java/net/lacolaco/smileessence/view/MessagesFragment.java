@@ -47,10 +47,6 @@ import java.util.List;
  * Fragment of messages list
  */
 public class MessagesFragment extends CustomListFragment {
-    @Override
-    public String getName() {
-        return getString(R.string.page_name_messages);
-    }
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 

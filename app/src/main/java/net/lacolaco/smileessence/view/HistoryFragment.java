@@ -35,11 +35,6 @@ import net.lacolaco.smileessence.activity.MainActivity;
  */
 public class HistoryFragment extends CustomListFragment {
 
-    @Override
-    public String getName() {
-        return getString(R.string.page_name_history);
-    }
-
     // --------------------- GETTER / SETTER METHODS ---------------------
 
     @Override

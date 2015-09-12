@@ -44,10 +44,6 @@ import twitter4j.Twitter;
 import java.util.List;
 
 public class MentionsFragment extends CustomListFragment {
-    @Override
-    public String getName() {
-        return getString(R.string.page_name_mentions);
-    }
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 

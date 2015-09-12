@@ -332,19 +332,19 @@ public class MainActivity extends Activity {
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public int addListPage(Class<? extends CustomListFragment> fragmentClass, CustomListAdapter<?> adapter, AdapterID adapterId, boolean visible) {
+    public int addListPage(Class<? extends CustomListFragment> fragmentClass, String name, CustomListAdapter<?> adapter, AdapterID adapterId, boolean visible) {
         if (visible) {
             Bundle args = new Bundle();
             adapterMap.put(adapterId, adapter);
-            return addPage(fragmentClass, args, false);
+            return addPage(fragmentClass, name, args, false);
         } else {
             return PAGE_INDEX_GONE;
         }
     }
 
     @Deprecated
-    public int addPage(Class<? extends PageFragment> fragmentClass, Bundle args, boolean withNotify) {
-        pagerAdapter.addPage(fragmentClass, args, withNotify);
+    public int addPage(Class<? extends PageFragment> fragmentClass, String name, Bundle args, boolean withNotify) {
+        pagerAdapter.addPage(fragmentClass, name, args, withNotify);
         return pagerAdapter.getCount() - 1;
     }
 
@@ -499,45 +499,41 @@ public class MainActivity extends Activity {
     }
 
     private void addPostPage() {
-        pageIndexPost = addPage(PostFragment.class, null, true);
+        pageIndexPost = addPage(PostFragment.class, getString(R.string.page_name_post), null, true);
     }
 
     private void addHomePage() {
         StatusListAdapter homeAdapter = new StatusListAdapter(this);
-        pageIndexHome = addListPage( HomeFragment.class, homeAdapter, AdapterID.Home, true);
+        pageIndexHome = addListPage( HomeFragment.class, getString(R.string.page_name_home), homeAdapter, AdapterID.Home, true);
     }
 
     private void addMentionsPage() {
         StatusListAdapter mentionsAdapter = new StatusListAdapter(this);
-        pageIndexMentions = addListPage(MentionsFragment.class, mentionsAdapter, AdapterID.Mentions, true);
+        pageIndexMentions = addListPage(MentionsFragment.class, getString(R.string.page_name_mentions), mentionsAdapter, AdapterID.Mentions, true);
     }
 
     private void addHistoryPage() {
         boolean visible = getUserPreferenceHelper().getValue(R.string.key_page_history_visibility, true);
-        getUserPreferenceHelper().putValue(R.string.key_page_history_visibility, visible);
         EventListAdapter historyAdapter = new EventListAdapter(this);
-        pageIndexHistory = addListPage(HistoryFragment.class, historyAdapter, AdapterID.History, visible);
+        pageIndexHistory = addListPage(HistoryFragment.class, getString(R.string.page_name_history), historyAdapter, AdapterID.History, visible);
     }
 
     private void addMessagesPage() {
         boolean visible = getUserPreferenceHelper().getValue(R.string.key_page_messages_visibility, true);
-        getUserPreferenceHelper().putValue(R.string.key_page_messages_visibility, visible);
         MessageListAdapter messagesAdapter = new MessageListAdapter(this);
-        pageIndexMessages = addListPage(MessagesFragment.class, messagesAdapter, AdapterID.Messages, visible);
+        pageIndexMessages = addListPage(MessagesFragment.class, getString(R.string.page_name_messages), messagesAdapter, AdapterID.Messages, visible);
     }
 
     private void addSearchPage() {
         boolean visible = getUserPreferenceHelper().getValue(R.string.key_page_search_visibility, true);
-        getUserPreferenceHelper().putValue(R.string.key_page_search_visibility, visible);
         SearchListAdapter searchAdapter = new SearchListAdapter(this);
-        pageIndexSearch = addListPage(SearchFragment.class, searchAdapter, AdapterID.Search, visible);
+        pageIndexSearch = addListPage(SearchFragment.class, getString(R.string.page_name_search), searchAdapter, AdapterID.Search, visible);
     }
 
     private void addUserListPage() {
         boolean visible = getUserPreferenceHelper().getValue(R.string.key_page_list_visibility, true);
-        getUserPreferenceHelper().putValue(R.string.key_page_list_visibility, visible);
         UserListListAdapter userListAdapter = new UserListListAdapter(this);
-        pageIndexUserList = addListPage(UserListFragment.class, userListAdapter, AdapterID.UserList, visible);
+        pageIndexUserList = addListPage(UserListFragment.class, getString(R.string.page_name_list), userListAdapter, AdapterID.UserList, visible);
     }
 
     private void getImageUri(int requestCode, int resultCode, Intent data) {
