@@ -40,14 +40,12 @@ public class ReportForSpamTask extends TwitterTask<User> {
     // ------------------------------ FIELDS ------------------------------
 
     private final long userID;
-    private final Activity activity;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public ReportForSpamTask(Twitter twitter, long userID, Activity activity) {
+    public ReportForSpamTask(Twitter twitter, long userID) {
         super(twitter);
         this.userID = userID;
-        this.activity = activity;
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
@@ -55,9 +53,9 @@ public class ReportForSpamTask extends TwitterTask<User> {
     @Override
     protected void onPostExecute(User user) {
         if (user != null) {
-            new Notificator(activity, R.string.notice_r4s_succeeded).publish();
+            Notificator.getInstance().publish(R.string.notice_r4s_succeeded);
         } else {
-            new Notificator(activity, R.string.notice_r4s_failed, NotificationType.ALERT).publish();
+            Notificator.getInstance().publish(R.string.notice_r4s_failed, NotificationType.ALERT);
         }
     }
 

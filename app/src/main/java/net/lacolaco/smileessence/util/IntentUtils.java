@@ -51,7 +51,7 @@ public class IntentUtils {
             activity.startActivity(intent);
             return true;
         } else {
-            new Notificator(activity, R.string.notice_error_start_activity, NotificationType.ALERT).publish();
+            Notificator.getInstance().publish(R.string.notice_error_start_activity, NotificationType.ALERT);
         }
         return false;
     }
@@ -82,7 +82,7 @@ public class IntentUtils {
             activity.startActivityForResult(intent, requestCode);
             return true;
         } else {
-            new Notificator(activity, R.string.notice_error_start_activity, NotificationType.ALERT).publish();
+            Notificator.getInstance().publish(R.string.notice_error_start_activity, NotificationType.ALERT);
         }
         return false;
     }

@@ -60,9 +60,9 @@ public class SettingFragment extends PreferenceFragment implements OnSharedPrefe
                 if (UserPreferenceHelper.TEXT_SIZE_MIN <= newTextSize && newTextSize <= UserPreferenceHelper.TEXT_SIZE_MAX) {
                     return true;
                 }
-                Notificator.publish(getActivity(), R.string.error_setting_text_size_range);
+                Notificator.getInstance().publish(R.string.error_setting_text_size_range);
             } else {
-                Notificator.publish(getActivity(), R.string.error_setting_text_size_not_number);
+                Notificator.getInstance().publish(R.string.error_setting_text_size_not_number);
             }
             return false;
         } else if (preference.getKey().contentEquals(getString(R.string.key_setting_timelines))) {
@@ -71,13 +71,13 @@ public class SettingFragment extends PreferenceFragment implements OnSharedPrefe
                 if (UserPreferenceHelper.TIMELINES_MIN <= newTextSize && newTextSize <= UserPreferenceHelper.TIMELINES_MAX) {
                     return true;
                 }
-                Notificator.publish(getActivity(), R.string.error_setting_timelines_range);
+                Notificator.getInstance().publish(R.string.error_setting_timelines_range);
             } else {
-                Notificator.publish(getActivity(), R.string.error_setting_timelines_not_number);
+                Notificator.getInstance().publish(R.string.error_setting_timelines_not_number);
             }
             return false;
         } else if (preference.getKey().contentEquals(getString(R.string.key_setting_theme))) {
-            Notificator.publish(getActivity(), R.string.notice_theme_changed);
+            Notificator.getInstance().publish(R.string.notice_theme_changed);
         }
         return true;
     }
@@ -96,7 +96,7 @@ public class SettingFragment extends PreferenceFragment implements OnSharedPrefe
             ConfirmDialogFragment.show(getActivity(), getString(R.string.dialog_confirm_clear_account), new Runnable() {
                 @Override
                 public void run() {
-                    Notificator.publish(getActivity(), R.string.notice_cleared_account);
+                    Notificator.getInstance().publish(R.string.notice_cleared_account);
                     Account.deleteAll();
                     finishActivity();
                 }

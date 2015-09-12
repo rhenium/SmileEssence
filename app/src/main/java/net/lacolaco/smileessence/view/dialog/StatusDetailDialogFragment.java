@@ -159,7 +159,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         confirm(activity, new Runnable() {
             @Override
             public void run() {
-                new DeleteStatusTask(TwitterApi.getTwitter(account), tweet.getOriginalTweet().getId(), activity).execute();
+                new DeleteStatusTask(TwitterApi.getTwitter(account), tweet.getOriginalTweet().getId()).execute();
                 dismiss();
             }
         });
@@ -288,9 +288,9 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
     private void toggleFavorite(MainActivity activity, Account account, Tweet tweet, Boolean isFavorited) {
         long statusID = tweet.getOriginalTweet().getId();
         if (isFavorited) {
-            new UnfavoriteTask(TwitterApi.getTwitter(account), statusID, activity).execute();
+            new UnfavoriteTask(TwitterApi.getTwitter(account), statusID).execute();
         } else {
-            new FavoriteTask(TwitterApi.getTwitter(account), statusID, activity).execute();
+            new FavoriteTask(TwitterApi.getTwitter(account), statusID).execute();
         }
     }
 
@@ -299,9 +299,9 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
             @Override
             public void run() {
                 if (retweetID != -1L) {
-                    new DeleteStatusTask(TwitterApi.getTwitter(account), retweetID, activity).execute();
+                    new DeleteStatusTask(TwitterApi.getTwitter(account), retweetID).execute();
                 } else {
-                    new RetweetTask(TwitterApi.getTwitter(account), tweet.getOriginalTweet().getId(), activity).execute();
+                    new RetweetTask(TwitterApi.getTwitter(account), tweet.getOriginalTweet().getId()).execute();
                 }
             }
         });

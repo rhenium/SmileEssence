@@ -63,7 +63,7 @@ public class UserCommandReportForSpam extends UserCommand implements IConfirmabl
 
     @Override
     public boolean execute() {
-        new ReportForSpamTask(new TwitterApi(account).getTwitter(), getUser().getId(), getActivity()).execute();
+        new ReportForSpamTask(new TwitterApi(account).getTwitter(), getUser().getId()).execute();
         return true;
     }
 }

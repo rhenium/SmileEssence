@@ -44,30 +44,13 @@ public class SearchTask extends TwitterTask<QueryResult> {
 
     // ------------------------------ FIELDS ------------------------------
 
-    private final MainActivity activity;
     private final Query query;
-
-    // -------------------------- STATIC METHODS --------------------------
-
-    public SearchTask(Twitter twitter, String queryString, MainActivity activity) {
-        this(twitter, getBaseQuery(activity, queryString), activity);
-    }
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public SearchTask(Twitter twitter, Query query, MainActivity activity) {
+    public SearchTask(Twitter twitter, Query query) {
         super(twitter);
-        this.activity = activity;
         this.query = query;
-    }
-
-    public static Query getBaseQuery(MainActivity activity, String queryString) {
-        Configuration config = activity.getResources().getConfiguration();
-        Query query = new Query();
-        query.setQuery(queryString);
-        query.setCount(TwitterUtils.getPagingCount(activity));
-        query.setResultType(Query.RECENT);
-        return query;
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
@@ -90,9 +73,9 @@ public class SearchTask extends TwitterTask<QueryResult> {
             e.printStackTrace();
             Logger.debug(e);
             if (e.exceededRateLimitation()) {
-                Notificator.publish(activity, R.string.notice_error_rate_limit, NotificationType.ALERT);
+                Notificator.getInstance().publish(R.string.notice_error_rate_limit, NotificationType.ALERT);
             } else {
-                Notificator.publish(activity, R.string.notice_error_search, NotificationType.ALERT);
+                Notificator.getInstance().publish(R.string.notice_error_search, NotificationType.ALERT);
             }
             return null;
         }

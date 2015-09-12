@@ -35,7 +35,6 @@ import net.lacolaco.smileessence.twitter.TwitterApi;
 import net.lacolaco.smileessence.twitter.task.FavoriteTask;
 import net.lacolaco.smileessence.twitter.task.TweetTask;
 
-import twitter4j.Status;
 import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
 
@@ -86,8 +85,8 @@ public class StatusCommandNanigaja extends StatusCommand implements IConfirmable
                 .setInReplyToStatusID(getOriginalStatus().getId())
                 .build();
         Twitter twitter = new TwitterApi(account).getTwitter();
-        new TweetTask(twitter, update, getActivity()).execute();
-        new FavoriteTask(twitter, getOriginalStatus().getId(), getActivity()).execute();
+        new TweetTask(twitter, update).execute();
+        new FavoriteTask(twitter, getOriginalStatus().getId()).execute();
         return true;
     }
 

@@ -59,7 +59,7 @@ public class StatusCommandAddToReply extends StatusCommand {
     public boolean execute() {
         String text = String.format("@%s ", getOriginalStatus().getUser().getScreenName());
         PostState.getState().beginTransaction().insertText(0, text).moveCursor(text.length()).commit();
-        Notificator.publish(getActivity(), R.string.notice_add_to_reply);
+        Notificator.getInstance().publish(R.string.notice_add_to_reply);
         return true;
     }
 }

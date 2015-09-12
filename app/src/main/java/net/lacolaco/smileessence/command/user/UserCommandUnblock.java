@@ -63,7 +63,7 @@ public class UserCommandUnblock extends UserCommand implements IConfirmable {
 
     @Override
     public boolean execute() {
-        new UnblockTask(new TwitterApi(account).getTwitter(), getUser().getId(), getActivity()).execute();
+        new UnblockTask(new TwitterApi(account).getTwitter(), getUser().getId()).execute();
         return true;
     }
 }

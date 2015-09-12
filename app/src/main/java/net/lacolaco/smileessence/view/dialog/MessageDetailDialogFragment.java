@@ -119,7 +119,7 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
 
         DirectMessage selectedMessage = DirectMessage.fetch(getMessageID());
         if (selectedMessage == null) {
-            Notificator.publish(getActivity(), R.string.notice_error_get_messages);
+            Notificator.getInstance().publish(R.string.notice_error_get_messages);
             return new DisposeDialog(getActivity());
         }
         View header = getTitleView(activity, account, selectedMessage);
@@ -173,7 +173,7 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
         ConfirmDialogFragment.show(getActivity(), getString(R.string.dialog_confirm_commands), new Runnable() {
             @Override
             public void run() {
-                new DeleteMessageTask(new TwitterApi(account).getTwitter(), message.getId(), getActivity()).execute();
+                new DeleteMessageTask(new TwitterApi(account).getTwitter(), message.getId()).execute();
                 dismiss();
             }
         });

@@ -129,7 +129,7 @@ public abstract class CustomListFragment extends PageFragment implements AbsList
     }
 
     protected void notifyListUpdated(int increments) {
-        Notificator.publish(getActivity(), getString(R.string.notice_timeline_new, increments));
+        Notificator.getInstance().publish(getString(R.string.notice_timeline_new, increments));
     }
 
     protected void updateListViewWithNotice(AbsListView absListView, CustomListAdapter<?> adapter, boolean addedToTop) {

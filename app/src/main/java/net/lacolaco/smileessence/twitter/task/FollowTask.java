@@ -40,14 +40,12 @@ public class FollowTask extends TwitterTask<User> {
     // ------------------------------ FIELDS ------------------------------
 
     private final long userID;
-    private final Activity activity;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public FollowTask(Twitter twitter, long userID, Activity activity) {
+    public FollowTask(Twitter twitter, long userID) {
         super(twitter);
         this.userID = userID;
-        this.activity = activity;
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
@@ -55,9 +53,9 @@ public class FollowTask extends TwitterTask<User> {
     @Override
     protected void onPostExecute(User user) {
         if (user != null) {
-            new Notificator(activity, R.string.notice_follow_succeeded).publish();
+            Notificator.getInstance().publish(R.string.notice_follow_succeeded);
         } else {
-            new Notificator(activity, R.string.notice_follow_failed, NotificationType.ALERT).publish();
+            Notificator.getInstance().publish(R.string.notice_follow_failed, NotificationType.ALERT);
         }
     }
 

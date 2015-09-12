@@ -38,7 +38,6 @@ import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.twitter.TwitterApi;
 
-import twitter4j.Status;
 import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -53,27 +52,26 @@ public class TweetTask extends TwitterTask<Tweet> {
 
     private final StatusUpdate update;
     private final String mediaPath;
-    private final Activity activity;
     private String tempFilePath;
+    private boolean resizeFlag;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public TweetTask(Twitter twitter, StatusUpdate update, Activity activity) {
-        this(twitter, update, null, activity);
+    public TweetTask(Twitter twitter, StatusUpdate update) {
+        this(twitter, update, null, false);
     }
 
-    public TweetTask(Twitter twitter, StatusUpdate update, String mediaPath, Activity activity) {
+    public TweetTask(Twitter twitter, StatusUpdate update, String mediaPath, boolean resize) {
         super(twitter);
         this.update = update;
         this.mediaPath = mediaPath;
-        this.activity = activity;
+        resizeFlag = resize;
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 
     public File getMediaFile() {
         File file = new File(mediaPath);
-        boolean resizeFlag = new UserPreferenceHelper(activity).getValue(R.string.key_setting_resize_post_image, false);
         if (file.length() >= TwitterApi.MEDIA_SIZE_LIMIT && resizeFlag) {
             BitmapFactory.Options opt = new BitmapFactory.Options();
             opt.inJustDecodeBounds = true; //decoder is not return bitmap but set option
@@ -111,9 +109,9 @@ public class TweetTask extends TwitterTask<Tweet> {
     @Override
     protected void onPostExecute(Tweet tweet) {
         if (tweet != null) {
-            new Notificator(activity, R.string.notice_tweet_succeeded).publish();
+            Notificator.getInstance().publish(R.string.notice_tweet_succeeded);
         } else {
-            new Notificator(activity, R.string.notice_tweet_failed, NotificationType.ALERT).publish();
+            Notificator.getInstance().publish(R.string.notice_tweet_failed, NotificationType.ALERT);
         }
     }
 

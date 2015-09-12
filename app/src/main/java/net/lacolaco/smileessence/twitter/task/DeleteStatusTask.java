@@ -41,14 +41,12 @@ public class DeleteStatusTask extends TwitterTask<Tweet> {
     // ------------------------------ FIELDS ------------------------------
 
     private final long statusID;
-    private final Activity activity;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public DeleteStatusTask(Twitter twitter, long statusID, Activity activity) {
+    public DeleteStatusTask(Twitter twitter, long statusID) {
         super(twitter);
         this.statusID = statusID;
-        this.activity = activity;
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
@@ -57,9 +55,9 @@ public class DeleteStatusTask extends TwitterTask<Tweet> {
     protected void onPostExecute(Tweet tweet) {
         if (tweet != null) {
             Tweet.remove(tweet.getId());
-            new Notificator(activity, R.string.notice_status_delete_succeeded).publish();
+            Notificator.getInstance().publish(R.string.notice_status_delete_succeeded);
         } else {
-            new Notificator(activity, R.string.notice_status_delete_failed, NotificationType.ALERT).publish();
+            Notificator.getInstance().publish(R.string.notice_status_delete_failed, NotificationType.ALERT);
         }
     }
 

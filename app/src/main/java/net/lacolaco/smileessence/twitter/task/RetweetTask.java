@@ -41,14 +41,12 @@ public class RetweetTask extends TwitterTask<Tweet> {
     // ------------------------------ FIELDS ------------------------------
 
     private final long statusID;
-    private final Activity activity;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public RetweetTask(Twitter twitter, long statusID, Activity activity) {
+    public RetweetTask(Twitter twitter, long statusID) {
         super(twitter);
         this.statusID = statusID;
-        this.activity = activity;
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
@@ -56,9 +54,9 @@ public class RetweetTask extends TwitterTask<Tweet> {
     @Override
     protected void onPostExecute(Tweet tweet) {
         if (tweet != null) {
-            new Notificator(activity, R.string.notice_retweet_succeeded).publish();
+            Notificator.getInstance().publish(R.string.notice_retweet_succeeded);
         } else {
-            new Notificator(activity, R.string.notice_retweet_failed, NotificationType.ALERT).publish();
+            Notificator.getInstance().publish(R.string.notice_retweet_failed, NotificationType.ALERT);
         }
     }
 

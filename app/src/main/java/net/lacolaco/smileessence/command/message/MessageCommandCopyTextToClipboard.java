@@ -59,7 +59,7 @@ public class MessageCommandCopyTextToClipboard extends MessageCommand {
     public boolean execute() {
         ClipboardManager manager = (ClipboardManager) getActivity().getSystemService(Activity.CLIPBOARD_SERVICE);
         manager.setPrimaryClip(ClipData.newPlainText("message text", getMessage().getText()));
-        Notificator.publish(getActivity(), R.string.notice_copy_clipboard);
+        Notificator.getInstance().publish(R.string.notice_copy_clipboard);
         return true;
     }
 }

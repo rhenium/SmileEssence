@@ -66,7 +66,7 @@ public class MessageCommandTofuBuster extends MessageCommand {
         try {
             getActivity().startActivity(i);
         } catch (ActivityNotFoundException e) {
-            new Notificator(getActivity(), R.string.notice_tofubuster_not_found).publish();
+            Notificator.getInstance().publish( R.string.notice_tofubuster_not_found);
         }
         return true;
     }

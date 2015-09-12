@@ -119,7 +119,7 @@ public class EditTabActivity extends Activity {
         putVisibility(R.string.key_page_search_visibility, search.isChecked());
         EditableCheckBoxModel list = (EditableCheckBoxModel) adapter.getItem(6);
         putVisibility(R.string.key_page_list_visibility, list.isChecked());
-        new Notificator(this, R.string.notice_tab_editted).makeToast().show();
+        Notificator.getInstance().publish(R.string.notice_tab_editted);
         super.onDestroy();
     }
 

@@ -79,7 +79,7 @@ public class MessagesFragment extends CustomListFragment {
         if (adapter.getCount() > 0) {
             paging.setSinceId(adapter.getTopID());
         }
-        new DirectMessagesTask(twitter, activity, paging) {
+        new DirectMessagesTask(twitter, paging) {
             @Override
             protected void onPostExecute(List<DirectMessage> directMessages) {
                 super.onPostExecute(directMessages);
@@ -102,7 +102,7 @@ public class MessagesFragment extends CustomListFragment {
         if (adapter.getCount() > 0) {
             paging.setMaxId(adapter.getLastID() - 1);
         }
-        new DirectMessagesTask(twitter, activity, paging) {
+        new DirectMessagesTask(twitter, paging) {
             @Override
             protected void onPostExecute(List<DirectMessage> directMessages) {
                 super.onPostExecute(directMessages);

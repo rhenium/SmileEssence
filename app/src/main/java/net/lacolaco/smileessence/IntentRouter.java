@@ -137,7 +137,7 @@ public class IntentRouter {
 
             @Override
             public void error() {
-                Notificator.publish(activity, R.string.error_intent_status_cannot_load, NotificationType.ALERT);
+                Notificator.getInstance().publish(R.string.error_intent_status_cannot_load, NotificationType.ALERT);
             }
         });
     }

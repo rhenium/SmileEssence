@@ -62,10 +62,6 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
         return activity.getCurrentAccount().userID;
     }
 
-    private int getPagerCount() {
-        return activity.getPagerAdapter().getCount();
-    }
-
     // ------------------------ INTERFACE METHODS ------------------------
 
 
@@ -74,13 +70,13 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
     @Override
     public void onConnect() {
         activity.setStreaming(true);
-        new Notificator(activity, R.string.notice_stream_connect).publish();
+        Notificator.getInstance().publish(R.string.notice_stream_connect);
     }
 
     @Override
     public void onDisconnect() {
         activity.setStreaming(false);
-        new Notificator(activity, R.string.notice_stream_disconnect).publish();
+        Notificator.getInstance().publish(R.string.notice_stream_disconnect);
     }
 
     @Override
@@ -101,7 +97,7 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
         }// else if (viewModel.isMention()) {
         //    addToMentions(viewModel);
         //    EventViewModel mentioned = new EventViewModel(EnumEvent.MENTIONED, status.getUser(), status);
-        //    Notificator.publish(activity, mentioned.getFormattedString(activity));
+        //    Notificator.getInstance().publish(mentioned.getFormattedString(activity));
         //}
         StatusFilter.filter(activity, vm);
         FavoriteCache.getInstance().put(status);
@@ -272,7 +268,7 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
 
     private void addToHistory(EventViewModel mentioned) {
         EventListAdapter history = (EventListAdapter) activity.getListAdapter(MainActivity.AdapterID.History);
-        Notificator.publish(activity, mentioned.getFormattedString(activity));
+        Notificator.getInstance().publish(mentioned.getFormattedString(activity));
         history.addToTop(mentioned);
         history.update();
     }

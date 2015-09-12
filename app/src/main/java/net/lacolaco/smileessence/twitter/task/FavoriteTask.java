@@ -41,14 +41,12 @@ public class FavoriteTask extends TwitterTask<Tweet> {
     // ------------------------------ FIELDS ------------------------------
 
     private final long statusID;
-    private final Activity activity;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public FavoriteTask(Twitter twitter, long statusID, Activity activity) {
+    public FavoriteTask(Twitter twitter, long statusID) {
         super(twitter);
         this.statusID = statusID;
-        this.activity = activity;
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
@@ -56,9 +54,9 @@ public class FavoriteTask extends TwitterTask<Tweet> {
     @Override
     protected void onPostExecute(Tweet tweet) {
         if (tweet != null) {
-            new Notificator(activity, R.string.notice_favorite_succeeded).publish();
+            Notificator.getInstance().publish(R.string.notice_favorite_succeeded);
         } else {
-            new Notificator(activity, R.string.notice_favorite_failed, NotificationType.ALERT).publish();
+            Notificator.getInstance().publish(R.string.notice_favorite_failed, NotificationType.ALERT);
         }
     }
 

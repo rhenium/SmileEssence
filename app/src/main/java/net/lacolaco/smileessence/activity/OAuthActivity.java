@@ -68,7 +68,7 @@ public class OAuthActivity extends Activity implements View.OnClickListener, Tex
         if (!TextUtils.isEmpty(url)) {
             linkTextView.setText(url);
         } else {
-            new Notificator(this, R.string.notice_error_authenticate_request).makeToast().show();
+            Notificator.getInstance().publish(R.string.notice_error_authenticate_request);
             finish();
         }
     }

@@ -26,7 +26,6 @@ package net.lacolaco.smileessence.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -46,6 +45,8 @@ import net.lacolaco.smileessence.IntentRouter;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.data.UserListCache;
 import net.lacolaco.smileessence.entity.*;
+import net.lacolaco.smileessence.entity.DirectMessage;
+import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
@@ -61,10 +62,7 @@ import net.lacolaco.smileessence.view.adapter.*;
 import net.lacolaco.smileessence.view.dialog.ConfirmDialogFragment;
 import net.lacolaco.smileessence.viewmodel.*;
 import net.lacolaco.smileessence.viewmodel.menu.MainActivityMenuHelper;
-import twitter4j.Paging;
-import twitter4j.QueryResult;
-import twitter4j.Twitter;
-import twitter4j.TwitterStream;
+import twitter4j.*;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -184,10 +182,6 @@ public class MainActivity extends Activity {
         return pageIndexUserList;
     }
 
-    public PageListAdapter getPagerAdapter() {
-        return pagerAdapter;
-    }
-
     public int getThemeIndex() {
         return ((Application) getApplication()).getThemeIndex();
     }
@@ -289,6 +283,7 @@ public class MainActivity extends Activity {
         } else {
             startOAuthActivity();
         }
+        Notificator.initialize(this);
         Logger.debug("onCreate");
     }
 
@@ -304,6 +299,7 @@ public class MainActivity extends Activity {
         if (stream != null) {
             stream.shutdown();
         }
+        Notificator.getInstance().stopNotification();
         Logger.debug("onDestroy");
     }
 
@@ -323,7 +319,7 @@ public class MainActivity extends Activity {
         super.onPause();
         Logger.debug("onPause");
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        Notificator.stopNotification();
+        Notificator.getInstance().stopNotification();
     }
 
     @Override
@@ -331,7 +327,7 @@ public class MainActivity extends Activity {
         super.onResume();
         Logger.debug("onResume");
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        Notificator.startNotification();
+        Notificator.getInstance().startNotification();
     }
 
     // -------------------------- OTHER METHODS --------------------------
@@ -373,10 +369,10 @@ public class MainActivity extends Activity {
             PostState.getState().beginTransaction()
                     .setMediaFilePath(rotatedPath)
                     .commitWithOpen(this);
-            Notificator.publish(this, R.string.notice_select_image_succeeded);
+            Notificator.getInstance().publish(R.string.notice_select_image_succeeded);
         } catch (Exception e) {
             e.printStackTrace();
-            Notificator.publish(this, R.string.notice_select_image_failed, NotificationType.ALERT);
+            Notificator.getInstance().publish(R.string.notice_select_image_failed, NotificationType.ALERT);
         }
     }
 
@@ -419,14 +415,18 @@ public class MainActivity extends Activity {
         startTwitter();
     }
 
-    public void startNewSearch(final Twitter twitter, final String query) {
-        setLastSearch(query);
-        if (!TextUtils.isEmpty(query)) {
+    public void startNewSearch(final Twitter twitter, final String queryString) {
+        setLastSearch(queryString);
+        if (!TextUtils.isEmpty(queryString)) {
             final SearchListAdapter adapter = (SearchListAdapter) getListAdapter(AdapterID.Search);
-            adapter.initSearch(query);
+            adapter.initSearch(queryString);
             adapter.clear();
             adapter.updateForce();
-            new SearchTask(twitter, query, this) {
+            final Query query = new Query();
+            query.setQuery(queryString);
+            query.setCount(TwitterUtils.getPagingCount(this));
+            query.setResultType(Query.RECENT);
+            new SearchTask(twitter, query) {
                 @Override
                 protected void onPostExecute(QueryResult queryResult) {
                     super.onPostExecute(queryResult);
@@ -543,7 +543,7 @@ public class MainActivity extends Activity {
     private void getImageUri(int requestCode, int resultCode, Intent data) {
         if (resultCode != RESULT_OK) {
             Logger.error(requestCode);
-            Notificator.publish(this, R.string.notice_select_image_failed);
+            Notificator.getInstance().publish(R.string.notice_select_image_failed);
             finish();
             return;
         }
@@ -557,7 +557,7 @@ public class MainActivity extends Activity {
     }
 
     private void initHome(final Twitter twitter, final Paging paging) {
-        new HomeTimelineTask(twitter, this, paging) {
+        new HomeTimelineTask(twitter, paging) {
             @Override
             protected void onPostExecute(List<Tweet> tweets) {
                 super.onPostExecute(tweets);
@@ -578,7 +578,7 @@ public class MainActivity extends Activity {
     }
 
     private void initMentions(final Twitter twitter, final Paging paging) {
-        new MentionsTimelineTask(twitter, this, paging) {
+        new MentionsTimelineTask(twitter, paging) {
             @Override
             protected void onPostExecute(List<Tweet> tweets) {
                 super.onPostExecute(tweets);
@@ -595,7 +595,7 @@ public class MainActivity extends Activity {
         if (pageIndexMessages == PAGE_INDEX_GONE) {
             return;
         }
-        new DirectMessagesTask(twitter, this, paging) {
+        new DirectMessagesTask(twitter, paging) {
             @Override
             protected void onPostExecute(List<DirectMessage> directMessages) {
                 super.onPostExecute(directMessages);
@@ -606,7 +606,7 @@ public class MainActivity extends Activity {
                 adapter.notifyDataSetChanged();
             }
         }.execute();
-        new SentDirectMessagesTask(twitter, this, paging) {
+        new SentDirectMessagesTask(twitter, paging) {
             @Override
             protected void onPostExecute(List<DirectMessage> directMessages) {
                 super.onPostExecute(directMessages);
@@ -679,7 +679,7 @@ public class MainActivity extends Activity {
     private void receiveOAuth(int requestCode, int resultCode, Intent data) {
         if (resultCode != RESULT_OK) {
             Logger.error(requestCode);
-            Notificator.publish(this, R.string.notice_error_authenticate);
+            Notificator.getInstance().publish(R.string.notice_error_authenticate);
             finish();
         } else {
             Account account = new Account(data.getStringExtra(OAuthSession.KEY_TOKEN),

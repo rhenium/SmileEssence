@@ -375,7 +375,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         Boolean isFollowing = buttonFollow.getTag() != null ? (Boolean) buttonFollow.getTag() : false;
         Twitter twitter = new TwitterApi(account).getTwitter();
         if (isFollowing) {
-            new UnfollowTask(twitter, user.getId(), activity) {
+            new UnfollowTask(twitter, user.getId()) {
                 @Override
                 public void onPostExecute(User result) {
                     super.onPostExecute(result);
@@ -384,7 +384,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
                 }
             }.execute();
         } else {
-            new FollowTask(twitter, user.getId(), activity) {
+            new FollowTask(twitter, user.getId()) {
                 @Override
                 public void onPostExecute(User result) {
                     super.onPostExecute(result);

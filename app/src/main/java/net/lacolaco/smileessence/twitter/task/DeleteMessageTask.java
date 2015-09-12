@@ -40,14 +40,12 @@ public class DeleteMessageTask extends TwitterTask<DirectMessage> {
     // ------------------------------ FIELDS ------------------------------
 
     private final long messageID;
-    private final Activity activity;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public DeleteMessageTask(Twitter twitter, long messageID, Activity activity) {
+    public DeleteMessageTask(Twitter twitter, long messageID) {
         super(twitter);
         this.messageID = messageID;
-        this.activity = activity;
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
@@ -55,9 +53,9 @@ public class DeleteMessageTask extends TwitterTask<DirectMessage> {
     @Override
     protected void onPostExecute(DirectMessage message) {
         if (message != null) {
-            new Notificator(activity, R.string.notice_message_delete_succeeded).publish();
+            Notificator.getInstance().publish(R.string.notice_message_delete_succeeded);
         } else {
-            new Notificator(activity, R.string.notice_message_delete_failed, NotificationType.ALERT).publish();
+            Notificator.getInstance().publish(R.string.notice_message_delete_failed, NotificationType.ALERT);
         }
     }
 

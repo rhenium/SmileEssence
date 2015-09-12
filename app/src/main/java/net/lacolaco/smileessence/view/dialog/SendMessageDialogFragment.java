@@ -157,7 +157,7 @@ public class SendMessageDialogFragment extends StackableDialogFragment implement
         MainActivity activity = (MainActivity) getActivity();
         Twitter twitter = TwitterApi.getTwitter(activity.getCurrentAccount());
         String text = editText.getText().toString();
-        new SendMessageTask(twitter, screenName, text, activity).execute();
+        new SendMessageTask(twitter, screenName, text).execute();
         hideIME();
         dismiss();
     }

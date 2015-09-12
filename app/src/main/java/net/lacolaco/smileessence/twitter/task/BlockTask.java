@@ -40,14 +40,12 @@ public class BlockTask extends TwitterTask<User> {
     // ------------------------------ FIELDS ------------------------------
 
     private final long userID;
-    private final Activity activity;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public BlockTask(Twitter twitter, long userID, Activity activity) {
+    public BlockTask(Twitter twitter, long userID) {
         super(twitter);
         this.userID = userID;
-        this.activity = activity;
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
@@ -55,9 +53,9 @@ public class BlockTask extends TwitterTask<User> {
     @Override
     protected void onPostExecute(User user) {
         if (user != null) {
-            new Notificator(activity, R.string.notice_block_succeeded).publish();
+            Notificator.getInstance().publish(R.string.notice_block_succeeded);
         } else {
-            new Notificator(activity, R.string.notice_block_failed, NotificationType.ALERT).publish();
+            Notificator.getInstance().publish(R.string.notice_block_failed, NotificationType.ALERT);
         }
     }
 

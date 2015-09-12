@@ -41,15 +41,13 @@ public class SendMessageTask extends TwitterTask<DirectMessage> {
 
     private final String userID;
     private final String text;
-    private final Activity activity;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public SendMessageTask(Twitter twitter, String screenName, String text, Activity activity) {
+    public SendMessageTask(Twitter twitter, String screenName, String text) {
         super(twitter);
         this.userID = screenName;
         this.text = text;
-        this.activity = activity;
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
@@ -57,9 +55,9 @@ public class SendMessageTask extends TwitterTask<DirectMessage> {
     @Override
     protected void onPostExecute(DirectMessage message) {
         if (message != null) {
-            new Notificator(activity, R.string.notice_message_send_succeeded).publish();
+            Notificator.getInstance().publish(R.string.notice_message_send_succeeded);
         } else {
-            new Notificator(activity, R.string.notice_message_send_failed, NotificationType.ALERT).publish();
+            Notificator.getInstance().publish(R.string.notice_message_send_failed, NotificationType.ALERT);
         }
     }
 

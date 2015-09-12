@@ -34,69 +34,70 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.util.UIHandler;
 
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 public class Notificator {
-
-    // ------------------------------ FIELDS ------------------------------
-
+    private static Notificator instance;
     private static final int DURATION = 1000;
-    private static boolean isRunning;
     private Activity activity;
-    private String text;
-    private NotificationType type;
+    private boolean isRunning;
 
-    // -------------------------- STATIC METHODS --------------------------
-
-    public Notificator(Activity activity, int resID) {
-        this(activity, resID, NotificationType.INFO);
+    public static void initialize(Activity activity) {
+        instance = new Notificator(activity);
     }
 
-    public Notificator(Activity activity, String text) {
-        this(activity, text, NotificationType.INFO);
+    public static Notificator getInstance() {
+        if (instance == null) {
+            throw new IllegalStateException("Notificatior is not initialized");
+        }
+        return instance;
     }
 
-    public Notificator(Activity activity, int resID, NotificationType type) {
-        this(activity, activity.getString(resID), type);
+    private Notificator(Activity a) {
+        activity = a;
     }
 
-    public Notificator(Activity activity, String text, NotificationType type) {
-        this.activity = activity;
-        this.text = text;
-        this.type = type;
+    public void publish(int resID) {
+        publish(activity.getString(resID));
     }
 
-    public static void startNotification() {
+    public void publish(String text) {
+        publish(text, NotificationType.INFO);
+    }
+
+    public void publish(int resID, NotificationType type) {
+        publish(activity.getString(resID), type);
+    }
+
+    public void publish(String text, NotificationType type) {
+        if (activity.isFinishing()) {
+            return;
+        }
+        new UIHandler() {
+            @Override
+            public void run() {
+                if (isRunning) {
+                    Logger.debug(String.format("notify by crouton %s", text));
+                    Crouton.makeText(activity, text, getStyle(type)).show();
+                } else {
+                    Logger.debug(String.format("notify by toast %s", text));
+                    Toast.makeText(activity, text, Toast.LENGTH_LONG).show();
+                }
+            }
+        }.post();
+    }
+
+    public void startNotification() {
         isRunning = true;
     }
 
-    public static void stopNotification() {
+    public void stopNotification() {
         isRunning = false;
         Crouton.cancelAllCroutons();
     }
 
-    // --------------------------- CONSTRUCTORS ---------------------------
-
-    /**
-     * Notify self on cronton or toast.
-     */
-    public static void publish(Activity activity, int resID) {
-        publish(activity, activity.getString(resID));
-    }
-
-    public static void publish(Activity activity, String text) {
-        new Notificator(activity, text, NotificationType.INFO).publish();
-    }
-
-    public static void publish(Activity activity, int resID, NotificationType type) {
-        publish(activity, activity.getString(resID), type);
-    }
-
-    public static void publish(Activity activity, String text, NotificationType type) {
-        new Notificator(activity, text, type).publish();
-    }
-
-    // --------------------- GETTER / SETTER METHODS ---------------------
-
-    private Style getStyle() {
+    private Style getStyle(NotificationType type) {
         Configuration.Builder conf = new Configuration.Builder();
         conf.setDuration(DURATION);
         Style.Builder style = new Style.Builder();
@@ -112,36 +113,5 @@ public class Notificator {
             }
         }
         return style.build();
-    }
-
-    // -------------------------- OTHER METHODS --------------------------
-
-    public Crouton makeCrouton() {
-        return Crouton.makeText(activity, text, getStyle());
-    }
-
-    public Toast makeToast() {
-        return Toast.makeText(activity, text, Toast.LENGTH_LONG);
-    }
-
-    /**
-     * Notify self on cronton or toast.
-     */
-    public void publish() {
-        if (activity == null || activity.isFinishing()) {
-            return;
-        }
-        new UIHandler() {
-            @Override
-            public void run() {
-                if (isRunning) {
-                    Logger.debug(String.format("notify by crouton %s", text));
-                    makeCrouton().show();
-                } else {
-                    Logger.debug(String.format("notify by toast %s", text));
-                    makeToast().show();
-                }
-            }
-        }.post();
     }
 }

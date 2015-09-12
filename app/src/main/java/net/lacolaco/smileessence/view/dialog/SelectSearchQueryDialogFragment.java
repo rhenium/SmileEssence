@@ -58,7 +58,7 @@ public class SelectSearchQueryDialogFragment extends MenuDialogFragment implemen
                 adapter.update();
 
                 command.getQuery().delete();
-                Notificator.publish(getActivity(), R.string.notice_search_query_deleted);
+                Notificator.getInstance().publish(R.string.notice_search_query_deleted);
             }
         }, false);
 

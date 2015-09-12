@@ -204,7 +204,7 @@ public class UserListFragment extends CustomListFragment implements View.OnClick
     }
 
     private void notifyTextEmpty(MainActivity activity) {
-        Notificator.publish(activity, R.string.notice_userlist_not_selected);
+        Notificator.getInstance().publish(R.string.notice_userlist_not_selected);
     }
 
     private void openUserListsDialog(final MainActivity mainActivity) {

@@ -42,14 +42,12 @@ public class MentionsTimelineTask extends TwitterTask<List<Tweet>> {
 
     // ------------------------------ FIELDS ------------------------------
 
-    private final Activity activity;
     private final Paging paging;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public MentionsTimelineTask(Twitter twitter, Activity activity, Paging paging) {
+    public MentionsTimelineTask(Twitter twitter, Paging paging) {
         super(twitter);
-        this.activity = activity;
         this.paging = paging;
     }
 
@@ -70,9 +68,9 @@ public class MentionsTimelineTask extends TwitterTask<List<Tweet>> {
             e.printStackTrace();
             Logger.error(e.toString());
             if (e.exceededRateLimitation()) {
-                Notificator.publish(activity, R.string.notice_error_rate_limit, NotificationType.ALERT);
+                Notificator.getInstance().publish(R.string.notice_error_rate_limit, NotificationType.ALERT);
             } else {
-                Notificator.publish(activity, R.string.notice_error_get_mentions, NotificationType.ALERT);
+                Notificator.getInstance().publish(R.string.notice_error_get_mentions, NotificationType.ALERT);
             }
             return Collections.emptyList();
         }

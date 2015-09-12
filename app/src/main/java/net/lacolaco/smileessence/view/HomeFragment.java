@@ -90,7 +90,7 @@ public class HomeFragment extends CustomListFragment {
         if (adapter.getCount() > 0) {
             paging.setSinceId(adapter.getTopID());
         }
-        new HomeTimelineTask(twitter, activity, paging) {
+        new HomeTimelineTask(twitter, paging) {
             @Override
             protected void onPostExecute(List<Tweet> tweets) {
                 super.onPostExecute(tweets);
@@ -116,7 +116,7 @@ public class HomeFragment extends CustomListFragment {
         if (adapter.getCount() > 0) {
             paging.setMaxId(adapter.getLastID() - 1);
         }
-        new HomeTimelineTask(twitter, activity, paging) {
+        new HomeTimelineTask(twitter, paging) {
             @Override
             protected void onPostExecute(List<Tweet> tweets) {
                 super.onPostExecute(tweets);

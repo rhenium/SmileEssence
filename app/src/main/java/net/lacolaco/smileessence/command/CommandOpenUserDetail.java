@@ -76,7 +76,7 @@ public class CommandOpenUserDetail extends Command {
                     fragment.setUserID(user.getId());
                     DialogHelper.showDialog(getActivity(), fragment);
                 } else {
-                    Notificator.publish(getActivity(), R.string.notice_error_show_user, NotificationType.ALERT);
+                    Notificator.getInstance().publish(R.string.notice_error_show_user, NotificationType.ALERT);
                 }
             }
         }.execute();

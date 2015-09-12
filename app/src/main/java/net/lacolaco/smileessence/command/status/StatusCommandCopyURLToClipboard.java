@@ -62,7 +62,7 @@ public class StatusCommandCopyURLToClipboard extends StatusCommand {
         String statusURL = getOriginalStatus().getTwitterUrl();
         ClipboardManager manager = (ClipboardManager) getActivity().getSystemService(Activity.CLIPBOARD_SERVICE);
         manager.setPrimaryClip(ClipData.newPlainText("tweet url", statusURL));
-        Notificator.publish(getActivity(), R.string.notice_copy_clipboard);
+        Notificator.getInstance().publish(R.string.notice_copy_clipboard);
         return true;
     }
 }

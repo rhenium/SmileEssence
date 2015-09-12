@@ -66,8 +66,8 @@ public class StatusCommandFavAndRT extends StatusCommand implements IConfirmable
 
     @Override
     public boolean execute() {
-        new FavoriteTask(new TwitterApi(account).getTwitter(), getOriginalStatus().getId(), getActivity()).execute();
-        new RetweetTask(new TwitterApi(account).getTwitter(), getOriginalStatus().getId(), getActivity()).execute();
+        new FavoriteTask(new TwitterApi(account).getTwitter(), getOriginalStatus().getId()).execute();
+        new RetweetTask(new TwitterApi(account).getTwitter(), getOriginalStatus().getId()).execute();
         return true;
     }
 }

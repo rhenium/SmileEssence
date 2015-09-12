@@ -60,7 +60,7 @@ public class CommandSaveAsTemplate extends Command {
     @Override
     public boolean execute() {
         new Template(text, 0).save();
-        new Notificator(getActivity(), R.string.notice_save_as_template).publish();
+        Notificator.getInstance().publish(R.string.notice_save_as_template);
         return true;
     }
 }

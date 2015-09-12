@@ -76,7 +76,7 @@ public class MentionsFragment extends CustomListFragment {
         if (adapter.getCount() > 0) {
             paging.setSinceId(adapter.getTopID());
         }
-        new MentionsTimelineTask(twitter, activity, paging) {
+        new MentionsTimelineTask(twitter, paging) {
             @Override
             protected void onPostExecute(List<Tweet> tweets) {
                 super.onPostExecute(tweets);
@@ -99,7 +99,7 @@ public class MentionsFragment extends CustomListFragment {
         if (adapter.getCount() > 0) {
             paging.setMaxId(adapter.getLastID() - 1);
         }
-        new MentionsTimelineTask(twitter, activity, paging) {
+        new MentionsTimelineTask(twitter, paging) {
             @Override
             protected void onPostExecute(List<Tweet> tweets) {
                 super.onPostExecute(tweets);

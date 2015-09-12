@@ -55,8 +55,6 @@ public class UserTimelineTask extends TwitterTask<List<Tweet>> {
 
     @Override
     protected void onPostExecute(List<Tweet> tweets) {
-        for (Tweet tweet : tweets) {
-        }
     }
 
     @Override

@@ -43,14 +43,12 @@ public class SentDirectMessagesTask extends TwitterTask<List<DirectMessage>> {
 
     // ------------------------------ FIELDS ------------------------------
 
-    private final Activity activity;
     private final Paging paging;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public SentDirectMessagesTask(Twitter twitter, Activity activity, Paging paging) {
+    public SentDirectMessagesTask(Twitter twitter, Paging paging) {
         super(twitter);
-        this.activity = activity;
         this.paging = paging;
     }
 
@@ -68,9 +66,9 @@ public class SentDirectMessagesTask extends TwitterTask<List<DirectMessage>> {
             e.printStackTrace();
             Logger.error(e.toString());
             if (e.exceededRateLimitation()) {
-                Notificator.publish(activity, R.string.notice_error_rate_limit, NotificationType.ALERT);
+                Notificator.getInstance().publish(R.string.notice_error_rate_limit, NotificationType.ALERT);
             } else {
-                Notificator.publish(activity, R.string.notice_error_get_messages, NotificationType.ALERT);
+                Notificator.getInstance().publish(R.string.notice_error_get_messages, NotificationType.ALERT);
             }
             return Collections.emptyList();
         }

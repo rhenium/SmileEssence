@@ -29,7 +29,6 @@ import android.os.Bundle;
 import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.method.ArrowKeyMovementMethod;
-import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -53,6 +52,7 @@ import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.StatusFilter;
 import net.lacolaco.smileessence.twitter.TwitterApi;
 import net.lacolaco.smileessence.twitter.task.SearchTask;
+import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.view.adapter.SearchListAdapter;
 import net.lacolaco.smileessence.view.dialog.SelectSearchQueryDialogFragment;
@@ -146,11 +146,14 @@ public class SearchFragment extends CustomListFragment implements View.OnClickLi
             }.post();
             return;
         }
-        final Query query = SearchTask.getBaseQuery(activity, queryString);
+        final Query query = new Query();
+        query.setQuery(queryString);
+        query.setCount(TwitterUtils.getPagingCount(activity));
+        query.setResultType(Query.RECENT);
         if (adapter.getCount() > 0) {
             query.setSinceId(adapter.getTopID());
         }
-        new SearchTask(twitter, query, activity) {
+        new SearchTask(twitter, query) {
             @Override
             protected void onPostExecute(QueryResult queryResult) {
                 super.onPostExecute(queryResult);
@@ -189,11 +192,14 @@ public class SearchFragment extends CustomListFragment implements View.OnClickLi
             }.post();
             return;
         }
-        final Query query = SearchTask.getBaseQuery(activity, queryString);
+        final Query query = new Query();
+        query.setQuery(queryString);
+        query.setCount(TwitterUtils.getPagingCount(activity));
+        query.setResultType(Query.RECENT);
         if (adapter.getCount() > 0) {
             query.setMaxId(adapter.getLastID() - 1);
         }
-        new SearchTask(twitter, query, activity) {
+        new SearchTask(twitter, query) {
             @Override
             protected void onPostExecute(QueryResult queryResult) {
                 super.onPostExecute(queryResult);
@@ -305,12 +311,12 @@ public class SearchFragment extends CustomListFragment implements View.OnClickLi
     }
 
     private void notifyTextEmpty(MainActivity activity) {
-        Notificator.publish(activity, R.string.notice_search_text_empty);
+        Notificator.getInstance().publish(R.string.notice_search_text_empty);
     }
 
     private void openSearchQueryDialog(final MainActivity mainActivity) {
         if (SearchQuery.getAll().size() == 0) {
-            Notificator.publish(mainActivity, R.string.notice_no_query_exists);
+            Notificator.getInstance().publish(R.string.notice_no_query_exists);
             return;
         }
         DialogHelper.showDialog(mainActivity, new SelectSearchQueryDialogFragment() {
@@ -327,10 +333,10 @@ public class SearchFragment extends CustomListFragment implements View.OnClickLi
     private void saveQuery() {
         String text = editText.getText().toString();
         if (TextUtils.isEmpty(text)) {
-            Notificator.publish(getActivity(), R.string.notice_query_is_empty, NotificationType.ALERT);
+            Notificator.getInstance().publish(R.string.notice_query_is_empty, NotificationType.ALERT);
         } else {
             SearchQuery.saveIfNotFound(text);
-            Notificator.publish(getActivity(), R.string.notice_query_saved);
+            Notificator.getInstance().publish(R.string.notice_query_saved);
         }
     }
 
@@ -338,7 +344,7 @@ public class SearchFragment extends CustomListFragment implements View.OnClickLi
         if (editText != null) {
             String text = editText.getText().toString();
             if (TextUtils.isEmpty(text)) {
-                Notificator.publish(getActivity(), R.string.notice_query_is_empty, NotificationType.ALERT);
+                Notificator.getInstance().publish(R.string.notice_query_is_empty, NotificationType.ALERT);
             } else {
                 ((MainActivity) getActivity()).openSearchPage(text);
                 hideIME();

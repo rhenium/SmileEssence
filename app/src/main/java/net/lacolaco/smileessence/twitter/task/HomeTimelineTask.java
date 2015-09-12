@@ -45,13 +45,11 @@ public class HomeTimelineTask extends TwitterTask<List<Tweet>> {
     // ------------------------------ FIELDS ------------------------------
 
     private final Paging paging;
-    private final Activity activity;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public HomeTimelineTask(Twitter twitter, Activity activity, Paging paging) {
+    public HomeTimelineTask(Twitter twitter, Paging paging) {
         super(twitter);
-        this.activity = activity;
         this.paging = paging;
     }
 
@@ -72,9 +70,9 @@ public class HomeTimelineTask extends TwitterTask<List<Tweet>> {
             e.printStackTrace();
             Logger.error(e.toString());
             if (e.exceededRateLimitation()) {
-                Notificator.publish(activity, R.string.notice_error_rate_limit, NotificationType.ALERT);
+                Notificator.getInstance().publish(R.string.notice_error_rate_limit, NotificationType.ALERT);
             } else {
-                Notificator.publish(activity, R.string.notice_error_get_home, NotificationType.ALERT);
+                Notificator.getInstance().publish(R.string.notice_error_get_home, NotificationType.ALERT);
             }
             return Collections.emptyList();
         }

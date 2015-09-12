@@ -41,14 +41,12 @@ public class UnfavoriteTask extends TwitterTask<Tweet> {
     // ------------------------------ FIELDS ------------------------------
 
     private final long statusID;
-    private final Activity activity;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public UnfavoriteTask(Twitter twitter, long statusID, Activity activity) {
+    public UnfavoriteTask(Twitter twitter, long statusID) {
         super(twitter);
         this.statusID = statusID;
-        this.activity = activity;
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
@@ -56,9 +54,9 @@ public class UnfavoriteTask extends TwitterTask<Tweet> {
     @Override
     protected void onPostExecute(Tweet tweet) {
         if (tweet != null) {
-            new Notificator(activity, R.string.notice_unfavorite_succeeded).publish();
+            Notificator.getInstance().publish(R.string.notice_unfavorite_succeeded);
         } else {
-            new Notificator(activity, R.string.notice_unfavorite_failed, NotificationType.ALERT).publish();
+            Notificator.getInstance().publish(R.string.notice_unfavorite_failed, NotificationType.ALERT);
         }
     }
 

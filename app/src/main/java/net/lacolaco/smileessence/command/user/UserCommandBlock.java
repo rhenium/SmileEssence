@@ -63,7 +63,7 @@ public class UserCommandBlock extends UserCommand implements IConfirmable {
 
     @Override
     public boolean execute() {
-        new BlockTask(TwitterApi.getTwitter(account), getUser().getId(), getActivity()).execute();
+        new BlockTask(TwitterApi.getTwitter(account), getUser().getId()).execute();
         return true;
     }
 }
