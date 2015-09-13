@@ -46,7 +46,6 @@ import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.data.PostState;
 import net.lacolaco.smileessence.data.UserListCache;
 import net.lacolaco.smileessence.entity.*;
-import net.lacolaco.smileessence.entity.DirectMessage;
 import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.notification.NotificationType;
@@ -61,13 +60,8 @@ import net.lacolaco.smileessence.util.*;
 import net.lacolaco.smileessence.view.*;
 import net.lacolaco.smileessence.view.adapter.*;
 import net.lacolaco.smileessence.view.dialog.ConfirmDialogFragment;
-import net.lacolaco.smileessence.viewmodel.*;
 import net.lacolaco.smileessence.viewmodel.menu.MainActivityMenuHelper;
 import twitter4j.*;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 
 public class MainActivity extends Activity {
 
@@ -253,7 +247,7 @@ public class MainActivity extends Activity {
         if (stream != null) {
             stream.shutdown();
         }
-        Notificator.getInstance().stopNotification();
+        Notificator.getInstance().onBackground();
         Logger.debug("onDestroy");
     }
 
@@ -273,7 +267,7 @@ public class MainActivity extends Activity {
         super.onPause();
         Logger.debug("onPause");
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        Notificator.getInstance().stopNotification();
+        Notificator.getInstance().onBackground();
     }
 
     @Override
@@ -281,7 +275,7 @@ public class MainActivity extends Activity {
         super.onResume();
         Logger.debug("onResume");
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        Notificator.getInstance().startNotification();
+        Notificator.getInstance().onForeground();
     }
 
     // -------------------------- OTHER METHODS --------------------------
@@ -500,5 +494,4 @@ public class MainActivity extends Activity {
     private void startOAuthActivity() {
         startActivityForResult(new Intent(this, OAuthActivity.class), REQUEST_OAUTH);
     }
-
 }

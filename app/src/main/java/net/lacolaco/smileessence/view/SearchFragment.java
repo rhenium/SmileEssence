@@ -81,7 +81,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
 
     // ------------------------ INTERFACE METHODS ------------------------
 
-    @Override // onCreate って Fragment のインスタンスが作られるときは必ず呼ばれるって認識でいいんだよね？
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);

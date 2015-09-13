@@ -34,14 +34,11 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.util.UIHandler;
 
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 public class Notificator {
     private static Notificator instance;
     private static final int DURATION = 1000;
     private Activity activity;
-    private boolean isRunning;
+    private boolean isForeground;
 
     public static void initialize(Activity activity) {
         instance = new Notificator(activity);
@@ -77,7 +74,7 @@ public class Notificator {
         new UIHandler() {
             @Override
             public void run() {
-                if (isRunning) {
+                if (isForeground) {
                     Logger.debug(String.format("notify by crouton %s", text));
                     Crouton.makeText(activity, text, getStyle(type)).show();
                 } else {
@@ -88,12 +85,12 @@ public class Notificator {
         }.post();
     }
 
-    public void startNotification() {
-        isRunning = true;
+    public void onForeground() {
+        isForeground = true;
     }
 
-    public void stopNotification() {
-        isRunning = false;
+    public void onBackground() {
+        isForeground = false;
         Crouton.cancelAllCroutons();
     }
 
