@@ -58,13 +58,14 @@ import net.lacolaco.smileessence.view.adapter.SearchListAdapter;
 import net.lacolaco.smileessence.view.dialog.SelectSearchQueryDialogFragment;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 
+import twitter4j.Paging;
 import twitter4j.Query;
 import twitter4j.QueryResult;
 import twitter4j.Twitter;
 
 import java.util.List;
 
-public class SearchFragment extends CustomListFragment implements View.OnClickListener, View.OnFocusChangeListener,
+public class SearchFragment extends CustomListFragment<SearchListAdapter> implements View.OnClickListener, View.OnFocusChangeListener,
         SearchListAdapter.OnQueryChangeListener {
 
     // ------------------------------ FIELDS ------------------------------
@@ -74,17 +75,26 @@ public class SearchFragment extends CustomListFragment implements View.OnClickLi
     // --------------------- GETTER / SETTER METHODS ---------------------
 
     @Override
-    protected MainActivity.AdapterID getAdapterIndex() {
-        return MainActivity.AdapterID.Search;
-    }
-
-    @Override
     protected PullToRefreshBase.Mode getRefreshMode() {
         return PullToRefreshBase.Mode.BOTH;
     }
 
     // ------------------------ INTERFACE METHODS ------------------------
 
+    @Override // onCreate って Fragment のインスタンスが作られるときは必ず呼ばれるって認識でいいんだよね？
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+        SearchListAdapter adapter = new SearchListAdapter(getActivity());
+        setAdapter(adapter);
+
+        final MainActivity activity = (MainActivity) getActivity();
+        final Twitter twitter = TwitterApi.getTwitter(activity.getCurrentAccount());
+        String lastUsedSearchQuery = activity.getLastSearch();
+        if (!TextUtils.isEmpty(lastUsedSearchQuery)) {
+            startSearch(twitter, lastUsedSearchQuery);
+        }
+    }
 
     // --------------------- Interface OnClickListener ---------------------
 
@@ -130,7 +140,7 @@ public class SearchFragment extends CustomListFragment implements View.OnClickLi
         final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
         Twitter twitter = TwitterApi.getTwitter(currentAccount);
-        final SearchListAdapter adapter = getListAdapter(activity);
+        final SearchListAdapter adapter = getAdapter();
         String queryString = adapter.getQuery();
         if (TextUtils.isEmpty(queryString)) {
             new UIHandler() {
@@ -160,7 +170,7 @@ public class SearchFragment extends CustomListFragment implements View.OnClickLi
                         if (!status.isRetweet()) {
                             StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status));
                             adapter.addToTop(viewModel);
-                            StatusFilter.filter(activity, viewModel);
+                            StatusFilter.getInstance().filter(viewModel);
                         }
                     }
                     updateListViewWithNotice(refreshView.getRefreshableView(), adapter, true);
@@ -176,7 +186,7 @@ public class SearchFragment extends CustomListFragment implements View.OnClickLi
         final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
         Twitter twitter = TwitterApi.getTwitter(currentAccount);
-        final SearchListAdapter adapter = getListAdapter(activity);
+        final SearchListAdapter adapter = getAdapter();
         String queryString = adapter.getQuery();
         if (TextUtils.isEmpty(queryString)) {
             new UIHandler() {
@@ -205,7 +215,7 @@ public class SearchFragment extends CustomListFragment implements View.OnClickLi
                         if (!status.isRetweet()) {
                             StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status));
                             adapter.addToBottom(viewModel);
-                            StatusFilter.filter(activity, viewModel);
+                            StatusFilter.getInstance().filter(viewModel);
                         }
                     }
                     updateListViewWithNotice(refreshView.getRefreshableView(), adapter, false);
@@ -223,12 +233,6 @@ public class SearchFragment extends CustomListFragment implements View.OnClickLi
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
-
-    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.removeItem(R.id.actionbar_search);
@@ -238,7 +242,7 @@ public class SearchFragment extends CustomListFragment implements View.OnClickLi
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View page = inflater.inflate(R.layout.fragment_search, container, false);
         PullToRefreshListView listView = getListView(page);
-        SearchListAdapter adapter = (SearchListAdapter) getListAdapter();
+        SearchListAdapter adapter = getAdapter();
         listView.setAdapter(adapter);
         listView.setOnScrollListener(this);
         listView.setOnRefreshListener(this);
@@ -287,10 +291,6 @@ public class SearchFragment extends CustomListFragment implements View.OnClickLi
 
     private ImageButton getExecuteButton(View page) {
         return (ImageButton) page.findViewById(R.id.button_search_execute);
-    }
-
-    private SearchListAdapter getListAdapter(MainActivity activity) {
-        return (SearchListAdapter) activity.getListAdapter(MainActivity.AdapterID.Search);
     }
 
     private ImageButton getQueriesButton(View page) {
@@ -345,6 +345,39 @@ public class SearchFragment extends CustomListFragment implements View.OnClickLi
                 ((MainActivity) getActivity()).openSearchPage(text);
                 hideIME();
             }
+        }
+    }
+
+    public void startSearch(final Twitter twitter, final String queryString) {
+        ((MainActivity) getActivity()).setLastSearch(queryString);
+        if (!TextUtils.isEmpty(queryString)) {
+            final SearchListAdapter adapter = getAdapter();
+            adapter.initSearch(queryString);
+            adapter.clear();
+            adapter.updateForce();
+            final Query query = new Query();
+            query.setQuery(queryString);
+            query.setCount(TwitterUtils.getPagingCount((MainActivity) getActivity()));
+            query.setResultType(Query.RECENT);
+            new SearchTask(twitter, query) {
+                @Override
+                protected void onPostExecute(QueryResult queryResult) {
+                    super.onPostExecute(queryResult);
+                    if (queryResult != null) {
+                        List<twitter4j.Status> tweets = queryResult.getTweets();
+                        for (int i = tweets.size() - 1; i >= 0; i--) {
+                            twitter4j.Status status = tweets.get(i);
+                            if (!status.isRetweet()) {
+                                StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status));
+                                adapter.addToTop(viewModel);
+                                StatusFilter.getInstance().filter(viewModel);
+                            }
+                        }
+                        adapter.setTopID(queryResult.getMaxId());
+                        adapter.updateForce();
+                    }
+                }
+            }.execute();
         }
     }
 }

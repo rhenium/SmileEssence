@@ -24,15 +24,17 @@
 
 package net.lacolaco.smileessence.view;
 
+import android.os.Bundle;
 import android.widget.ListView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 
-import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Account;
+import net.lacolaco.smileessence.twitter.StatusFilter;
 import net.lacolaco.smileessence.twitter.TwitterApi;
 import net.lacolaco.smileessence.twitter.task.DirectMessagesTask;
+import net.lacolaco.smileessence.twitter.task.SentDirectMessagesTask;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.view.adapter.MessageListAdapter;
 import net.lacolaco.smileessence.viewmodel.MessageViewModel;
@@ -46,14 +48,9 @@ import java.util.List;
 /**
  * Fragment of messages list
  */
-public class MessagesFragment extends CustomListFragment {
+public class MessagesFragment extends CustomListFragment<MessageListAdapter> {
 
     // --------------------- GETTER / SETTER METHODS ---------------------
-
-    @Override
-    protected MainActivity.AdapterID getAdapterIndex() {
-        return MainActivity.AdapterID.Messages;
-    }
 
     @Override
     protected PullToRefreshBase.Mode getRefreshMode() {
@@ -62,6 +59,39 @@ public class MessagesFragment extends CustomListFragment {
 
     // ------------------------ INTERFACE METHODS ------------------------
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        MessageListAdapter adapter = new MessageListAdapter(getActivity());
+        setAdapter(adapter);
+
+        StatusFilter.getInstance().register(this, MessageViewModel.class, (MessageViewModel message) -> {
+            adapter.addToTop(message);
+            adapter.update();
+        });
+        final Twitter twitter = TwitterApi.getTwitter(((MainActivity) getActivity()).getCurrentAccount());
+        final Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount((MainActivity) getActivity()));
+        new DirectMessagesTask(twitter, paging) {
+            @Override
+            protected void onPostExecute(List<DirectMessage> directMessages) {
+                super.onPostExecute(directMessages);
+                for (DirectMessage message : directMessages) {
+                    adapter.addToBottom(new MessageViewModel(message));
+                }
+                adapter.notifyDataSetChanged();
+            }
+        }.execute();
+        new SentDirectMessagesTask(twitter, paging) {
+            @Override
+            protected void onPostExecute(List<DirectMessage> directMessages) {
+                super.onPostExecute(directMessages);
+                for (DirectMessage message : directMessages) {
+                    adapter.addToBottom(new MessageViewModel(message));
+                }
+                adapter.notifyDataSetChanged();
+            }
+        }.execute();
+    }
 
     // --------------------- Interface OnRefreshListener2 ---------------------
 
@@ -70,7 +100,7 @@ public class MessagesFragment extends CustomListFragment {
         final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
         Twitter twitter = TwitterApi.getTwitter(currentAccount);
-        final MessageListAdapter adapter = (MessageListAdapter) getListAdapter();
+        final MessageListAdapter adapter = getAdapter();
         Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount(activity));
         if (adapter.getCount() > 0) {
             paging.setSinceId(adapter.getTopID());
@@ -93,7 +123,7 @@ public class MessagesFragment extends CustomListFragment {
         final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
         Twitter twitter = TwitterApi.getTwitter(currentAccount);
-        final MessageListAdapter adapter = (MessageListAdapter) getListAdapter();
+        final MessageListAdapter adapter = getAdapter();
         Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount(activity));
         if (adapter.getCount() > 0) {
             paging.setMaxId(adapter.getLastID() - 1);

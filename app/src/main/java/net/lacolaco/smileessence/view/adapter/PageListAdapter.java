@@ -26,10 +26,12 @@ package net.lacolaco.smileessence.view.adapter;
 
 import android.app.ActionBar;
 import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 
+import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
@@ -37,6 +39,7 @@ import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.view.HomeFragment;
 import net.lacolaco.smileessence.view.PageFragment;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -102,7 +105,7 @@ public class PageListAdapter extends FragmentPagerAdapter implements ViewPager.O
     @Override
     public synchronized Fragment getItem(int position) {
         PageInfo info = pages.get(position);
-        return Fragment.instantiate(context, info.getFragmentClass().getName(), info.getArgs());
+        return info.instantiate(context);
     }
 
     public void addPage(Class<? extends PageFragment> klass, String name, Bundle args) {
@@ -143,10 +146,21 @@ public class PageListAdapter extends FragmentPagerAdapter implements ViewPager.O
         return -1;
     }
 
+    @Deprecated
+    public <T extends PageFragment> T getFragment(Class<T> fragmentClass) {
+        for(PageInfo info : pages) {
+            if (info.getFragmentClass() == fragmentClass) {
+                return (T) info.getCachedInstance();
+            }
+        }
+        return null;
+    }
+
     private static final class PageInfo {
         private final Class<? extends PageFragment> fragmentClass;
         private final Bundle args;
         private final String name;
+        private WeakReference<PageFragment> fragmentCache;
 
         PageInfo(Class<? extends PageFragment> _fragmentClass, String _name, Bundle _args) {
             fragmentClass = _fragmentClass;
@@ -162,6 +176,16 @@ public class PageListAdapter extends FragmentPagerAdapter implements ViewPager.O
 
         public Bundle getArgs() {
             return args;
+        }
+
+        public PageFragment instantiate(Context context) {
+            PageFragment fragment = (PageFragment) Fragment.instantiate(context, getFragmentClass().getName(), getArgs());
+            fragmentCache = new WeakReference<>(fragment);
+            return fragment;
+        }
+
+        public PageFragment getCachedInstance() {
+            return fragmentCache.get();
         }
     }
 }

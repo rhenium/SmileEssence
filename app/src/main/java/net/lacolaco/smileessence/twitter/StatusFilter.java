@@ -24,37 +24,46 @@
 
 package net.lacolaco.smileessence.twitter;
 
-import net.lacolaco.smileessence.activity.MainActivity;
-import net.lacolaco.smileessence.entity.ExtractionWord;
-import net.lacolaco.smileessence.view.adapter.StatusListAdapter;
-import net.lacolaco.smileessence.viewmodel.StatusViewModel;
+import net.lacolaco.smileessence.util.Consumer;
+import net.lacolaco.smileessence.viewmodel.IViewModel;
 
-import java.util.regex.Pattern;
+import java.util.*;
 
 public class StatusFilter {
+    private Map<Class<?>, Map<Object, Consumer<?>>> handlers = new HashMap<>();
+    private static StatusFilter instance = new StatusFilter();
+
+    public static StatusFilter getInstance() {
+        return instance;
+    }
+
+    public synchronized <T> void register(Object key, Class<T> klass, Consumer<T> handler) {
+        Map<Object, Consumer<?>> map = handlers.get(klass);
+        if (map == null) {
+            map = new WeakHashMap<>();
+            handlers.put(klass, map);
+        }
+        map.put(key, handler);
+    }
 
     // -------------------------- STATIC METHODS --------------------------
 
-    public static void filter(MainActivity activity, StatusViewModel status) {
-        extract(activity, status);
-    }
-
-    private static void extract(MainActivity activity, StatusViewModel status) {
-        if (status.getTweet().isRetweet()) {
-            return;
-        }
-        Pattern pattern;
-        for (ExtractionWord word : ExtractionWord.getAll()) {
-            pattern = Pattern.compile(word.text);
-            if (pattern.matcher(status.getTweet().getText()).find()) {
-                addToMentions(activity, status);
+    public <T extends IViewModel> void filter(T status) {
+        Map<Object, Consumer<?>> map = handlers.get(status.getClass());
+        if (map != null) {
+            for(Consumer f_ : map.values()) {
+                ((Consumer<T>) f_).accept(status);
             }
         }
     }
 
-    private static void addToMentions(MainActivity activity, StatusViewModel status) {
-        StatusListAdapter adapter = (StatusListAdapter) activity.getListAdapter(MainActivity.AdapterID.Mentions);
-        adapter.addToTop(status);
-        adapter.update();
-    }
+    // public void remove(Class<? extends IViewModel> klass, long id) {
+    //     Map<Object, Consumer<?>> map = handlers.get(klass);
+    //
+    //     if (map != null) {
+    //         for(Consumer f_ : map.values()) {
+    //             ((Consumer<T>) f_).accept(status);
+    //         }
+    //     }
+    // }
 }

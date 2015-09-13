@@ -51,7 +51,7 @@ import net.lacolaco.smileessence.twitter.task.RetweetTask;
 import net.lacolaco.smileessence.twitter.task.UnfavoriteTask;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.view.DialogHelper;
-import net.lacolaco.smileessence.view.adapter.PostState;
+import net.lacolaco.smileessence.data.PostState;
 import net.lacolaco.smileessence.view.adapter.StatusListAdapter;
 import net.lacolaco.smileessence.view.listener.ListItemClickListener;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;

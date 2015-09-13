@@ -36,7 +36,7 @@ import android.widget.RatingBar;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Tweet;
-import net.lacolaco.smileessence.view.adapter.PostState;
+import net.lacolaco.smileessence.data.PostState;
 
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 

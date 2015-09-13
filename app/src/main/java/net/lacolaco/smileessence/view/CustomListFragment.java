@@ -24,7 +24,6 @@
 
 package net.lacolaco.smileessence.view;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,24 +36,16 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 
-public abstract class CustomListFragment extends PageFragment implements AbsListView.OnScrollListener,
+public abstract class CustomListFragment<T extends CustomListAdapter> extends PageFragment<T> implements AbsListView.OnScrollListener,
         PullToRefreshBase.OnRefreshListener2<ListView> {
 
     // ------------------------------ FIELDS ------------------------------
 
     public static final int SCROLL_DURATION = 1500;
-
     // --------------------- GETTER / SETTER METHODS ---------------------
-
-    protected abstract MainActivity.AdapterID getAdapterIndex();
-
-    protected CustomListAdapter<?> getListAdapter() {
-        return ((MainActivity) getActivity()).getListAdapter(getAdapterIndex());
-    }
 
     protected PullToRefreshBase.Mode getRefreshMode() {
         return PullToRefreshBase.Mode.DISABLED;
@@ -79,7 +70,7 @@ public abstract class CustomListFragment extends PageFragment implements AbsList
 
     @Override
     public void onScrollStateChanged(AbsListView absListView, int scrollState) {
-        CustomListAdapter<?> adapter = getListAdapter();
+        T adapter = getAdapter();
         adapter.setNotifiable(false);
 
         if (absListView.getFirstVisiblePosition() == 0 && absListView.getChildAt(0) != null && absListView.getChildAt(0).getTop() == 0) {
@@ -104,7 +95,7 @@ public abstract class CustomListFragment extends PageFragment implements AbsList
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View page = inflater.inflate(R.layout.fragment_list, container, false);
         PullToRefreshListView listView = getListView(page);
-        ListAdapter adapter = getListAdapter();
+        ListAdapter adapter = getAdapter();
         listView.setAdapter(adapter);
         listView.setOnScrollListener(this);
         listView.setOnRefreshListener(this);

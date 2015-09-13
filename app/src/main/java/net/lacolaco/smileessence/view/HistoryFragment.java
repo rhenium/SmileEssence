@@ -24,23 +24,22 @@
 
 package net.lacolaco.smileessence.view;
 
+import android.os.Bundle;
 import android.widget.ListView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
+import net.lacolaco.smileessence.twitter.StatusFilter;
+import net.lacolaco.smileessence.view.adapter.EventListAdapter;
+import net.lacolaco.smileessence.viewmodel.EventViewModel;
 
 /**
  * Fragment for notice history
  */
-public class HistoryFragment extends CustomListFragment {
+public class HistoryFragment extends CustomListFragment<EventListAdapter> {
 
     // --------------------- GETTER / SETTER METHODS ---------------------
-
-    @Override
-    protected MainActivity.AdapterID getAdapterIndex() {
-        return MainActivity.AdapterID.History;
-    }
 
     @Override
     protected PullToRefreshBase.Mode getRefreshMode() {
@@ -49,6 +48,17 @@ public class HistoryFragment extends CustomListFragment {
 
     // ------------------------ INTERFACE METHODS ------------------------
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EventListAdapter adapter = new EventListAdapter(getActivity());
+        setAdapter(adapter);
+
+        StatusFilter.getInstance().register(this, EventViewModel.class, (EventViewModel vm) -> {
+            adapter.addToTop(vm);
+            adapter.update();
+        });
+    }
 
     // --------------------- Interface OnRefreshListener2 ---------------------
 

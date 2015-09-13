@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package net.lacolaco.smileessence.view.adapter;
+package net.lacolaco.smileessence.data;
 
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.view.DialogHelper;

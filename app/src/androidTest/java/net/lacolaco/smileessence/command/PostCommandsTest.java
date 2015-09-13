@@ -31,7 +31,7 @@ import net.lacolaco.smileessence.command.post.PostCommandInsert;
 import net.lacolaco.smileessence.command.post.PostCommandMorse;
 import net.lacolaco.smileessence.command.post.PostCommandZekamashi;
 import net.lacolaco.smileessence.util.Morse;
-import net.lacolaco.smileessence.view.adapter.PostState;
+import net.lacolaco.smileessence.data.PostState;
 
 public class PostCommandsTest extends ActivityInstrumentationTestCase2<MainActivity> {
 

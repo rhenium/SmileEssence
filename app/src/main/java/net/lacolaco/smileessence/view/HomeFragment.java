@@ -24,11 +24,11 @@
 
 package net.lacolaco.smileessence.view;
 
+import android.os.Bundle;
 import android.widget.ListView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 
-import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
@@ -46,14 +46,9 @@ import twitter4j.Twitter;
 import java.util.List;
 import java.util.ListIterator;
 
-public class HomeFragment extends CustomListFragment {
+public class HomeFragment extends CustomListFragment<StatusListAdapter> {
 
     // --------------------- GETTER / SETTER METHODS ---------------------
-
-    @Override
-    protected MainActivity.AdapterID getAdapterIndex() {
-        return MainActivity.AdapterID.Home;
-    }
 
     @Override
     protected PullToRefreshBase.Mode getRefreshMode() {
@@ -62,17 +57,43 @@ public class HomeFragment extends CustomListFragment {
 
     // ------------------------ INTERFACE METHODS ------------------------
 
+    @Override // onCreate って Fragment のインスタンスが作られるときは必ず呼ばれるって認識でいいんだよね？
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        StatusListAdapter adapter = new StatusListAdapter(getActivity());
+        setAdapter(adapter);
+
+        StatusFilter.getInstance().register(this, StatusViewModel.class, (StatusViewModel tweet) -> {
+            adapter.addToTop(tweet);
+            adapter.update();
+        });
+        final Twitter twitter = TwitterApi.getTwitter(((MainActivity) getActivity()).getCurrentAccount());
+        final Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount((MainActivity) getActivity()));
+        new HomeTimelineTask(twitter, paging) {
+            @Override
+            protected void onPostExecute(List<Tweet> tweets) {
+                super.onPostExecute(tweets);
+                for (Tweet tweet : tweets) {
+                    StatusViewModel statusViewModel = new StatusViewModel(tweet);
+                    adapter.addToBottom(statusViewModel);
+                    StatusFilter.getInstance().filter(statusViewModel);
+                }
+                adapter.updateForce();
+            }
+        }.execute();
+    }
+
 
     // --------------------- Interface OnRefreshListener2 ---------------------
 
     @Override
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
         final MainActivity activity = (MainActivity) getActivity();
+        final StatusListAdapter adapter = getAdapter();
         if (activity.isStreaming()) {
             new UIHandler() {
                 @Override
                 public void run() {
-                    StatusListAdapter adapter = (StatusListAdapter) getListAdapter();
                     updateListViewWithNotice(refreshView.getRefreshableView(), adapter, true);
                     refreshView.onRefreshComplete();
                 }
@@ -81,7 +102,6 @@ public class HomeFragment extends CustomListFragment {
         }
         final Account currentAccount = activity.getCurrentAccount();
         Twitter twitter = TwitterApi.getTwitter(currentAccount);
-        final StatusListAdapter adapter = (StatusListAdapter) getListAdapter();
         Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount(activity));
         if (adapter.getCount() > 0) {
             paging.setSinceId(adapter.getTopID());
@@ -94,7 +114,7 @@ public class HomeFragment extends CustomListFragment {
                 while (li.hasPrevious()) {
                     StatusViewModel viewModel = new StatusViewModel(li.previous());
                     adapter.addToTop(viewModel);
-                    StatusFilter.filter(activity, viewModel);
+                    StatusFilter.getInstance().filter(viewModel);
                 }
                 updateListViewWithNotice(refreshView.getRefreshableView(), adapter, true);
                 refreshView.onRefreshComplete();
@@ -105,9 +125,9 @@ public class HomeFragment extends CustomListFragment {
     @Override
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
         final MainActivity activity = (MainActivity) getActivity();
+        final StatusListAdapter adapter = getAdapter();
         final Account currentAccount = activity.getCurrentAccount();
         Twitter twitter = TwitterApi.getTwitter(currentAccount);
-        final StatusListAdapter adapter = (StatusListAdapter) getListAdapter();
         Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount(activity));
         if (adapter.getCount() > 0) {
             paging.setMaxId(adapter.getLastID() - 1);
@@ -119,7 +139,7 @@ public class HomeFragment extends CustomListFragment {
                 for (Tweet tweet : tweets) {
                     StatusViewModel viewModel = new StatusViewModel(tweet);
                     adapter.addToBottom(viewModel);
-                    StatusFilter.filter(activity, viewModel);
+                    StatusFilter.getInstance().filter(viewModel);
                 }
                 updateListViewWithNotice(refreshView.getRefreshableView(), adapter, false);
                 refreshView.onRefreshComplete();

@@ -44,11 +44,7 @@ public class UserListStatusesTask extends TwitterTask<List<Tweet>> {
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public UserListStatusesTask(Twitter twitter, MainActivity activity, String listFullName) {
-        this(twitter, activity, listFullName, TwitterUtils.getPaging(TwitterUtils.getPagingCount(activity)));
-    }
-
-    public UserListStatusesTask(Twitter twitter, MainActivity activity, String listFullName, Paging paging) {
+    public UserListStatusesTask(Twitter twitter, String listFullName, Paging paging) {
         super(twitter);
         this.listFullName = listFullName;
         this.paging = paging;
@@ -58,9 +54,6 @@ public class UserListStatusesTask extends TwitterTask<List<Tweet>> {
 
     @Override
     protected void onPostExecute(List<Tweet> tweets) {
-        for (Tweet tweet : tweets) {
-            // FavoriteCache.getInstance().put(tweet);
-        }
     }
 
     @Override

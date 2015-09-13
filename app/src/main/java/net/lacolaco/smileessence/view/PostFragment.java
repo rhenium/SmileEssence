@@ -51,7 +51,7 @@ import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.util.BitmapThumbnailTask;
 import net.lacolaco.smileessence.util.IntentUtils;
 import net.lacolaco.smileessence.util.UIHandler;
-import net.lacolaco.smileessence.view.adapter.PostState;
+import net.lacolaco.smileessence.data.PostState;
 import net.lacolaco.smileessence.view.dialog.PostMenuDialogFragment;
 import net.lacolaco.smileessence.view.dialog.SelectImageDialogFragment;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;

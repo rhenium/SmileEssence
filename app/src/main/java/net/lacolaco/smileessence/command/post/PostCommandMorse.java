@@ -29,7 +29,7 @@ import android.text.TextUtils;
 
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.util.Morse;
-import net.lacolaco.smileessence.view.adapter.PostState;
+import net.lacolaco.smileessence.data.PostState;
 
 public class PostCommandMorse extends PostCommand {
 

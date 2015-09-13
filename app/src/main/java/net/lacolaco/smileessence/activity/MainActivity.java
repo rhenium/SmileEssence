@@ -43,6 +43,7 @@ import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.BuildConfig;
 import net.lacolaco.smileessence.IntentRouter;
 import net.lacolaco.smileessence.R;
+import net.lacolaco.smileessence.data.PostState;
 import net.lacolaco.smileessence.data.UserListCache;
 import net.lacolaco.smileessence.entity.*;
 import net.lacolaco.smileessence.entity.DirectMessage;
@@ -72,19 +73,6 @@ public class MainActivity extends Activity {
 
     // ------------------------------ FIELDS ------------------------------
 
-    public enum AdapterID {
-        Home,
-        Mentions,
-        History,
-        Messages,
-        Search,
-        UserList;
-
-        public static AdapterID get(int ordinal) {
-            return values()[ordinal];
-        }
-    }
-
     public static final int REQUEST_OAUTH = 10;
     public static final int REQUEST_GET_PICTURE_FROM_GALLERY = 11;
     public static final int REQUEST_GET_PICTURE_FROM_CAMERA = 12;
@@ -95,7 +83,6 @@ public class MainActivity extends Activity {
     private PageListAdapter pagerAdapter;
     private Account currentAccount;
     private TwitterStream stream;
-    private HashMap<AdapterID, CustomListAdapter<?>> adapterMap = new HashMap<>();
     private boolean streaming = false;
     private Uri cameraTempFilePath;
 
@@ -121,7 +108,7 @@ public class MainActivity extends Activity {
         this.currentAccount = account;
     }
 
-    private String getLastSearch() {
+    public String getLastSearch() {
         return getAppPreferenceHelper().getValue(KEY_LAST_USED_SEARCH_QUERY, "");
     }
 
@@ -142,12 +129,8 @@ public class MainActivity extends Activity {
         getAppPreferenceHelper().putValue(KEY_LAST_USED_ACCOUNT_ID, account.getId());
     }
 
-    private String getLastUserList() {
+    public String getLastUserList() {
         return getAppPreferenceHelper().getValue(KEY_LAST_USER_LIST, "");
-    }
-
-    public Collection<CustomListAdapter<?>> getListAdapters() {
-        return adapterMap.values();
     }
 
     public int getThemeIndex() {
@@ -303,26 +286,8 @@ public class MainActivity extends Activity {
 
     // -------------------------- OTHER METHODS --------------------------
 
-    @Deprecated // visible is 何
-    public void addListPage(Class<? extends CustomListFragment> fragmentClass, String name, CustomListAdapter<?> adapter, AdapterID adapterId, boolean visible) {
-        if (visible) {
-            Bundle args = new Bundle();
-            adapterMap.put(adapterId, adapter);
-            addPage(fragmentClass, name, args, false);
-        }
-    }
-
-    @Deprecated
-    public void addPage(Class<? extends PageFragment> fragmentClass, String name, Bundle args, boolean withNotify) {
-        pagerAdapter.addPage(fragmentClass, name, args, withNotify);
-    }
-
     public void forceFinish() {
         super.finish();
-    }
-
-    public CustomListAdapter<?> getListAdapter(AdapterID adapterId) {
-        return adapterMap.get(adapterId);
     }
 
     public void openHomePage() {
@@ -360,13 +325,19 @@ public class MainActivity extends Activity {
      * Open search page with given query
      */
     public void openSearchPage(final String query) {
-        startNewSearch(TwitterApi.getTwitter(getCurrentAccount()), query);
-        openSearchPage();
+        SearchFragment fragment = pagerAdapter.getFragment(SearchFragment.class);
+        if (fragment != null) {
+            fragment.startSearch(TwitterApi.getTwitter(getCurrentAccount()), query);
+            openSearchPage();
+        }
     }
 
     public void openUserListPage(String listFullName) {
-        startUserList(TwitterApi.getTwitter(getCurrentAccount()), listFullName);
-        openUserListPage();
+        UserListFragment fragment = pagerAdapter.getFragment(UserListFragment.class);
+        if (fragment != null) {
+            fragment.startUserList(TwitterApi.getTwitter(getCurrentAccount()), listFullName);
+            openUserListPage();
+        }
     }
 
     public void saveLastUserList(String lastUserList) {
@@ -383,42 +354,9 @@ public class MainActivity extends Activity {
     }
 
     public void startMainLogic() {
-        initializeView();
         CommandSetting.initialize();
+        initializeView();
         startTwitter();
-    }
-
-    public void startNewSearch(final Twitter twitter, final String queryString) {
-        setLastSearch(queryString);
-        if (!TextUtils.isEmpty(queryString)) {
-            final SearchListAdapter adapter = (SearchListAdapter) getListAdapter(AdapterID.Search);
-            adapter.initSearch(queryString);
-            adapter.clear();
-            adapter.updateForce();
-            final Query query = new Query();
-            query.setQuery(queryString);
-            query.setCount(TwitterUtils.getPagingCount(this));
-            query.setResultType(Query.RECENT);
-            new SearchTask(twitter, query) {
-                @Override
-                protected void onPostExecute(QueryResult queryResult) {
-                    super.onPostExecute(queryResult);
-                    if (queryResult != null) {
-                        List<twitter4j.Status> tweets = queryResult.getTweets();
-                        for (int i = tweets.size() - 1; i >= 0; i--) {
-                            twitter4j.Status status = tweets.get(i);
-                            if (!status.isRetweet()) {
-                                StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status));
-                                adapter.addToTop(viewModel);
-                                StatusFilter.filter(MainActivity.this, viewModel);
-                            }
-                        }
-                        adapter.setTopID(queryResult.getMaxId());
-                        adapter.updateForce();
-                    }
-                }
-            }.execute();
-        }
     }
 
     public boolean startStream() {
@@ -442,14 +380,8 @@ public class MainActivity extends Activity {
         }
         int count = TwitterUtils.getPagingCount(this);
         Twitter twitter = TwitterApi.getTwitter(currentAccount);
-        Paging paging = TwitterUtils.getPaging(count);
         initInvisibleUser(twitter);
         initUserListCache(twitter);
-        initHome(twitter, paging);
-        initMentions(twitter, paging);
-        initMessages(twitter, paging);
-        initSearch(twitter);
-        initUserList(twitter);
         updateActionBarIcon();
         return true;
     }
@@ -471,44 +403,6 @@ public class MainActivity extends Activity {
         userTask.execute();
     }
 
-    private void addPostPage() {
-        addPage(PostFragment.class, getString(R.string.page_name_post), null, true);
-    }
-
-    private void addHomePage() {
-        StatusListAdapter homeAdapter = new StatusListAdapter(this);
-        addListPage( HomeFragment.class, getString(R.string.page_name_home), homeAdapter, AdapterID.Home, true);
-    }
-
-    private void addMentionsPage() {
-        StatusListAdapter mentionsAdapter = new StatusListAdapter(this);
-        addListPage(MentionsFragment.class, getString(R.string.page_name_mentions), mentionsAdapter, AdapterID.Mentions, true);
-    }
-
-    private void addHistoryPage() {
-        boolean visible = getUserPreferenceHelper().getValue(R.string.key_page_history_visibility, true);
-        EventListAdapter historyAdapter = new EventListAdapter(this);
-        addListPage(HistoryFragment.class, getString(R.string.page_name_history), historyAdapter, AdapterID.History, visible);
-    }
-
-    private void addMessagesPage() {
-        boolean visible = getUserPreferenceHelper().getValue(R.string.key_page_messages_visibility, true);
-        MessageListAdapter messagesAdapter = new MessageListAdapter(this);
-        addListPage(MessagesFragment.class, getString(R.string.page_name_messages), messagesAdapter, AdapterID.Messages, visible);
-    }
-
-    private void addSearchPage() {
-        boolean visible = getUserPreferenceHelper().getValue(R.string.key_page_search_visibility, true);
-        SearchListAdapter searchAdapter = new SearchListAdapter(this);
-        addListPage(SearchFragment.class, getString(R.string.page_name_search), searchAdapter, AdapterID.Search, visible);
-    }
-
-    private void addUserListPage() {
-        boolean visible = getUserPreferenceHelper().getValue(R.string.key_page_list_visibility, true);
-        UserListListAdapter userListAdapter = new UserListListAdapter(this);
-        addListPage(UserListFragment.class, getString(R.string.page_name_list), userListAdapter, AdapterID.UserList, visible);
-    }
-
     private void getImageUri(int requestCode, int resultCode, Intent data) {
         if (resultCode != RESULT_OK) {
             Logger.error(requestCode);
@@ -525,20 +419,9 @@ public class MainActivity extends Activity {
         openPostPageWithImage(uri);
     }
 
-    private void initHome(final Twitter twitter, final Paging paging) {
-        new HomeTimelineTask(twitter, paging) {
-            @Override
-            protected void onPostExecute(List<Tweet> tweets) {
-                super.onPostExecute(tweets);
-                StatusListAdapter adapter = (StatusListAdapter) getListAdapter(AdapterID.Home);
-                for (Tweet tweet : tweets) {
-                    StatusViewModel statusViewModel = new StatusViewModel(tweet);
-                    adapter.addToBottom(statusViewModel);
-                    StatusFilter.filter(MainActivity.this, statusViewModel);
-                }
-                adapter.updateForce();
-            }
-        }.execute();
+    @Deprecated
+    public void addPage(Class<? extends PageFragment> fragmentClass, String name, Bundle args, boolean withNotify) {
+        pagerAdapter.addPage(fragmentClass, name, args, withNotify);
     }
 
     private void initInvisibleUser(Twitter twitter) {
@@ -546,70 +429,8 @@ public class MainActivity extends Activity {
         new MutesIDsTask(twitter).execute();
     }
 
-    private void initMentions(final Twitter twitter, final Paging paging) {
-        new MentionsTimelineTask(twitter, paging) {
-            @Override
-            protected void onPostExecute(List<Tweet> tweets) {
-                super.onPostExecute(tweets);
-                StatusListAdapter adapter = (StatusListAdapter) getListAdapter(AdapterID.Mentions);
-                for (Tweet tweet : tweets) {
-                    adapter.addToBottom(new StatusViewModel(tweet));
-                }
-                adapter.updateForce();
-            }
-        }.execute();
-    }
-
-    private void initMessages(final Twitter twitter, final Paging paging) {
-        if (pagerAdapter.getIndex(MessagesFragment.class) == -1) {
-            return;
-        }
-        new DirectMessagesTask(twitter, paging) {
-            @Override
-            protected void onPostExecute(List<DirectMessage> directMessages) {
-                super.onPostExecute(directMessages);
-                MessageListAdapter adapter = (MessageListAdapter) getListAdapter(AdapterID.Messages);
-                for (DirectMessage message : directMessages) {
-                    adapter.addToBottom(new MessageViewModel(message));
-                }
-                adapter.notifyDataSetChanged();
-            }
-        }.execute();
-        new SentDirectMessagesTask(twitter, paging) {
-            @Override
-            protected void onPostExecute(List<DirectMessage> directMessages) {
-                super.onPostExecute(directMessages);
-                MessageListAdapter adapter = (MessageListAdapter) getListAdapter(AdapterID.Messages);
-                for (DirectMessage message : directMessages) {
-                    adapter.addToBottom(new MessageViewModel(message));
-                }
-                adapter.notifyDataSetChanged();
-            }
-        }.execute();
-    }
-
     private void initPostState() {
         PostState.newState().beginTransaction().commit();
-    }
-
-    private void initSearch(Twitter twitter) {
-        if (pagerAdapter.getIndex(SearchFragment.class) == -1) {
-            return;
-        }
-        String lastUsedSearchQuery = getLastSearch();
-        if (!TextUtils.isEmpty(lastUsedSearchQuery)) {
-            startNewSearch(twitter, lastUsedSearchQuery);
-        }
-    }
-
-    private void initUserList(Twitter twitter) {
-        if (pagerAdapter.getIndex(UserListFragment.class) == -1) {
-            return;
-        }
-        String lastUserList = getLastUserList();
-        if (!TextUtils.isEmpty(lastUserList)) {
-            startUserList(twitter, lastUserList);
-        }
     }
 
     private void initUserListCache(Twitter twitter) {
@@ -618,13 +439,17 @@ public class MainActivity extends Activity {
     }
 
     private void initializePages() {
-        addPostPage();
-        addHomePage();
-        addMentionsPage();
-        addHistoryPage();
-        addMessagesPage();
-        addSearchPage();
-        addUserListPage();
+        addPage(PostFragment.class, getString(R.string.page_name_post), null, false);
+        addPage(HomeFragment.class, getString(R.string.page_name_home), null, false);
+        addPage(MentionsFragment.class, getString(R.string.page_name_mentions), null, false);
+        if (getUserPreferenceHelper().getValue(R.string.key_page_history_visibility, true))
+            addPage(HistoryFragment.class, getString(R.string.page_name_history), null, false);
+        if (getUserPreferenceHelper().getValue(R.string.key_page_messages_visibility, true))
+            addPage(MessagesFragment.class, getString(R.string.page_name_messages), null, false);
+        if (getUserPreferenceHelper().getValue(R.string.key_page_search_visibility, true))
+            addPage(SearchFragment.class, getString(R.string.page_name_search), null, false);
+        if (getUserPreferenceHelper().getValue(R.string.key_page_list_visibility, true))
+            addPage(UserListFragment.class, getString(R.string.page_name_list), null, false);
         pagerAdapter.notifyDataSetChanged();
         viewPager.setOffscreenPageLimit(pagerAdapter.getCount());
         initPostState();
@@ -676,23 +501,4 @@ public class MainActivity extends Activity {
         startActivityForResult(new Intent(this, OAuthActivity.class), REQUEST_OAUTH);
     }
 
-    private void startUserList(Twitter twitter, String listFullName) {
-        saveLastUserList(listFullName);
-        final UserListListAdapter adapter = (UserListListAdapter) getListAdapter(AdapterID.UserList);
-        adapter.setListFullName(listFullName);
-        adapter.clear();
-        adapter.updateForce();
-        new UserListStatusesTask(twitter, this, listFullName) {
-            @Override
-            protected void onPostExecute(List<Tweet> tweets) {
-                super.onPostExecute(tweets);
-                for (Tweet tweet : tweets) {
-                    StatusViewModel statusViewModel = new StatusViewModel(tweet);
-                    adapter.addToBottom(statusViewModel);
-                    StatusFilter.filter(MainActivity.this, statusViewModel);
-                }
-                adapter.updateForce();
-            }
-        }.execute();
-    }
 }

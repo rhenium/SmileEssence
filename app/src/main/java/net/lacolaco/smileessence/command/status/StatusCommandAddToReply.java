@@ -29,9 +29,7 @@ import android.app.Activity;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.notification.Notificator;
-import net.lacolaco.smileessence.view.adapter.PostState;
-
-import twitter4j.Status;
+import net.lacolaco.smileessence.data.PostState;
 
 public class StatusCommandAddToReply extends StatusCommand {
 

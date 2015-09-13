@@ -33,7 +33,7 @@ import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.*;
 import net.lacolaco.smileessence.command.CommandOpenURL;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
-import net.lacolaco.smileessence.view.adapter.PostState;
+import net.lacolaco.smileessence.data.PostState;
 
 public class MainActivityMenuHelper {
 

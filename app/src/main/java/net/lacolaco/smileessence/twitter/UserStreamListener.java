@@ -89,7 +89,6 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
     public void onStatus(Status status) {
         Tweet tweet = Tweet.fromTwitter(status);
         StatusViewModel vm = new StatusViewModel(tweet);
-        addToHome(vm);
         if (tweet.isRetweet()) {
             //if (viewModel.isRetweetOfMe()) {
             //    addToHistory(new EventViewModel(EnumEvent.RETWEETED, status.getUser(), status));
@@ -99,19 +98,20 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
         //    EventViewModel mentioned = new EventViewModel(EnumEvent.MENTIONED, status.getUser(), status);
         //    Notificator.getInstance().publish(mentioned.getFormattedString(activity));
         //}
-        StatusFilter.filter(activity, vm);
+        StatusFilter.getInstance().filter(vm);
         FavoriteCache.getInstance().put(status);
     }
 
     @Override
     public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
-        for (CustomListAdapter<?> adapter : activity.getListAdapters()) {
-            if (adapter != null && adapter instanceof StatusListAdapter) {
-                StatusListAdapter statusListAdapter = (StatusListAdapter) adapter;
-                statusListAdapter.removeByStatusID(statusDeletionNotice.getStatusId());
-                statusListAdapter.updateForce();
-            }
-        }
+        // TODO: StatusFilter.getInstance().remove(StatusViewModel.class, statusDeletionNotice.getStatusId());
+        // for (CustomListAdapter<?> adapter : activity.getListAdapters()) {
+        //     if (adapter != null && adapter instanceof StatusListAdapter) {
+        //         StatusListAdapter statusListAdapter = (StatusListAdapter) adapter;
+        //         statusListAdapter.removeByStatusID(statusDeletionNotice.getStatusId());
+        //         statusListAdapter.updateForce();
+        //     }
+        // }
         Tweet.remove(statusDeletionNotice.getStatusId());
     }
 
@@ -138,9 +138,10 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
 
     @Override
     public void onDeletionNotice(long directMessageId, long userId) {
-        MessageListAdapter messages = (MessageListAdapter) activity.getListAdapter(MainActivity.AdapterID.Messages);
-        messages.removeByMessageID(directMessageId);
-        messages.updateForce();
+        // TODO: StatusFilter.getInstance().remove(MessageViewModel.class, directMessageId);
+        // MessageListAdapter messages = (MessageListAdapter) activity.getListAdapter(MainActivity.AdapterID.Messages);
+        // messages.removeByMessageID(directMessageId);
+        // messages.updateForce();
         DirectMessage.remove(directMessageId);
     }
 
@@ -156,8 +157,8 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
         }
         if (isMe(User.fromTwitter(source))) {
             FavoriteCache.getInstance().put(favoritedStatus, true);
-            activity.getListAdapter(MainActivity.AdapterID.Home).update();
-            activity.getListAdapter(MainActivity.AdapterID.Mentions).update();
+            // TODO: activity.getAdapter(MainActivity.AdapterID.Home).update();
+            // TODO: activity.getAdapter(MainActivity.AdapterID.Mentions).update();
         }
     }
 
@@ -170,8 +171,8 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
         }
         if (isMe(User.fromTwitter(source))) {
             //FavoriteCache.getInstance().put(unfavoritedStatus, false);
-            activity.getListAdapter(MainActivity.AdapterID.Home).update();
-            activity.getListAdapter(MainActivity.AdapterID.Mentions).update();
+            // TODO: activity.getAdapter(MainActivity.AdapterID.Home).update();
+            // TODO: activity.getAdapter(MainActivity.AdapterID.Mentions).update();
         }
     }
 
@@ -193,7 +194,7 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
             addToHistory(new EventViewModel(EnumEvent.RECEIVE_MESSAGE, User.fromTwitter(directMessage.getSender())));
         }
         MessageViewModel vm = new MessageViewModel(message);
-        addToMessages(vm);
+        StatusFilter.getInstance().filter(vm);
     }
 
     @Override
@@ -267,28 +268,8 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
     }
 
     private void addToHistory(EventViewModel mentioned) {
-        EventListAdapter history = (EventListAdapter) activity.getListAdapter(MainActivity.AdapterID.History);
+        StatusFilter.getInstance().filter(mentioned);
         Notificator.getInstance().publish(mentioned.getFormattedString(activity));
-        history.addToTop(mentioned);
-        history.update();
-    }
-
-    private void addToHome(StatusViewModel viewModel) {
-        StatusListAdapter home = (StatusListAdapter) activity.getListAdapter(MainActivity.AdapterID.Home);
-        home.addToTop(viewModel);
-        home.update();
-    }
-
-    private void addToMentions(StatusViewModel viewModel) {
-        StatusListAdapter mentions = (StatusListAdapter) activity.getListAdapter(MainActivity.AdapterID.Mentions);
-        mentions.addToTop(viewModel);
-        mentions.update();
-    }
-
-    private void addToMessages(MessageViewModel message) {
-        MessageListAdapter messages = (MessageListAdapter) activity.getListAdapter(MainActivity.AdapterID.Messages);
-        messages.addToTop(message);
-        messages.update();
     }
 
     private boolean isMe(User user) {

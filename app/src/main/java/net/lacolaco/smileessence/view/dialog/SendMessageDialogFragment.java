@@ -45,7 +45,7 @@ import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.twitter.TwitterApi;
 import net.lacolaco.smileessence.twitter.task.SendMessageTask;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
-import net.lacolaco.smileessence.view.adapter.PostState;
+import net.lacolaco.smileessence.data.PostState;
 
 import twitter4j.Twitter;
 
