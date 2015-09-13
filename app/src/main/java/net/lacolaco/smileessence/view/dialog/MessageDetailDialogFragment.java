@@ -40,7 +40,6 @@ import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.CommandOpenURL;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.notification.Notificator;
-import net.lacolaco.smileessence.twitter.TwitterApi;
 import net.lacolaco.smileessence.twitter.task.DeleteMessageTask;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.view.DialogHelper;
@@ -173,7 +172,7 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
         ConfirmDialogFragment.show(getActivity(), getString(R.string.dialog_confirm_commands), new Runnable() {
             @Override
             public void run() {
-                new DeleteMessageTask(new TwitterApi(account).getTwitter(), message.getId()).execute();
+                new DeleteMessageTask(account.getTwitter(), message.getId()).execute();
                 dismiss();
             }
         });

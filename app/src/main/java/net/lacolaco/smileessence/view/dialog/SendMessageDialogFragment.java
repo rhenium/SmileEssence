@@ -42,7 +42,6 @@ import com.twitter.Validator;
 
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
-import net.lacolaco.smileessence.twitter.TwitterApi;
 import net.lacolaco.smileessence.twitter.task.SendMessageTask;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.data.PostState;
@@ -155,7 +154,7 @@ public class SendMessageDialogFragment extends StackableDialogFragment implement
 
     private void sendMessage() {
         MainActivity activity = (MainActivity) getActivity();
-        Twitter twitter = TwitterApi.getTwitter(activity.getCurrentAccount());
+        Twitter twitter = activity.getCurrentAccount().getTwitter();
         String text = editText.getText().toString();
         new SendMessageTask(twitter, screenName, text).execute();
         hideIME();

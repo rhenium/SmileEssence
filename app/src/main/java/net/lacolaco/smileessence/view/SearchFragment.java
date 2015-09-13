@@ -50,7 +50,6 @@ import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.StatusFilter;
-import net.lacolaco.smileessence.twitter.TwitterApi;
 import net.lacolaco.smileessence.twitter.task.SearchTask;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.util.UIHandler;
@@ -58,7 +57,6 @@ import net.lacolaco.smileessence.view.adapter.SearchListAdapter;
 import net.lacolaco.smileessence.view.dialog.SelectSearchQueryDialogFragment;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 
-import twitter4j.Paging;
 import twitter4j.Query;
 import twitter4j.QueryResult;
 import twitter4j.Twitter;
@@ -89,7 +87,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
         setAdapter(adapter);
 
         final MainActivity activity = (MainActivity) getActivity();
-        final Twitter twitter = TwitterApi.getTwitter(activity.getCurrentAccount());
+        final Twitter twitter = activity.getCurrentAccount().getTwitter();
         String lastUsedSearchQuery = activity.getLastSearch();
         if (!TextUtils.isEmpty(lastUsedSearchQuery)) {
             startSearch(twitter, lastUsedSearchQuery);
@@ -139,7 +137,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
         final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
-        Twitter twitter = TwitterApi.getTwitter(currentAccount);
+        Twitter twitter = currentAccount.getTwitter();
         final SearchListAdapter adapter = getAdapter();
         String queryString = adapter.getQuery();
         if (TextUtils.isEmpty(queryString)) {
@@ -185,7 +183,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
         final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
-        Twitter twitter = TwitterApi.getTwitter(currentAccount);
+        Twitter twitter = currentAccount.getTwitter();
         final SearchListAdapter adapter = getAdapter();
         String queryString = adapter.getQuery();
         if (TextUtils.isEmpty(queryString)) {

@@ -43,7 +43,6 @@ import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.StatusFilter;
-import net.lacolaco.smileessence.twitter.TwitterApi;
 import net.lacolaco.smileessence.twitter.task.UserListStatusesTask;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.util.UIHandler;
@@ -81,7 +80,7 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
         UserListListAdapter adapter = new UserListListAdapter(getActivity());
         setAdapter(adapter);
 
-        final Twitter twitter = TwitterApi.getTwitter(((MainActivity) getActivity()).getCurrentAccount());
+        final Twitter twitter = ((MainActivity) getActivity()).getCurrentAccount().getTwitter();
         String lastUserList = getMainActivity().getLastUserList();
         if (!TextUtils.isEmpty(lastUserList)) {
             startUserList(twitter, lastUserList);
@@ -106,7 +105,7 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
         final MainActivity activity = getMainActivity();
         final Account currentAccount = activity.getCurrentAccount();
-        Twitter twitter = TwitterApi.getTwitter(currentAccount);
+        Twitter twitter = currentAccount.getTwitter();
         final UserListListAdapter adapter = (UserListListAdapter) getAdapter();
         String listFullName = adapter.getListFullName();
         if (TextUtils.isEmpty(listFullName)) {
@@ -142,7 +141,7 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
         final MainActivity activity = getMainActivity();
         final Account currentAccount = activity.getCurrentAccount();
-        Twitter twitter = TwitterApi.getTwitter(currentAccount);
+        Twitter twitter = currentAccount.getTwitter();
         final UserListListAdapter adapter = (UserListListAdapter) getAdapter();
         String listFullName = adapter.getListFullName();
         if (TextUtils.isEmpty(listFullName)) {

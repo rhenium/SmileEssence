@@ -45,7 +45,6 @@ import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
-import net.lacolaco.smileessence.twitter.TwitterApi;
 import net.lacolaco.smileessence.twitter.task.TweetTask;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.util.BitmapThumbnailTask;
@@ -378,7 +377,7 @@ public class PostFragment extends PageFragment implements TextWatcher, View.OnFo
         StatusUpdate statusUpdate = state.toStatusUpdate();
         MainActivity mainActivity = (MainActivity) getActivity();
         boolean resizeFlag = new UserPreferenceHelper(mainActivity).getValue(R.string.key_setting_resize_post_image, false);
-        TweetTask tweetTask = new TweetTask(TwitterApi.getTwitter(mainActivity.getCurrentAccount()), statusUpdate, state.getMediaFilePath(), resizeFlag);
+        TweetTask tweetTask = new TweetTask(mainActivity.getCurrentAccount().getTwitter(), statusUpdate, state.getMediaFilePath(), resizeFlag);
         tweetTask.execute();
         PostState.newState().beginTransaction().commit();
         mainActivity.openHomePage();

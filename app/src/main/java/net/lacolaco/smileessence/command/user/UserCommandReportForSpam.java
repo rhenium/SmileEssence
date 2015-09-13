@@ -29,7 +29,6 @@ import android.app.Activity;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.command.IConfirmable;
 import net.lacolaco.smileessence.entity.Account;
-import net.lacolaco.smileessence.twitter.TwitterApi;
 import net.lacolaco.smileessence.twitter.task.ReportForSpamTask;
 
 import net.lacolaco.smileessence.entity.User;
@@ -63,7 +62,7 @@ public class UserCommandReportForSpam extends UserCommand implements IConfirmabl
 
     @Override
     public boolean execute() {
-        new ReportForSpamTask(new TwitterApi(account).getTwitter(), getUser().getId()).execute();
+        new ReportForSpamTask(account.getTwitter(), getUser().getId()).execute();
         return true;
     }
 }

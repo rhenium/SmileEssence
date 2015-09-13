@@ -44,7 +44,6 @@ import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.twitter.TweetBuilder;
-import net.lacolaco.smileessence.twitter.TwitterApi;
 import net.lacolaco.smileessence.twitter.task.DeleteStatusTask;
 import net.lacolaco.smileessence.twitter.task.FavoriteTask;
 import net.lacolaco.smileessence.twitter.task.RetweetTask;
@@ -159,7 +158,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         confirm(activity, new Runnable() {
             @Override
             public void run() {
-                new DeleteStatusTask(TwitterApi.getTwitter(account), tweet.getOriginalTweet().getId()).execute();
+                new DeleteStatusTask(account.getTwitter(), tweet.getOriginalTweet().getId()).execute();
                 dismiss();
             }
         });
@@ -288,9 +287,9 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
     private void toggleFavorite(MainActivity activity, Account account, Tweet tweet, Boolean isFavorited) {
         long statusID = tweet.getOriginalTweet().getId();
         if (isFavorited) {
-            new UnfavoriteTask(TwitterApi.getTwitter(account), statusID).execute();
+            new UnfavoriteTask(account.getTwitter(), statusID).execute();
         } else {
-            new FavoriteTask(TwitterApi.getTwitter(account), statusID).execute();
+            new FavoriteTask(account.getTwitter(), statusID).execute();
         }
     }
 
@@ -299,9 +298,9 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
             @Override
             public void run() {
                 if (retweetID != -1L) {
-                    new DeleteStatusTask(TwitterApi.getTwitter(account), retweetID).execute();
+                    new DeleteStatusTask(account.getTwitter(), retweetID).execute();
                 } else {
-                    new RetweetTask(TwitterApi.getTwitter(account), tweet.getOriginalTweet().getId()).execute();
+                    new RetweetTask(account.getTwitter(), tweet.getOriginalTweet().getId()).execute();
                 }
             }
         });

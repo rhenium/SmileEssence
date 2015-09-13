@@ -33,7 +33,6 @@ import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.entity.User;
-import net.lacolaco.smileessence.twitter.TwitterApi;
 import net.lacolaco.smileessence.twitter.task.ShowDirectMessageTask;
 import net.lacolaco.smileessence.twitter.task.ShowStatusTask;
 import net.lacolaco.smileessence.twitter.task.ShowUserTask;
@@ -70,9 +69,9 @@ public class TwitterUtils {
         if (tweet != null) {
             callback.success(tweet);
             //update cache
-            task = new ShowStatusTask(new TwitterApi(account).getTwitter(), statusID);
+            task = new ShowStatusTask(account.getTwitter(), statusID);
         } else {
-            task = new ShowStatusTask(new TwitterApi(account).getTwitter(), statusID) {
+            task = new ShowStatusTask(account.getTwitter(), statusID) {
                 @Override
                 protected void onPostExecute(Tweet tweet) {
                     if (tweet != null) {
@@ -93,10 +92,10 @@ public class TwitterUtils {
         User user = User.fetch(userID);
         if (user != null) {
             callback.success(user);
-            ShowUserTask task = new ShowUserTask(new TwitterApi(account).getTwitter(), userID);
+            ShowUserTask task = new ShowUserTask(account.getTwitter(), userID);
             task.execute();
         } else {
-            ShowUserTask task = new ShowUserTask(new TwitterApi(account).getTwitter(), userID) {
+            ShowUserTask task = new ShowUserTask(account.getTwitter(), userID) {
                 @Override
                 protected void onPostExecute(User user) {
                     super.onPostExecute(user);
@@ -120,7 +119,7 @@ public class TwitterUtils {
         if (message != null) {
             callback.success(message);
         } else {
-            ShowDirectMessageTask task = new ShowDirectMessageTask(new TwitterApi(account).getTwitter(), messageID) {
+            ShowDirectMessageTask task = new ShowDirectMessageTask(account.getTwitter(), messageID) {
                 @Override
                 protected void onPostExecute(DirectMessage directMessage) {
                     super.onPostExecute(directMessage);

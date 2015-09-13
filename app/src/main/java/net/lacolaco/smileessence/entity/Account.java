@@ -28,6 +28,11 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Delete;
+import twitter4j.Twitter;
+import twitter4j.TwitterFactory;
+import twitter4j.TwitterStream;
+import twitter4j.TwitterStreamFactory;
+import twitter4j.auth.AccessToken;
 
 @Table(name = "Accounts")
 public class Account extends Model {
@@ -61,5 +66,17 @@ public class Account extends Model {
 
     public static void deleteAll() {
         new Delete().from(Account.class).execute();
+    }
+
+    public Twitter getTwitter() {
+        Twitter twitter = new TwitterFactory().getInstance();
+        twitter.setOAuthAccessToken(new AccessToken(accessToken, accessSecret));
+        return twitter;
+    }
+
+    public TwitterStream getTwitterStream() {
+        TwitterStream stream = new TwitterStreamFactory().getInstance();
+        stream.setOAuthAccessToken(new AccessToken(accessToken, accessSecret));
+        return stream;
     }
 }

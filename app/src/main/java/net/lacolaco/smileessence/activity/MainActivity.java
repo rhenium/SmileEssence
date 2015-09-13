@@ -55,7 +55,6 @@ import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.twitter.*;
 import net.lacolaco.smileessence.twitter.UserStreamListener;
 import net.lacolaco.smileessence.twitter.task.*;
-import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.util.*;
 import net.lacolaco.smileessence.view.*;
 import net.lacolaco.smileessence.view.adapter.*;
@@ -321,7 +320,7 @@ public class MainActivity extends Activity {
     public void openSearchPage(final String query) {
         SearchFragment fragment = pagerAdapter.getFragment(SearchFragment.class);
         if (fragment != null) {
-            fragment.startSearch(TwitterApi.getTwitter(getCurrentAccount()), query);
+            fragment.startSearch(getCurrentAccount().getTwitter(), query);
             openSearchPage();
         }
     }
@@ -329,7 +328,7 @@ public class MainActivity extends Activity {
     public void openUserListPage(String listFullName) {
         UserListFragment fragment = pagerAdapter.getFragment(UserListFragment.class);
         if (fragment != null) {
-            fragment.startUserList(TwitterApi.getTwitter(getCurrentAccount()), listFullName);
+            fragment.startUserList(getCurrentAccount().getTwitter(), listFullName);
             openUserListPage();
         }
     }
@@ -360,7 +359,7 @@ public class MainActivity extends Activity {
         if (stream != null) {
             stream.shutdown();
         }
-        stream = new TwitterApi(currentAccount).getTwitterStream();
+        stream = currentAccount.getTwitterStream();
         UserStreamListener listener = new UserStreamListener(this);
         stream.addListener(listener);
         stream.addConnectionLifeCycleListener(listener);
@@ -372,8 +371,7 @@ public class MainActivity extends Activity {
         if (!startStream()) {
             return false;
         }
-        int count = TwitterUtils.getPagingCount(this);
-        Twitter twitter = TwitterApi.getTwitter(currentAccount);
+        Twitter twitter = currentAccount.getTwitter();
         initInvisibleUser(twitter);
         initUserListCache(twitter);
         updateActionBarIcon();
@@ -381,7 +379,7 @@ public class MainActivity extends Activity {
     }
 
     public void updateActionBarIcon() {
-        Twitter twitter = new TwitterApi(currentAccount).getTwitter();
+        Twitter twitter = currentAccount.getTwitter();
         final ImageView homeIcon = (ImageView) findViewById(android.R.id.home);
         ShowUserTask userTask = new ShowUserTask(twitter, currentAccount.userID) {
             @Override
@@ -413,11 +411,6 @@ public class MainActivity extends Activity {
         openPostPageWithImage(uri);
     }
 
-    @Deprecated
-    public void addPage(Class<? extends PageFragment> fragmentClass, String name, Bundle args, boolean withNotify) {
-        pagerAdapter.addPage(fragmentClass, name, args, withNotify);
-    }
-
     private void initInvisibleUser(Twitter twitter) {
         new BlockIDsTask(twitter).execute();
         new MutesIDsTask(twitter).execute();
@@ -433,17 +426,17 @@ public class MainActivity extends Activity {
     }
 
     private void initializePages() {
-        addPage(PostFragment.class, getString(R.string.page_name_post), null, false);
-        addPage(HomeFragment.class, getString(R.string.page_name_home), null, false);
-        addPage(MentionsFragment.class, getString(R.string.page_name_mentions), null, false);
+        pagerAdapter.addPage(PostFragment.class, getString(R.string.page_name_post), null, false);
+        pagerAdapter.addPage(HomeFragment.class, getString(R.string.page_name_home), null, false);
+        pagerAdapter.addPage(MentionsFragment.class, getString(R.string.page_name_mentions), null, false);
         if (getUserPreferenceHelper().getValue(R.string.key_page_history_visibility, true))
-            addPage(HistoryFragment.class, getString(R.string.page_name_history), null, false);
+            pagerAdapter.addPage(HistoryFragment.class, getString(R.string.page_name_history), null, false);
         if (getUserPreferenceHelper().getValue(R.string.key_page_messages_visibility, true))
-            addPage(MessagesFragment.class, getString(R.string.page_name_messages), null, false);
+            pagerAdapter.addPage(MessagesFragment.class, getString(R.string.page_name_messages), null, false);
         if (getUserPreferenceHelper().getValue(R.string.key_page_search_visibility, true))
-            addPage(SearchFragment.class, getString(R.string.page_name_search), null, false);
+            pagerAdapter.addPage(SearchFragment.class, getString(R.string.page_name_search), null, false);
         if (getUserPreferenceHelper().getValue(R.string.key_page_list_visibility, true))
-            addPage(UserListFragment.class, getString(R.string.page_name_list), null, false);
+            pagerAdapter.addPage(UserListFragment.class, getString(R.string.page_name_list), null, false);
         pagerAdapter.notifyDataSetChanged();
         viewPager.setOffscreenPageLimit(pagerAdapter.getCount());
         initPostState();

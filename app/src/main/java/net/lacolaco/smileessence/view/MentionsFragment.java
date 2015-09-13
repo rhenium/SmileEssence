@@ -34,7 +34,6 @@ import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.ExtractionWord;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.twitter.StatusFilter;
-import net.lacolaco.smileessence.twitter.TwitterApi;
 import net.lacolaco.smileessence.twitter.task.MentionsTimelineTask;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.view.adapter.StatusListAdapter;
@@ -72,7 +71,7 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
                 }
             }
         });
-        final Twitter twitter = TwitterApi.getTwitter(((MainActivity) getActivity()).getCurrentAccount());
+        final Twitter twitter = ((MainActivity) getActivity()).getCurrentAccount().getTwitter();
         final Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount((MainActivity) getActivity()));
         final StatusListAdapter adapter_ = adapter;
         new MentionsTimelineTask(twitter, paging) {
@@ -96,7 +95,7 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
         final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
         final StatusListAdapter adapter = getAdapter();
-        Twitter twitter = TwitterApi.getTwitter(currentAccount);
+        Twitter twitter = currentAccount.getTwitter();
         Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount(activity));
         if (adapter.getCount() > 0) {
             paging.setSinceId(adapter.getTopID());
@@ -119,7 +118,7 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
         final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
         final StatusListAdapter adapter = getAdapter();
-        Twitter twitter = TwitterApi.getTwitter(currentAccount);
+        Twitter twitter = currentAccount.getTwitter();
         Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount(activity));
         if (adapter.getCount() > 0) {
             paging.setMaxId(adapter.getLastID() - 1);

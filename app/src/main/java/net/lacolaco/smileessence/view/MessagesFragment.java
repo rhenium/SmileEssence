@@ -32,7 +32,6 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.twitter.StatusFilter;
-import net.lacolaco.smileessence.twitter.TwitterApi;
 import net.lacolaco.smileessence.twitter.task.DirectMessagesTask;
 import net.lacolaco.smileessence.twitter.task.SentDirectMessagesTask;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
@@ -69,7 +68,7 @@ public class MessagesFragment extends CustomListFragment<MessageListAdapter> {
             adapter.addToTop(message);
             adapter.update();
         });
-        final Twitter twitter = TwitterApi.getTwitter(((MainActivity) getActivity()).getCurrentAccount());
+        final Twitter twitter = ((MainActivity) getActivity()).getCurrentAccount().getTwitter();
         final Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount((MainActivity) getActivity()));
         new DirectMessagesTask(twitter, paging) {
             @Override
@@ -99,7 +98,7 @@ public class MessagesFragment extends CustomListFragment<MessageListAdapter> {
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
         final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
-        Twitter twitter = TwitterApi.getTwitter(currentAccount);
+        Twitter twitter = currentAccount.getTwitter();
         final MessageListAdapter adapter = getAdapter();
         Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount(activity));
         if (adapter.getCount() > 0) {
@@ -122,7 +121,7 @@ public class MessagesFragment extends CustomListFragment<MessageListAdapter> {
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
         final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
-        Twitter twitter = TwitterApi.getTwitter(currentAccount);
+        Twitter twitter = currentAccount.getTwitter();
         final MessageListAdapter adapter = getAdapter();
         Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount(activity));
         if (adapter.getCount() > 0) {

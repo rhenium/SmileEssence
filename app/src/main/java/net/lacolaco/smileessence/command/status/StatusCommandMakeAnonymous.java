@@ -31,7 +31,6 @@ import net.lacolaco.smileessence.command.IConfirmable;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.twitter.TweetBuilder;
-import net.lacolaco.smileessence.twitter.TwitterApi;
 import net.lacolaco.smileessence.twitter.task.FavoriteTask;
 import net.lacolaco.smileessence.twitter.task.TweetTask;
 
@@ -83,7 +82,7 @@ public class StatusCommandMakeAnonymous extends StatusCommand implements IConfir
     @Override
     public boolean execute() {
         StatusUpdate update = new TweetBuilder().setText(build(getActivity(), getOriginalStatus(), account)).build();
-        Twitter twitter = new TwitterApi(account).getTwitter();
+        Twitter twitter = account.getTwitter();
         new TweetTask(twitter, update).execute();
         new FavoriteTask(twitter, getOriginalStatus().getId()).execute();
         return true;

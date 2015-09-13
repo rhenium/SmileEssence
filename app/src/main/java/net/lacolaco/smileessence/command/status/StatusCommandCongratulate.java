@@ -31,7 +31,6 @@ import net.lacolaco.smileessence.command.IConfirmable;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.twitter.TweetBuilder;
-import net.lacolaco.smileessence.twitter.TwitterApi;
 import net.lacolaco.smileessence.twitter.task.FavoriteTask;
 import net.lacolaco.smileessence.twitter.task.TweetTask;
 
@@ -91,7 +90,7 @@ public class StatusCommandCongratulate extends StatusCommand implements IConfirm
         StatusUpdate update = new TweetBuilder().setText(build())
                 .setInReplyToStatusID(getOriginalStatus().getId())
                 .build();
-        Twitter twitter = new TwitterApi(account).getTwitter();
+        Twitter twitter = account.getTwitter();
         new TweetTask(twitter, update).execute();
         new FavoriteTask(twitter, getOriginalStatus().getId()).execute();
         return true;

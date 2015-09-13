@@ -29,7 +29,6 @@ import android.app.Activity;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.command.IConfirmable;
 import net.lacolaco.smileessence.entity.Account;
-import net.lacolaco.smileessence.twitter.TwitterApi;
 import net.lacolaco.smileessence.twitter.task.BlockTask;
 
 import net.lacolaco.smileessence.entity.User;
@@ -63,7 +62,7 @@ public class UserCommandBlock extends UserCommand implements IConfirmable {
 
     @Override
     public boolean execute() {
-        new BlockTask(TwitterApi.getTwitter(account), getUser().getId()).execute();
+        new BlockTask(account.getTwitter(), getUser().getId()).execute();
         return true;
     }
 }

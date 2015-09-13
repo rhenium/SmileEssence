@@ -28,7 +28,6 @@ import android.content.Context;
 import android.content.res.AssetManager;
 
 import net.lacolaco.smileessence.entity.Account;
-import net.lacolaco.smileessence.twitter.TwitterApi;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -118,7 +117,7 @@ public class TwitterMock {
     }
 
     public Twitter getTwitterMock() throws IOException, JSONException {
-        return new TwitterApi(getAccessToken(), getAccessTokenSecret()).getTwitter();
+        return getAccount().getTwitter();
     }
 
     public Account getAccount() throws IOException, TwitterException, JSONException {
