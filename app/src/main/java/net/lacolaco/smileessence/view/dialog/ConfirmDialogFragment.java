@@ -59,7 +59,7 @@ public abstract class ConfirmDialogFragment extends StackableDialogFragment {
     }
 
     public static void show(Activity activity, String text, final Runnable onOK, final Runnable onCancel, boolean ignorable) {
-        boolean confirm = new UserPreferenceHelper(activity).getValue(R.string.key_setting_show_confirm_dialog, true);
+        boolean confirm = UserPreferenceHelper.getInstance().get(R.string.key_setting_show_confirm_dialog, true);
         if (!confirm && ignorable) {
             onOK.run();
             return;

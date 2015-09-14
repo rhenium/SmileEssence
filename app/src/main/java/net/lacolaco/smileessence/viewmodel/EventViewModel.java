@@ -138,9 +138,8 @@ public class EventViewModel implements IViewModel {
         if (convertedView == null) {
             convertedView = inflater.inflate(R.layout.list_item_status, null);
         }
-        UserPreferenceHelper preferenceHelper = new UserPreferenceHelper(activity);
-        int textSize = preferenceHelper.getValue(R.string.key_setting_text_size, 10);
-        int nameStyle = preferenceHelper.getValue(R.string.key_setting_namestyle, 0);
+        int textSize = UserPreferenceHelper.getInstance().get(R.string.key_setting_text_size, 10);
+        int nameStyle = UserPreferenceHelper.getInstance().get(R.string.key_setting_namestyle, 0);
         int theme = ((MainActivity) activity).getThemeIndex();
         NetworkImageView icon = (NetworkImageView) convertedView.findViewById(R.id.imageview_status_icon);
         ImageCache.getInstance().setImageToView(getIconURL(), icon);

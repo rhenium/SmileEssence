@@ -27,104 +27,26 @@ package net.lacolaco.smileessence.preference;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import net.lacolaco.smileessence.Application;
 
 import java.util.Set;
 
 public class UserPreferenceHelper extends SharedPreferenceHelper {
-
-    // ------------------------------ FIELDS ------------------------------
-
-    public static final int TEXT_SIZE_MIN = 8;
-    public static final int TEXT_SIZE_MAX = 24;
-    public static final int TIMELINES_MIN = 1;
-    public static final int TIMELINES_MAX = 200;
-
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public UserPreferenceHelper(Context context) {
-        super(context, null);
+    private static final UserPreferenceHelper instance = new UserPreferenceHelper();
+
+    public static UserPreferenceHelper getInstance() {
+        return instance;
+    }
+
+    private UserPreferenceHelper() {
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 
     @Override
-    protected SharedPreferences getPref() {
-        return PreferenceManager.getDefaultSharedPreferences(context);
-    }
-
-    // -------------------------- OTHER METHODS --------------------------
-
-    public boolean getValue(int keyID, boolean defaultValue) {
-        return getString(keyID) != null ? super.getValue(getString(keyID), defaultValue) : defaultValue;
-    }
-
-    public int getValue(int keyID, int defaultValue) {
-        return getString(keyID) != null ? super.getValue(getString(keyID), defaultValue) : defaultValue;
-    }
-
-    public float getValue(int keyID, float defaultValue) {
-        return getString(keyID) != null ? super.getValue(getString(keyID), defaultValue) : defaultValue;
-    }
-
-    public long getValue(int keyID, long defaultValue) {
-        return getString(keyID) != null ? super.getValue(getString(keyID), defaultValue) : defaultValue;
-    }
-
-    public String getValue(int keyID, String defaultValue) {
-        return getString(keyID) != null ? super.getValue(getString(keyID), defaultValue) : defaultValue;
-    }
-
-    public Set<String> getValue(int keyID, Set<String> defaultValue) {
-        return getString(keyID) != null ? super.getValue(getString(keyID), defaultValue) : defaultValue;
-    }
-
-    public boolean putValue(int keyID, boolean value) {
-        if (getString(keyID) == null) {
-            return false;
-        }
-        return super.putValue(getString(keyID), value);
-    }
-
-    public boolean putValue(int keyID, int value) {
-        if (getString(keyID) == null) {
-            return false;
-        }
-        return super.putValue(getString(keyID), value);
-    }
-
-    public boolean putValue(int keyID, float value) {
-        if (getString(keyID) == null) {
-            return false;
-        }
-        return super.putValue(getString(keyID), value);
-    }
-
-    public boolean putValue(int keyID, long value) {
-        if (getString(keyID) == null) {
-            return false;
-        }
-        return super.putValue(getString(keyID), value);
-    }
-
-    public boolean putValue(int keyID, String value) {
-        if (getString(keyID) == null) {
-            return false;
-        }
-        return super.putValue(getString(keyID), value);
-    }
-
-    public boolean putValue(int keyID, Set<String> value) {
-        if (getString(keyID) == null) {
-            return false;
-        }
-        return super.putValue(getString(keyID), value);
-    }
-
-    protected String getString(int resID) {
-        try {
-            return context.getString(resID);
-        } catch (Exception e) {
-            return null;
-        }
+    protected SharedPreferences getPreferences() {
+        return PreferenceManager.getDefaultSharedPreferences(Application.getContext());
     }
 }

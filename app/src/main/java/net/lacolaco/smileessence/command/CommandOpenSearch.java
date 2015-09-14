@@ -29,6 +29,7 @@ import android.app.Activity;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.SearchQuery;
+import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 
 public class CommandOpenSearch extends Command {
 
@@ -56,7 +57,7 @@ public class CommandOpenSearch extends Command {
 
     @Override
     public boolean isEnabled() {
-        return ((MainActivity) getActivity()).getUserPreferenceHelper().getValue(R.string.key_page_search_visibility, true);
+        return UserPreferenceHelper.getInstance().get(R.string.key_page_search_visibility, true);
     }
 
     // -------------------------- OTHER METHODS --------------------------

@@ -37,7 +37,6 @@ import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.LicenseActivity;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.notification.Notificator;
-import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.view.dialog.ConfirmDialogFragment;
 import net.lacolaco.smileessence.view.dialog.SimpleDialogFragment;
 
@@ -45,6 +44,10 @@ import static android.content.SharedPreferences.OnSharedPreferenceChangeListener
 
 public class SettingFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener,
         Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
+    private static final int TEXT_SIZE_MIN = 8;
+    private static final int TEXT_SIZE_MAX = 24;
+    private static final int TIMELINES_MIN = 1;
+    private static final int TIMELINES_MAX = 200;
 
     // ------------------------ INTERFACE METHODS ------------------------
 
@@ -57,7 +60,7 @@ public class SettingFragment extends PreferenceFragment implements OnSharedPrefe
         if (preference.getKey().contentEquals(getString(R.string.key_setting_text_size))) {
             if (TextUtils.isDigitsOnly(newValueStr)) {
                 int newTextSize = Integer.parseInt(newValueStr);
-                if (UserPreferenceHelper.TEXT_SIZE_MIN <= newTextSize && newTextSize <= UserPreferenceHelper.TEXT_SIZE_MAX) {
+                if (TEXT_SIZE_MIN <= newTextSize && newTextSize <= TEXT_SIZE_MAX) {
                     return true;
                 }
                 Notificator.getInstance().publish(R.string.error_setting_text_size_range);
@@ -68,7 +71,7 @@ public class SettingFragment extends PreferenceFragment implements OnSharedPrefe
         } else if (preference.getKey().contentEquals(getString(R.string.key_setting_timelines))) {
             if (TextUtils.isDigitsOnly(newValueStr)) {
                 int newTextSize = Integer.parseInt(newValueStr);
-                if (UserPreferenceHelper.TIMELINES_MIN <= newTextSize && newTextSize <= UserPreferenceHelper.TIMELINES_MAX) {
+                if (TIMELINES_MIN <= newTextSize && newTextSize <= TIMELINES_MAX) {
                     return true;
                 }
                 Notificator.getInstance().publish(R.string.error_setting_timelines_range);
@@ -98,7 +101,7 @@ public class SettingFragment extends PreferenceFragment implements OnSharedPrefe
                 public void run() {
                     Notificator.getInstance().publish(R.string.notice_cleared_account);
                     Account.deleteAll();
-                    finishActivity();
+                    getActivity().finish();
                 }
             }, false);
         } else if (key.contentEquals(getString(R.string.key_setting_licenses))) {
@@ -157,10 +160,6 @@ public class SettingFragment extends PreferenceFragment implements OnSharedPrefe
 
     public Preference findPreference(int preferenceResID) {
         return findPreference(getString(preferenceResID));
-    }
-
-    private void finishActivity() {
-        getActivity().finish();
     }
 
     private void openLicenseActivity() {

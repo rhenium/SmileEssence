@@ -24,8 +24,6 @@
 
 package net.lacolaco.smileessence.twitter.task;
 
-import android.app.Activity;
-
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.entity.DirectMessage;
 import net.lacolaco.smileessence.logging.Logger;

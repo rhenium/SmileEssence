@@ -24,90 +24,102 @@
 
 package net.lacolaco.smileessence.preference;
 
-import android.content.Context;
 import android.content.SharedPreferences;
+import net.lacolaco.smileessence.Application;
 
 import java.util.Set;
 
-public class SharedPreferenceHelper {
-
-    // ------------------------------ FIELDS ------------------------------
-
-    protected final Context context;
-    protected final String fileName;
-
-    // --------------------------- CONSTRUCTORS ---------------------------
-
-    public SharedPreferenceHelper(Context context, String fileName) {
-        this.context = context;
-        this.fileName = fileName;
-    }
-
+public abstract class SharedPreferenceHelper {
     // --------------------- GETTER / SETTER METHODS ---------------------
 
-    protected SharedPreferences getPref() {
-        return context.getSharedPreferences(fileName, Context.MODE_PRIVATE);
-    }
+    protected abstract SharedPreferences getPreferences();
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public boolean getValue(String key, boolean defaultValue) {
-        return getPref().getBoolean(key, defaultValue);
+    public String get(int key, String defaultValue) {
+        return getPreferences().getString(getString(key), defaultValue);
     }
 
-    public int getValue(String key, int defaultValue) {
-        return Integer.valueOf(getPref().getString(key, String.valueOf(defaultValue)));
+    // int, long, float value may be stored in String format (old versions)
+    public int get(int key, int defaultValue) {
+        try {
+            return getPreferences().getInt(getString(key), defaultValue);
+        } catch (ClassCastException ex) {
+            int ret = Integer.parseInt(get(key, String.valueOf(defaultValue)));
+            set(key, ret);
+            return ret;
+        }
     }
 
-    public float getValue(String key, float defaultValue) {
-        return Float.valueOf(getPref().getString(key, String.valueOf(defaultValue)));
+    public long get(int key, long defaultValue) {
+        try {
+            return getPreferences().getLong(getString(key), defaultValue);
+        } catch (ClassCastException ex) {
+            long ret = Long.parseLong(get(key, String.valueOf(defaultValue)));
+            set(key, ret);
+            return ret;
+        }
     }
 
-    public long getValue(String key, long defaultValue) {
-        return Long.valueOf(getPref().getString(key, String.valueOf(defaultValue)));
+    public float get(int key, float defaultValue) {
+        try {
+            return getPreferences().getFloat(getString(key), defaultValue);
+        } catch (ClassCastException ex) {
+            float ret = Float.parseFloat(get(key, String.valueOf(defaultValue)));
+            set(key, ret);
+            return ret;
+        }
     }
 
-    public String getValue(String key, String defaultValue) {
-        return getPref().getString(key, defaultValue);
+    public boolean get(int key, boolean defaultValue) {
+        return getPreferences().getBoolean(getString(key), defaultValue);
     }
 
-    public Set<String> getValue(String key, Set<String> defaultValue) {
-        return getPref().getStringSet(key, defaultValue);
+    public Set<String> get(int key, Set<String> defaultValue) {
+        return getPreferences().getStringSet(getString(key), defaultValue);
     }
 
-    public boolean putValue(String key, boolean value) {
-        SharedPreferences.Editor editor = getPref().edit();
-        editor.putBoolean(key, value);
-        return editor.commit();
+    public boolean set(int key, String value) {
+        return getPreferences().edit()
+                .putString(getString(key), value)
+                .commit();
     }
 
-    public boolean putValue(String key, int value) {
-        SharedPreferences.Editor editor = getPref().edit();
-        editor.putString(key, String.valueOf(value));
-        return editor.commit();
+    public boolean set(int key, int value) {
+        return getPreferences().edit()
+                .putInt(getString(key), value)
+                .commit();
     }
 
-    public boolean putValue(String key, float value) {
-        SharedPreferences.Editor editor = getPref().edit();
-        editor.putString(key, String.valueOf(value));
-        return editor.commit();
+    public boolean set(int key, long value) {
+        return getPreferences().edit()
+                .putLong(getString(key), value)
+                .commit();
     }
 
-    public boolean putValue(String key, long value) {
-        SharedPreferences.Editor editor = getPref().edit();
-        editor.putString(key, String.valueOf(value));
-        return editor.commit();
+    public boolean set(int key, float value) {
+        return getPreferences().edit()
+                .putFloat(getString(key), value)
+                .commit();
     }
 
-    public boolean putValue(String key, String value) {
-        SharedPreferences.Editor editor = getPref().edit();
-        editor.putString(key, value);
-        return editor.commit();
+    public boolean set(int key, boolean value) {
+        return getPreferences().edit()
+                .putBoolean(getString(key), value)
+                .commit();
     }
 
-    public boolean putValue(String key, Set<String> value) {
-        SharedPreferences.Editor editor = getPref().edit();
-        editor.putStringSet(key, value);
-        return editor.commit();
+    public boolean set(int key, Set<String> value) {
+        return getPreferences().edit()
+                .putStringSet(getString(key), value)
+                .commit();
+    }
+
+    private String getString(int resID) {
+        try {
+            return Application.getContext().getString(resID);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

@@ -32,7 +32,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
-import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -50,7 +49,7 @@ import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
-import net.lacolaco.smileessence.preference.AppPreferenceHelper;
+import net.lacolaco.smileessence.preference.InternalPreferenceHelper;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.twitter.*;
 import net.lacolaco.smileessence.twitter.UserStreamListener;
@@ -69,9 +68,6 @@ public class MainActivity extends Activity {
     public static final int REQUEST_OAUTH = 10;
     public static final int REQUEST_GET_PICTURE_FROM_GALLERY = 11;
     public static final int REQUEST_GET_PICTURE_FROM_CAMERA = 12;
-    private static final String KEY_LAST_USED_SEARCH_QUERY = "lastUsedSearchQuery";
-    private static final String KEY_LAST_USED_ACCOUNT_ID = "lastUsedAccountID";
-    private static final String KEY_LAST_USER_LIST = "lastUsedUserList";
     private ViewPager viewPager;
     private PageListAdapter pagerAdapter;
     private Account currentAccount;
@@ -80,10 +76,6 @@ public class MainActivity extends Activity {
     private Uri cameraTempFilePath;
 
     // --------------------- GETTER / SETTER METHODS ---------------------
-
-    public AppPreferenceHelper getAppPreferenceHelper() {
-        return new AppPreferenceHelper(this);
-    }
 
     public Uri getCameraTempFilePath() {
         return cameraTempFilePath;
@@ -102,36 +94,31 @@ public class MainActivity extends Activity {
     }
 
     public String getLastSearch() {
-        return getAppPreferenceHelper().getValue(KEY_LAST_USED_SEARCH_QUERY, "");
+        return InternalPreferenceHelper.getInstance().get(R.string.key_last_used_search_query, "");
     }
 
     public void setLastSearch(String query) {
-        getAppPreferenceHelper().putValue(KEY_LAST_USED_SEARCH_QUERY, query);
+        InternalPreferenceHelper.getInstance().set(R.string.key_last_used_search_query, query);
     }
 
     private long getLastUsedAccountID() {
-        String id = getAppPreferenceHelper().getValue(KEY_LAST_USED_ACCOUNT_ID, "");
-        if (TextUtils.isEmpty(id)) {
-            return -1;
-        } else {
-            return Long.parseLong(id);
-        }
+        return InternalPreferenceHelper.getInstance().get(R.string.key_last_used_account_id, -1L);
     }
 
     private void setLastUsedAccountID(Account account) {
-        getAppPreferenceHelper().putValue(KEY_LAST_USED_ACCOUNT_ID, account.getId());
+        InternalPreferenceHelper.getInstance().set(R.string.key_last_used_account_id, account.getId());
     }
 
     public String getLastUserList() {
-        return getAppPreferenceHelper().getValue(KEY_LAST_USER_LIST, "");
+        return InternalPreferenceHelper.getInstance().get(R.string.key_last_used_user_list, "");
+    }
+
+    public void setLastUserList(String lastUserList) {
+        InternalPreferenceHelper.getInstance().set(R.string.key_last_used_user_list, lastUserList);
     }
 
     public int getThemeIndex() {
         return ((Application) getApplication()).getThemeIndex();
-    }
-
-    public UserPreferenceHelper getUserPreferenceHelper() {
-        return new UserPreferenceHelper(this);
     }
 
     public String getVersion() {
@@ -333,10 +320,6 @@ public class MainActivity extends Activity {
         }
     }
 
-    public void saveLastUserList(String lastUserList) {
-        getAppPreferenceHelper().putValue(KEY_LAST_USER_LIST, lastUserList);
-    }
-
     public void setSelectedPageIndex(final int position, final boolean smooth) {
         new UIHandler() {
             @Override
@@ -429,13 +412,13 @@ public class MainActivity extends Activity {
         pagerAdapter.addPage(PostFragment.class, getString(R.string.page_name_post), null, false);
         pagerAdapter.addPage(HomeFragment.class, getString(R.string.page_name_home), null, false);
         pagerAdapter.addPage(MentionsFragment.class, getString(R.string.page_name_mentions), null, false);
-        if (getUserPreferenceHelper().getValue(R.string.key_page_history_visibility, true))
+        if (UserPreferenceHelper.getInstance().get(R.string.key_page_history_visibility, true))
             pagerAdapter.addPage(HistoryFragment.class, getString(R.string.page_name_history), null, false);
-        if (getUserPreferenceHelper().getValue(R.string.key_page_messages_visibility, true))
+        if (UserPreferenceHelper.getInstance().get(R.string.key_page_messages_visibility, true))
             pagerAdapter.addPage(MessagesFragment.class, getString(R.string.page_name_messages), null, false);
-        if (getUserPreferenceHelper().getValue(R.string.key_page_search_visibility, true))
+        if (UserPreferenceHelper.getInstance().get(R.string.key_page_search_visibility, true))
             pagerAdapter.addPage(SearchFragment.class, getString(R.string.page_name_search), null, false);
-        if (getUserPreferenceHelper().getValue(R.string.key_page_list_visibility, true))
+        if (UserPreferenceHelper.getInstance().get(R.string.key_page_list_visibility, true))
             pagerAdapter.addPage(UserListFragment.class, getString(R.string.page_name_list), null, false);
         pagerAdapter.notifyDataSetChanged();
         viewPager.setOffscreenPageLimit(pagerAdapter.getCount());
@@ -475,7 +458,7 @@ public class MainActivity extends Activity {
     }
 
     private void setTheme() {
-        ((Application) getApplication()).setThemeIndex(getUserPreferenceHelper().getValue(R.string.key_setting_theme, 0));
+        ((Application) getApplication()).setThemeIndex(UserPreferenceHelper.getInstance().get(R.string.key_setting_theme, 0));
         setTheme(Themes.getTheme(getThemeIndex()));
     }
 

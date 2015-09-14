@@ -25,16 +25,29 @@
 package net.lacolaco.smileessence.preference;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import net.lacolaco.smileessence.Application;
 
-public class AppPreferenceHelper extends SharedPreferenceHelper {
+public class InternalPreferenceHelper extends SharedPreferenceHelper {
 
     // ------------------------------ FIELDS ------------------------------
 
     private static final String FILE_NAME = "AppPreference";
+    private static final InternalPreferenceHelper instance = new InternalPreferenceHelper();
+
+    public static InternalPreferenceHelper getInstance() {
+        return instance;
+    }
+
+    private InternalPreferenceHelper() {
+    }
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public AppPreferenceHelper(Context context) {
-        super(context, FILE_NAME);
+    @Override
+    protected SharedPreferences getPreferences() {
+
+        return Application.getContext().getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
+
     }
 }

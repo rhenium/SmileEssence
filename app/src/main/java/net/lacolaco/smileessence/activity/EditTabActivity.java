@@ -90,15 +90,10 @@ public class EditTabActivity extends Activity {
         return (MainActivity) getParent();
     }
 
-    private UserPreferenceHelper getPreference() {
-        return new UserPreferenceHelper(this);
-    }
-
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        UserPreferenceHelper userPreferenceHelper = getPreference();
         setTheme(Themes.getTheme(((Application) getApplication()).getThemeIndex()));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_edit_list);
@@ -135,11 +130,11 @@ public class EditTabActivity extends Activity {
     }
 
     private int getPosition(int key, int defaultValue) {
-        return Integer.parseInt(getPreference().getValue(key, String.valueOf(defaultValue)));
+        return UserPreferenceHelper.getInstance().get(key, defaultValue);
     }
 
     private boolean getVisibility(int key) {
-        return getPreference().getValue(key, true);
+        return UserPreferenceHelper.getInstance().get(key, true);
     }
 
     private void initializeViews() {
@@ -150,11 +145,7 @@ public class EditTabActivity extends Activity {
         adapter.update();
     }
 
-    private void putPosition(int key, int value) {
-        getPreference().putValue(key, String.valueOf(value));
-    }
-
     private void putVisibility(int key, boolean value) {
-        getPreference().putValue(key, value);
+        UserPreferenceHelper.getInstance().set(key, value);
     }
 }

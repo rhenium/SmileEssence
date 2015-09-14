@@ -1,9 +1,8 @@
 package net.lacolaco.smileessence.entity;
 
-import com.google.common.base.Function;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.Lists;
+import net.lacolaco.smileessence.util.ListUtils;
 import twitter4j.*;
 
 import java.util.Date;
@@ -33,12 +32,7 @@ public class DirectMessage {
     }
 
     public synchronized static List<DirectMessage> fromTwitter(List<twitter4j.DirectMessage> sts) {
-        return Lists.transform(sts, new Function<twitter4j.DirectMessage, DirectMessage>() {
-            @Override
-            public DirectMessage apply(twitter4j.DirectMessage input) {
-                return DirectMessage.fromTwitter(input);
-            }
-        });
+        return ListUtils.map(sts, DirectMessage::fromTwitter);
     }
 
     // インスタンス

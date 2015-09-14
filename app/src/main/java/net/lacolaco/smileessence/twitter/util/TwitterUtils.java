@@ -30,15 +30,13 @@ import com.twitter.Validator;
 
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
-import net.lacolaco.smileessence.entity.Account;
-import net.lacolaco.smileessence.entity.Tweet;
-import net.lacolaco.smileessence.entity.User;
+import net.lacolaco.smileessence.entity.*;
+import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.twitter.task.ShowDirectMessageTask;
 import net.lacolaco.smileessence.twitter.task.ShowStatusTask;
 import net.lacolaco.smileessence.twitter.task.ShowUserTask;
 
 import net.lacolaco.smileessence.twitter.task.TwitterTask;
-import net.lacolaco.smileessence.entity.DirectMessage;
 import twitter4j.Paging;
 import twitter4j.URLEntity;
 import twitter4j.UserMentionEntity;
@@ -222,7 +220,7 @@ public class TwitterUtils {
     }
 
     public static int getPagingCount(MainActivity activity) {
-        return activity.getUserPreferenceHelper().getValue(R.string.key_setting_timelines, 20);
+        return UserPreferenceHelper.getInstance().get(R.string.key_setting_timelines, 20);
     }
 
     public static String getMessageSummary(DirectMessage message) {

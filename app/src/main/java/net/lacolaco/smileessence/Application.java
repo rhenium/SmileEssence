@@ -24,11 +24,28 @@
 
 package net.lacolaco.smileessence;
 
+import android.content.Context;
+
 public class Application extends com.activeandroid.app.Application {
 
     // ------------------------------ FIELDS ------------------------------
 
     private int themeIndex;
+    private static Context context;
+
+    public static Context getContext() {
+        if (context == null) {
+            throw new IllegalStateException("Application is not initialized");
+        }
+        return context;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        // onCreate は一度しか呼ばれないはずだから安全なはず
+        context = getApplicationContext();
+    }
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 
@@ -39,4 +56,5 @@ public class Application extends com.activeandroid.app.Application {
     public void setThemeIndex(int themeIndex) {
         this.themeIndex = themeIndex;
     }
+
 }

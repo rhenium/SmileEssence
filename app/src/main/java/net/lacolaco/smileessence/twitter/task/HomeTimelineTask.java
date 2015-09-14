@@ -24,12 +24,7 @@
 
 package net.lacolaco.smileessence.twitter.task;
 
-import android.app.Activity;
-
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.data.FavoriteCache;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.notification.NotificationType;

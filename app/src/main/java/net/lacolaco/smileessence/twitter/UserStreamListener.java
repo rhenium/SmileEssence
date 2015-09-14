@@ -32,6 +32,7 @@ import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.notification.Notificator;
+import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 import net.lacolaco.smileessence.view.adapter.EventListAdapter;
 import net.lacolaco.smileessence.view.adapter.MessageListAdapter;
@@ -165,7 +166,7 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
     @Override
     public void onUnfavorite(twitter4j.User source, twitter4j.User target, twitter4j.Status unfavoritedStatus) {
         Tweet tweet = Tweet.fromTwitter(unfavoritedStatus);
-        boolean unfavNoticeEnabled = activity.getUserPreferenceHelper().getValue(R.string.key_setting_notify_on_unfavorited, true);
+        boolean unfavNoticeEnabled = UserPreferenceHelper.getInstance().get(R.string.key_setting_notify_on_unfavorited, true);
         if (isMe(User.fromTwitter(target)) && unfavNoticeEnabled) {
             addToHistory(new EventViewModel(EnumEvent.UNFAVORITED, User.fromTwitter(source), tweet));
         }

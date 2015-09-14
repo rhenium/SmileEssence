@@ -230,13 +230,12 @@ public class PostFragment extends PageFragment implements TextWatcher, View.OnFo
         Logger.debug("onCreateView");
         MainActivity activity = (MainActivity) getActivity();
         PostState.getState().setListener(this);
-        UserPreferenceHelper preferenceHelper = new UserPreferenceHelper(activity);
         View v = inflater.inflate(R.layout.fragment_post, null);
         buttonTweet = getTweetButton(v);
         buttonTweet.setOnClickListener(this);
         editText = getEditText(v);
         textViewCount = getCountTextView(v);
-        int textSize = preferenceHelper.getValue(R.string.key_setting_text_size, 10);
+        int textSize = UserPreferenceHelper.getInstance().get(R.string.key_setting_text_size, 10);
         editText.addTextChangedListener(this);
         editText.setOnFocusChangeListener(this);
         editText.setTextSize(textSize + 4);
@@ -376,7 +375,7 @@ public class PostFragment extends PageFragment implements TextWatcher, View.OnFo
         PostState state = PostState.getState();
         StatusUpdate statusUpdate = state.toStatusUpdate();
         MainActivity mainActivity = (MainActivity) getActivity();
-        boolean resizeFlag = new UserPreferenceHelper(mainActivity).getValue(R.string.key_setting_resize_post_image, false);
+        boolean resizeFlag = UserPreferenceHelper.getInstance().get(R.string.key_setting_resize_post_image, false);
         TweetTask tweetTask = new TweetTask(mainActivity.getCurrentAccount().getTwitter(), statusUpdate, state.getMediaFilePath(), resizeFlag);
         tweetTask.execute();
         PostState.newState().beginTransaction().commit();

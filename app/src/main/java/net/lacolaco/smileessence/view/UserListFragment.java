@@ -219,7 +219,7 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
     }
 
     public void startUserList(Twitter twitter, String listFullName) {
-        getMainActivity().saveLastUserList(listFullName);
+        getMainActivity().setLastUserList(listFullName);
         final UserListListAdapter adapter = getAdapter();
         adapter.setListFullName(listFullName);
         adapter.clear();

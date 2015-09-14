@@ -1,10 +1,9 @@
 package net.lacolaco.smileessence.entity;
 
-import com.google.common.base.Function;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.Lists;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
+import net.lacolaco.smileessence.util.ListUtils;
 import twitter4j.*;
 
 import java.util.Date;
@@ -34,12 +33,7 @@ public class Tweet {
     }
 
     public synchronized static List<Tweet> fromTwitter(List<Status> sts) {
-        return Lists.transform(sts, new Function<Status, Tweet>() {
-            @Override
-            public Tweet apply(twitter4j.Status input) {
-                return Tweet.fromTwitter(input);
-            }
-        });
+        return ListUtils.map(sts, Tweet::fromTwitter);
     }
 
     // インスタンス

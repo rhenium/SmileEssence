@@ -147,7 +147,7 @@ public class StatusViewModel implements IViewModel {
 
     @Override
     public View getView(final Activity activity, final LayoutInflater inflater, View convertedView) {
-        boolean extendStatusURL = new UserPreferenceHelper(activity).getValue(R.string.key_setting_extend_status_url, true);
+        boolean extendStatusURL = UserPreferenceHelper.getInstance().get(R.string.key_setting_extend_status_url, true);
         return getView(activity, inflater, convertedView, extendStatusURL);
     }
 
@@ -162,9 +162,8 @@ public class StatusViewModel implements IViewModel {
         if (convertedView == null) {
             convertedView = inflater.inflate(R.layout.list_item_status, null);
         }
-        UserPreferenceHelper preferenceHelper = new UserPreferenceHelper(activity);
-        int textSize = preferenceHelper.getValue(R.string.key_setting_text_size, 10);
-        int nameStyle = preferenceHelper.getValue(R.string.key_setting_namestyle, 0);
+        int textSize = UserPreferenceHelper.getInstance().get(R.string.key_setting_text_size, 10);
+        int nameStyle = UserPreferenceHelper.getInstance().get(R.string.key_setting_namestyle, 0);
         int theme = ((MainActivity) activity).getThemeIndex();
         NetworkImageView icon = (NetworkImageView) convertedView.findViewById(R.id.imageview_status_icon);
         ImageCache.getInstance().setImageToView(tweet.getUser().getProfileImageUrl(), icon);
@@ -258,7 +257,7 @@ public class StatusViewModel implements IViewModel {
     }
 
         private boolean isReadMorseEnabled(MainActivity activity) {
-        return activity.getUserPreferenceHelper().getValue(R.string.key_setting_read_morse, true);
+        return UserPreferenceHelper.getInstance().get(R.string.key_setting_read_morse, true);
     }
 
     private void onClick(Activity activity) {
