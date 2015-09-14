@@ -29,7 +29,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
@@ -75,7 +74,7 @@ public abstract class CustomListFragment<T extends CustomListAdapter> extends Pa
 
         if (absListView.getFirstVisiblePosition() == 0 && absListView.getChildAt(0) != null && absListView.getChildAt(0).getTop() == 0) {
             if (scrollState == SCROLL_STATE_IDLE) {
-                updateListViewWithNotice(absListView, adapter, true);
+                updateListViewWithNotice(absListView, true);
             }
         }
     }
@@ -95,7 +94,7 @@ public abstract class CustomListFragment<T extends CustomListAdapter> extends Pa
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View page = inflater.inflate(R.layout.fragment_list, container, false);
         PullToRefreshListView listView = getListView(page);
-        ListAdapter adapter = getAdapter();
+        T adapter = getAdapter();
         listView.setAdapter(adapter);
         listView.setOnScrollListener(this);
         listView.setOnRefreshListener(this);
@@ -119,18 +118,15 @@ public abstract class CustomListFragment<T extends CustomListAdapter> extends Pa
         return (PullToRefreshListView) page.findViewById(R.id.fragment_list_listview);
     }
 
-    protected void notifyListUpdated(int increments) {
-        Notificator.getInstance().publish(getString(R.string.notice_timeline_new, increments));
-    }
-
-    protected void updateListViewWithNotice(AbsListView absListView, CustomListAdapter<?> adapter, boolean addedToTop) {
+    protected void updateListViewWithNotice(AbsListView absListView, boolean addedToTop) {
+        T adapter = getAdapter();
         int before = adapter.getCount();
         adapter.notifyDataSetChanged(); // synchronized call (not adapter#updateForce())
         int after = adapter.getCount();
         int increments = after - before;
         if (increments > 0) {
             adapter.setNotifiable(false);
-            notifyListUpdated(increments);
+            Notificator.getInstance().publish(getString(R.string.notice_timeline_new, increments));
             if (addedToTop) {
                 absListView.setSelection(increments + 1);
                 absListView.smoothScrollToPositionFromTop(increments, 0);

@@ -93,7 +93,7 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
             new UIHandler() {
                 @Override
                 public void run() {
-                    updateListViewWithNotice(refreshView.getRefreshableView(), adapter, true);
+                    updateListViewWithNotice(refreshView.getRefreshableView(), true);
                     refreshView.onRefreshComplete();
                 }
             }.post();
@@ -115,7 +115,7 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
                     adapter.addToTop(viewModel);
                     StatusFilter.getInstance().filter(viewModel);
                 }
-                updateListViewWithNotice(refreshView.getRefreshableView(), adapter, true);
+                updateListViewWithNotice(refreshView.getRefreshableView(), true);
                 refreshView.onRefreshComplete();
             }
         }.execute();
@@ -140,7 +140,7 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
                     adapter.addToBottom(viewModel);
                     StatusFilter.getInstance().filter(viewModel);
                 }
-                updateListViewWithNotice(refreshView.getRefreshableView(), adapter, false);
+                updateListViewWithNotice(refreshView.getRefreshableView(), false);
                 refreshView.onRefreshComplete();
             }
         }.execute();

@@ -107,7 +107,7 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
                 for (int i = tweets.size() - 1; i >= 0; i--) {
                     adapter.addToTop(new StatusViewModel(tweets.get(i)));
                 }
-                updateListViewWithNotice(refreshView.getRefreshableView(), adapter, true);
+                updateListViewWithNotice(refreshView.getRefreshableView(), true);
                 refreshView.onRefreshComplete();
             }
         }.execute();
@@ -130,7 +130,7 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
                 for (Tweet tweet : tweets) {
                     adapter.addToBottom(new StatusViewModel(tweet));
                 }
-                updateListViewWithNotice(refreshView.getRefreshableView(), adapter, false);
+                updateListViewWithNotice(refreshView.getRefreshableView(), false);
                 refreshView.onRefreshComplete();
             }
         }.execute();

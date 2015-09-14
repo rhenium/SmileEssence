@@ -111,7 +111,7 @@ public class MessagesFragment extends CustomListFragment<MessageListAdapter> {
                 for (int i = directMessages.size() - 1; i >= 0; i--) {
                     adapter.addToTop(new MessageViewModel(directMessages.get(i)));
                 }
-                updateListViewWithNotice(refreshView.getRefreshableView(), adapter, true);
+                updateListViewWithNotice(refreshView.getRefreshableView(), true);
                 refreshView.onRefreshComplete();
             }
         }.execute();
@@ -134,7 +134,7 @@ public class MessagesFragment extends CustomListFragment<MessageListAdapter> {
                 for (DirectMessage directMessage : directMessages) {
                     adapter.addToBottom(new MessageViewModel(directMessage));
                 }
-                updateListViewWithNotice(refreshView.getRefreshableView(), adapter, false);
+                updateListViewWithNotice(refreshView.getRefreshableView(), false);
                 refreshView.onRefreshComplete();
             }
         }.execute();

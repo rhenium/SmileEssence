@@ -131,7 +131,7 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
                     adapter.addToTop(statusViewModel);
                     StatusFilter.getInstance().filter(statusViewModel);
                 }
-                updateListViewWithNotice(refreshView.getRefreshableView(), adapter, true);
+                updateListViewWithNotice(refreshView.getRefreshableView(), true);
                 refreshView.onRefreshComplete();
             }
         }.execute();
@@ -167,7 +167,7 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
                     adapter.addToBottom(statusViewModel);
                     StatusFilter.getInstance().filter(statusViewModel);
                 }
-                updateListViewWithNotice(refreshView.getRefreshableView(), adapter, false);
+                updateListViewWithNotice(refreshView.getRefreshableView(), false);
                 refreshView.onRefreshComplete();
             }
         }.execute();

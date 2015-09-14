@@ -171,7 +171,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
                             StatusFilter.getInstance().filter(viewModel);
                         }
                     }
-                    updateListViewWithNotice(refreshView.getRefreshableView(), adapter, true);
+                    updateListViewWithNotice(refreshView.getRefreshableView(), true);
                     adapter.setTopID(queryResult.getMaxId());
                     refreshView.onRefreshComplete();
                 }
@@ -216,7 +216,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
                             StatusFilter.getInstance().filter(viewModel);
                         }
                     }
-                    updateListViewWithNotice(refreshView.getRefreshableView(), adapter, false);
+                    updateListViewWithNotice(refreshView.getRefreshableView(), false);
                     refreshView.onRefreshComplete();
                 }
             }
