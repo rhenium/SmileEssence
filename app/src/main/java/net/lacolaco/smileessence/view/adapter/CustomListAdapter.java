@@ -82,7 +82,7 @@ public class CustomListAdapter<T extends IViewModel> extends BaseAdapter {
     // --------------------- Interface Adapter ---------------------
 
     @Override
-    public Object getItem(int position) {
+    public T getItem(int position) {
         return frozenList.get(position);
     }
 

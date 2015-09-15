@@ -106,7 +106,7 @@ public class EditCommandActivity extends Activity {
     @Override
     protected void onDestroy() {
         for (int i = 0; i < adapter.getCount(); i++) {
-            CheckBoxModel checkBoxModel = (CheckBoxModel) adapter.getItem(i);
+            CheckBoxModel checkBoxModel = adapter.getItem(i);
             Command command = editedCommands.get(i);
             CommandSetting.setVisible(command.getKey(), checkBoxModel.isChecked());
         }

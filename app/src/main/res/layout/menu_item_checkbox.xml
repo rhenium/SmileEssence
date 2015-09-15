@@ -23,19 +23,25 @@
   ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   ~ SOFTWARE.
   -->
-
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="?android:attr/activatedBackgroundIndicator"
-    android:orientation="vertical">
-
-    <CheckBox
-        android:id="@+id/checkBox_menuItem"
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <variable name="checkedState" type="net.lacolaco.smileessence.viewmodel.CheckBoxModel.CheckedState" />
+    </data>
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginTop="16dp"
-        android:paddingLeft="10dp"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-</FrameLayout>
+        android:layout_height="match_parent"
+        android:background="?android:attr/activatedBackgroundIndicator"
+        android:orientation="vertical">
+
+        <CheckBox
+            android:id="@+id/checkBox_menuItem"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:paddingLeft="10dp"
+            android:checked="@{checkedState.checked}"
+            android:text="@{checkedState.text}"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+    </FrameLayout>
+</layout>
