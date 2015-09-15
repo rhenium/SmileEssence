@@ -131,4 +131,21 @@ public class User {
     public boolean isVerified() {
         return isVerified;
     }
+
+
+    public String getUserHomeURL() {
+        return String.format("https://twitter.com/%s", getScreenName());
+    }
+
+    public String getAclogTimelineURL() {
+        return String.format("http://aclog.koba789.com/%s/timeline", getScreenName());
+    }
+
+    public String getFavstarRecentURL() {
+        return String.format("http://favstar.fm/users/%s/recent", getScreenName());
+    }
+
+    public String getTwilogURL() {
+        return String.format("http://twilog.org/%s", getScreenName());
+    }
 }

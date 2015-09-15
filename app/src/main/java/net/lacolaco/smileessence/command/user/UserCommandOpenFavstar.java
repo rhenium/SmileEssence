@@ -56,6 +56,6 @@ public class UserCommandOpenFavstar extends UserCommand {
 
     @Override
     public boolean execute() {
-        return new CommandOpenURL(getActivity(), TwitterUtils.getFavstarRecentURL(getUser().getScreenName())).execute();
+        return new CommandOpenURL(getActivity(), getUser().getFavstarRecentURL()).execute();
     }
 }

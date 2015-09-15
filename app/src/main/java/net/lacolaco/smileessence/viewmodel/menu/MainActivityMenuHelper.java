@@ -32,6 +32,8 @@ import android.view.SubMenu;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.*;
 import net.lacolaco.smileessence.command.CommandOpenURL;
+import net.lacolaco.smileessence.entity.User;
+import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.data.PostState;
 
@@ -71,6 +73,7 @@ public class MainActivityMenuHelper {
     }
 
     public static boolean onItemSelected(MainActivity activity, MenuItem item) {
+        User user = activity.getCurrentAccount().getCachedUser();
         switch (item.getItemId()) {
             case R.id.actionbar_post: {
                 openPostPage(activity);
@@ -106,15 +109,27 @@ public class MainActivityMenuHelper {
                 return true;
             }
             case R.id.actionbar_favstar: {
-                new CommandOpenURL(activity, TwitterUtils.getFavstarRecentURL(activity.getCurrentAccount().screenName)).execute();
+                if (user == null) {
+                    Notificator.getInstance().publish(R.string.notice_application_starting);
+                } else {
+                    new CommandOpenURL(activity, user.getFavstarRecentURL()).execute();
+                }
                 return true;
             }
             case R.id.actionbar_aclog: {
-                new CommandOpenURL(activity, TwitterUtils.getAclogTimelineURL(activity.getCurrentAccount().screenName)).execute();
+                if (user == null) {
+                    Notificator.getInstance().publish(R.string.notice_application_starting);
+                } else {
+                    new CommandOpenURL(activity, user.getAclogTimelineURL()).execute();
+                }
                 return true;
             }
             case R.id.actionbar_twilog: {
-                new CommandOpenURL(activity, TwitterUtils.getTwilogURL(activity.getCurrentAccount().screenName)).execute();
+                if (user == null) {
+                    Notificator.getInstance().publish(R.string.notice_application_starting);
+                } else {
+                    new CommandOpenURL(activity, user.getTwilogURL()).execute();
+                }
                 return true;
             }
             case R.id.actionbar_report: {

@@ -5,6 +5,7 @@ import com.google.common.cache.CacheBuilder;
 import net.lacolaco.smileessence.util.ListUtils;
 import twitter4j.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -104,5 +105,34 @@ public class DirectMessage {
 
     public SymbolEntity[] getSymbols() {
         return symbols;
+    }
+
+    public List<String> getMentioningScreenNames(String excludeScreenName) {
+        List<String> names = getMentioningScreenNames();
+        if (excludeScreenName != null) {
+            names.remove(excludeScreenName);
+        }
+        return names;
+    }
+
+    public List<String> getMentioningScreenNames() {
+        List<String> names = new ArrayList<>();
+        names.add(getSender().getScreenName());
+        if (getSender() != getRecipient()) {
+            names.add(getRecipient().getScreenName());
+        }
+        if (getMentions() != null) {
+            for (UserMentionEntity entity : getMentions()) {
+                if (names.contains(entity.getScreenName())) {
+                    continue;
+                }
+                names.add(entity.getScreenName());
+            }
+        }
+        return names;
+    }
+
+    public String getMessageSummary() {
+        return String.format("@%s: %s", getSender().getScreenName(), getText());
     }
 }

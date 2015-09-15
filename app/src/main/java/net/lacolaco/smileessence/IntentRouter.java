@@ -31,11 +31,11 @@ import android.text.TextUtils;
 
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.CommandOpenUserDetail;
+import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
-import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.data.PostState;
 import net.lacolaco.smileessence.view.DialogHelper;
@@ -126,16 +126,12 @@ public class IntentRouter {
     }
 
     private static void showStatusDialog(final MainActivity activity, long id) {
-        TwitterUtils.tryGetStatus(activity.getCurrentAccount(), id, new TwitterUtils.StatusCallback() {
-            @Override
-            public void success(Tweet tweet) {
+        activity.getCurrentAccount().fetchTweet(id, (tweet) -> {
+            if (tweet != null) {
                 StatusDetailDialogFragment fragment = new StatusDetailDialogFragment();
                 fragment.setStatusID(tweet.getId());
                 DialogHelper.showDialog(activity, fragment);
-            }
-
-            @Override
-            public void error() {
+            } else {
                 Notificator.getInstance().publish(R.string.error_intent_status_cannot_load, NotificationType.ALERT);
             }
         });

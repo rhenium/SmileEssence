@@ -26,6 +26,7 @@ package net.lacolaco.smileessence.twitter;
 
 import android.test.InstrumentationTestCase;
 
+import com.twitter.Validator;
 import junit.framework.Assert;
 
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
@@ -37,9 +38,9 @@ public class TwitterUtilsTest extends InstrumentationTestCase {
 
     public void testLength() throws Exception {
         String text = "test";
-        Assert.assertEquals(text.length(), TwitterUtils.getFixedTextLength(text));
+        Assert.assertEquals(text.length(), new Validator().getTweetLength(text));
         text = "test.com";
-        assertNotSame(text.length(), TwitterUtils.getFixedTextLength(text));
+        assertNotSame(text.length(), new Validator().getTweetLength(text));
     }
 
     public void testURL() throws Exception {

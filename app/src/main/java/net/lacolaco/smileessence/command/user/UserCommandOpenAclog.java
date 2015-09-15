@@ -56,6 +56,6 @@ public class UserCommandOpenAclog extends UserCommand {
 
     @Override
     public boolean execute() {
-        return new CommandOpenURL(getActivity(), TwitterUtils.getAclogTimelineURL(getUser().getScreenName())).execute();
+        return new CommandOpenURL(getActivity(), getUser().getAclogTimelineURL()).execute();
     }
 }

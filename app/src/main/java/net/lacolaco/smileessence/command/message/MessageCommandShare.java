@@ -60,7 +60,7 @@ public class MessageCommandShare extends MessageCommand {
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_SEND);
         intent.setType("text/plain");
-        intent.putExtra(Intent.EXTRA_TEXT, TwitterUtils.getMessageSummary(getMessage()));
+        intent.putExtra(Intent.EXTRA_TEXT, getMessage().getMessageSummary());
         IntentUtils.startActivityIfFound(getActivity(), intent);
         return true;
     }

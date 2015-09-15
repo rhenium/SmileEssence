@@ -43,7 +43,6 @@ import net.lacolaco.smileessence.data.ImageCache;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
-import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.util.Morse;
 import net.lacolaco.smileessence.util.NameStyles;
 import net.lacolaco.smileessence.util.StringUtils;
@@ -221,7 +220,7 @@ public class StatusViewModel implements IViewModel {
                 embeddedStatus.setVisibility(View.VISIBLE);
                 final Account account = ((MainActivity) activity).getCurrentAccount();
                 for (long id : embeddedStatusIDs) {
-                    AsyncTask task = TwitterUtils.tryGetStatus(account, id, new TwitterUtils.StatusCallback() {
+                    AsyncTask task = account.tryGetStatus(id, new Account.StatusCallback() {
                         @Override
                         public void success(Tweet tweet) {
                             StatusViewModel viewModel = new StatusViewModel(tweet);

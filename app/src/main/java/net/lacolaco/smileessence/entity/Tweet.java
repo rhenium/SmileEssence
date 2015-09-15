@@ -6,6 +6,7 @@ import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.util.ListUtils;
 import twitter4j.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -149,5 +150,26 @@ public class Tweet {
 
     public long getInReplyTo() {
         return inReplyTo;
+    }
+
+    public List<String> getMentioningScreenNames(String excludeScreenName) {
+        List<String> names = getMentioningScreenNames();
+        if (excludeScreenName != null) {
+            names.remove(excludeScreenName);
+        }
+        return names;
+    }
+
+    public List<String> getMentioningScreenNames() {
+        List<String> names = new ArrayList<>();
+        names.add(getUser().getScreenName());
+        if (getMentions() != null) {
+            for (UserMentionEntity entity : getMentions()) {
+                if (!names.contains(entity.getScreenName())) {
+                    names.add(entity.getScreenName());
+                }
+            }
+        }
+        return names;
     }
 }

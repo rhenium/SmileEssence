@@ -56,6 +56,6 @@ public class UserCommandOpenTwilog extends UserCommand {
 
     @Override
     public boolean execute() {
-        return new CommandOpenURL(getActivity(), TwitterUtils.getTwilogURL(getUser().getScreenName())).execute();
+        return new CommandOpenURL(getActivity(), getUser().getTwilogURL()).execute();
     }
 }

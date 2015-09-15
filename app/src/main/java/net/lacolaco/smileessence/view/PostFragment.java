@@ -46,7 +46,6 @@ import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.twitter.task.TweetTask;
-import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.util.BitmapThumbnailTask;
 import net.lacolaco.smileessence.util.IntentUtils;
 import net.lacolaco.smileessence.util.UIHandler;
@@ -144,7 +143,7 @@ public class PostFragment extends PageFragment implements TextWatcher, View.OnFo
             if (postState.getInReplyToStatusID() >= 0) {
                 viewGroupReply.setVisibility(View.VISIBLE);
                 final Account account = activity.getCurrentAccount();
-                TwitterUtils.tryGetStatus(account, postState.getInReplyToStatusID(), new TwitterUtils.StatusCallback() {
+                account.tryGetStatus(postState.getInReplyToStatusID(), new Account.StatusCallback() {
                     @Override
                     public void success(Tweet tweet) {
                         View header = viewGroupReply.findViewById(R.id.layout_post_reply_status);
@@ -188,9 +187,10 @@ public class PostFragment extends PageFragment implements TextWatcher, View.OnFo
     }
 
     public void updateTextCount(CharSequence s) {
-        int remainingCount = 140 - TwitterUtils.getFixedTextLength(s.toString());
+        Validator validator = new Validator();
+        int remainingCount = 140 - validator.getTweetLength(s.toString());
         if (!TextUtils.isEmpty(PostState.getState().getMediaFilePath())) {
-            remainingCount -= new Validator().getShortUrlLength();
+            remainingCount -= validator.getShortUrlLength();
         }
         textViewCount.setText(String.valueOf(remainingCount));
         if (remainingCount == 140) {

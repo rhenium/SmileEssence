@@ -48,7 +48,6 @@ import net.lacolaco.smileessence.twitter.task.DeleteStatusTask;
 import net.lacolaco.smileessence.twitter.task.FavoriteTask;
 import net.lacolaco.smileessence.twitter.task.RetweetTask;
 import net.lacolaco.smileessence.twitter.task.UnfavoriteTask;
-import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.data.PostState;
 import net.lacolaco.smileessence.view.adapter.StatusListAdapter;
@@ -135,7 +134,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         if (inReplyToStatusId == -1) {
             listView.setVisibility(View.GONE);
         } else {
-            TwitterUtils.tryGetStatus(account, inReplyToStatusId, new TwitterUtils.StatusCallback() {
+            account.tryGetStatus(inReplyToStatusId, new Account.StatusCallback() {
                 @Override
                 public void success(Tweet tweet) {
                     adapter.addToTop(new StatusViewModel(tweet));
@@ -272,7 +271,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         if (account.userID == originalTweet.getUser().getId()) {
             builder.addScreenName(account.screenName);
         }
-        builder.addScreenNames(TwitterUtils.getScreenNames(originalTweet, account.screenName));
+        builder.addScreenNames(originalTweet.getMentioningScreenNames(account.screenName));
 
         String text = builder.buildText();
         int selStart = originalTweet.getUser().getScreenName().length() + 2; // "@" and " "

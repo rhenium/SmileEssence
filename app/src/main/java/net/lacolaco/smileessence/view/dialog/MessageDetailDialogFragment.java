@@ -41,7 +41,6 @@ import net.lacolaco.smileessence.command.CommandOpenURL;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.task.DeleteMessageTask;
-import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.adapter.MessageListAdapter;
 import net.lacolaco.smileessence.view.listener.ListItemClickListener;
@@ -80,7 +79,7 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
     public void onClick(final View v) {
         final MainActivity activity = (MainActivity) getActivity();
         final Account account = activity.getCurrentAccount();
-        TwitterUtils.tryGetMessage(account, getMessageID(), new TwitterUtils.MessageCallback() {
+        account.tryGetMessage(getMessageID(), new Account.MessageCallback() {
             @Override
             public void success(DirectMessage message) {
                 switch (v.getId()) {

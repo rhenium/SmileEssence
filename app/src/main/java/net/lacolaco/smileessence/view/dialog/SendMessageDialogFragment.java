@@ -43,7 +43,6 @@ import com.twitter.Validator;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.twitter.task.SendMessageTask;
-import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.data.PostState;
 
 import twitter4j.Twitter;
@@ -94,9 +93,10 @@ public class SendMessageDialogFragment extends StackableDialogFragment implement
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        int remainingCount = 140 - TwitterUtils.getFixedTextLength(s.toString());
+        Validator validator = new Validator();
+        int remainingCount = 140 - validator.getTweetLength(s.toString());
         if (!TextUtils.isEmpty(PostState.getState().getMediaFilePath())) {
-            remainingCount -= new Validator().getShortUrlLength();
+            remainingCount -= validator.getShortUrlLength();
         }
         textViewCount.setText(String.valueOf(remainingCount));
         if (remainingCount == 140) {

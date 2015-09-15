@@ -34,7 +34,6 @@ import net.lacolaco.smileessence.command.CommandOpenURL;
 import net.lacolaco.smileessence.command.CommandOpenUserDetail;
 import net.lacolaco.smileessence.command.CommandSaveAsTemplate;
 import net.lacolaco.smileessence.entity.Account;
-import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 
 import java.util.ArrayList;
@@ -70,7 +69,7 @@ public class MessageMenuDialogFragment extends MenuDialogFragment {
         final MainActivity activity = (MainActivity) getActivity();
         final Account account = activity.getCurrentAccount();
 
-        TwitterUtils.tryGetMessage(account, getMessageID(), new TwitterUtils.MessageCallback() {
+        account.tryGetMessage(getMessageID(), new Account.MessageCallback() {
             @Override
             public void success(DirectMessage message) {
                 List<Command> commands = getCommands(activity, message, account);
@@ -93,7 +92,7 @@ public class MessageMenuDialogFragment extends MenuDialogFragment {
     public void addBottomCommands(Activity activity, DirectMessage message, Account account, ArrayList<Command> commands) {
         commands.add(new CommandSaveAsTemplate(activity, message.getText()));
         //User
-        for (String screenName : TwitterUtils.getScreenNames(message, null)) {
+        for (String screenName : message.getMentioningScreenNames()) {
             commands.add(new CommandOpenUserDetail(activity, screenName, account));
         }
         for (Command command : getHashtagCommands(activity, message)) {

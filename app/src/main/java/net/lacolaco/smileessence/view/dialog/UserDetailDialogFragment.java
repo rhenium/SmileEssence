@@ -115,7 +115,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
     public void onClick(final View v) {
         final MainActivity activity = (MainActivity) getActivity();
         final Account account = activity.getCurrentAccount();
-        TwitterUtils.tryGetUser(account, getUserID(), new TwitterUtils.UserCallback() {
+        account.tryGetUser(getUserID(), new Account.UserCallback() {
             @Override
             public void success(final User user) {
                 switch (v.getId()) {
@@ -128,23 +128,23 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
                         break;
                     }
                     case R.id.textview_user_detail_screenname: {
-                        openUrl(TwitterUtils.getUserHomeURL(user.getScreenName()));
+                        openUrl(user.getUserHomeURL());
                         break;
                     }
                     case R.id.textview_user_detail_tweet_count: {
-                        openUrl(TwitterUtils.getUserHomeURL(user.getScreenName()));
+                        openUrl(user.getUserHomeURL());
                         break;
                     }
                     case R.id.textview_user_detail_friend_count: {
-                        openUrl(String.format("%s/following", TwitterUtils.getUserHomeURL(user.getScreenName())));
+                        openUrl(String.format("%s/following", user.getUserHomeURL()));
                         break;
                     }
                     case R.id.textview_user_detail_follower_count: {
-                        openUrl(String.format("%s/followers", TwitterUtils.getUserHomeURL(user.getScreenName())));
+                        openUrl(String.format("%s/followers", user.getUserHomeURL()));
                         break;
                     }
                     case R.id.textview_user_detail_favorite_count: {
-                        openUrl(String.format("%s/favorites", TwitterUtils.getUserHomeURL(user.getScreenName())));
+                        openUrl(String.format("%s/favorites", user.getUserHomeURL()));
                         break;
                     }
                     case R.id.button_user_detail_follow: {
@@ -252,7 +252,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         tabHost.setCurrentTab(0);
 
         final Account account = activity.getCurrentAccount();
-        TwitterUtils.tryGetUser(account, getUserID(), new TwitterUtils.UserCallback() {
+        account.tryGetUser(getUserID(), new Account.UserCallback() {
             @Override
             public void success(User user) {
                 try {
@@ -296,7 +296,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         }
         String html = description;
         html = html.replaceAll("https?://[\\w/:%#\\$&\\?\\(\\)~\\.=\\+\\-]+", "<a href=\"$0\">$0</a>");
-        html = html.replaceAll("@([a-zA-Z0-9_]+)", "<a href=\"" + TwitterUtils.getUserHomeURL("$1") + "\">$0</a>");
+        html = html.replaceAll("@([a-zA-Z0-9_]+)", "<a href=\"https://twitter.com/$1\">$0</a>");
         html = html.replaceAll("\r\n", "<br />");
         return html;
     }

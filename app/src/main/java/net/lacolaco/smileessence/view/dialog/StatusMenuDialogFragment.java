@@ -35,7 +35,6 @@ import net.lacolaco.smileessence.command.CommandOpenUserDetail;
 import net.lacolaco.smileessence.command.CommandSaveAsTemplate;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
-import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 
 import java.util.ArrayList;
@@ -43,7 +42,6 @@ import java.util.List;
 
 import twitter4j.HashtagEntity;
 import twitter4j.MediaEntity;
-import twitter4j.Status;
 import twitter4j.URLEntity;
 
 public class StatusMenuDialogFragment extends MenuDialogFragment {
@@ -88,7 +86,7 @@ public class StatusMenuDialogFragment extends MenuDialogFragment {
     public void addBottomCommands(Activity activity, Tweet tweet, Account account, ArrayList<Command> commands) {
         commands.add(new CommandSaveAsTemplate(activity, tweet.getOriginalTweet().getText()));
         //User
-        for (String screenName : TwitterUtils.getScreenNames(tweet, null)) {
+        for (String screenName : tweet.getMentioningScreenNames()) {
             commands.add(new CommandOpenUserDetail(activity, screenName, account));
         }
         for (Command command : getHashtagCommands(activity, tweet)) {

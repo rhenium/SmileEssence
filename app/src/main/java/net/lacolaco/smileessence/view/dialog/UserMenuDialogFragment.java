@@ -32,7 +32,6 @@ import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.CommandSearchOnTwitter;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.User;
-import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 
 import java.util.ArrayList;
@@ -63,7 +62,7 @@ public class UserMenuDialogFragment extends MenuDialogFragment {
         final MainActivity activity = (MainActivity) getActivity();
         final Account account = activity.getCurrentAccount();
 
-        TwitterUtils.tryGetUser(account, getUserID(), new TwitterUtils.UserCallback() {
+        account.tryGetUser(getUserID(), new Account.UserCallback() {
             @Override
             public void success(User user) {
                 List<Command> commands = getCommands(activity, user, account);
