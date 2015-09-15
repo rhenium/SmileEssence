@@ -132,12 +132,7 @@ public class PostFragment extends PageFragment implements TextWatcher, View.OnFo
             editText.setTextKeepState(postState.getText());
             editText.addTextChangedListener(this);
             updateTextCount(editText.getText());
-            new UIHandler() {
-                @Override
-                public void run() {
-                    editText.setSelection(start, end);
-                }
-            }.postAtFrontOfQueue();
+            new UIHandler(() -> editText.setSelection(start, end)).postAtFrontOfQueue();
         }
         if (viewGroupReply != null) {
             if (postState.getInReplyToStatusID() >= 0) {
@@ -359,13 +354,10 @@ public class PostFragment extends PageFragment implements TextWatcher, View.OnFo
 
     private void showIME() {
         if (editText != null) {
-            new UIHandler() {
-                @Override
-                public void run() {
-                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.showSoftInput(editText, InputMethodManager.RESULT_UNCHANGED_SHOWN);
-                }
-            }.postDelayed(100);
+            new UIHandler(() -> {
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(editText, InputMethodManager.RESULT_UNCHANGED_SHOWN);
+            }).postDelayed(100);
         }
     }
 

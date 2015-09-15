@@ -143,20 +143,10 @@ public class IntentRouter {
     }
 
     private static void openPostPage(final MainActivity activity, final String str) {
-        new UIHandler() {
-            @Override
-            public void run() {
-                PostState.newState().beginTransaction().setText(str).commitWithOpen(activity);
-            }
-        }.post();
+        new UIHandler(() -> PostState.newState().beginTransaction().setText(str).commitWithOpen(activity)).post();
     }
 
     private static void openPostPageWithImage(final MainActivity activity, final Uri imageUri) {
-        new UIHandler() {
-            @Override
-            public void run() {
-                activity.openPostPageWithImage(imageUri);
-            }
-        }.post();
+        new UIHandler(() -> activity.openPostPageWithImage(imageUri)).post();
     }
 }

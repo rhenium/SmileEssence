@@ -27,45 +27,36 @@ package net.lacolaco.smileessence.util;
 import android.os.Handler;
 import android.os.Looper;
 
-public abstract class UIHandler extends Handler implements Runnable {
+public class UIHandler {
+    private final Runnable runnable;
+    private final Handler handler;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public UIHandler() {
-        super(Looper.getMainLooper());
+    public UIHandler(Runnable _runnable) {
+        handler = new Handler(Looper.getMainLooper());
+        runnable = _runnable;
     }
-
-    public UIHandler(Callback callback) {
-        super(Looper.getMainLooper(), callback);
-    }
-
-    // ------------------------ INTERFACE METHODS ------------------------
-
-
-    // --------------------- Interface Runnable ---------------------
-
-    @Override
-    public abstract void run();
 
     // -------------------------- OTHER METHODS --------------------------
 
     public boolean post() {
-        return post(this);
+        return handler.post(runnable);
     }
 
     public boolean postAtFrontOfQueue() {
-        return postAtFrontOfQueue(this);
+        return handler.postAtFrontOfQueue(runnable);
     }
 
     public boolean postAtTime(long uptimeMillis) {
-        return postAtTime(this, uptimeMillis);
+        return handler.postAtTime(runnable, uptimeMillis);
     }
 
     public boolean postAtTime(Object token, long uptimeMillis) {
-        return postAtTime(this, token, uptimeMillis);
+        return handler.postAtTime(runnable, token, uptimeMillis);
     }
 
     public boolean postDelayed(long delayMillis) {
-        return postDelayed(this, delayMillis);
+        return handler.postDelayed(runnable, delayMillis);
     }
 }

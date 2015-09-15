@@ -109,13 +109,10 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
         final UserListListAdapter adapter = (UserListListAdapter) getAdapter();
         String listFullName = adapter.getListFullName();
         if (TextUtils.isEmpty(listFullName)) {
-            new UIHandler() {
-                @Override
-                public void run() {
-                    notifyTextEmpty(activity);
-                    refreshView.onRefreshComplete();
-                }
-            }.post();
+            new UIHandler(() -> {
+                notifyTextEmpty(activity);
+                refreshView.onRefreshComplete();
+            }).post();
             return;
         }
         Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount(activity));
@@ -145,13 +142,10 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
         final UserListListAdapter adapter = (UserListListAdapter) getAdapter();
         String listFullName = adapter.getListFullName();
         if (TextUtils.isEmpty(listFullName)) {
-            new UIHandler() {
-                @Override
-                public void run() {
-                    notifyTextEmpty(activity);
-                    refreshView.onRefreshComplete();
-                }
-            }.post();
+            new UIHandler(() -> {
+                notifyTextEmpty(activity);
+                refreshView.onRefreshComplete();
+            }).post();
             return;
         }
         Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount(activity));

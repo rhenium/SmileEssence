@@ -347,15 +347,12 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
             @Override
             protected void executeCommand(Command command) {
                 super.executeCommand(command);
-                new UIHandler() {
-                    @Override
-                    public void run() {
-                        if (UserDetailDialogFragment.this.isDetached()) {
-                            return;
-                        }
-                        updateRelationship(activity, user.getId());
+                new UIHandler(() -> {
+                    if (UserDetailDialogFragment.this.isDetached()) {
+                        return;
                     }
-                }.postDelayed(1000);
+                    updateRelationship(activity, user.getId());
+                }).postDelayed(1000);
             }
         };
         menuFragment.setUserID(user.getId());

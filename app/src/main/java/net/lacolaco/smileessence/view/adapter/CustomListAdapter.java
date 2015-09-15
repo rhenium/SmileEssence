@@ -160,12 +160,7 @@ public class CustomListAdapter<T extends IViewModel> extends BaseAdapter {
 
     public void updateForce() {
         synchronized (LOCK) {
-            new UIHandler() {
-                @Override
-                public void run() {
-                    notifyDataSetChanged();
-                }
-            }.post();
+            new UIHandler(this::notifyDataSetChanged).post();
         }
     }
 }

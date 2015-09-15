@@ -321,12 +321,7 @@ public class MainActivity extends Activity {
     }
 
     public void setSelectedPageIndex(final int position, final boolean smooth) {
-        new UIHandler() {
-            @Override
-            public void run() {
-                viewPager.setCurrentItem(position, smooth);
-            }
-        }.post();
+        new UIHandler(() -> viewPager.setCurrentItem(position, smooth)).post();
     }
 
     public void startMainLogic() {

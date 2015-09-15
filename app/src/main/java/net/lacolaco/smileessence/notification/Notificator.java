@@ -71,18 +71,15 @@ public class Notificator {
         if (activity.isFinishing()) {
             return;
         }
-        new UIHandler() {
-            @Override
-            public void run() {
-                if (isForeground) {
-                    Logger.debug(String.format("notify by crouton %s", text));
-                    Crouton.makeText(activity, text, getStyle(type)).show();
-                } else {
-                    Logger.debug(String.format("notify by toast %s", text));
-                    Toast.makeText(activity, text, Toast.LENGTH_LONG).show();
-                }
+        new UIHandler(() -> {
+            if (isForeground) {
+                Logger.debug(String.format("notify by crouton %s", text));
+                Crouton.makeText(activity, text, getStyle(type)).show();
+            } else {
+                Logger.debug(String.format("notify by toast %s", text));
+                Toast.makeText(activity, text, Toast.LENGTH_LONG).show();
             }
-        }.post();
+        }).post();
     }
 
     public void onForeground() {
