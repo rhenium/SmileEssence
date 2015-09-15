@@ -31,8 +31,6 @@ import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.dialog.ReviewDialogFragment;
 
-import twitter4j.Status;
-
 public class StatusCommandReview extends StatusCommand {
 
     // --------------------------- CONSTRUCTORS ---------------------------
@@ -50,7 +48,7 @@ public class StatusCommandReview extends StatusCommand {
 
     @Override
     public boolean isEnabled() {
-        return !getOriginalStatus().getUser().isProtected();
+        return !getOriginalStatus().getUser().isTweetProtected();
     }
 
     // -------------------------- OTHER METHODS --------------------------

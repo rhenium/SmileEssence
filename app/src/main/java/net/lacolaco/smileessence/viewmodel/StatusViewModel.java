@@ -40,6 +40,7 @@ import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.data.FavoriteCache;
 import net.lacolaco.smileessence.data.ImageCache;
+import net.lacolaco.smileessence.databinding.ListItemStatusBinding;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
@@ -159,25 +160,26 @@ public class StatusViewModel implements IViewModel {
         lastTasks.clear();
 
         if (convertedView == null) {
-            convertedView = inflater.inflate(R.layout.list_item_status, null);
+            ListItemStatusBinding binding = ListItemStatusBinding.inflate(inflater, null, false);
+            convertedView = binding.getRoot();
+            convertedView.setTag(binding);
         }
+        ListItemStatusBinding binding = (ListItemStatusBinding) convertedView.getTag();
+        binding.setTweet(getTweet());
+        //return convertedView;
+
         int textSize = UserPreferenceHelper.getInstance().get(R.string.key_setting_text_size, 10);
         int nameStyle = UserPreferenceHelper.getInstance().get(R.string.key_setting_namestyle, 0);
         int theme = ((MainActivity) activity).getThemeIndex();
         NetworkImageView icon = (NetworkImageView) convertedView.findViewById(R.id.imageview_status_icon);
         ImageCache.getInstance().setImageToView(tweet.getUser().getProfileImageUrl(), icon);
-        icon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onIconClick(activity);
-            }
-        });
+        icon.setOnClickListener(v -> onIconClick(activity));
         TextView header = (TextView) convertedView.findViewById(R.id.textview_status_header);
         header.setTextSize(textSize);
         int colorHeader = Themes.getStyledColor(activity, theme, R.attr.color_status_text_header, 0);
         int colorMineHeader = Themes.getStyledColor(activity, theme, R.attr.color_status_text_mine, 0);
         header.setTextColor(isMyStatus() ? colorMineHeader : colorHeader);
-        header.setText(NameStyles.getNameString(nameStyle, tweet.getUser().getScreenName(), tweet.getUser().getName()));
+        header.setText(NameStyles.getNameString(nameStyle, tweet.getUser()));
         TextView content = (TextView) convertedView.findViewById(R.id.textview_status_text);
         content.setTextSize(textSize);
         int colorNormal = Themes.getStyledColor(activity, theme, R.attr.color_status_text_normal, 0);
