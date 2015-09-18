@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.android.databinding'
+// apply plugin: 'com.android.databinding'
 apply plugin: 'me.tatarka.retrolambda'
 
 android {
@@ -29,10 +29,9 @@ android {
     lintOptions {
         abortOnError false
     }
-}
-
-repositories {
-    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    dexOptions {
+        preDexLibraries = false
+    }
 }
 
 dependencies {
@@ -59,3 +58,9 @@ dependencies {
     // guava
     compile 'com.google.guava:guava:+'
 }
+
+retrolambda {
+    jdk System.getenv("JAVA_HOME")
+    oldJdk System.getenv("JAVA7_HOME")
+}
+
