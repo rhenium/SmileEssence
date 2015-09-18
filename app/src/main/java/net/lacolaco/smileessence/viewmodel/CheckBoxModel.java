@@ -25,37 +25,35 @@
 package net.lacolaco.smileessence.viewmodel;
 
 import android.app.Activity;
-import android.databinding.*;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
-import net.lacolaco.smileessence.BR;
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.databinding.MenuItemCheckboxBinding;
 
 public class CheckBoxModel implements IViewModel {
 
     // ------------------------------ FIELDS ------------------------------
 
-    private final CheckedState state;
+    private final String text;
+    private boolean checked;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public CheckBoxModel(String _text, boolean _checked) {
-        state = new CheckedState(_text, _checked);
+    public CheckBoxModel(String text, boolean isChecked) {
+        this.text = text;
+        checked = isChecked;
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 
     public boolean isChecked() {
-        return state.isChecked();
+        return checked;
     }
 
-    public void setChecked(boolean _checked) {
-        state.setChecked(_checked);
+    public void setChecked(boolean checked) {
+        this.checked = checked;
     }
 
     // ------------------------ INTERFACE METHODS ------------------------
@@ -66,43 +64,17 @@ public class CheckBoxModel implements IViewModel {
     @Override
     public View getView(Activity activity, LayoutInflater inflater, View convertedView) {
         if (convertedView == null) {
-            MenuItemCheckboxBinding binding = MenuItemCheckboxBinding.inflate(inflater, null, false);
-            convertedView = binding.getRoot();
-            convertedView.setTag(binding);
+            convertedView = inflater.inflate(R.layout.menu_item_checkbox, null);
         }
-
-        MenuItemCheckboxBinding binding = (MenuItemCheckboxBinding) convertedView.getTag();
-        binding.setCheckedState(state);
+        CheckBox checkBox = (CheckBox) convertedView.findViewById(R.id.checkBox_menuItem);
+        checkBox.setText(this.text);
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                CheckBoxModel.this.checked = isChecked;
+            }
+        });
+        checkBox.setChecked(checked);
         return convertedView;
-    }
-
-    public static class CheckedState extends BaseObservable {
-        private String text;
-        private boolean checked;
-
-        CheckedState(String _text, boolean _checked) {
-            text = _text;
-            checked = _checked;
-        }
-
-        @Bindable
-        public String getText() {
-            return text;
-        }
-
-        public void setText(String text) {
-            this.text = text;
-            notifyPropertyChanged(BR.text);
-        }
-
-        @Bindable
-        public boolean isChecked() {
-            return checked;
-        }
-
-        public void setChecked(boolean checked) {
-            this.checked = checked;
-            notifyPropertyChanged(BR.checked);
-        }
     }
 }

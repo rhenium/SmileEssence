@@ -140,7 +140,7 @@ public class Account extends Model {
         }
     }
 
-    public void fetchTweet(long statusId, boolean forceRetrieve, Consumer<Tweet> callback) {
+    public void fetchTweet(long statusId, Consumer<Tweet> callback, boolean forceRetrieve) {
         Tweet tweet = Tweet.fetch(statusId);
         if (forceRetrieve || tweet == null) {
             new ShowStatusTask(getTwitter(), statusId) {
@@ -154,7 +154,7 @@ public class Account extends Model {
         }
     }
     public void fetchTweet(long statusId, Consumer<Tweet> callback) {
-        fetchTweet(statusId, false, callback);
+        fetchTweet(statusId, callback, false);
     }
 
     public TwitterTask<Tweet> tryGetStatus(long statusID, final StatusCallback callback) {
