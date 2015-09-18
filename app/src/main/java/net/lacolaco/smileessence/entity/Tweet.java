@@ -1,10 +1,7 @@
 package net.lacolaco.smileessence.entity;
 
-import android.databinding.BaseObservable;
-import android.databinding.Bindable;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import net.lacolaco.smileessence.BR;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.util.ListUtils;
 import twitter4j.*;
@@ -13,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Tweet extends BaseObservable {
+public class Tweet {
     // キャッシュ こっちは soft reference
     private static Cache<Long, Tweet> storage = CacheBuilder.newBuilder().softValues().build();
 
@@ -67,14 +64,8 @@ public class Tweet extends BaseObservable {
         text = TwitterUtils.replaceURLEntities(status.getText(), status.getURLEntities(), false);
         createdAt = status.getCreatedAt();
         source = status.getSource();
-        if (status.getFavoriteCount() != status.getFavoriteCount()) {
-            favoriteCount = status.getFavoriteCount();
-            notifyPropertyChanged(BR.favoriteCount);
-        }
-        if (status.getRetweetCount() != status.getRetweetCount()) {
-            retweetCount = status.getRetweetCount();
-            notifyPropertyChanged(BR.retweetCount);
-        }
+        favoriteCount = status.getFavoriteCount();
+        retweetCount = status.getRetweetCount();
 
         mentions = status.getUserMentionEntities();
         hashtags = status.getHashtagEntities();
@@ -89,7 +80,6 @@ public class Tweet extends BaseObservable {
         }
     }
 
-    @Bindable
     public String getTwitterUrl() {
         return String.format("https://twitter.com/%s/status/%s", getOriginalTweet().getUser().getScreenName(), getOriginalTweet().getId());
     }
@@ -130,12 +120,10 @@ public class Tweet extends BaseObservable {
         }
     }
 
-    @Bindable
     public int getFavoriteCount() {
         return favoriteCount;
     }
 
-    @Bindable
     public int getRetweetCount() {
         return retweetCount;
     }

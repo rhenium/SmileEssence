@@ -252,7 +252,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
 
     private boolean isNotRetweetable(Account account, Tweet tweet) {
         User user = tweet.getOriginalTweet().getUser();
-        return user.isTweetProtected() || user.getId() == account.userID;
+        return user.isProtected() || user.getId() == account.userID;
     }
 
     private boolean isRetweetDeletable(Account account, Tweet tweet) {

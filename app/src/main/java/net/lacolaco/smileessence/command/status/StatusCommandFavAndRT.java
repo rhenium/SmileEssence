@@ -58,7 +58,7 @@ public class StatusCommandFavAndRT extends StatusCommand implements IConfirmable
     @Override
     public boolean isEnabled() {
         User user = getOriginalStatus().getUser();
-        return !user.isTweetProtected() && user.getId() != account.userID;
+        return !user.isProtected() && user.getId() != account.userID;
     }
 
     // -------------------------- OTHER METHODS --------------------------

@@ -24,15 +24,11 @@
 
 package net.lacolaco.smileessence.util;
 
-import net.lacolaco.smileessence.entity.User;
-
 public class NameStyles {
 
     // -------------------------- STATIC METHODS --------------------------
 
-    public static String getNameString(int style, User user) {
-        String name = user.getName();
-        String screenName = user.getScreenName();
+    public static String getNameString(int style, String screenName, String name) {
         switch (style) {
             case 1: {
                 return String.format("%s / %s", name, screenName);

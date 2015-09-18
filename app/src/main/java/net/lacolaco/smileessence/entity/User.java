@@ -1,12 +1,9 @@
 package net.lacolaco.smileessence.entity;
 
-import android.databinding.BaseObservable;
-import android.databinding.Bindable;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import net.lacolaco.smileessence.BR;
 
-public class User extends BaseObservable {
+public class User {
     // 重複防止用キャッシュ こっちは weak reference
     private static Cache<Long, User> storage = CacheBuilder.newBuilder().weakValues().build();
 
@@ -27,7 +24,7 @@ public class User extends BaseObservable {
 
     // インスタンス
     private long id;
-    private boolean tweetProtected;
+    private boolean isProtected;
     private String screenName;
     private String name;
     private String profileImageUrl;
@@ -47,80 +44,37 @@ public class User extends BaseObservable {
 
     private void update(twitter4j.User user) {
         id = user.getId();
-        if (isTweetProtected() != user.isProtected()) {
-            tweetProtected = user.isProtected();
-            notifyPropertyChanged(BR.tweetProtected);
-        }
-        if (!getScreenName().equals(user.getScreenName())) {
-            screenName = user.getScreenName();
-            notifyPropertyChanged(BR.screenName);
-        }
-        if (!getName().equals(user.getName())) {
-            name = user.getName();
-            notifyPropertyChanged(BR.name);
-        }
-        if (!getProfileImageUrl().equals(user.getProfileBackgroundImageUrlHttps())) {
-            profileImageUrl = user.getProfileImageURLHttps();
-            notifyPropertyChanged(BR.profileImageUrl);
-        }
-        if (!getProfileBannerUrl().equals(user.getProfileBannerURL())) {
-            profileBannerUrl = user.getProfileBannerURL();
-            notifyPropertyChanged(BR.profileBannerUrl);
-        }
-        if (!getDescription().equals(user.getDescription())) {
-            description = user.getDescription();
-            notifyPropertyChanged(BR.description);
-        }
-        if (!getLocation().equals(user.getLocation())) {
-            location = user.getLocation();
-            notifyPropertyChanged(BR.location);
-        }
-        if (!getUrl().equals(user.getURL())) {
-            url = user.getURL();
-            notifyPropertyChanged(BR.url);
-        }
-        if (getFavoritesCount() != user.getFavouritesCount()) {
-            favoritesCount = user.getFavouritesCount();
-            notifyPropertyChanged(BR.favoritesCount);
-        }
-        if (getStatusesCount() != user.getStatusesCount()) {
-            statusesCount = user.getStatusesCount();
-            notifyPropertyChanged(BR.statusesCount);
-        }
-        if (getFriendsCount() != user.getFriendsCount()) {
-            friendsCount = user.getFriendsCount();
-            notifyPropertyChanged(BR.friendsCount);
-        }
-        if (getFollowersCount() != user.getFollowersCount()) {
-            followersCount = user.getFollowersCount();
-            notifyPropertyChanged(BR.followersCount);
-        }
-        if (isVerified() != user.isVerified()) {
-            isVerified = user.isVerified();
-            notifyPropertyChanged(BR.verified);
-        }
+        isProtected = user.isProtected();
+        screenName = user.getScreenName();
+        name = user.getName();
+        profileImageUrl = user.getProfileImageURLHttps();
+        profileBannerUrl = user.getProfileBannerURL();
+        description = user.getDescription();
+        location = user.getLocation();
+        url = user.getURL();
+        favoritesCount = user.getFavouritesCount();
+        statusesCount = user.getStatusesCount();
+        friendsCount = user.getFriendsCount();
+        followersCount = user.getFollowersCount();
+        isVerified = user.isVerified();
     }
 
     public long getId() {
         return id;
     }
 
-    @Bindable // TODO: workaround for bugs in com.android.databinding
-    public boolean isTweetProtected() {
-        return tweetProtected;
+    public boolean isProtected() {
+        return isProtected;
     }
 
-    @Bindable
     public String getScreenName() {
         return screenName;
     }
 
-    @Bindable
     public String getName() {
         return name;
     }
 
-    @Bindable
     public String getProfileImageUrl() {
         return profileImageUrl;
     }
@@ -142,47 +96,38 @@ public class User extends BaseObservable {
         return null;
     }
 
-    @Bindable
     public String getProfileBannerUrl() {
         return profileBannerUrl;
     }
 
-    @Bindable
     public String getDescription() {
         return description;
     }
 
-    @Bindable
     public String getLocation() {
         return location;
     }
 
-    @Bindable
     public String getUrl() {
         return url;
     }
 
-    @Bindable
     public int getFavoritesCount() {
         return favoritesCount;
     }
 
-    @Bindable
     public int getStatusesCount() {
         return statusesCount;
     }
 
-    @Bindable
     public int getFriendsCount() {
         return friendsCount;
     }
 
-    @Bindable
     public int getFollowersCount() {
         return followersCount;
     }
 
-    @Bindable
     public boolean isVerified() {
         return isVerified;
     }

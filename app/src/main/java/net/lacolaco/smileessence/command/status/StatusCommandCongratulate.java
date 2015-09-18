@@ -61,7 +61,7 @@ public class StatusCommandCongratulate extends StatusCommand implements IConfirm
 
     @Override
     public boolean isEnabled() {
-        return !getOriginalStatus().getUser().isTweetProtected();
+        return !getOriginalStatus().getUser().isProtected();
     }
 
     // -------------------------- OTHER METHODS --------------------------

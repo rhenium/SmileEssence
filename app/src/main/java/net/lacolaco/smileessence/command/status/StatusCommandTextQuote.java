@@ -49,7 +49,7 @@ public class StatusCommandTextQuote extends StatusCommand {
 
     @Override
     public boolean isEnabled() {
-        return !getStatus().getUser().isTweetProtected();
+        return !getStatus().getUser().isProtected();
     }
 
     // -------------------------- OTHER METHODS --------------------------

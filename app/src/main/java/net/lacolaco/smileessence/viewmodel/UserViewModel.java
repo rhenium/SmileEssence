@@ -60,7 +60,7 @@ public class UserViewModel {
         friendsCount = user.getFriendsCount();
         followersCount = user.getFollowersCount();
         favoritesCount = user.getFavoritesCount();
-        isProtected = user.isTweetProtected();
+        isProtected = user.isProtected();
         isVerified = user.isVerified();
     }
 

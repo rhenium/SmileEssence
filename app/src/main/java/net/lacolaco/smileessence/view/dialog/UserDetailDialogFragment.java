@@ -318,7 +318,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         textViewFriendCount.setText(String.valueOf(user.getFriendsCount()));
         textViewFollowerCount.setText(String.valueOf(user.getFollowersCount()));
         textViewFavoriteCount.setText(String.valueOf(user.getFavoritesCount()));
-        textViewProtected.setVisibility(user.isTweetProtected() ? View.VISIBLE : View.GONE);
+        textViewProtected.setVisibility(user.isProtected() ? View.VISIBLE : View.GONE);
         String htmlDescription = getHtmlDescription(user.getDescription());
         textViewDescription.setText(Html.fromHtml(htmlDescription));
         textViewDescription.setMovementMethod(LinkMovementMethod.getInstance());
