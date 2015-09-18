@@ -1,6 +1,5 @@
 package net.lacolaco.smileessence.entity;
 
-import com.google.common.collect.Lists;
 import twitter4j.*;
 
 import java.util.*;

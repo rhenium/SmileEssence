@@ -72,7 +72,7 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
             }
         });
         final Twitter twitter = ((MainActivity) getActivity()).getCurrentAccount().getTwitter();
-        final Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount((MainActivity) getActivity()));
+        final Paging paging = TwitterUtils.getPaging(((MainActivity) getActivity()).getRequestCountPerPage());
         final StatusListAdapter adapter_ = adapter;
         new MentionsTimelineTask(twitter, paging) {
             @Override
@@ -96,7 +96,7 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
         final Account currentAccount = activity.getCurrentAccount();
         final StatusListAdapter adapter = getAdapter();
         Twitter twitter = currentAccount.getTwitter();
-        Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount(activity));
+        Paging paging = TwitterUtils.getPaging(activity.getRequestCountPerPage());
         if (adapter.getCount() > 0) {
             paging.setSinceId(adapter.getTopID());
         }
@@ -119,7 +119,7 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
         final Account currentAccount = activity.getCurrentAccount();
         final StatusListAdapter adapter = getAdapter();
         Twitter twitter = currentAccount.getTwitter();
-        Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount(activity));
+        Paging paging = TwitterUtils.getPaging(activity.getRequestCountPerPage());
         if (adapter.getCount() > 0) {
             paging.setMaxId(adapter.getLastID() - 1);
         }

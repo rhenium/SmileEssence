@@ -67,7 +67,7 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
             adapter.update();
         });
         final Twitter twitter = ((MainActivity) getActivity()).getCurrentAccount().getTwitter();
-        final Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount((MainActivity) getActivity()));
+        final Paging paging = TwitterUtils.getPaging(((MainActivity) getActivity()).getRequestCountPerPage());
         new HomeTimelineTask(twitter, paging) {
             @Override
             protected void onPostExecute(List<Tweet> tweets) {
@@ -98,7 +98,7 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
         }
         final Account currentAccount = activity.getCurrentAccount();
         Twitter twitter = currentAccount.getTwitter();
-        Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount(activity));
+        Paging paging = TwitterUtils.getPaging(activity.getRequestCountPerPage());
         if (adapter.getCount() > 0) {
             paging.setSinceId(adapter.getTopID());
         }
@@ -124,7 +124,7 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
         final StatusListAdapter adapter = getAdapter();
         final Account currentAccount = activity.getCurrentAccount();
         Twitter twitter = currentAccount.getTwitter();
-        Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount(activity));
+        Paging paging = TwitterUtils.getPaging(activity.getRequestCountPerPage());
         if (adapter.getCount() > 0) {
             paging.setMaxId(adapter.getLastID() - 1);
         }

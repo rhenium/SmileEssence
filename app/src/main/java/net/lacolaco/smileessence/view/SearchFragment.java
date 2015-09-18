@@ -51,7 +51,6 @@ import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.StatusFilter;
 import net.lacolaco.smileessence.twitter.task.SearchTask;
-import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.view.adapter.SearchListAdapter;
 import net.lacolaco.smileessence.view.dialog.SelectSearchQueryDialogFragment;
@@ -149,7 +148,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
         }
         final Query query = new Query();
         query.setQuery(queryString);
-        query.setCount(TwitterUtils.getPagingCount(activity));
+        query.setCount(activity.getRequestCountPerPage());
         query.setResultType(Query.RECENT);
         if (adapter.getCount() > 0) {
             query.setSinceId(adapter.getTopID());
@@ -192,7 +191,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
         }
         final Query query = new Query();
         query.setQuery(queryString);
-        query.setCount(TwitterUtils.getPagingCount(activity));
+        query.setCount(activity.getRequestCountPerPage());
         query.setResultType(Query.RECENT);
         if (adapter.getCount() > 0) {
             query.setMaxId(adapter.getLastID() - 1);
@@ -349,7 +348,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
             adapter.updateForce();
             final Query query = new Query();
             query.setQuery(queryString);
-            query.setCount(TwitterUtils.getPagingCount((MainActivity) getActivity()));
+            query.setCount(((MainActivity) getActivity()).getRequestCountPerPage());
             query.setResultType(Query.RECENT);
             new SearchTask(twitter, query) {
                 @Override

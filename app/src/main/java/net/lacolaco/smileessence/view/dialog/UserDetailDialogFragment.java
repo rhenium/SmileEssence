@@ -173,7 +173,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
         Twitter twitter = currentAccount.getTwitter();
-        Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount(activity));
+        Paging paging = TwitterUtils.getPaging(activity.getRequestCountPerPage());
         if (adapter.getCount() > 0) {
             paging.setSinceId(adapter.getTopID());
         }
@@ -195,7 +195,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
         Twitter twitter = currentAccount.getTwitter();
-        Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount(activity));
+        Paging paging = TwitterUtils.getPaging(activity.getRequestCountPerPage());
         if (adapter.getCount() > 0) {
             paging.setMaxId(adapter.getLastID() - 1);
         }

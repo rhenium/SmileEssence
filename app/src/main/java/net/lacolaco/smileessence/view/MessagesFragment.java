@@ -69,7 +69,7 @@ public class MessagesFragment extends CustomListFragment<MessageListAdapter> {
             adapter.update();
         });
         final Twitter twitter = ((MainActivity) getActivity()).getCurrentAccount().getTwitter();
-        final Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount((MainActivity) getActivity()));
+        final Paging paging = TwitterUtils.getPaging(((MainActivity) getActivity()).getRequestCountPerPage());
         new DirectMessagesTask(twitter, paging) {
             @Override
             protected void onPostExecute(List<DirectMessage> directMessages) {
@@ -100,7 +100,7 @@ public class MessagesFragment extends CustomListFragment<MessageListAdapter> {
         final Account currentAccount = activity.getCurrentAccount();
         Twitter twitter = currentAccount.getTwitter();
         final MessageListAdapter adapter = getAdapter();
-        Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount(activity));
+        Paging paging = TwitterUtils.getPaging(activity.getRequestCountPerPage());
         if (adapter.getCount() > 0) {
             paging.setSinceId(adapter.getTopID());
         }
@@ -123,7 +123,7 @@ public class MessagesFragment extends CustomListFragment<MessageListAdapter> {
         final Account currentAccount = activity.getCurrentAccount();
         Twitter twitter = currentAccount.getTwitter();
         final MessageListAdapter adapter = getAdapter();
-        Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount(activity));
+        Paging paging = TwitterUtils.getPaging(activity.getRequestCountPerPage());
         if (adapter.getCount() > 0) {
             paging.setMaxId(adapter.getLastID() - 1);
         }

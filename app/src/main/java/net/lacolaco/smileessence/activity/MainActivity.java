@@ -76,6 +76,9 @@ public class MainActivity extends Activity {
     private Uri cameraTempFilePath;
 
     // --------------------- GETTER / SETTER METHODS ---------------------
+    public int getRequestCountPerPage() {
+        return UserPreferenceHelper.getInstance().get(R.string.key_setting_timelines, 20);
+    }
 
     public Uri getCameraTempFilePath() {
         return cameraTempFilePath;

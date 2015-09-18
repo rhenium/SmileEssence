@@ -51,7 +51,4 @@ public class TwitterUtils {
         return new Paging(1).count(count);
     }
 
-    public static int getPagingCount(MainActivity activity) {
-        return UserPreferenceHelper.getInstance().get(R.string.key_setting_timelines, 20);
-    }
 }

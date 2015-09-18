@@ -115,7 +115,7 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
             }).post();
             return;
         }
-        Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount(activity));
+        Paging paging = TwitterUtils.getPaging(activity.getRequestCountPerPage());
         if (adapter.getCount() > 0) {
             paging.setSinceId(adapter.getTopID());
         }
@@ -148,7 +148,7 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
             }).post();
             return;
         }
-        Paging paging = TwitterUtils.getPaging(TwitterUtils.getPagingCount(activity));
+        Paging paging = TwitterUtils.getPaging(activity.getRequestCountPerPage());
         if (adapter.getCount() > 0) {
             paging.setMaxId(adapter.getLastID() - 1);
         }
@@ -218,7 +218,7 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
         adapter.setListFullName(listFullName);
         adapter.clear();
         adapter.updateForce();
-        new UserListStatusesTask(twitter, listFullName, TwitterUtils.getPaging(TwitterUtils.getPagingCount(getMainActivity()))) {
+        new UserListStatusesTask(twitter, listFullName, TwitterUtils.getPaging(getMainActivity().getRequestCountPerPage())) {
             @Override
             protected void onPostExecute(List<Tweet> tweets) {
                 super.onPostExecute(tweets);
