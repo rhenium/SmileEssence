@@ -51,7 +51,7 @@ public class DirectMessage extends EntitySupport {
         id = message.getId();
         sender = User.fromTwitter(message.getSender());
         recipient = User.fromTwitter(message.getRecipient());
-        text = message.getText();
+        text = extractText(message, false);
         createdAt = message.getCreatedAt();
 
         updateEntities(message);

@@ -47,29 +47,6 @@ import java.util.Collection;
 public class TwitterUtils {
     // -------------------------- STATIC METHODS --------------------------
 
-    /**
-     * Replace urls by entities
-     *
-     * @param text     raw text
-     * @param entities url entities
-     * @param expand   if true, use expanded url
-     * @return replaced text
-     */
-    public static String replaceURLEntities(String text, URLEntity[] entities, boolean expand) {
-        if (TextUtils.isEmpty(text)) {
-            return "";
-        } else if (entities == null) {
-            return text;
-        }
-        if (entities.length == 0) {
-            return text;
-        }
-        for (URLEntity entity : entities) {
-            text = text.replace(entity.getURL(), expand ? entity.getExpandedURL() : entity.getDisplayURL());
-        }
-        return text;
-    }
-
     public static Paging getPaging(int count) {
         return new Paging(1).count(count);
     }

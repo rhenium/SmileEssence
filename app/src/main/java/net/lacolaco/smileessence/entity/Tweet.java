@@ -56,7 +56,7 @@ public class Tweet extends EntitySupport {
     private void update(twitter4j.Status status) {
         id = status.getId();
         user = User.fromTwitter(status.getUser());
-        text = TwitterUtils.replaceURLEntities(status.getText(), status.getURLEntities(), false);
+        text = extractText(status, false);
         createdAt = status.getCreatedAt();
         source = status.getSource();
         favoriteCount = status.getFavoriteCount();

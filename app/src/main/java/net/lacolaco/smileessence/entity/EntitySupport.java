@@ -1,9 +1,9 @@
 package net.lacolaco.smileessence.entity;
 
+import com.google.common.collect.Lists;
 import twitter4j.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public abstract class EntitySupport {
     private List<String> mentions;
@@ -90,4 +90,36 @@ public abstract class EntitySupport {
         return names;
     }
 
+    public String extractText(twitter4j.Status status, boolean expand) {
+        return extractText(status, status.getText(), expand);
+    }
+
+    public String extractText(twitter4j.DirectMessage status, boolean expand) {
+        return extractText(status, status.getText(), expand);
+    }
+
+    private String extractText(twitter4j.EntitySupport status, String text, boolean expand) {
+        SortedSet<twitter4j.URLEntity> set = new TreeSet<>((a, b) -> a.getStart() - b.getStart());
+        if (status.getURLEntities() != null) {
+            for (URLEntity entity : status.getURLEntities()) {
+                set.add(entity);
+            }
+        }
+        if (status.getExtendedMediaEntities() != null) {
+            for (URLEntity entity : status.getExtendedMediaEntities()) {
+                set.add(entity);
+            }
+        } else if (status.getMediaEntities() != null) {
+            for (URLEntity entity : status.getMediaEntities()) {
+                set.add(entity);
+            }
+        }
+
+        for (URLEntity entity : set) {
+            String newString = expand ? entity.getExpandedURL() : entity.getDisplayURL();
+            text = text.replaceFirst(entity.getText(), newString);
+        }
+
+        return text;
+    }
 }
