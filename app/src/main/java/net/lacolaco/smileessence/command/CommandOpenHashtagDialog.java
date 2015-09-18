@@ -35,20 +35,20 @@ public class CommandOpenHashtagDialog extends Command {
 
     // ------------------------------ FIELDS ------------------------------
 
-    private final HashtagEntity hashtagEntity;
+    private final String hashtag;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public CommandOpenHashtagDialog(Activity activity, HashtagEntity hashtagEntity) {
+    public CommandOpenHashtagDialog(Activity activity, String hashtag) {
         super(-1, activity);
-        this.hashtagEntity = hashtagEntity;
+        this.hashtag = hashtag;
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 
     @Override
     public String getText() {
-        return "#" + hashtagEntity.getText();
+        return "#" + hashtag;
     }
 
     @Override
@@ -61,7 +61,7 @@ public class CommandOpenHashtagDialog extends Command {
     @Override
     public boolean execute() {
         HashtagDialogFragment dialogFragment = new HashtagDialogFragment();
-        dialogFragment.setText(hashtagEntity.getText());
+        dialogFragment.setText(hashtag);
         DialogHelper.showDialog(getActivity(), dialogFragment);
         return false;
     }

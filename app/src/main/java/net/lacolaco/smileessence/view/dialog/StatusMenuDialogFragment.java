@@ -38,11 +38,11 @@ import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import twitter4j.HashtagEntity;
 import twitter4j.MediaEntity;
-import twitter4j.URLEntity;
 
 public class StatusMenuDialogFragment extends MenuDialogFragment {
 
@@ -86,20 +86,19 @@ public class StatusMenuDialogFragment extends MenuDialogFragment {
     public void addBottomCommands(Activity activity, Tweet tweet, Account account, ArrayList<Command> commands) {
         commands.add(new CommandSaveAsTemplate(activity, tweet.getOriginalTweet().getText()));
         //User
-        for (String screenName : tweet.getMentioningScreenNames()) {
+        commands.add(new CommandOpenUserDetail(activity, tweet.getUser().getScreenName(), account));
+        for (String screenName : new ArrayList<>(new LinkedHashSet<>(tweet.getMentions()))) { // Array#uniq
             commands.add(new CommandOpenUserDetail(activity, screenName, account));
         }
         for (Command command : getHashtagCommands(activity, tweet)) {
             commands.add(command);
         }
         // Media
-        if (tweet.getUrls() != null) {
-            for (URLEntity urlEntity : tweet.getUrls()) {
-                commands.add(new CommandOpenURL(activity, urlEntity.getExpandedURL()));
-            }
+        for (String url : tweet.getUrlsExpanded()) {
+            commands.add(new CommandOpenURL(activity, url));
         }
-        for (MediaEntity mediaEntity : tweet.getMedia()) {
-            commands.add(new CommandOpenURL(activity, mediaEntity.getMediaURL()));
+        for (String url : tweet.getMediaUrls()) {
+            commands.add(new CommandOpenURL(activity, url));
         }
     }
 
@@ -116,10 +115,8 @@ public class StatusMenuDialogFragment extends MenuDialogFragment {
 
     private ArrayList<Command> getHashtagCommands(Activity activity, Tweet tweet) {
         ArrayList<Command> commands = new ArrayList<>();
-        if (tweet.getHashtags() != null) {
-            for (HashtagEntity hashtagEntity : tweet.getHashtags()) {
-                commands.add(new CommandOpenHashtagDialog(activity, hashtagEntity));
-            }
+        for (String hashtag : tweet.getHashtags()) {
+            commands.add(new CommandOpenHashtagDialog(activity, hashtag));
         }
         return commands;
     }

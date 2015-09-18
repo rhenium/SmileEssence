@@ -92,20 +92,21 @@ public class MessageMenuDialogFragment extends MenuDialogFragment {
     public void addBottomCommands(Activity activity, DirectMessage message, Account account, ArrayList<Command> commands) {
         commands.add(new CommandSaveAsTemplate(activity, message.getText()));
         //User
-        for (String screenName : message.getMentioningScreenNames()) {
+        if (message.getSender() != message.getRecipient()) {
+            commands.add(new CommandOpenUserDetail(activity, message.getRecipient().getScreenName(), account));
+        }
+        for (String screenName : message.getMentions()) {
             commands.add(new CommandOpenUserDetail(activity, screenName, account));
         }
         for (Command command : getHashtagCommands(activity, message)) {
             commands.add(command);
         }
         // Media
-        if (message.getUrls() != null) {
-            for (URLEntity urlEntity : message.getUrls()) {
-                commands.add(new CommandOpenURL(activity, urlEntity.getExpandedURL()));
-            }
+        for (String url : message.getUrlsExpanded()) {
+            commands.add(new CommandOpenURL(activity, url));
         }
-        for (MediaEntity mediaEntity : message.getMedia()) {
-            commands.add(new CommandOpenURL(activity, mediaEntity.getMediaURL()));
+        for (String url : message.getMediaUrls()) {
+            commands.add(new CommandOpenURL(activity, url));
         }
     }
 
@@ -123,8 +124,8 @@ public class MessageMenuDialogFragment extends MenuDialogFragment {
     private ArrayList<Command> getHashtagCommands(Activity activity, DirectMessage status) {
         ArrayList<Command> commands = new ArrayList<>();
         if (status.getHashtags() != null) {
-            for (HashtagEntity hashtagEntity : status.getHashtags()) {
-                commands.add(new CommandOpenHashtagDialog(activity, hashtagEntity));
+            for (String hashtag : status.getHashtags()) {
+                commands.add(new CommandOpenHashtagDialog(activity, hashtag));
             }
         }
         return commands;

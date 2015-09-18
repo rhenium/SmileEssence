@@ -57,7 +57,6 @@ import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 import java.util.ArrayList;
 
 import twitter4j.MediaEntity;
-import twitter4j.URLEntity;
 
 public class StatusDetailDialogFragment extends StackableDialogFragment implements View.OnClickListener {
 
@@ -235,13 +234,11 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
     private ArrayList<Command> getCommands(Activity activity, Tweet tweet, Account account) {
         ArrayList<Command> commands = new ArrayList<>();
         // URL
-        if (tweet.getUrls() != null) {
-            for (URLEntity urlEntity : tweet.getUrls()) {
-                commands.add(new CommandOpenURL(activity, urlEntity.getExpandedURL()));
-            }
+        for (String url : tweet.getUrlsExpanded()) {
+            commands.add(new CommandOpenURL(activity, url));
         }
-        for (MediaEntity mediaEntity : tweet.getMedia()) {
-            commands.add(new CommandOpenURL(activity, mediaEntity.getMediaURL()));
+        for (String url : tweet.getMediaUrls()) {
+            commands.add(new CommandOpenURL(activity, url));
         }
         return commands;
     }
@@ -271,7 +268,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         if (account.userID == originalTweet.getUser().getId()) {
             builder.addScreenName(account.screenName);
         }
-        builder.addScreenNames(originalTweet.getMentioningScreenNames(account.screenName));
+        builder.addScreenNames(originalTweet.getMentions());
 
         String text = builder.buildText();
         int selStart = originalTweet.getUser().getScreenName().length() + 2; // "@" and " "

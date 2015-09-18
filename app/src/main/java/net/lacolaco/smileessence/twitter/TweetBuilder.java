@@ -33,6 +33,7 @@ import twitter4j.StatusUpdate;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class TweetBuilder {
 
@@ -67,12 +68,16 @@ public class TweetBuilder {
     // -------------------------- OTHER METHODS --------------------------
 
     public TweetBuilder addScreenName(String screenName) {
-        screenNameList.add(screenName);
+        if (!screenNameList.contains(screenName)) {
+            screenNameList.add(screenName);
+        }
         return this;
     }
 
-    public TweetBuilder addScreenNames(Collection<String> screenNames) {
-        screenNameList.addAll(screenNames);
+    public TweetBuilder addScreenNames(List<String> screenNames) {
+        for (String name : screenNames) {
+            addScreenName(name);
+        }
         return this;
     }
 

@@ -186,24 +186,13 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
     private ArrayList<Command> getCommands(Activity activity, DirectMessage message, Account account) {
         ArrayList<Command> commands = new ArrayList<>();
         // URL
-        if (message.getUrls() != null) {
-            for (URLEntity urlEntity : message.getUrls()) {
-                commands.add(new CommandOpenURL(activity, urlEntity.getExpandedURL()));
-            }
+        for (String url : message.getUrlsExpanded()) {
+            commands.add(new CommandOpenURL(activity, url));
         }
-        for (MediaEntity mediaEntity : getMediaEntities(message)) {
-            commands.add(new CommandOpenURL(activity, mediaEntity.getMediaURL()));
+        for (String url : message.getMediaUrls()) {
+            commands.add(new CommandOpenURL(activity, url));
         }
         return commands;
-    }
-
-    private MediaEntity[] getMediaEntities(DirectMessage message) {
-        if (message.getMedia().length == 0) {
-            // direct message's media is contained also in url entities.
-            return new MediaEntity[0];
-        } else {
-            return message.getMedia();
-        }
     }
 
     private View getTitleView(MainActivity activity, Account account, DirectMessage message) {

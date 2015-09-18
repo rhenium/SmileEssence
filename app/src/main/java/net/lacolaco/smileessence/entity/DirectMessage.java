@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class DirectMessage {
+public class DirectMessage extends EntitySupport {
     // キャッシュ これも weak reference
     private static Cache<Long, DirectMessage> storage = CacheBuilder.newBuilder().weakValues().build();
 
@@ -43,12 +43,6 @@ public class DirectMessage {
     private String text;
     private Date createdAt;
 
-    private UserMentionEntity[] mentions;
-    private HashtagEntity[] hashtags;
-    private MediaEntity[] media;
-    private URLEntity[] urls;
-    private SymbolEntity[] symbols;
-
     private DirectMessage(twitter4j.DirectMessage st) {
         update(st);
     }
@@ -60,11 +54,7 @@ public class DirectMessage {
         text = message.getText();
         createdAt = message.getCreatedAt();
 
-        mentions = message.getUserMentionEntities();
-        hashtags = message.getHashtagEntities();
-        media = message.getExtendedMediaEntities().length > 0 ? message.getExtendedMediaEntities() : message.getMediaEntities();
-        urls = message.getURLEntities();
-        symbols = message.getSymbolEntities();
+        updateEntities(message);
     }
 
     public long getId() {
@@ -85,51 +75,6 @@ public class DirectMessage {
 
     public Date getCreatedAt() {
         return createdAt;
-    }
-
-    public UserMentionEntity[] getMentions() {
-        return mentions;
-    }
-
-    public HashtagEntity[] getHashtags() {
-        return hashtags;
-    }
-
-    public MediaEntity[] getMedia() {
-        return media;
-    }
-
-    public URLEntity[] getUrls() {
-        return urls;
-    }
-
-    public SymbolEntity[] getSymbols() {
-        return symbols;
-    }
-
-    public List<String> getMentioningScreenNames(String excludeScreenName) {
-        List<String> names = getMentioningScreenNames();
-        if (excludeScreenName != null) {
-            names.remove(excludeScreenName);
-        }
-        return names;
-    }
-
-    public List<String> getMentioningScreenNames() {
-        List<String> names = new ArrayList<>();
-        names.add(getSender().getScreenName());
-        if (getSender() != getRecipient()) {
-            names.add(getRecipient().getScreenName());
-        }
-        if (getMentions() != null) {
-            for (UserMentionEntity entity : getMentions()) {
-                if (names.contains(entity.getScreenName())) {
-                    continue;
-                }
-                names.add(entity.getScreenName());
-            }
-        }
-        return names;
     }
 
     public String getMessageSummary() {

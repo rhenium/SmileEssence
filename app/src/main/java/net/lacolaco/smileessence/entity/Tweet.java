@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Tweet {
+public class Tweet extends EntitySupport {
     // キャッシュ こっちは soft reference
     private static Cache<Long, Tweet> storage = CacheBuilder.newBuilder().softValues().build();
 
@@ -45,11 +45,6 @@ public class Tweet {
     private String source;
     private boolean isRetweet;
     private Tweet retweetedTweet;
-    private UserMentionEntity[] mentions;
-    private HashtagEntity[] hashtags;
-    private MediaEntity[] media;
-    private URLEntity[] urls;
-    private SymbolEntity[] symbols;
     private long inReplyTo;
     private int favoriteCount;
     private int retweetCount;
@@ -67,17 +62,13 @@ public class Tweet {
         favoriteCount = status.getFavoriteCount();
         retweetCount = status.getRetweetCount();
 
-        mentions = status.getUserMentionEntities();
-        hashtags = status.getHashtagEntities();
-        media = status.getExtendedMediaEntities().length > 0 ? status.getExtendedMediaEntities() : status.getMediaEntities();
-        urls = status.getURLEntities();
-        symbols = status.getSymbolEntities();
         inReplyTo = status.getInReplyToStatusId();
-
         isRetweet = status.isRetweet();
         if (isRetweet()) {
             retweetedTweet = Tweet.fromTwitter(status.getRetweetedStatus());
         }
+
+        updateEntities(status);
     }
 
     public String getTwitterUrl() {
@@ -128,48 +119,7 @@ public class Tweet {
         return retweetCount;
     }
 
-    public UserMentionEntity[] getMentions() {
-        return mentions;
-    }
-
-    public HashtagEntity[] getHashtags() {
-        return hashtags;
-    }
-
-    public MediaEntity[] getMedia() {
-        return media;
-    }
-
-    public URLEntity[] getUrls() {
-        return urls;
-    }
-
-    public SymbolEntity[] getSymbols() {
-        return symbols;
-    }
-
     public long getInReplyTo() {
         return inReplyTo;
-    }
-
-    public List<String> getMentioningScreenNames(String excludeScreenName) {
-        List<String> names = getMentioningScreenNames();
-        if (excludeScreenName != null) {
-            names.remove(excludeScreenName);
-        }
-        return names;
-    }
-
-    public List<String> getMentioningScreenNames() {
-        List<String> names = new ArrayList<>();
-        names.add(getUser().getScreenName());
-        if (getMentions() != null) {
-            for (UserMentionEntity entity : getMentions()) {
-                if (!names.contains(entity.getScreenName())) {
-                    names.add(entity.getScreenName());
-                }
-            }
-        }
-        return names;
     }
 }
