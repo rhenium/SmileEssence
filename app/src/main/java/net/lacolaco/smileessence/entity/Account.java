@@ -42,8 +42,7 @@ import twitter4j.auth.AccessToken;
 
 @Table(name = "Accounts")
 public class Account extends Model {
-
-    // ------------------------------ FIELDS ------------------------------
+    private User user;
 
     @Column(name = "Token", notNull = true)
     public String accessToken;
@@ -51,18 +50,8 @@ public class Account extends Model {
     public String accessSecret;
     @Column(name = "UserID", notNull = true)
     public long userID;
-    @Column(name = "ScreenName", notNull = true)
+    @Deprecated @Column(name = "ScreenName", notNull = true)
     public String screenName;
-
-    private User user;
-
-    // -------------------------- STATIC METHODS --------------------------
-
-    public Account() {
-        super();
-    }
-
-    // --------------------------- CONSTRUCTORS ---------------------------
 
     public Account(String token, String tokenSecret, long userID, String screenName) {
         super();
@@ -72,8 +61,13 @@ public class Account extends Model {
         this.screenName = screenName;
     }
 
+    @Deprecated
     public static void deleteAll() {
         new Delete().from(Account.class).execute();
+    }
+
+    public long getUserId() {
+        return userID;
     }
 
     public Twitter getTwitter() {

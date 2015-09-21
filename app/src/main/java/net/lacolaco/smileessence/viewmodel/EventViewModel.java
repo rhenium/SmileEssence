@@ -31,6 +31,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.android.volley.toolbox.NetworkImageView;
+import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.data.ImageCache;
@@ -143,7 +144,7 @@ public class EventViewModel implements IViewModel {
         header.setTextSize(textSize);
         int colorHeader = Themes.getStyledColor(activity, theme, R.attr.color_status_text_mine, 0);
         header.setTextColor(colorHeader);
-        header.setText(getFormattedString(activity));
+        header.setText(getFormattedString());
         TextView content = (TextView) convertedView.findViewById(R.id.textview_status_text);
         content.setTextSize(textSize);
         int colorNormal = Themes.getStyledColor(activity, theme, R.attr.color_status_text_normal, 0);
@@ -168,7 +169,7 @@ public class EventViewModel implements IViewModel {
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public String getFormattedString(Context context) {
-        return context.getString(event.getTextFormatResourceID(), sourceScreenName);
+    public String getFormattedString() {
+        return Application.getContext().getString(event.getTextFormatResourceID(), sourceScreenName);
     }
 }

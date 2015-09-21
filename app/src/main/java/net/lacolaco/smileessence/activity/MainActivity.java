@@ -78,6 +78,7 @@ public class MainActivity extends Activity {
     private TwitterStream stream;
     private boolean streaming = false;
     private Uri cameraTempFilePath;
+    private UserStreamListener userStreamListener;
 
     // --------------------- GETTER / SETTER METHODS ---------------------
     public int getRequestCountPerPage() {
@@ -138,16 +139,12 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * Returns which twitter stream is running
+     * Returns whether twitter stream is running
      *
      * @return
      */
     public boolean isStreaming() {
-        return streaming;
-    }
-
-    public void setStreaming(boolean streaming) {
-        this.streaming = streaming;
+        return userStreamListener != null && userStreamListener.isConnected();
     }
 
     public void setSelectedPageIndex(int position) {
@@ -345,9 +342,9 @@ public class MainActivity extends Activity {
             stream.shutdown();
         }
         stream = currentAccount.getTwitterStream();
-        UserStreamListener listener = new UserStreamListener(this);
-        stream.addListener(listener);
-        stream.addConnectionLifeCycleListener(listener);
+        userStreamListener = new UserStreamListener(currentAccount);
+        stream.addListener(userStreamListener);
+        stream.addConnectionLifeCycleListener(userStreamListener);
         stream.user();
         return true;
     }

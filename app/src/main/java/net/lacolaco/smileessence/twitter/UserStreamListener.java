@@ -28,6 +28,7 @@ import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.data.FavoriteCache;
 import net.lacolaco.smileessence.data.UserListCache;
+import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.DirectMessage;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.entity.User;
@@ -46,18 +47,19 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
 
     // ------------------------------ FIELDS ------------------------------
 
-    private final MainActivity activity;
+    private final Account account;
+    private boolean connected = false;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public UserStreamListener(MainActivity activity) {
-        this.activity = activity;
+    public UserStreamListener(Account account) {
+        this.account = account;
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 
-    private long getMyID() {
-        return activity.getCurrentAccount().userID;
+    public boolean isConnected() {
+        return connected;
     }
 
     // ------------------------ INTERFACE METHODS ------------------------
@@ -67,13 +69,13 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
 
     @Override
     public void onConnect() {
-        activity.setStreaming(true);
+        connected = true;
         Notificator.getInstance().publish(R.string.notice_stream_connect);
     }
 
     @Override
     public void onDisconnect() {
-        activity.setStreaming(false);
+        connected = false;
         Notificator.getInstance().publish(R.string.notice_stream_disconnect);
     }
 
@@ -87,17 +89,16 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
     public void onStatus(Status status) {
         Tweet tweet = Tweet.fromTwitter(status);
         StatusViewModel vm = new StatusViewModel(tweet);
-        if (tweet.isRetweet()) {
-            //if (viewModel.isRetweetOfMe()) {
-            //    addToHistory(new EventViewModel(EnumEvent.RETWEETED, status.getUser(), status));
-            //}
-        }// else if (viewModel.isMention()) {
-        //    addToMentions(viewModel);
-        //    EventViewModel mentioned = new EventViewModel(EnumEvent.MENTIONED, status.getUser(), status);
-        //    Notificator.getInstance().publish(mentioned.getFormattedString(activity));
-        //}
         StatusFilter.getInstance().filter(vm);
         FavoriteCache.getInstance().put(status);
+        if (tweet.isRetweet()) {
+            if (tweet.getUser().getId() == account.getUserId()) {
+                addToHistory(new EventViewModel(EnumEvent.RETWEETED, tweet.getUser(), tweet));
+            }
+        } else if (account.getCachedUser() != null && tweet.getMentions().contains(account.getCachedUser().getScreenName())) {
+            EventViewModel mentioned = new EventViewModel(EnumEvent.MENTIONED, tweet.getUser(), tweet);
+            Notificator.getInstance().publish(mentioned.getFormattedString());
+        }
     }
 
     @Override
@@ -257,10 +258,10 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
 
     private void addToHistory(EventViewModel mentioned) {
         StatusFilter.getInstance().filter(mentioned);
-        Notificator.getInstance().publish(mentioned.getFormattedString(activity));
+        Notificator.getInstance().publish(mentioned.getFormattedString());
     }
 
     private boolean isMe(User user) {
-        return user.getId() == getMyID();
+        return user.getId() == account.getUserId();
     }
 }
