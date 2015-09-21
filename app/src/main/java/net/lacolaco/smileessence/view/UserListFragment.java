@@ -42,12 +42,10 @@ import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.StatusFilter;
 import net.lacolaco.smileessence.twitter.task.UserListStatusesTask;
-import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.view.dialog.SelectUserListDialogFragment;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 import net.lacolaco.smileessence.viewmodel.UserListListAdapter;
-import twitter4j.Paging;
 
 public class UserListFragment extends CustomListFragment<UserListListAdapter> implements View.OnClickListener {
 
@@ -107,11 +105,10 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
             });
             return;
         }
-        Paging paging = TwitterUtils.getPaging(activity.getRequestCountPerPage());
-        if (adapter.getCount() > 0) {
-            paging.setSinceId(adapter.getTopID());
-        }
-        new UserListStatusesTask(currentAccount, listFullName, paging).onDoneUI(tweets -> {
+        new UserListStatusesTask(currentAccount, listFullName)
+                .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
+                .setSinceId(adapter.getTopID())
+                .onDoneUI(tweets -> {
             for (int i = tweets.size() - 1; i >= 0; i--) {
                 StatusViewModel statusViewModel = new StatusViewModel(tweets.get(i));
                 adapter.addToTop(statusViewModel);
@@ -135,11 +132,10 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
             });
             return;
         }
-        Paging paging = TwitterUtils.getPaging(activity.getRequestCountPerPage());
-        if (adapter.getCount() > 0) {
-            paging.setMaxId(adapter.getLastID() - 1);
-        }
-        new UserListStatusesTask(currentAccount, listFullName, paging).onDoneUI(tweets -> {
+        new UserListStatusesTask(currentAccount, listFullName)
+                .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
+                .setMaxId(adapter.getLastID() - 1)
+                .onDoneUI(tweets -> {
             for (int i = 0; i < tweets.size(); i++) {
                 StatusViewModel statusViewModel = new StatusViewModel(tweets.get(i));
                 adapter.addToBottom(statusViewModel);
@@ -201,7 +197,9 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
         adapter.setListFullName(listFullName);
         adapter.clear();
         adapter.updateForce();
-        new UserListStatusesTask(account, listFullName, TwitterUtils.getPaging(getMainActivity().getRequestCountPerPage())).onDoneUI(tweets -> {
+        new UserListStatusesTask(account, listFullName)
+                .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
+                .onDoneUI(tweets -> {
             for (Tweet tweet : tweets) {
                 StatusViewModel statusViewModel = new StatusViewModel(tweet);
                 adapter.addToBottom(statusViewModel);

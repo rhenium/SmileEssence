@@ -52,14 +52,12 @@ import net.lacolaco.smileessence.twitter.task.FollowTask;
 import net.lacolaco.smileessence.twitter.task.ShowFriendshipTask;
 import net.lacolaco.smileessence.twitter.task.UnfollowTask;
 import net.lacolaco.smileessence.twitter.task.UserTimelineTask;
-import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.util.Themes;
 import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 import net.lacolaco.smileessence.view.adapter.StatusListAdapter;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
-import twitter4j.Paging;
 
 public class UserDetailDialogFragment extends StackableDialogFragment implements View.OnClickListener,
         PullToRefreshBase.OnRefreshListener2<ListView> {
@@ -163,11 +161,10 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
         final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
-        Paging paging = TwitterUtils.getPaging(activity.getRequestCountPerPage());
-        if (adapter.getCount() > 0) {
-            paging.setSinceId(adapter.getTopID());
-        }
-        new UserTimelineTask(currentAccount, getUserID(), paging).onDoneUI(tweets -> {
+        new UserTimelineTask(currentAccount, getUserID())
+                .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
+                .setSinceId(adapter.getTopID())
+                .onDoneUI(tweets -> {
             for (int i = tweets.size() - 1; i >= 0; i--) {
                 adapter.addToTop(new StatusViewModel(tweets.get(i)));
             }
@@ -180,11 +177,10 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
         final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
-        Paging paging = TwitterUtils.getPaging(activity.getRequestCountPerPage());
-        if (adapter.getCount() > 0) {
-            paging.setMaxId(adapter.getLastID() - 1);
-        }
-        new UserTimelineTask(currentAccount, getUserID(), paging).onDoneUI(tweets -> {
+        new UserTimelineTask(currentAccount, getUserID())
+                .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
+                .setMaxId(adapter.getLastID() - 1)
+                .onDoneUI(tweets -> {
             for (Tweet tweet : tweets) {
                 adapter.addToBottom(new StatusViewModel(tweet));
             }
@@ -257,7 +253,9 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
 
     private void executeUserTimelineTask(final User user, final Account account, final StatusListAdapter adapter) {
         tabHost.getTabWidget().getChildTabViewAt(1).setVisibility(View.GONE);
-        new UserTimelineTask(account, user.getId()).onDoneUI(tweets -> {
+        new UserTimelineTask(account, user.getId())
+                .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
+                .onDoneUI(tweets -> {
             for (Tweet tweet : tweets) {
                 adapter.addToBottom(new StatusViewModel(tweet));
             }

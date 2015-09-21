@@ -37,18 +37,16 @@ import twitter4j.TwitterException;
 import java.util.Collections;
 import java.util.List;
 
-public class SentDirectMessagesTask extends BackgroundTask<List<DirectMessage>, Void> {
+public class SentDirectMessagesTask extends TimelineTask<DirectMessage> {
 
     // ------------------------------ FIELDS ------------------------------
 
     private final Account account;
-    private final Paging paging;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public SentDirectMessagesTask(Account account, Paging paging) {
+    public SentDirectMessagesTask(Account account) {
         this.account = account;
-        this.paging = paging;
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
@@ -56,7 +54,7 @@ public class SentDirectMessagesTask extends BackgroundTask<List<DirectMessage>, 
     @Override
     protected List<DirectMessage> doInBackground(Void... params) {
         try {
-            return DirectMessage.fromTwitter(account.getTwitter().directMessages().getSentDirectMessages(paging));
+            return DirectMessage.fromTwitter(account.getTwitter().directMessages().getSentDirectMessages(getPaging()));
         } catch (TwitterException e) {
             e.printStackTrace();
             Logger.error(e.toString());

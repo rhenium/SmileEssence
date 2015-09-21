@@ -29,7 +29,6 @@ import android.test.InstrumentationTestCase;
 import com.twitter.Validator;
 import junit.framework.Assert;
 
-import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.util.TwitterMock;
 
 import twitter4j.Status;

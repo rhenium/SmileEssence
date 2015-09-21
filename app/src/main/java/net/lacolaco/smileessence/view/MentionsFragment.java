@@ -33,10 +33,8 @@ import net.lacolaco.smileessence.entity.ExtractionWord;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.twitter.StatusFilter;
 import net.lacolaco.smileessence.twitter.task.MentionsTimelineTask;
-import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.view.adapter.StatusListAdapter;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
-import twitter4j.Paging;
 
 import java.util.regex.Pattern;
 
@@ -67,9 +65,10 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
             }
         });
         final Account account = ((MainActivity) getActivity()).getCurrentAccount();
-        final Paging paging = TwitterUtils.getPaging(((MainActivity) getActivity()).getRequestCountPerPage());
         final StatusListAdapter adapter_ = adapter;
-        new MentionsTimelineTask(account, paging).onDoneUI(tweets -> {
+        new MentionsTimelineTask(account)
+                .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
+                .onDoneUI(tweets -> {
             for (Tweet tweet : tweets) {
                 StatusViewModel statusViewModel = new StatusViewModel(tweet);
                 adapter_.addToBottom(statusViewModel);
@@ -86,11 +85,10 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
         final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
         final StatusListAdapter adapter = getAdapter();
-        Paging paging = TwitterUtils.getPaging(activity.getRequestCountPerPage());
-        if (adapter.getCount() > 0) {
-            paging.setSinceId(adapter.getTopID());
-        }
-        new MentionsTimelineTask(currentAccount, paging).onDoneUI(tweets -> {
+        new MentionsTimelineTask(currentAccount)
+                .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
+                .setSinceId(adapter.getTopID())
+                .onDoneUI(tweets -> {
             for (int i = tweets.size() - 1; i >= 0; i--) {
                 adapter.addToTop(new StatusViewModel(tweets.get(i)));
             }
@@ -104,11 +102,10 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
         final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
         final StatusListAdapter adapter = getAdapter();
-        Paging paging = TwitterUtils.getPaging(activity.getRequestCountPerPage());
-        if (adapter.getCount() > 0) {
-            paging.setMaxId(adapter.getLastID() - 1);
-        }
-        new MentionsTimelineTask(currentAccount, paging).onDoneUI(tweets -> {
+        new MentionsTimelineTask(currentAccount)
+                .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
+                .setMaxId(adapter.getLastID() - 1)
+                .onDoneUI(tweets -> {
             for (Tweet tweet : tweets) {
                 adapter.addToBottom(new StatusViewModel(tweet));
             }

@@ -43,11 +43,19 @@ public class StatusListAdapter extends CustomListAdapter<StatusViewModel> {
     // --------------------- GETTER / SETTER METHODS ---------------------
 
     public long getLastID() {
-        return ((StatusViewModel) getItem(getCount() - 1)).getTweet().getId();
+        if (getCount() > 0) {
+            return ((StatusViewModel) getItem(getCount() - 1)).getTweet().getId();
+        } else {
+            return Long.MAX_VALUE;
+        }
     }
 
     public long getTopID() {
-        return ((StatusViewModel) getItem(0)).getTweet().getId();
+        if (getCount() > 0) {
+            return ((StatusViewModel) getItem(0)).getTweet().getId();
+        } else {
+            return -1;
+        }
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------

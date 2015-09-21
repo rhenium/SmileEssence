@@ -22,15 +22,36 @@
  * SOFTWARE.
  */
 
-package net.lacolaco.smileessence.twitter.util;
+package net.lacolaco.smileessence.twitter.task;
 
+import net.lacolaco.smileessence.util.BackgroundTask;
 import twitter4j.Paging;
 
-public class TwitterUtils {
-    // -------------------------- STATIC METHODS --------------------------
+import java.util.List;
 
-    public static Paging getPaging(int count) {
-        return new Paging(1).count(count);
+public abstract class TimelineTask<T> extends BackgroundTask<List<T>, Void> {
+    private Paging paging = new Paging();;
+
+    public TimelineTask<T> setPage(int page) {
+        paging.setPage(page);
+        return this;
     }
 
+    public TimelineTask<T> setCount(int count) {
+        paging.setCount(count);
+        return this;
+    }
+
+    public TimelineTask<T> setMaxId(long maxId) {
+        paging.setMaxId(maxId);
+        return this;
+    }
+    public TimelineTask<T> setSinceId(long sinceId) {
+        paging.setSinceId(sinceId);
+        return this;
+    }
+
+    protected Paging getPaging() {
+        return paging;
+    }
 }

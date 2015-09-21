@@ -37,18 +37,16 @@ import twitter4j.TwitterException;
 import java.util.Collections;
 import java.util.List;
 
-public class MentionsTimelineTask extends BackgroundTask<List<Tweet>, Void> {
+public class MentionsTimelineTask extends TimelineTask<Tweet> {
 
     // ------------------------------ FIELDS ------------------------------
 
     private final Account account;
-    private final Paging paging;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public MentionsTimelineTask(Account account, Paging paging) {
+    public MentionsTimelineTask(Account account) {
         this.account = account;
-        this.paging = paging;
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
@@ -56,7 +54,7 @@ public class MentionsTimelineTask extends BackgroundTask<List<Tweet>, Void> {
     @Override
     protected List<Tweet> doInBackground(Void... params) {
         try {
-            return Tweet.fromTwitter(account.getTwitter().timelines().getMentionsTimeline(paging));
+            return Tweet.fromTwitter(account.getTwitter().timelines().getMentionsTimeline(getPaging()));
         } catch (TwitterException e) {
             e.printStackTrace();
             Logger.error(e.toString());
