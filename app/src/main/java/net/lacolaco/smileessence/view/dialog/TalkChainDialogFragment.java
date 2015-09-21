@@ -35,6 +35,7 @@ import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.twitter.task.GetTalkTask;
+import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.view.adapter.StatusListAdapter;
 
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
@@ -64,20 +65,16 @@ public class TalkChainDialogFragment extends StackableDialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         MainActivity activity = (MainActivity) getActivity();
         final Account account = activity.getCurrentAccount();
-        Twitter twitter = account.getTwitter();
+
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_talk_list, null);
         ListView listView = (ListView) view.findViewById(R.id.listview_dialog_talk_list);
         final StatusListAdapter adapter = new StatusListAdapter(getActivity());
         listView.setAdapter(adapter);
 
-        new GetTalkTask(twitter, getStatusID()) {
-            @Override
-            protected void onProgressUpdate(Tweet... tweets) {
-                Tweet tweet = tweets[0];
-                adapter.addToBottom(new StatusViewModel(tweet));
-                adapter.updateForce();
-            }
-        }.execute();
+        new GetTalkTask(account, getStatusID()).onProgressUI(tweet -> {
+            adapter.addToBottom(new StatusViewModel(tweet));
+            adapter.updateForce();
+        }).execute();
 
         return new AlertDialog.Builder(activity)
                 .setTitle(R.string.dialog_title_talk_chain)

@@ -23,6 +23,10 @@ public class Tweet extends EntitySupport {
     }
 
     public synchronized static Tweet fromTwitter(final twitter4j.Status st) {
+        if (st == null) {
+            return null;
+        }
+
         Tweet t = fetch(st.getId());
         if (t == null) {
             t = new Tweet(st);
