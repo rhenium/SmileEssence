@@ -30,8 +30,6 @@ import net.lacolaco.smileessence.entity.DirectMessage;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
-import net.lacolaco.smileessence.util.BackgroundTask;
-import twitter4j.Paging;
 import twitter4j.TwitterException;
 
 import java.util.Collections;
