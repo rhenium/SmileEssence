@@ -98,7 +98,6 @@ public class ReviewDialogFragment extends StackableDialogFragment implements Vie
     private void execute() {
         hideIME();
         Tweet tweet = Tweet.fetch(statusID).getOriginalTweet();
-        StatusViewModel status = new StatusViewModel(tweet);
         int star = (int) ratingBar.getRating();
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < 5; i++) {

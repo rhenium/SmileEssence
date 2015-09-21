@@ -48,10 +48,7 @@ import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
-import net.lacolaco.smileessence.twitter.task.FollowTask;
-import net.lacolaco.smileessence.twitter.task.ShowFriendshipTask;
-import net.lacolaco.smileessence.twitter.task.UnfollowTask;
-import net.lacolaco.smileessence.twitter.task.UserTimelineTask;
+import net.lacolaco.smileessence.twitter.task.*;
 import net.lacolaco.smileessence.util.Themes;
 import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.view.DialogHelper;
@@ -104,55 +101,50 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
     public void onClick(final View v) {
         final MainActivity activity = (MainActivity) getActivity();
         final Account account = activity.getCurrentAccount();
-        account.tryGetUser(getUserID(), new Account.UserCallback() {
-            @Override
-            public void success(final User user) {
-                switch (v.getId()) {
-                    case R.id.imageview_user_detail_menu: {
-                        openUserMenu(activity, user);
-                        break;
-                    }
-                    case R.id.imageview_user_detail_icon: {
-                        openUrl(user.getProfileImageUrlOriginal());
-                        break;
-                    }
-                    case R.id.textview_user_detail_screenname: {
-                        openUrl(user.getUserHomeURL());
-                        break;
-                    }
-                    case R.id.textview_user_detail_tweet_count: {
-                        openUrl(user.getUserHomeURL());
-                        break;
-                    }
-                    case R.id.textview_user_detail_friend_count: {
-                        openUrl(String.format("%s/following", user.getUserHomeURL()));
-                        break;
-                    }
-                    case R.id.textview_user_detail_follower_count: {
-                        openUrl(String.format("%s/followers", user.getUserHomeURL()));
-                        break;
-                    }
-                    case R.id.textview_user_detail_favorite_count: {
-                        openUrl(String.format("%s/favorites", user.getUserHomeURL()));
-                        break;
-                    }
-                    case R.id.button_user_detail_follow: {
-                        ConfirmDialogFragment.show(activity, getString(R.string.dialog_confirm_commands), new Runnable() {
-                            @Override
-                            public void run() {
-                                toggleFollowing(user, account, activity);
-                            }
-                        });
-                        break;
-                    }
+        User user = User.fetch(getUserID());
+        if (user != null) {
+            switch (v.getId()) {
+                case R.id.imageview_user_detail_menu: {
+                    openUserMenu(activity, user);
+                    break;
+                }
+                case R.id.imageview_user_detail_icon: {
+                    openUrl(user.getProfileImageUrlOriginal());
+                    break;
+                }
+                case R.id.textview_user_detail_screenname: {
+                    openUrl(user.getUserHomeURL());
+                    break;
+                }
+                case R.id.textview_user_detail_tweet_count: {
+                    openUrl(user.getUserHomeURL());
+                    break;
+                }
+                case R.id.textview_user_detail_friend_count: {
+                    openUrl(String.format("%s/following", user.getUserHomeURL()));
+                    break;
+                }
+                case R.id.textview_user_detail_follower_count: {
+                    openUrl(String.format("%s/followers", user.getUserHomeURL()));
+                    break;
+                }
+                case R.id.textview_user_detail_favorite_count: {
+                    openUrl(String.format("%s/favorites", user.getUserHomeURL()));
+                    break;
+                }
+                case R.id.button_user_detail_follow: {
+                    ConfirmDialogFragment.show(activity, getString(R.string.dialog_confirm_commands), new Runnable() {
+                        @Override
+                        public void run() {
+                            toggleFollowing(user, account, activity);
+                        }
+                    });
+                    break;
                 }
             }
-
-            @Override
-            public void error() {
-                dismiss();
-            }
-        });
+        } else {
+            dismiss(); // BUG
+        }
     }
 
     // --------------------- Interface OnRefreshListener2 ---------------------
@@ -229,19 +221,10 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         tabHost.setCurrentTab(0);
 
         final Account account = activity.getCurrentAccount();
-        account.tryGetUser(getUserID(), new Account.UserCallback() {
-            @Override
-            public void success(User user) {
-                try {
-                    initUserData(user, account);
-                } catch (Exception e) {
-                    Logger.error(e);
-                    error();
-                }
-            }
-
-            @Override
-            public void error() {
+        new ShowUserTask(account, getUserID()).onDoneUI(user -> {
+            if (user != null) {
+                initUserData(user, account);
+            } else {
                 dismiss();
             }
         });

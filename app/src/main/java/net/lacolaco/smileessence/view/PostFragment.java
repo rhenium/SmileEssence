@@ -133,6 +133,9 @@ public class PostFragment extends PageFragment implements TextWatcher, View.OnFo
         if (viewGroupReply != null) {
             if (postState.getInReplyToStatusID() >= 0) {
                 viewGroupReply.setVisibility(View.VISIBLE);
+                ImageButton imageButtonDeleteReply = (ImageButton) viewGroupReply.findViewById(R.id.button_post_reply_delete);
+                imageButtonDeleteReply.setOnClickListener(this);
+
                 final Account account = activity.getCurrentAccount();
                 account.fetchTweet(postState.getInReplyToStatusID(), tweet -> {
                     if (tweet != null) {
@@ -144,8 +147,6 @@ public class PostFragment extends PageFragment implements TextWatcher, View.OnFo
                         viewGroupReply.setVisibility(View.GONE);
                     }
                 });
-                ImageButton imageButtonDeleteReply = (ImageButton) viewGroupReply.findViewById(R.id.button_post_reply_delete);
-                imageButtonDeleteReply.setOnClickListener(this);
             } else {
                 viewGroupReply.setVisibility(View.GONE);
             }

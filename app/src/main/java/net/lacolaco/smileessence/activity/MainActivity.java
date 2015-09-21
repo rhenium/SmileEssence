@@ -76,7 +76,6 @@ public class MainActivity extends Activity {
     private PageListAdapter pagerAdapter;
     private Account currentAccount;
     private TwitterStream stream;
-    private boolean streaming = false;
     private Uri cameraTempFilePath;
     private UserStreamListener userStreamListener;
 

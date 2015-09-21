@@ -215,7 +215,9 @@ public class StatusViewModel implements IViewModel {
                             embeddedStatus.invalidate();
                         }
                     });
-                    lastTasks.add(task);
+                    if (task != null) {
+                        lastTasks.add(task);
+                    }
                 }
 
             }

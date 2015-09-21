@@ -76,33 +76,29 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
     public void onClick(final View v) {
         final MainActivity activity = (MainActivity) getActivity();
         final Account account = activity.getCurrentAccount();
-        account.tryGetMessage(getMessageID(), new Account.MessageCallback() {
-            @Override
-            public void success(DirectMessage message) {
-                switch (v.getId()) {
-                    case R.id.button_status_detail_reply: {
-                        openSendMessageDialog(message);
-                        break;
-                    }
-                    case R.id.button_status_detail_delete: {
-                        deleteMessage(account, message);
-                        break;
-                    }
-                    case R.id.button_status_detail_menu: {
-                        openMenu(activity);
-                        break;
-                    }
-                    default: {
-                        dismiss();
-                    }
+
+        DirectMessage message = DirectMessage.fetch(getMessageID());
+        if (message != null) {
+            switch (v.getId()) {
+                case R.id.button_status_detail_reply: {
+                    openSendMessageDialog(message);
+                    break;
+                }
+                case R.id.button_status_detail_delete: {
+                    deleteMessage(account, message);
+                    break;
+                }
+                case R.id.button_status_detail_menu: {
+                    openMenu(activity);
+                    break;
+                }
+                default: {
+                    dismiss();
                 }
             }
-
-            @Override
-            public void error() {
-
-            }
-        });
+        } else {
+            dismiss(); // BUG
+        }
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------

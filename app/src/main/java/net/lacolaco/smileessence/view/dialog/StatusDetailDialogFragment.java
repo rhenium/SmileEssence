@@ -42,10 +42,7 @@ import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.TweetBuilder;
-import net.lacolaco.smileessence.twitter.task.DeleteStatusTask;
-import net.lacolaco.smileessence.twitter.task.FavoriteTask;
-import net.lacolaco.smileessence.twitter.task.RetweetTask;
-import net.lacolaco.smileessence.twitter.task.UnfavoriteTask;
+import net.lacolaco.smileessence.twitter.task.*;
 import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.adapter.StatusListAdapter;
 import net.lacolaco.smileessence.view.listener.ListItemClickListener;
@@ -128,12 +125,12 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         if (inReplyToStatusId == -1) {
             listView.setVisibility(View.GONE);
         } else {
-            account.fetchTweet(inReplyToStatusId, replyTo -> {
+            new ShowStatusTask(account, inReplyToStatusId).onDoneUI(replyTo -> {
                 if (replyTo != null) {
                     adapter.addToTop(new StatusViewModel(replyTo));
                     adapter.updateForce();
                 }
-            }, true);
+            });
         }
         return new AlertDialog.Builder(getActivity()).setView(header).create();
     }

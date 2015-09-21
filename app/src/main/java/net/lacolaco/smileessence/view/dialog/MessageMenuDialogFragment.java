@@ -60,22 +60,17 @@ public class MessageMenuDialogFragment extends MenuDialogFragment {
         final MainActivity activity = (MainActivity) getActivity();
         final Account account = activity.getCurrentAccount();
 
-        account.tryGetMessage(getMessageID(), new Account.MessageCallback() {
-            @Override
-            public void success(DirectMessage message) {
-                List<Command> commands = getCommands(activity, message, account);
-                Command.filter(commands);
-                for (Command command : commands) {
-                    adapter.addToBottom(command);
-                }
-                adapter.update();
+        DirectMessage message = DirectMessage.fetch(getMessageID());
+        if (message != null) {
+            List<Command> commands = getCommands(activity, message, account);
+            Command.filter(commands);
+            for (Command command : commands) {
+                adapter.addToBottom(command);
             }
-
-            @Override
-            public void error() {
-                dismiss();
-            }
-        });
+            adapter.update();
+        } else {
+            dismiss();
+        }
     }
 
     // -------------------------- OTHER METHODS --------------------------

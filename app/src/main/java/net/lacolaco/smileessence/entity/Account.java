@@ -89,71 +89,15 @@ public class Account extends Model {
         return user; // null かも
     }
 
-    public void tryGetMessage(long messageID, final MessageCallback callback) {
-        DirectMessage message = DirectMessage.fetch(messageID);
-        if (message != null) {
-            callback.success(message);
-        } else {
-            Handler handler = new Handler();
-            BackgroundTask task = new ShowDirectMessageTask(this, messageID).onDone(directMessage -> handler.post(() -> {
-                if (directMessage != null) {
-                    callback.success(directMessage);
-                } else {
-                    callback.error();
-                }
-            }));
-            task.execute();
-        }
-    }
-
-    /**
-     * Get status from api if not cached
-     */
-    public void tryGetUser(long userID, final UserCallback callback) {
-        User user = User.fetch(userID);
-        if (user != null) {
-            callback.success(user);
-            ShowUserTask task = new ShowUserTask(this, userID);
-            task.execute();
-        } else {
-            Handler handler = new Handler();
-            BackgroundTask task = new ShowUserTask(this, userID).onDone(gotUser -> handler.post(() -> {
-                if (gotUser != null) {
-                    callback.success(gotUser);
-                } else {
-                    callback.error();
-                }
-            }));
-            task.execute();
-        }
-    }
-
-    public BackgroundTask<Tweet, Void> fetchTweet(long statusId, Consumer<Tweet> callback, boolean forceRetrieve) {
+    @Deprecated()
+    public BackgroundTask<Tweet, Void> fetchTweet(long statusId, Consumer<Tweet> callback) {
         Tweet tweet = Tweet.fetch(statusId);
-        if (forceRetrieve || tweet == null) {
+        if (tweet == null) {
             Handler handler = new Handler(); // get current Looper
             return new ShowStatusTask(this, statusId).onDone(t -> handler.post(() -> callback.accept(t))).execute();
         } else {
             callback.accept(tweet);
             return null;
         }
-    }
-
-    public BackgroundTask<Tweet, Void> fetchTweet(long statusId, Consumer<Tweet> callback) {
-        return fetchTweet(statusId, callback, false);
-    }
-
-    public interface UserCallback {
-
-        void success(User user);
-
-        void error();
-    }
-
-    public interface MessageCallback {
-
-        void success(DirectMessage message);
-
-        void error();
     }
 }

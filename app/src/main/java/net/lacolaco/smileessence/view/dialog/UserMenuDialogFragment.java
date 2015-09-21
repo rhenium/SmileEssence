@@ -61,22 +61,17 @@ public class UserMenuDialogFragment extends MenuDialogFragment {
         final MainActivity activity = (MainActivity) getActivity();
         final Account account = activity.getCurrentAccount();
 
-        account.tryGetUser(getUserID(), new Account.UserCallback() {
-            @Override
-            public void success(User user) {
-                List<Command> commands = getCommands(activity, user, account);
-                Command.filter(commands);
-                for (Command command : commands) {
-                    adapter.addToBottom(command);
-                }
-                adapter.update();
+        User user = User.fetch(getUserID());
+        if (user != null) {
+            List<Command> commands = getCommands(activity, user, account);
+            Command.filter(commands);
+            for (Command command : commands) {
+                adapter.addToBottom(command);
             }
-
-            @Override
-            public void error() {
-                dismiss();
-            }
-        });
+            adapter.update();
+        } else {
+            dismiss(); // BUG
+        }
     }
 
     // -------------------------- OTHER METHODS --------------------------
