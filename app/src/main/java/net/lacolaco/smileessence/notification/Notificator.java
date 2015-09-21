@@ -71,7 +71,7 @@ public class Notificator {
         if (activity.isFinishing()) {
             return;
         }
-        new UIHandler(() -> {
+        new UIHandler().post(() -> {
             if (isForeground) {
                 Logger.debug(String.format("notify by crouton %s", text));
                 Crouton.makeText(activity, text, getStyle(type)).show();
@@ -79,7 +79,7 @@ public class Notificator {
                 Logger.debug(String.format("notify by toast %s", text));
                 Toast.makeText(activity, text, Toast.LENGTH_LONG).show();
             }
-        }).post();
+        });
     }
 
     public void onForeground() {

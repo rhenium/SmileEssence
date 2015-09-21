@@ -96,13 +96,10 @@ public class MessageViewModel implements IViewModel {
         int theme = ((MainActivity) activity).getThemeIndex();
         NetworkImageView icon = (NetworkImageView) convertedView.findViewById(R.id.imageview_status_icon);
         ImageCache.getInstance().setImageToView(directMessage.getSender().getProfileImageUrl(), icon);
-        icon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                UserDetailDialogFragment dialogFragment = new UserDetailDialogFragment();
-                dialogFragment.setUserID(directMessage.getSender().getId());
-                DialogHelper.showDialog(activity, dialogFragment);
-            }
+        icon.setOnClickListener(v -> {
+            UserDetailDialogFragment dialogFragment = new UserDetailDialogFragment();
+            dialogFragment.setUserID(directMessage.getSender().getId());
+            DialogHelper.showDialog(activity, dialogFragment);
         });
         TextView header = (TextView) convertedView.findViewById(R.id.textview_status_header);
         header.setTextSize(textSize);

@@ -162,13 +162,10 @@ public class EventViewModel implements IViewModel {
         favorited.setVisibility(View.GONE);
         int colorBgNormal = Themes.getStyledColor(activity, theme, R.attr.color_status_bg_normal, 0);
         convertedView.setBackgroundColor(colorBgNormal);
-        convertedView.setOnClickListener(new ListItemClickListener(activity, new Runnable() {
-            @Override
-            public void run() {
-                UserDetailDialogFragment fragment = new UserDetailDialogFragment();
-                fragment.setUserID(getSourceUserID());
-                DialogHelper.showDialog(activity, fragment);
-            }
+        convertedView.setOnClickListener(new ListItemClickListener(activity, () -> {
+            UserDetailDialogFragment fragment = new UserDetailDialogFragment();
+            fragment.setUserID(getSourceUserID());
+            DialogHelper.showDialog(activity, fragment);
         }));
         return convertedView;
     }

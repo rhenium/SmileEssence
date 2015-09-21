@@ -35,7 +35,7 @@ public class DialogHelper {
     private static LinkedHashSet<String> dialogStack = new LinkedHashSet<>();
 
     public static void closeAllDialogs(Activity activity) {
-        for (String tag : new LinkedHashSet<String>(dialogStack)) {
+        for (String tag : new LinkedHashSet<>(dialogStack)) {
             StackableDialogFragment dialog = (StackableDialogFragment) activity.getFragmentManager().findFragmentByTag(tag);
             if (dialog != null) {
                 dialog.dismiss();

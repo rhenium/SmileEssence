@@ -90,10 +90,10 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
         final MainActivity activity = (MainActivity) getActivity();
         final StatusListAdapter adapter = getAdapter();
         if (activity.isStreaming()) {
-            new UIHandler(() -> {
+            new UIHandler().post(() -> {
                 updateListViewWithNotice(refreshView.getRefreshableView(), true);
                 refreshView.onRefreshComplete();
-            }).post();
+            });
             return;
         }
         final Account currentAccount = activity.getCurrentAccount();

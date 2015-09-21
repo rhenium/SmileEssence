@@ -93,12 +93,7 @@ public class EditableCheckBoxModel implements IViewModel {
         checkBox.setText(this.text);
         checkBox.setChecked(checked);
         checkBox.setEnabled(!isFreezing());
-        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                EditableCheckBoxModel.this.setChecked(isChecked);
-            }
-        });
+        checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> EditableCheckBoxModel.this.setChecked(isChecked));
         EditText editText = (EditText) convertedView.findViewById(R.id.edittext_editable_checkbox);
         editText.addTextChangedListener(new TextWatcher() {
             @Override

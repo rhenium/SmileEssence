@@ -140,10 +140,10 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
         final SearchListAdapter adapter = getAdapter();
         String queryString = adapter.getQuery();
         if (TextUtils.isEmpty(queryString)) {
-            new UIHandler(() -> {
+            new UIHandler().post(() -> {
                 notifyTextEmpty(activity);
                 refreshView.onRefreshComplete();
-            }).post();
+            });
             return;
         }
         final Query query = new Query();
@@ -183,10 +183,10 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
         final SearchListAdapter adapter = getAdapter();
         String queryString = adapter.getQuery();
         if (TextUtils.isEmpty(queryString)) {
-            new UIHandler(() -> {
+            new UIHandler().post(() -> {
                 notifyTextEmpty(activity);
                 refreshView.onRefreshComplete();
-            }).post();
+            });
             return;
         }
         final Query query = new Query();

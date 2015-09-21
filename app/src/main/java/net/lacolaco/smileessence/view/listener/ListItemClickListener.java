@@ -55,9 +55,9 @@ public class ListItemClickListener implements View.OnClickListener {
         final int currentBgColor = ((ColorDrawable) v.getBackground()).getColor();
         v.setBackgroundColor(activity.getResources().getColor(R.color.metro_blue));
         v.invalidate();
-        new UIHandler(() -> {
+        new UIHandler().post(() -> {
             v.setBackgroundColor(currentBgColor);
             callback.run();
-        }).post();
+        });
     }
 }

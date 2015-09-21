@@ -68,12 +68,7 @@ public class CheckBoxModel implements IViewModel {
         }
         CheckBox checkBox = (CheckBox) convertedView.findViewById(R.id.checkBox_menuItem);
         checkBox.setText(this.text);
-        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                CheckBoxModel.this.checked = isChecked;
-            }
-        });
+        checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> CheckBoxModel.this.checked = isChecked);
         checkBox.setChecked(checked);
         return convertedView;
     }

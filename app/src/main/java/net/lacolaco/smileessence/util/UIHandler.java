@@ -27,36 +27,10 @@ package net.lacolaco.smileessence.util;
 import android.os.Handler;
 import android.os.Looper;
 
-public class UIHandler {
-    private final Runnable runnable;
-    private final Handler handler;
-
+public class UIHandler extends Handler {
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public UIHandler(Runnable _runnable) {
-        handler = new Handler(Looper.getMainLooper());
-        runnable = _runnable;
-    }
-
-    // -------------------------- OTHER METHODS --------------------------
-
-    public boolean post() {
-        return handler.post(runnable);
-    }
-
-    public boolean postAtFrontOfQueue() {
-        return handler.postAtFrontOfQueue(runnable);
-    }
-
-    public boolean postAtTime(long uptimeMillis) {
-        return handler.postAtTime(runnable, uptimeMillis);
-    }
-
-    public boolean postAtTime(Object token, long uptimeMillis) {
-        return handler.postAtTime(runnable, token, uptimeMillis);
-    }
-
-    public boolean postDelayed(long delayMillis) {
-        return handler.postDelayed(runnable, delayMillis);
+    public UIHandler() {
+        super(Looper.getMainLooper());
     }
 }
