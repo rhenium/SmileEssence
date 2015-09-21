@@ -53,17 +53,11 @@ public class ShowFriendshipTask extends BackgroundTask<Relationship, Void> {
     }
 
     @Override
-    protected Relationship doInBackground(Void... params) {
-        try {
-            if (screenName != null) {
-                return account.getTwitter().friendsFollowers().showFriendship(account.getTwitter().getScreenName(), screenName);
-            } else {
-                return account.getTwitter().friendsFollowers().showFriendship(account.getTwitter().getId(), userID);
-            }
-        } catch (TwitterException e) {
-            e.printStackTrace();
-            Logger.error(e.toString());
-            return null;
+    protected Relationship doInBackground() throws TwitterException {
+        if (screenName != null) {
+            return account.getTwitter().friendsFollowers().showFriendship(account.getTwitter().getScreenName(), screenName);
+        } else {
+            return account.getTwitter().friendsFollowers().showFriendship(account.getTwitter().getId(), userID);
         }
     }
 }

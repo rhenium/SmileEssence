@@ -50,19 +50,7 @@ public class FavoriteTask extends BackgroundTask<Tweet, Void> {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected Tweet doInBackground(Void... params) {
-        try {
-            Tweet tweet = Tweet.fromTwitter(account.getTwitter().favorites().createFavorite(statusID));
-            if (tweet != null) {
-                Notificator.getInstance().publish(R.string.notice_favorite_succeeded);
-            } else {
-                Notificator.getInstance().publish(R.string.notice_favorite_failed, NotificationType.ALERT);
-            }
-            return tweet;
-        } catch (TwitterException e) {
-            e.printStackTrace();
-            Logger.error(e.toString());
-            return null;
-        }
+    protected Tweet doInBackground() throws TwitterException {
+        return Tweet.fromTwitter(account.getTwitter().favorites().createFavorite(statusID));
     }
 }

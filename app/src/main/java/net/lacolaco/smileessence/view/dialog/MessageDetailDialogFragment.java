@@ -162,13 +162,10 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
 
     public void deleteMessage(final Account account, final DirectMessage message) {
         ConfirmDialogFragment.show(getActivity(), getString(R.string.dialog_confirm_commands), () -> {
-            new DeleteMessageTask(account, message.getId()).onDoneUI(user -> {
-                if (message != null) {
-                    Notificator.getInstance().publish(R.string.notice_message_delete_succeeded);
-                } else {
-                    Notificator.getInstance().publish(R.string.notice_message_delete_failed, NotificationType.ALERT);
-                }
-            }).execute();
+            new DeleteMessageTask(account, message.getId())
+                    .onDone(x -> Notificator.getInstance().publish(R.string.notice_message_delete_succeeded))
+                    .onFail(x -> Notificator.getInstance().publish(R.string.notice_message_delete_failed, NotificationType.ALERT))
+                    .execute();
             dismiss();
         });
     }

@@ -49,14 +49,7 @@ public class SendMessageTask extends BackgroundTask<DirectMessage, Void> {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected DirectMessage doInBackground(Void... params) {
-        try {
-            return DirectMessage.fromTwitter(account.getTwitter().directMessages().sendDirectMessage(userID, text));
-        } catch (TwitterException e) {
-            e.printStackTrace();
-            Logger.error(e.toString());
-            return null;
-        }
+    protected DirectMessage doInBackground() throws TwitterException {
+        return DirectMessage.fromTwitter(account.getTwitter().directMessages().sendDirectMessage(userID, text));
     }
-
 }

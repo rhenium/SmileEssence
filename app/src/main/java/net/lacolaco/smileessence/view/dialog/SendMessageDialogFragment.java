@@ -154,13 +154,10 @@ public class SendMessageDialogFragment extends StackableDialogFragment implement
         hideIME();
         MainActivity activity = (MainActivity) getActivity();
         String text = editText.getText().toString();
-        new SendMessageTask(activity.getCurrentAccount(), screenName, text).onDone(message -> {
-            if (message != null) {
-                Notificator.getInstance().publish(R.string.notice_message_send_succeeded);
-            } else {
-                Notificator.getInstance().publish(R.string.notice_message_send_failed, NotificationType.ALERT);
-            }
-        }).execute();
+        new SendMessageTask(activity.getCurrentAccount(), screenName, text)
+                .onDone(x -> Notificator.getInstance().publish(R.string.notice_message_send_succeeded))
+                .onFail(x -> Notificator.getInstance().publish(R.string.notice_message_send_failed, NotificationType.ALERT))
+                .execute();
         dismiss();
     }
 }

@@ -27,9 +27,12 @@ package net.lacolaco.smileessence.view;
 import android.os.Bundle;
 import android.widget.ListView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
+import net.lacolaco.smileessence.notification.NotificationType;
+import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.StatusFilter;
 import net.lacolaco.smileessence.twitter.task.HomeTimelineTask;
 import net.lacolaco.smileessence.util.UIHandler;
@@ -65,14 +68,15 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
         final Account account = ((MainActivity) getActivity()).getCurrentAccount();
         new HomeTimelineTask(account)
                 .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
+                .onFail(e -> Notificator.getInstance().publish(R.string.notice_error_get_home, NotificationType.ALERT))
                 .onDoneUI(tweets -> {
-            for (Tweet tweet : tweets) {
-                StatusViewModel statusViewModel = new StatusViewModel(tweet);
-                adapter.addToBottom(statusViewModel);
-                StatusFilter.getInstance().filter(statusViewModel);
-            }
-            adapter.updateForce();
-        }).execute();
+                    for (Tweet tweet : tweets) {
+                        StatusViewModel statusViewModel = new StatusViewModel(tweet);
+                        adapter.addToBottom(statusViewModel);
+                        StatusFilter.getInstance().filter(statusViewModel);
+                    }
+                    adapter.updateForce();
+                }).execute();
     }
 
 
@@ -93,16 +97,17 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
         new HomeTimelineTask(currentAccount)
                 .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
                 .setSinceId(adapter.getTopID())
+                .onFail(e -> Notificator.getInstance().publish(R.string.notice_error_get_home, NotificationType.ALERT))
                 .onDoneUI(tweets -> {
-            ListIterator<Tweet> li = tweets.listIterator(tweets.size());
-            while (li.hasPrevious()) {
-                StatusViewModel viewModel = new StatusViewModel(li.previous());
-                adapter.addToTop(viewModel);
-                StatusFilter.getInstance().filter(viewModel);
-            }
-            updateListViewWithNotice(refreshView.getRefreshableView(), true);
-            refreshView.onRefreshComplete();
-        }).execute();
+                    ListIterator<Tweet> li = tweets.listIterator(tweets.size());
+                    while (li.hasPrevious()) {
+                        StatusViewModel viewModel = new StatusViewModel(li.previous());
+                        adapter.addToTop(viewModel);
+                        StatusFilter.getInstance().filter(viewModel);
+                    }
+                    updateListViewWithNotice(refreshView.getRefreshableView(), true);
+                    refreshView.onRefreshComplete();
+                }).execute();
     }
 
     @Override
@@ -113,14 +118,15 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
         new HomeTimelineTask(currentAccount)
                 .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
                 .setMaxId(adapter.getLastID() - 1)
+                .onFail(e -> Notificator.getInstance().publish(R.string.notice_error_get_home, NotificationType.ALERT))
                 .onDoneUI(tweets -> {
-            for (Tweet tweet : tweets) {
-                StatusViewModel viewModel = new StatusViewModel(tweet);
-                adapter.addToBottom(viewModel);
-                StatusFilter.getInstance().filter(viewModel);
-            }
-            updateListViewWithNotice(refreshView.getRefreshableView(), false);
-            refreshView.onRefreshComplete();
-        }).execute();
+                    for (Tweet tweet : tweets) {
+                        StatusViewModel viewModel = new StatusViewModel(tweet);
+                        adapter.addToBottom(viewModel);
+                        StatusFilter.getInstance().filter(viewModel);
+                    }
+                    updateListViewWithNotice(refreshView.getRefreshableView(), false);
+                    refreshView.onRefreshComplete();
+                }).execute();
     }
 }

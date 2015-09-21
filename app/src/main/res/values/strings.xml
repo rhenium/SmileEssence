@@ -234,4 +234,6 @@
     <string name="command_paste_to_post">Paste to post</string>
     <string name="command_search_on_twitter">Search on Twitter</string>
     <string name="command_search_on_google">Search on Google</string>
+    <string name="notice_error_get_user_timeline">Failed to get user timeline</string>
+    <string name="notice_error_get_list">Failed to get list timeline</string>
 </resources>

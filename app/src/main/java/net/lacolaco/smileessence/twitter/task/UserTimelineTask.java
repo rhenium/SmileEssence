@@ -49,13 +49,7 @@ public class UserTimelineTask extends TimelineTask<Tweet> {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected List<Tweet> doInBackground(Void... params) {
-        try {
-            return Tweet.fromTwitter(account.getTwitter().timelines().getUserTimeline(userID, getPaging()));
-        } catch (TwitterException e) {
-            e.printStackTrace();
-            Logger.error(e.toString());
-            return Collections.emptyList();
-        }
+    protected List<Tweet> doInBackground() throws TwitterException {
+        return Tweet.fromTwitter(account.getTwitter().timelines().getUserTimeline(userID, getPaging()));
     }
 }

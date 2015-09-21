@@ -147,22 +147,25 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
         if (adapter.getCount() > 0) {
             query.setSinceId(adapter.getTopID());
         }
-        new SearchTask(currentAccount, query).onDoneUI(queryResult -> {
-            if (queryResult != null) {
-                List<twitter4j.Status> tweets = queryResult.getTweets();
-                for (int i = tweets.size() - 1; i >= 0; i--) {
-                    twitter4j.Status status = tweets.get(i);
-                    if (!status.isRetweet()) {
-                        StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status));
-                        adapter.addToTop(viewModel);
-                        StatusFilter.getInstance().filter(viewModel);
+        new SearchTask(currentAccount, query)
+                .onDoneUI(queryResult -> {
+                    if (queryResult != null) {
+                        List<twitter4j.Status> tweets = queryResult.getTweets();
+                        for (int i = tweets.size() - 1; i >= 0; i--) {
+                            twitter4j.Status status = tweets.get(i);
+                            if (!status.isRetweet()) {
+                                StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status));
+                                adapter.addToTop(viewModel);
+                                StatusFilter.getInstance().filter(viewModel);
+                            }
+                        }
+                        updateListViewWithNotice(refreshView.getRefreshableView(), true);
+                        adapter.setTopID(queryResult.getMaxId());
+                        refreshView.onRefreshComplete();
                     }
-                }
-                updateListViewWithNotice(refreshView.getRefreshableView(), true);
-                adapter.setTopID(queryResult.getMaxId());
-                refreshView.onRefreshComplete();
-            }
-        }).execute();
+                })
+                .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_search, NotificationType.ALERT))
+                .execute();
     }
 
     @Override
@@ -186,20 +189,23 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
         if (adapter.getCount() > 0) {
             query.setMaxId(adapter.getLastID() - 1);
         }
-        new SearchTask(currentAccount, query).onDoneUI(queryResult -> {
-            if (queryResult != null) {
-                List<twitter4j.Status> tweets = queryResult.getTweets();
-                for (twitter4j.Status status : tweets) {
-                    if (!status.isRetweet()) {
-                        StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status));
-                        adapter.addToBottom(viewModel);
-                        StatusFilter.getInstance().filter(viewModel);
+        new SearchTask(currentAccount, query)
+                .onDoneUI(queryResult -> {
+                    if (queryResult != null) {
+                        List<twitter4j.Status> tweets = queryResult.getTweets();
+                        for (twitter4j.Status status : tweets) {
+                            if (!status.isRetweet()) {
+                                StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status));
+                                adapter.addToBottom(viewModel);
+                                StatusFilter.getInstance().filter(viewModel);
+                            }
+                        }
+                        updateListViewWithNotice(refreshView.getRefreshableView(), false);
+                        refreshView.onRefreshComplete();
                     }
-                }
-                updateListViewWithNotice(refreshView.getRefreshableView(), false);
-                refreshView.onRefreshComplete();
-            }
-        }).execute();
+                })
+                .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_search, NotificationType.ALERT))
+                .execute();
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
@@ -336,21 +342,24 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
             query.setQuery(queryString);
             query.setCount(((MainActivity) getActivity()).getRequestCountPerPage());
             query.setResultType(Query.RECENT);
-            new SearchTask(account, query).onDoneUI(queryResult -> {
-                if (queryResult != null) {
-                    List<twitter4j.Status> tweets = queryResult.getTweets();
-                    for (int i = tweets.size() - 1; i >= 0; i--) {
-                        twitter4j.Status status = tweets.get(i);
-                        if (!status.isRetweet()) {
-                            StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status));
-                            adapter.addToTop(viewModel);
-                            StatusFilter.getInstance().filter(viewModel);
+            new SearchTask(account, query)
+                    .onDoneUI(queryResult -> {
+                        if (queryResult != null) {
+                            List<twitter4j.Status> tweets = queryResult.getTweets();
+                            for (int i = tweets.size() - 1; i >= 0; i--) {
+                                twitter4j.Status status = tweets.get(i);
+                                if (!status.isRetweet()) {
+                                    StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status));
+                                    adapter.addToTop(viewModel);
+                                    StatusFilter.getInstance().filter(viewModel);
+                                }
+                            }
+                            adapter.setTopID(queryResult.getMaxId());
+                            adapter.updateForce();
                         }
-                    }
-                    adapter.setTopID(queryResult.getMaxId());
-                    adapter.updateForce();
-                }
-            }).execute();
+                    })
+                    .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_search, NotificationType.ALERT))
+                    .execute();
         }
     }
 }

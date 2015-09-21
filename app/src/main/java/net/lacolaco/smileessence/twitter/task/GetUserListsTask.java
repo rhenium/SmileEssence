@@ -25,15 +25,13 @@
 package net.lacolaco.smileessence.twitter.task;
 
 import net.lacolaco.smileessence.entity.Account;
-import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.util.BackgroundTask;
 import twitter4j.TwitterException;
 import twitter4j.UserList;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class GetUserListsTask extends BackgroundTask<UserList[], Void> {
+public class GetUserListsTask extends BackgroundTask<List<UserList>,Object> {
 
     private final Account account;
 
@@ -46,15 +44,7 @@ public class GetUserListsTask extends BackgroundTask<UserList[], Void> {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected UserList[] doInBackground(Void... params) {
-        try {
-            List<UserList> userLists = new ArrayList<>();
-
-            userLists.addAll(account.getTwitter().list().getUserLists(account.getTwitter().getId()));
-            return userLists.toArray(new UserList[userLists.size()]);
-        } catch (TwitterException e) {
-            Logger.error(e);
-            return new UserList[0];
-        }
+    protected List<UserList> doInBackground() throws TwitterException {
+        return account.getTwitter().list().getUserLists(account.getTwitter().getId());
     }
 }

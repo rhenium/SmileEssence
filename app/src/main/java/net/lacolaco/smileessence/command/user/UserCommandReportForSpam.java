@@ -62,13 +62,10 @@ public class UserCommandReportForSpam extends UserCommand implements IConfirmabl
 
     @Override
     public boolean execute() {
-        new ReportForSpamTask(account, getUser().getId()).onDoneUI(user -> {
-            if (user != null) {
-                Notificator.getInstance().publish(R.string.notice_r4s_succeeded);
-            } else {
-                Notificator.getInstance().publish(R.string.notice_r4s_failed, NotificationType.ALERT);
-            }
-        }).execute();
+        new ReportForSpamTask(account, getUser().getId())
+                .onDone(user -> Notificator.getInstance().publish(R.string.notice_r4s_succeeded))
+                .onFail(ex -> Notificator.getInstance().publish(R.string.notice_r4s_failed, NotificationType.ALERT))
+                .execute();
         return true;
     }
 }

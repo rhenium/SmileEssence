@@ -64,15 +64,14 @@ public class CommandOpenUserDetail extends Command {
 
     @Override
     public boolean execute() {
-        new ShowUserTask(account, screenName).onDoneUI(user -> {
-            if (user != null) {
-                UserDetailDialogFragment fragment = new UserDetailDialogFragment();
-                fragment.setUserID(user.getId());
-                DialogHelper.showDialog(getActivity(), fragment);
-            } else {
-                Notificator.getInstance().publish(R.string.notice_error_show_user, NotificationType.ALERT);
-            }
-        }).execute();
+        new ShowUserTask(account, screenName)
+                .onDoneUI(user -> {
+                    UserDetailDialogFragment fragment = new UserDetailDialogFragment();
+                    fragment.setUserID(user.getId());
+                    DialogHelper.showDialog(getActivity(), fragment);
+                })
+                .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_show_user, NotificationType.ALERT))
+                .execute();
 
         return false;
     }

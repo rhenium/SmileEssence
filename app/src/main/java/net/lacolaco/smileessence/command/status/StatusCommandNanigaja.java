@@ -29,6 +29,8 @@ import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.command.IConfirmable;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
+import net.lacolaco.smileessence.notification.NotificationType;
+import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.TweetBuilder;
 import net.lacolaco.smileessence.twitter.task.FavoriteTask;
 import net.lacolaco.smileessence.twitter.task.TweetTask;
@@ -81,7 +83,10 @@ public class StatusCommandNanigaja extends StatusCommand implements IConfirmable
                 .setInReplyToStatusID(getOriginalStatus().getId())
                 .build();
         new TweetTask(account, update).execute();
-        new FavoriteTask(account, getOriginalStatus().getId()).execute();
+        new FavoriteTask(account, getOriginalStatus().getId())
+                .onDone(x -> Notificator.getInstance().publish(R.string.notice_favorite_succeeded))
+                .onFail(x -> Notificator.getInstance().publish(R.string.notice_favorite_failed, NotificationType.ALERT))
+                .execute();
         return true;
     }
 

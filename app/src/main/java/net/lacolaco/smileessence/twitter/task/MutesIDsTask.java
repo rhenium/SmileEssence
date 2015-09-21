@@ -46,23 +46,16 @@ public class MutesIDsTask extends BackgroundTask<List<Long>, Void> {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected List<Long> doInBackground(Void... params) {
-        try {
-            List<Long> idList = new ArrayList<>();
-            long cursor = -1;
-            do {
-                IDs mutesIDs = account.getTwitter().getMutesIDs(cursor);
-                cursor = mutesIDs.getNextCursor();
-                for (long id : mutesIDs.getIDs()) {
-                    idList.add(id);
-                }
+    protected List<Long> doInBackground() throws TwitterException {
+        List<Long> idList = new ArrayList<>();
+        long cursor = -1;
+        while (cursor != 0) {
+            IDs mutesIDs = account.getTwitter().getMutesIDs(cursor);
+            cursor = mutesIDs.getNextCursor();
+            for (long id : mutesIDs.getIDs()) {
+                idList.add(id);
             }
-            while (cursor != 0);
-
-            return idList;
-        } catch (TwitterException e) {
-            Logger.error(e);
-            return Collections.emptyList();
         }
+        return idList;
     }
 }

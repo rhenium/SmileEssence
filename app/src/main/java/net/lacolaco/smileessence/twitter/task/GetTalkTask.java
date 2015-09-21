@@ -19,27 +19,24 @@ public class GetTalkTask extends BackgroundTask<List<Tweet>, Tweet> {
     }
 
     @Override
-    protected List<Tweet> doInBackground(Void... params) {
+    protected List<Tweet> doInBackground() {
         ArrayList<Tweet> list = new ArrayList<>();
         long id = statusId;
-        try {
-            while (id != -1) {
-                Tweet tweet = Tweet.fetch(id);
-                if (tweet == null) {
+        while (id != -1) {
+            Tweet tweet = Tweet.fetch(id);
+            if (tweet == null) {
+                try {
                     tweet = Tweet.fromTwitter(account.getTwitter().showStatus(id));
-                }
-
-                if (tweet == null) {
-                    break;
-                } else {
-                    list.add(tweet);
-                    publishProgress(tweet);
-                    id = tweet.getInReplyTo();
-                }
+                } catch (TwitterException ignored) { }
             }
-        } catch (TwitterException e) {
-            e.printStackTrace();
-            Logger.error(e);
+
+            if (tweet == null) {
+                break;
+            } else {
+                list.add(tweet);
+                progress(tweet);
+                id = tweet.getInReplyTo();
+            }
         }
         return list;
     }

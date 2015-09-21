@@ -34,6 +34,7 @@ import net.lacolaco.smileessence.data.PostState;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
+import net.lacolaco.smileessence.twitter.task.ShowStatusTask;
 import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.dialog.StatusDetailDialogFragment;
@@ -45,7 +46,7 @@ public class IntentRouter {
 
     // ------------------------------ FIELDS ------------------------------
 
-    public static final String TWITTER_HOST = "twitter.com";
+    private static final String TWITTER_HOST = "twitter.com";
     private static final Pattern TWITTER_STATUS_PATTERN = Pattern.compile("\\A(?:/#!)?/(?:\\w{1,15})/status(?:es)?/(\\d+)\\z", Pattern.CASE_INSENSITIVE);
     private static final Pattern TWITTER_USER_PATTERN = Pattern.compile("\\A(?:/#!)?/(\\w{1,15})/?\\z", Pattern.CASE_INSENSITIVE);
     private static final Pattern TWITTER_POST_PATTERN = Pattern.compile("\\A/(intent/tweet|share)\\z", Pattern.CASE_INSENSITIVE);
@@ -123,15 +124,13 @@ public class IntentRouter {
     }
 
     private static void showStatusDialog(final MainActivity activity, long id) {
-        activity.getCurrentAccount().fetchTweet(id, (tweet) -> {
-            if (tweet != null) {
-                StatusDetailDialogFragment fragment = new StatusDetailDialogFragment();
-                fragment.setStatusID(tweet.getId());
-                DialogHelper.showDialog(activity, fragment);
-            } else {
-                Notificator.getInstance().publish(R.string.error_intent_status_cannot_load, NotificationType.ALERT);
-            }
-        });
+        new ShowStatusTask(activity.getCurrentAccount(), id)
+                .onDoneUI(tweet -> {
+                    StatusDetailDialogFragment fragment = new StatusDetailDialogFragment();
+                    fragment.setStatusID(tweet.getId());
+                    DialogHelper.showDialog(activity, fragment);
+                })
+                .onFail(x -> Notificator.getInstance().publish(R.string.error_intent_status_cannot_load, NotificationType.ALERT));
     }
 
     private static void showUserDialog(MainActivity activity, String screenName) {

@@ -62,13 +62,10 @@ public class UserCommandUnblock extends UserCommand implements IConfirmable {
 
     @Override
     public boolean execute() {
-        new UnblockTask(account, getUser().getId()).onDoneUI(user -> {
-            if (user != null) {
-                Notificator.getInstance().publish(R.string.notice_unblock_succeeded);
-            } else {
-                Notificator.getInstance().publish(R.string.notice_unblock_failed, NotificationType.ALERT);
-            }
-        }).execute();
+        new UnblockTask(account, getUser().getId())
+                .onDone(user -> Notificator.getInstance().publish(R.string.notice_unblock_succeeded))
+                .onFail(x -> Notificator.getInstance().publish(R.string.notice_unblock_failed, NotificationType.ALERT))
+                .execute();
         return true;
     }
 }

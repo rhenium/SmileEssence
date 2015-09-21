@@ -49,14 +49,8 @@ public class UserListStatusesTask extends TimelineTask<Tweet> {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected List<Tweet> doInBackground(Void... params) {
-        try {
-            String[] strings = listFullName.split("/");
-            return Tweet.fromTwitter(account.getTwitter().list().getUserListStatuses(strings[0], strings[1], getPaging()));
-        } catch (TwitterException e) {
-            e.printStackTrace();
-            Logger.error(e.toString());
-            return Collections.emptyList();
-        }
+    protected List<Tweet> doInBackground() throws TwitterException {
+        String[] strings = listFullName.split("/");
+        return Tweet.fromTwitter(account.getTwitter().list().getUserListStatuses(strings[0], strings[1], getPaging()));
     }
 }

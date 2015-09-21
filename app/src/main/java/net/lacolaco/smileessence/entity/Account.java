@@ -89,7 +89,7 @@ public class Account extends Model {
         return user; // null かも
     }
 
-    @Deprecated()
+    @Deprecated
     public BackgroundTask<Tweet, Void> fetchTweet(long statusId, Consumer<Tweet> callback) {
         Tweet tweet = Tweet.fetch(statusId);
         if (tweet == null) {

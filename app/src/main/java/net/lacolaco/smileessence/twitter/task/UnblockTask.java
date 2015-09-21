@@ -47,13 +47,7 @@ public class UnblockTask extends BackgroundTask<User, Void> {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected User doInBackground(Void... params) {
-        try {
-            return User.fromTwitter(account.getTwitter().users().destroyBlock(userID));
-        } catch (TwitterException e) {
-            e.printStackTrace();
-            Logger.error(e.toString());
-            return null;
-        }
+    protected User doInBackground() throws TwitterException {
+        return User.fromTwitter(account.getTwitter().users().destroyBlock(userID));
     }
 }

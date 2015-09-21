@@ -156,13 +156,15 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         new UserTimelineTask(currentAccount, getUserID())
                 .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
                 .setSinceId(adapter.getTopID())
+                .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_user_timeline, NotificationType.ALERT))
                 .onDoneUI(tweets -> {
-            for (int i = tweets.size() - 1; i >= 0; i--) {
-                adapter.addToTop(new StatusViewModel(tweets.get(i)));
-            }
-            updateListView(refreshView.getRefreshableView(), adapter, true);
-            refreshView.onRefreshComplete();
-        }).execute();
+                    for (int i = tweets.size() - 1; i >= 0; i--) {
+                        adapter.addToTop(new StatusViewModel(tweets.get(i)));
+                    }
+                    updateListView(refreshView.getRefreshableView(), adapter, true);
+                    refreshView.onRefreshComplete();
+                })
+                .execute();
     }
 
     @Override
@@ -172,13 +174,15 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         new UserTimelineTask(currentAccount, getUserID())
                 .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
                 .setMaxId(adapter.getLastID() - 1)
+                .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_user_timeline, NotificationType.ALERT))
                 .onDoneUI(tweets -> {
-            for (Tweet tweet : tweets) {
-                adapter.addToBottom(new StatusViewModel(tweet));
-            }
-            updateListView(refreshView.getRefreshableView(), adapter, false);
-            refreshView.onRefreshComplete();
-        }).execute();
+                    for (Tweet tweet : tweets) {
+                        adapter.addToBottom(new StatusViewModel(tweet));
+                    }
+                    updateListView(refreshView.getRefreshableView(), adapter, false);
+                    refreshView.onRefreshComplete();
+                })
+                .execute();
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
@@ -221,13 +225,10 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         tabHost.setCurrentTab(0);
 
         final Account account = activity.getCurrentAccount();
-        new ShowUserTask(account, getUserID()).onDoneUI(user -> {
-            if (user != null) {
-                initUserData(user, account);
-            } else {
-                dismiss();
-            }
-        });
+        new ShowUserTask(account, getUserID())
+                .onDoneUI(user -> initUserData(user, account))
+                .onFailUI(x -> dismiss())
+                .execute();
         return new AlertDialog.Builder(activity)
                 .setView(v)
                 .setCancelable(true)
@@ -238,13 +239,15 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         tabHost.getTabWidget().getChildTabViewAt(1).setVisibility(View.GONE);
         new UserTimelineTask(account, user.getId())
                 .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
+                .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_user_timeline, NotificationType.ALERT))
                 .onDoneUI(tweets -> {
-            for (Tweet tweet : tweets) {
-                adapter.addToBottom(new StatusViewModel(tweet));
-            }
-            adapter.updateForce();
-            tabHost.getTabWidget().getChildTabViewAt(1).setVisibility(View.VISIBLE);
-        }).execute();
+                    for (Tweet tweet : tweets) {
+                        adapter.addToBottom(new StatusViewModel(tweet));
+                    }
+                    adapter.updateForce();
+                    tabHost.getTabWidget().getChildTabViewAt(1).setVisibility(View.VISIBLE);
+                })
+                .execute();
     }
 
     private String getHtmlDescription(String description) {
@@ -327,25 +330,24 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         lockFollowButton(activity);
         Boolean isFollowing = buttonFollow.getTag() != null ? (Boolean) buttonFollow.getTag() : false;
         if (isFollowing) {
-            new UnfollowTask(account, user.getId()).onDoneUI(result -> {
-                if (result != null) {
-                    Notificator.getInstance().publish(R.string.notice_unfollow_succeeded);
-                } else {
-                    Notificator.getInstance().publish(R.string.notice_unfollow_failed, NotificationType.ALERT);
-                }
-                updateRelationship(activity, user.getId());
-                buttonFollow.setEnabled(true);
-            }).execute();
+            new UnfollowTask(account, user.getId())
+                    .onDoneUI(result -> {
+                        Notificator.getInstance().publish(R.string.notice_unfollow_succeeded);
+                        updateRelationship(activity, user.getId());
+                        buttonFollow.setEnabled(true);
+                    })
+                    .onFail(x ->
+                            Notificator.getInstance().publish(R.string.notice_unfollow_failed, NotificationType.ALERT))
+                    .execute();
         } else {
-            new FollowTask(account, user.getId()).onDoneUI(result -> {
-                if (result != null) {
-                    Notificator.getInstance().publish(R.string.notice_follow_succeeded);
-                } else {
-                    Notificator.getInstance().publish(R.string.notice_follow_failed, NotificationType.ALERT);
-                }
-                updateRelationship(activity, user.getId());
-                buttonFollow.setEnabled(true);
-            }).execute();
+            new FollowTask(account, user.getId())
+                    .onDoneUI(result -> {
+                        Notificator.getInstance().publish(R.string.notice_follow_succeeded);
+                        updateRelationship(activity, user.getId());
+                        buttonFollow.setEnabled(true);
+                    })
+                    .onFail(x -> Notificator.getInstance().publish(R.string.notice_follow_failed, NotificationType.ALERT))
+                    .execute();
         }
     }
 
@@ -385,12 +387,10 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
             final Drawable red = Themes.getStyledDrawable(activity, theme, R.attr.button_round_red);
             final Drawable blue = Themes.getStyledDrawable(activity, theme, R.attr.button_round_blue);
             new ShowFriendshipTask(account, userId).onDoneUI(relationship -> {
-                if (relationship != null) {
-                    boolean isFollowing = relationship.isSourceFollowingTarget();
-                    boolean isFollowed = relationship.isSourceFollowedByTarget();
-                    setFollowButtonState(isFollowing, red, blue);
-                    textViewFollowed.setText(isFollowed ? R.string.user_detail_followed : R.string.user_detail_not_followed);
-                }
+                boolean isFollowing = relationship.isSourceFollowingTarget();
+                boolean isFollowed = relationship.isSourceFollowedByTarget();
+                setFollowButtonState(isFollowing, red, blue);
+                textViewFollowed.setText(isFollowed ? R.string.user_detail_followed : R.string.user_detail_not_followed);
             }).execute();
         }
     }

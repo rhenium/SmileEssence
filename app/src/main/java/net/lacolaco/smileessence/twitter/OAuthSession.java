@@ -51,11 +51,9 @@ public class OAuthSession {
         RequestTokenTask task = new RequestTokenTask(twitter);
         task.execute();
         try {
-            requestToken = task.get();
+            requestToken = task.getImmediately();
             return requestToken.getAuthorizationURL();
         } catch (Exception e) {
-            e.printStackTrace();
-            Logger.error(e.getMessage());
             return null;
         }
     }
@@ -67,10 +65,8 @@ public class OAuthSession {
         AccessTokenTask task = new AccessTokenTask(twitter, requestToken, pinCode);
         task.execute();
         try {
-            return task.get();
+            return task.getImmediately();
         } catch (Exception e) {
-            e.printStackTrace();
-            Logger.error(e.toString());
             return null;
         }
     }

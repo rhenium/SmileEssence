@@ -43,13 +43,7 @@ public class RequestTokenTask extends BackgroundTask<RequestToken, Void> {
     }
 
     @Override
-    protected RequestToken doInBackground(Void... params) {
-        try {
-            return twitter.getOAuthRequestToken();
-        } catch (TwitterException e) {
-            e.printStackTrace();
-            Logger.error(e.toString());
-            return null;
-        }
+    protected RequestToken doInBackground() throws TwitterException {
+        return twitter.getOAuthRequestToken();
     }
 }

@@ -55,17 +55,11 @@ public class ShowUserTask extends BackgroundTask<User, Void> {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected User doInBackground(Void... params) {
-        try {
-            if (screenName != null) {
-                return User.fromTwitter(account.getTwitter().users().showUser(screenName));
-            } else {
-                return User.fromTwitter(account.getTwitter().users().showUser(userID));
-            }
-        } catch (TwitterException e) {
-            e.printStackTrace();
-            Logger.error(e.toString());
-            return null;
+    protected User doInBackground() throws TwitterException {
+        if (screenName != null) {
+            return User.fromTwitter(account.getTwitter().users().showUser(screenName));
+        } else {
+            return User.fromTwitter(account.getTwitter().users().showUser(userID));
         }
     }
 }

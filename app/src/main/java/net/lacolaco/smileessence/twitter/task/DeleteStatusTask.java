@@ -47,15 +47,9 @@ public class DeleteStatusTask extends BackgroundTask<Tweet, Void> {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected Tweet doInBackground(Void... params) {
-        try {
-            Tweet t = Tweet.fromTwitter(account.getTwitter().tweets().destroyStatus(statusID));
-            Tweet.remove(t.getId());
-            return t;
-        } catch (TwitterException e) {
-            e.printStackTrace();
-            Logger.error(e.toString());
-            return null;
-        }
+    protected Tweet doInBackground() throws TwitterException {
+        Tweet t = Tweet.fromTwitter(account.getTwitter().tweets().destroyStatus(statusID));
+        Tweet.remove(t.getId());
+        return t;
     }
 }

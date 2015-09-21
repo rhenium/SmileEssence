@@ -50,18 +50,7 @@ public class DirectMessagesTask extends TimelineTask<DirectMessage> {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected List<DirectMessage> doInBackground(Void... params) {
-        try {
-            return DirectMessage.fromTwitter(account.getTwitter().directMessages().getDirectMessages(getPaging()));
-        } catch (TwitterException e) {
-            e.printStackTrace();
-            Logger.error(e.toString());
-            if (e.exceededRateLimitation()) {
-                Notificator.getInstance().publish(R.string.notice_error_rate_limit, NotificationType.ALERT);
-            } else {
-                Notificator.getInstance().publish(R.string.notice_error_get_messages, NotificationType.ALERT);
-            }
-            return Collections.emptyList();
-        }
+    protected List<DirectMessage> doInBackground() throws TwitterException {
+        return DirectMessage.fromTwitter(account.getTwitter().directMessages().getDirectMessages(getPaging()));
     }
 }

@@ -47,13 +47,7 @@ public class UnfavoriteTask extends BackgroundTask<Tweet, Void> {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected Tweet doInBackground(Void... params) {
-        try {
-            return Tweet.fromTwitter(account.getTwitter().favorites().destroyFavorite(statusID));
-        } catch (TwitterException e) {
-            e.printStackTrace();
-            Logger.error(e.toString());
-            return null;
-        }
+    protected Tweet doInBackground() throws TwitterException {
+        return Tweet.fromTwitter(account.getTwitter().favorites().destroyFavorite(statusID));
     }
 }

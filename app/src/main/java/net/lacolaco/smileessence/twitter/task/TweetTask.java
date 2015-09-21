@@ -105,7 +105,7 @@ public class TweetTask extends BackgroundTask<Tweet, Void> {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected Tweet doInBackground(Void... params) {
+    protected Tweet doInBackground() {
         try {
             if (!TextUtils.isEmpty(mediaPath)) {
                 File mediaFile = getMediaFile();

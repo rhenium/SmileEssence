@@ -47,23 +47,18 @@ public class BlockIDsTask extends BackgroundTask<List<Long>, Void> {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected List<Long> doInBackground(Void... params) {
-        try {
-            List<Long> idList = new ArrayList<>();
-            long cursor = -1;
-            do {
-                IDs blocksIDs = account.getTwitter().getBlocksIDs(cursor);
-                cursor = blocksIDs.getNextCursor();
-                for (long id : blocksIDs.getIDs()) {
-                    idList.add(id);
-                }
-            }
-            while (cursor != 0);
+    protected List<Long> doInBackground() throws TwitterException {
+        List<Long> idList = new ArrayList<>();
+        long cursor = -1;
 
-            return idList;
-        } catch (TwitterException e) {
-            Logger.error(e);
-            return Collections.emptyList();
+        while (cursor != 0) {
+            IDs blocksIDs = account.getTwitter().getBlocksIDs(cursor);
+            cursor = blocksIDs.getNextCursor();
+            for (long id : blocksIDs.getIDs()) {
+                idList.add(id);
+            }
         }
+
+        return idList;
     }
 }

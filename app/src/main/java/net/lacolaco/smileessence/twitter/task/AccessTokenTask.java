@@ -47,12 +47,7 @@ public class AccessTokenTask extends BackgroundTask<AccessToken, Void> {
     }
 
     @Override
-    protected AccessToken doInBackground(Void... params) {
-        try {
-            return twitter.getOAuthAccessToken(requestToken, pinCode);
-        } catch (TwitterException e) {
-            e.printStackTrace();
-            return null;
-        }
+    protected AccessToken doInBackground() throws TwitterException {
+        return twitter.getOAuthAccessToken(requestToken, pinCode);
     }
 }

@@ -125,12 +125,11 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         if (inReplyToStatusId == -1) {
             listView.setVisibility(View.GONE);
         } else {
-            new ShowStatusTask(account, inReplyToStatusId).onDoneUI(replyTo -> {
-                if (replyTo != null) {
-                    adapter.addToTop(new StatusViewModel(replyTo));
-                    adapter.updateForce();
-                }
-            });
+            new ShowStatusTask(account, inReplyToStatusId)
+                    .onDoneUI(replyTo -> {
+                        adapter.addToTop(new StatusViewModel(replyTo));
+                        adapter.updateForce();
+                    });
         }
         return new AlertDialog.Builder(getActivity()).setView(header).create();
     }
@@ -141,13 +140,10 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
 
     private void deleteStatus(final MainActivity activity, final Account account, final Tweet tweet) {
         confirm(activity, () -> {
-            new DeleteStatusTask(account, tweet.getOriginalTweet().getId()).onDoneUI(t -> {
-                if (t != null) {
-                    Notificator.getInstance().publish(R.string.notice_status_delete_succeeded);
-                } else {
-                    Notificator.getInstance().publish(R.string.notice_status_delete_failed, NotificationType.ALERT);
-                }
-            }).execute();
+            new DeleteStatusTask(account, tweet.getOriginalTweet().getId())
+                    .onDone(t -> Notificator.getInstance().publish(R.string.notice_status_delete_succeeded))
+                    .onFail(e -> Notificator.getInstance().publish(R.string.notice_status_delete_failed, NotificationType.ALERT))
+                    .execute();
             dismiss();
         });
     }
@@ -273,15 +269,15 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
     private void toggleFavorite(MainActivity activity, Account account, Tweet tweet, Boolean isFavorited) {
         long statusID = tweet.getOriginalTweet().getId();
         if (isFavorited) {
-            new UnfavoriteTask(account, statusID).onDone(t -> {
-                if (t != null) {
-                    Notificator.getInstance().publish(R.string.notice_unfavorite_succeeded);
-                } else {
-                    Notificator.getInstance().publish(R.string.notice_unfavorite_failed, NotificationType.ALERT);
-                }
-            }).execute();
+            new UnfavoriteTask(account, statusID)
+                    .onDone(x -> Notificator.getInstance().publish(R.string.notice_unfavorite_succeeded))
+                    .onFail(x -> Notificator.getInstance().publish(R.string.notice_unfavorite_failed, NotificationType.ALERT))
+                    .execute();
         } else {
-            new FavoriteTask(account, statusID).execute();
+            new FavoriteTask(account, statusID)
+                    .onDone(x -> Notificator.getInstance().publish(R.string.notice_favorite_succeeded))
+                    .onFail(x -> Notificator.getInstance().publish(R.string.notice_favorite_failed, NotificationType.ALERT))
+                    .execute();
         }
     }
 
@@ -290,7 +286,10 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
             if (retweetID != -1L) {
                 deleteStatus(activity, account, tweet);
             } else {
-                new RetweetTask(account, tweet.getOriginalTweet().getId()).execute();
+                new RetweetTask(account, tweet.getOriginalTweet().getId())
+                        .onDone(x -> Notificator.getInstance().publish(R.string.notice_retweet_succeeded))
+                        .onFail(x -> Notificator.getInstance().publish(R.string.notice_retweet_failed, NotificationType.ALERT))
+                        .execute();
             }
         });
     }

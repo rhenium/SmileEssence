@@ -51,18 +51,7 @@ public class SearchTask extends BackgroundTask<QueryResult, Void> {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected QueryResult doInBackground(Void... params) {
-        try {
-            return account.getTwitter().search(query);
-        } catch (TwitterException e) {
-            e.printStackTrace();
-            Logger.debug(e);
-            if (e.exceededRateLimitation()) {
-                Notificator.getInstance().publish(R.string.notice_error_rate_limit, NotificationType.ALERT);
-            } else {
-                Notificator.getInstance().publish(R.string.notice_error_search, NotificationType.ALERT);
-            }
-            return null;
-        }
+    protected QueryResult doInBackground() throws TwitterException {
+        return account.getTwitter().search(query);
     }
 }

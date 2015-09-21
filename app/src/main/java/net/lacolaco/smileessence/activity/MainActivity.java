@@ -360,13 +360,14 @@ public class MainActivity extends Activity {
 
     public void updateActionBarIcon() {
         final ImageView homeIcon = (ImageView) findViewById(android.R.id.home);
-        new ShowUserTask(currentAccount, currentAccount.userID).onDoneUI(user -> {
-            if (user != null) {
-                String urlHttps = user.getProfileImageUrl();
-                homeIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                new BitmapURLTask(urlHttps, homeIcon).execute();
-            }
-        }).execute();
+        new ShowUserTask(currentAccount, currentAccount.userID)
+                .onDoneUI(user -> {
+                    String urlHttps = user.getProfileImageUrl();
+                    homeIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                    new BitmapURLTask(urlHttps, homeIcon).execute();
+                })
+                .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_show_user, NotificationType.ALERT))
+                .execute();
     }
 
     private void getImageUri(int requestCode, int resultCode, Intent data) {
@@ -404,11 +405,14 @@ public class MainActivity extends Activity {
 
     private void initUserListCache() {
         UserListCache.getInstance().clear();
-        new GetUserListsTask(getCurrentAccount()).onDone(lists -> {
-            for (UserList list : lists) {
-                UserListCache.getInstance().put(list.getFullName());
-            }
-        }).execute();
+        new GetUserListsTask(getCurrentAccount())
+                .onDone(lists -> {
+                    for (UserList list : lists) {
+                        UserListCache.getInstance().put(list.getFullName());
+                    }
+                })
+                .onFail(x -> { /* TODO */ })
+                .execute();
     }
 
     private void initializePages() {

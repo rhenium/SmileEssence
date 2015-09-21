@@ -234,4 +234,6 @@
     <string name="command_paste_to_post">投稿欄に貼り付ける</string>
     <string name="command_search_on_twitter">Twitterで検索する</string>
     <string name="command_search_on_google">Googleで検索する</string>
+    <string name="notice_error_get_user_timeline">ユーザータイムラインの取得に失敗しました</string>
+    <string name="notice_error_get_list">リストタイムラインの取得に失敗しました</string>
 </resources>

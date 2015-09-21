@@ -62,13 +62,10 @@ public class UserCommandBlock extends UserCommand implements IConfirmable {
 
     @Override
     public boolean execute() {
-        new BlockTask(account, getUser().getId()).onDoneUI((user)-> {
-            if (user != null) {
-                Notificator.getInstance().publish(R.string.notice_block_succeeded);
-            } else {
-                Notificator.getInstance().publish(R.string.notice_block_failed, NotificationType.ALERT);
-            }
-        }).execute();
+        new BlockTask(account, getUser().getId())
+                .onDone(user -> Notificator.getInstance().publish(R.string.notice_block_succeeded))
+                .onFail(ex -> Notificator.getInstance().publish(R.string.notice_block_failed, NotificationType.ALERT))
+                .execute();
         return true;
     }
 }

@@ -27,10 +27,13 @@ package net.lacolaco.smileessence.view;
 import android.os.Bundle;
 import android.widget.ListView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.ExtractionWord;
 import net.lacolaco.smileessence.entity.Tweet;
+import net.lacolaco.smileessence.notification.NotificationType;
+import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.StatusFilter;
 import net.lacolaco.smileessence.twitter.task.MentionsTimelineTask;
 import net.lacolaco.smileessence.view.adapter.StatusListAdapter;
@@ -71,14 +74,15 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
         final StatusListAdapter adapter_ = adapter;
         new MentionsTimelineTask(account)
                 .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
+                .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_mentions, NotificationType.ALERT))
                 .onDoneUI(tweets -> {
-            for (Tweet tweet : tweets) {
-                StatusViewModel statusViewModel = new StatusViewModel(tweet);
-                adapter_.addToBottom(statusViewModel);
-                StatusFilter.getInstance().filter(statusViewModel);
-            }
-            adapter_.updateForce();
-        }).execute();
+                    for (Tweet tweet : tweets) {
+                        StatusViewModel statusViewModel = new StatusViewModel(tweet);
+                        adapter_.addToBottom(statusViewModel);
+                        StatusFilter.getInstance().filter(statusViewModel);
+                    }
+                    adapter_.updateForce();
+                }).execute();
     }
 
     // --------------------- Interface OnRefreshListener2 ---------------------
@@ -91,13 +95,14 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
         new MentionsTimelineTask(currentAccount)
                 .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
                 .setSinceId(adapter.getTopID())
+                .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_mentions, NotificationType.ALERT))
                 .onDoneUI(tweets -> {
-            for (int i = tweets.size() - 1; i >= 0; i--) {
-                adapter.addToTop(new StatusViewModel(tweets.get(i)));
-            }
-            updateListViewWithNotice(refreshView.getRefreshableView(), true);
-            refreshView.onRefreshComplete();
-        }).execute();
+                    for (int i = tweets.size() - 1; i >= 0; i--) {
+                        adapter.addToTop(new StatusViewModel(tweets.get(i)));
+                    }
+                    updateListViewWithNotice(refreshView.getRefreshableView(), true);
+                    refreshView.onRefreshComplete();
+                }).execute();
     }
 
     @Override
@@ -108,12 +113,13 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
         new MentionsTimelineTask(currentAccount)
                 .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
                 .setMaxId(adapter.getLastID() - 1)
+                .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_mentions, NotificationType.ALERT))
                 .onDoneUI(tweets -> {
-            for (Tweet tweet : tweets) {
-                adapter.addToBottom(new StatusViewModel(tweet));
-            }
-            updateListViewWithNotice(refreshView.getRefreshableView(), false);
-            refreshView.onRefreshComplete();
-        }).execute();
+                    for (Tweet tweet : tweets) {
+                        adapter.addToBottom(new StatusViewModel(tweet));
+                    }
+                    updateListViewWithNotice(refreshView.getRefreshableView(), false);
+                    refreshView.onRefreshComplete();
+                }).execute();
     }
 }

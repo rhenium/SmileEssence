@@ -50,19 +50,7 @@ public class RetweetTask extends BackgroundTask<Tweet, Void> {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected Tweet doInBackground(Void... params) {
-        try {
-            Tweet tweet = Tweet.fromTwitter(account.getTwitter().tweets().retweetStatus(statusID));
-            if (tweet != null) { // TODO
-                Notificator.getInstance().publish(R.string.notice_retweet_succeeded);
-            } else {
-                Notificator.getInstance().publish(R.string.notice_retweet_failed, NotificationType.ALERT);
-            }
-            return tweet;
-        } catch (TwitterException e) {
-            e.printStackTrace();
-            Logger.error(e.toString());
-            return null;
-        }
+    protected Tweet doInBackground() throws TwitterException {
+        return Tweet.fromTwitter(account.getTwitter().tweets().retweetStatus(statusID));
     }
 }

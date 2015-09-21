@@ -47,14 +47,7 @@ public class ShowStatusTask extends BackgroundTask<Tweet, Void> {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected Tweet doInBackground(Void... params) {
-        try {
-            twitter4j.Status status = account.getTwitter().tweets().showStatus(id);
-            return Tweet.fromTwitter(status);
-        } catch (TwitterException e) {
-            e.printStackTrace();
-            Logger.error(e.toString());
-            return null;
-        }
+    protected Tweet doInBackground() throws TwitterException {
+        return Tweet.fromTwitter(account.getTwitter().tweets().showStatus(id));
     }
 }
