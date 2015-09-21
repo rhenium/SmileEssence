@@ -24,45 +24,32 @@
 
 package net.lacolaco.smileessence.twitter.task;
 
-import android.app.Activity;
-
-import net.lacolaco.smileessence.R;
+import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.logging.Logger;
-import net.lacolaco.smileessence.notification.NotificationType;
-import net.lacolaco.smileessence.notification.Notificator;
-
-import twitter4j.Twitter;
+import net.lacolaco.smileessence.util.BackgroundTask;
 import twitter4j.TwitterException;
 
-public class UnfollowTask extends TwitterTask<User> {
+public class UnfollowTask extends BackgroundTask<User, Void> {
 
     // ------------------------------ FIELDS ------------------------------
 
+    private final Account account;
     private final long userID;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public UnfollowTask(Twitter twitter, long userID) {
-        super(twitter);
+    public UnfollowTask(Account account, long userID) {
+        this.account = account;
         this.userID = userID;
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected void onPostExecute(User user) {
-        if (user != null) {
-            Notificator.getInstance().publish(R.string.notice_unfollow_succeeded);
-        } else {
-            Notificator.getInstance().publish(R.string.notice_unfollow_failed, NotificationType.ALERT);
-        }
-    }
-
-    @Override
     protected User doInBackground(Void... params) {
         try {
-            return User.fromTwitter(twitter.friendsFollowers().destroyFriendship(userID));
+            return User.fromTwitter(account.getTwitter().friendsFollowers().destroyFriendship(userID));
         } catch (TwitterException e) {
             e.printStackTrace();
             Logger.error(e.toString());

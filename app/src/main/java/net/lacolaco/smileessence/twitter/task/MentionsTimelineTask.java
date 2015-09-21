@@ -24,46 +24,39 @@
 
 package net.lacolaco.smileessence.twitter.task;
 
-import android.app.Activity;
-
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.data.FavoriteCache;
+import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
-
-import twitter4j.*;
+import net.lacolaco.smileessence.util.BackgroundTask;
+import twitter4j.Paging;
+import twitter4j.TwitterException;
 
 import java.util.Collections;
 import java.util.List;
 
-public class MentionsTimelineTask extends TwitterTask<List<Tweet>> {
+public class MentionsTimelineTask extends BackgroundTask<List<Tweet>, Void> {
 
     // ------------------------------ FIELDS ------------------------------
 
+    private final Account account;
     private final Paging paging;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public MentionsTimelineTask(Twitter twitter, Paging paging) {
-        super(twitter);
+    public MentionsTimelineTask(Account account, Paging paging) {
+        this.account = account;
         this.paging = paging;
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected void onPostExecute(List<Tweet> tweets) {
-        for (Tweet tweet : tweets) {
-            //FavoriteCache.getInstance().put(tweet);
-        }
-    }
-
-    @Override
     protected List<Tweet> doInBackground(Void... params) {
         try {
-            return Tweet.fromTwitter(twitter.timelines().getMentionsTimeline(paging));
+            return Tweet.fromTwitter(account.getTwitter().timelines().getMentionsTimeline(paging));
         } catch (TwitterException e) {
             e.printStackTrace();
             Logger.error(e.toString());

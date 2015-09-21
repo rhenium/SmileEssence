@@ -30,7 +30,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
-
 import net.lacolaco.smileessence.R;
 
 public abstract class EditTextDialogFragment extends StackableDialogFragment {

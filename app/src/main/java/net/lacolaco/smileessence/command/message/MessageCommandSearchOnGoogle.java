@@ -25,12 +25,10 @@
 package net.lacolaco.smileessence.command.message;
 
 import android.app.Activity;
-
 import net.lacolaco.smileessence.R;
+import net.lacolaco.smileessence.entity.DirectMessage;
 import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.dialog.SearchOnGoogleDialogFragment;
-
-import net.lacolaco.smileessence.entity.DirectMessage;
 
 public class MessageCommandSearchOnGoogle extends MessageCommand {
 

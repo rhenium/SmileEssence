@@ -25,7 +25,6 @@
 package net.lacolaco.smileessence.command.status;
 
 import android.app.Activity;
-
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.command.IConfirmable;
 import net.lacolaco.smileessence.entity.Account;
@@ -33,9 +32,7 @@ import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.twitter.TweetBuilder;
 import net.lacolaco.smileessence.twitter.task.FavoriteTask;
 import net.lacolaco.smileessence.twitter.task.TweetTask;
-
 import twitter4j.StatusUpdate;
-import twitter4j.Twitter;
 
 public class StatusCommandMakeAnonymous extends StatusCommand implements IConfirmable {
 
@@ -82,9 +79,8 @@ public class StatusCommandMakeAnonymous extends StatusCommand implements IConfir
     @Override
     public boolean execute() {
         StatusUpdate update = new TweetBuilder().setText(build(getActivity(), getOriginalStatus(), account)).build();
-        Twitter twitter = account.getTwitter();
-        new TweetTask(twitter, update).execute();
-        new FavoriteTask(twitter, getOriginalStatus().getId()).execute();
+        new TweetTask(account, update).execute();
+        new FavoriteTask(account, getOriginalStatus().getId()).execute();
         return true;
     }
 }

@@ -37,7 +37,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.view.DialogHelper;
 

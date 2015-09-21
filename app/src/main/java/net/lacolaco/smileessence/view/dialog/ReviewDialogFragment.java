@@ -32,12 +32,10 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.RatingBar;
-
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
-import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.data.PostState;
-
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 
 public class ReviewDialogFragment extends StackableDialogFragment implements View.OnClickListener {

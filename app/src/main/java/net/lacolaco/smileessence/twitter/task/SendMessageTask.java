@@ -24,28 +24,24 @@
 
 package net.lacolaco.smileessence.twitter.task;
 
-import android.app.Activity;
-
-import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.logging.Logger;
-import net.lacolaco.smileessence.notification.NotificationType;
-import net.lacolaco.smileessence.notification.Notificator;
-
+import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.DirectMessage;
-import twitter4j.Twitter;
+import net.lacolaco.smileessence.logging.Logger;
+import net.lacolaco.smileessence.util.BackgroundTask;
 import twitter4j.TwitterException;
 
-public class SendMessageTask extends TwitterTask<DirectMessage> {
+public class SendMessageTask extends BackgroundTask<DirectMessage, Void> {
 
     // ------------------------------ FIELDS ------------------------------
 
+    private final Account account;
     private final String userID;
     private final String text;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public SendMessageTask(Twitter twitter, String screenName, String text) {
-        super(twitter);
+    public SendMessageTask(Account account, String screenName, String text) {
+        this.account = account;
         this.userID = screenName;
         this.text = text;
     }
@@ -53,18 +49,9 @@ public class SendMessageTask extends TwitterTask<DirectMessage> {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected void onPostExecute(DirectMessage message) {
-        if (message != null) {
-            Notificator.getInstance().publish(R.string.notice_message_send_succeeded);
-        } else {
-            Notificator.getInstance().publish(R.string.notice_message_send_failed, NotificationType.ALERT);
-        }
-    }
-
-    @Override
     protected DirectMessage doInBackground(Void... params) {
         try {
-            return DirectMessage.fromTwitter(twitter.directMessages().sendDirectMessage(userID, text));
+            return DirectMessage.fromTwitter(account.getTwitter().directMessages().sendDirectMessage(userID, text));
         } catch (TwitterException e) {
             e.printStackTrace();
             Logger.error(e.toString());

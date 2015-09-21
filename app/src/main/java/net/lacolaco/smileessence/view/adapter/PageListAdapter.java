@@ -30,18 +30,13 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-
-import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.logging.Logger;
-import net.lacolaco.smileessence.view.HomeFragment;
 import net.lacolaco.smileessence.view.PageFragment;
 
 import java.lang.ref.WeakReference;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 

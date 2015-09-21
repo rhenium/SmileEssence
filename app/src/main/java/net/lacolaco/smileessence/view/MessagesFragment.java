@@ -26,23 +26,17 @@ package net.lacolaco.smileessence.view;
 
 import android.os.Bundle;
 import android.widget.ListView;
-
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
-
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Account;
+import net.lacolaco.smileessence.entity.DirectMessage;
 import net.lacolaco.smileessence.twitter.StatusFilter;
 import net.lacolaco.smileessence.twitter.task.DirectMessagesTask;
 import net.lacolaco.smileessence.twitter.task.SentDirectMessagesTask;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.view.adapter.MessageListAdapter;
 import net.lacolaco.smileessence.viewmodel.MessageViewModel;
-
-import net.lacolaco.smileessence.entity.DirectMessage;
 import twitter4j.Paging;
-import twitter4j.Twitter;
-
-import java.util.List;
 
 /**
  * Fragment of messages list
@@ -68,28 +62,20 @@ public class MessagesFragment extends CustomListFragment<MessageListAdapter> {
             adapter.addToTop(message);
             adapter.update();
         });
-        final Twitter twitter = ((MainActivity) getActivity()).getCurrentAccount().getTwitter();
+        final Account account = ((MainActivity) getActivity()).getCurrentAccount();
         final Paging paging = TwitterUtils.getPaging(((MainActivity) getActivity()).getRequestCountPerPage());
-        new DirectMessagesTask(twitter, paging) {
-            @Override
-            protected void onPostExecute(List<DirectMessage> directMessages) {
-                super.onPostExecute(directMessages);
-                for (DirectMessage message : directMessages) {
-                    adapter.addToBottom(new MessageViewModel(message));
-                }
-                adapter.notifyDataSetChanged();
+        new DirectMessagesTask(account, paging).onDoneUI(directMessages -> {
+            for (DirectMessage message : directMessages) {
+                adapter.addToBottom(new MessageViewModel(message));
             }
-        }.execute();
-        new SentDirectMessagesTask(twitter, paging) {
-            @Override
-            protected void onPostExecute(List<DirectMessage> directMessages) {
-                super.onPostExecute(directMessages);
-                for (DirectMessage message : directMessages) {
-                    adapter.addToBottom(new MessageViewModel(message));
-                }
-                adapter.notifyDataSetChanged();
+            adapter.notifyDataSetChanged();
+        }).execute();
+        new SentDirectMessagesTask(account, paging).onDoneUI(directMessages -> {
+            for (DirectMessage message : directMessages) {
+                adapter.addToBottom(new MessageViewModel(message));
             }
-        }.execute();
+            adapter.notifyDataSetChanged();
+        }).execute();
     }
 
     // --------------------- Interface OnRefreshListener2 ---------------------
@@ -98,45 +84,35 @@ public class MessagesFragment extends CustomListFragment<MessageListAdapter> {
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
         final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
-        Twitter twitter = currentAccount.getTwitter();
         final MessageListAdapter adapter = getAdapter();
         Paging paging = TwitterUtils.getPaging(activity.getRequestCountPerPage());
         if (adapter.getCount() > 0) {
             paging.setSinceId(adapter.getTopID());
         }
-        new DirectMessagesTask(twitter, paging) {
-            @Override
-            protected void onPostExecute(List<DirectMessage> directMessages) {
-                super.onPostExecute(directMessages);
-                for (int i = directMessages.size() - 1; i >= 0; i--) {
-                    adapter.addToTop(new MessageViewModel(directMessages.get(i)));
-                }
-                updateListViewWithNotice(refreshView.getRefreshableView(), true);
-                refreshView.onRefreshComplete();
+        new DirectMessagesTask(currentAccount, paging).onDoneUI(directMessages -> {
+            for (int i = directMessages.size() - 1; i >= 0; i--) {
+                adapter.addToTop(new MessageViewModel(directMessages.get(i)));
             }
-        }.execute();
+            updateListViewWithNotice(refreshView.getRefreshableView(), true);
+            refreshView.onRefreshComplete();
+        }).execute();
     }
 
     @Override
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
         final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
-        Twitter twitter = currentAccount.getTwitter();
         final MessageListAdapter adapter = getAdapter();
         Paging paging = TwitterUtils.getPaging(activity.getRequestCountPerPage());
         if (adapter.getCount() > 0) {
             paging.setMaxId(adapter.getLastID() - 1);
         }
-        new DirectMessagesTask(twitter, paging) {
-            @Override
-            protected void onPostExecute(List<DirectMessage> directMessages) {
-                super.onPostExecute(directMessages);
-                for (DirectMessage directMessage : directMessages) {
-                    adapter.addToBottom(new MessageViewModel(directMessage));
-                }
-                updateListViewWithNotice(refreshView.getRefreshableView(), false);
-                refreshView.onRefreshComplete();
+        new DirectMessagesTask(currentAccount, paging).onDoneUI(directMessages -> {
+            for (DirectMessage directMessage : directMessages) {
+                adapter.addToBottom(new MessageViewModel(directMessage));
             }
-        }.execute();
+            updateListViewWithNotice(refreshView.getRefreshableView(), false);
+            refreshView.onRefreshComplete();
+        }).execute();
     }
 }

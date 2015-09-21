@@ -2,7 +2,10 @@ package net.lacolaco.smileessence.entity;
 
 import twitter4j.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public abstract class EntitySupport {
     private List<String> mentions;

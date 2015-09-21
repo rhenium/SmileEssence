@@ -37,29 +37,33 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.ImageView;
-
 import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.BuildConfig;
 import net.lacolaco.smileessence.IntentRouter;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.data.PostState;
 import net.lacolaco.smileessence.data.UserListCache;
-import net.lacolaco.smileessence.entity.*;
-import net.lacolaco.smileessence.entity.User;
+import net.lacolaco.smileessence.entity.Account;
+import net.lacolaco.smileessence.entity.CommandSetting;
+import net.lacolaco.smileessence.entity.MuteUserIds;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.preference.InternalPreferenceHelper;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
-import net.lacolaco.smileessence.twitter.*;
+import net.lacolaco.smileessence.twitter.OAuthSession;
 import net.lacolaco.smileessence.twitter.UserStreamListener;
-import net.lacolaco.smileessence.twitter.task.*;
+import net.lacolaco.smileessence.twitter.task.BlockIDsTask;
+import net.lacolaco.smileessence.twitter.task.GetUserListsTask;
+import net.lacolaco.smileessence.twitter.task.MutesIDsTask;
+import net.lacolaco.smileessence.twitter.task.ShowUserTask;
 import net.lacolaco.smileessence.util.*;
 import net.lacolaco.smileessence.view.*;
-import net.lacolaco.smileessence.view.adapter.*;
+import net.lacolaco.smileessence.view.adapter.PageListAdapter;
 import net.lacolaco.smileessence.view.dialog.ConfirmDialogFragment;
 import net.lacolaco.smileessence.viewmodel.menu.MainActivityMenuHelper;
-import twitter4j.*;
+import twitter4j.TwitterStream;
+import twitter4j.UserList;
 
 public class MainActivity extends Activity {
 
@@ -310,7 +314,7 @@ public class MainActivity extends Activity {
     public void openSearchPage(final String query) {
         SearchFragment fragment = pagerAdapter.getFragment(SearchFragment.class);
         if (fragment != null) {
-            fragment.startSearch(getCurrentAccount().getTwitter(), query);
+            fragment.startSearch(getCurrentAccount(), query);
             openSearchPage();
         }
     }
@@ -318,7 +322,7 @@ public class MainActivity extends Activity {
     public void openUserListPage(String listFullName) {
         UserListFragment fragment = pagerAdapter.getFragment(UserListFragment.class);
         if (fragment != null) {
-            fragment.startUserList(getCurrentAccount().getTwitter(), listFullName);
+            fragment.startUserList(getCurrentAccount(), listFullName);
             openUserListPage();
         }
     }
@@ -352,28 +356,21 @@ public class MainActivity extends Activity {
         if (!startStream()) {
             return false;
         }
-        Twitter twitter = currentAccount.getTwitter();
-        initInvisibleUser(twitter);
-        initUserListCache(twitter);
+        initInvisibleUser();
+        initUserListCache();
         updateActionBarIcon();
         return true;
     }
 
     public void updateActionBarIcon() {
-        Twitter twitter = currentAccount.getTwitter();
         final ImageView homeIcon = (ImageView) findViewById(android.R.id.home);
-        ShowUserTask userTask = new ShowUserTask(twitter, currentAccount.userID) {
-            @Override
-            protected void onPostExecute(User user) {
-                super.onPostExecute(user);
-                if (user != null) {
-                    String urlHttps = user.getProfileImageUrl();
-                    homeIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                    new BitmapURLTask(urlHttps, homeIcon).execute();
-                }
+        new ShowUserTask(currentAccount, currentAccount.userID).onDoneUI(user -> {
+            if (user != null) {
+                String urlHttps = user.getProfileImageUrl();
+                homeIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                new BitmapURLTask(urlHttps, homeIcon).execute();
             }
-        };
-        userTask.execute();
+        }).execute();
     }
 
     private void getImageUri(int requestCode, int resultCode, Intent data) {
@@ -392,18 +389,30 @@ public class MainActivity extends Activity {
         openPostPageWithImage(uri);
     }
 
-    private void initInvisibleUser(Twitter twitter) {
-        new BlockIDsTask(twitter).execute();
-        new MutesIDsTask(twitter).execute();
+    private void initInvisibleUser() {
+        new BlockIDsTask(getCurrentAccount()).onDone(idList -> {
+            for (Long blockID : idList) {
+                MuteUserIds.add(blockID);
+            }
+        }).execute();
+        new MutesIDsTask(getCurrentAccount()).onDone(mutesIDs -> {
+            for (Long mutesID : mutesIDs) {
+                MuteUserIds.add(mutesID);
+            }
+        }).execute();
     }
 
     private void initPostState() {
         PostState.newState().beginTransaction().commit();
     }
 
-    private void initUserListCache(Twitter twitter) {
+    private void initUserListCache() {
         UserListCache.getInstance().clear();
-        new GetUserListsTask(twitter).execute();
+        new GetUserListsTask(getCurrentAccount()).onDone(lists -> {
+            for (UserList list : lists) {
+                UserListCache.getInstance().put(list.getFullName());
+            }
+        }).execute();
     }
 
     private void initializePages() {

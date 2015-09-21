@@ -25,14 +25,11 @@
 package net.lacolaco.smileessence.command.status;
 
 import android.app.Activity;
-
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.dialog.TalkChainDialogFragment;
-
-import twitter4j.Status;
 
 public class StatusCommandOpenTalkView extends StatusCommand {
 

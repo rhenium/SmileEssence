@@ -24,45 +24,32 @@
 
 package net.lacolaco.smileessence.twitter.task;
 
-import android.app.Activity;
-
-import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.logging.Logger;
-import net.lacolaco.smileessence.notification.NotificationType;
-import net.lacolaco.smileessence.notification.Notificator;
-
+import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.DirectMessage;
-import twitter4j.Twitter;
+import net.lacolaco.smileessence.logging.Logger;
+import net.lacolaco.smileessence.util.BackgroundTask;
 import twitter4j.TwitterException;
 
-public class DeleteMessageTask extends TwitterTask<DirectMessage> {
+public class DeleteMessageTask extends BackgroundTask<DirectMessage, Void> {
 
     // ------------------------------ FIELDS ------------------------------
 
+    private final Account account;
     private final long messageID;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public DeleteMessageTask(Twitter twitter, long messageID) {
-        super(twitter);
+    public DeleteMessageTask(Account account, long messageID) {
+        this.account = account;
         this.messageID = messageID;
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected void onPostExecute(DirectMessage message) {
-        if (message != null) {
-            Notificator.getInstance().publish(R.string.notice_message_delete_succeeded);
-        } else {
-            Notificator.getInstance().publish(R.string.notice_message_delete_failed, NotificationType.ALERT);
-        }
-    }
-
-    @Override
     protected DirectMessage doInBackground(Void... params) {
         try {
-            return DirectMessage.fromTwitter(twitter.directMessages().destroyDirectMessage(messageID));
+            return DirectMessage.fromTwitter(account.getTwitter().directMessages().destroyDirectMessage(messageID));
         } catch (TwitterException e) {
             e.printStackTrace();
             Logger.error(e.toString());

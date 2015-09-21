@@ -27,7 +27,6 @@ package net.lacolaco.smileessence.command;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
-
 import net.lacolaco.smileessence.util.IntentUtils;
 
 public class CommandOpenURL extends Command {

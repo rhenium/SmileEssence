@@ -28,8 +28,6 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-
 import net.lacolaco.smileessence.R;
 
 public class CheckBoxModel implements IViewModel {

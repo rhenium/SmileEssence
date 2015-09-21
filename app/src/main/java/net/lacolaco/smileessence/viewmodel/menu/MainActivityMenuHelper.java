@@ -28,14 +28,12 @@ import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
-
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.*;
 import net.lacolaco.smileessence.command.CommandOpenURL;
+import net.lacolaco.smileessence.data.PostState;
 import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.notification.Notificator;
-import net.lacolaco.smileessence.twitter.util.TwitterUtils;
-import net.lacolaco.smileessence.data.PostState;
 
 public class MainActivityMenuHelper {
 

@@ -25,13 +25,13 @@
 package net.lacolaco.smileessence.command.user;
 
 import android.app.Activity;
-
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.command.IConfirmable;
 import net.lacolaco.smileessence.entity.Account;
-import net.lacolaco.smileessence.twitter.task.BlockTask;
-
 import net.lacolaco.smileessence.entity.User;
+import net.lacolaco.smileessence.notification.NotificationType;
+import net.lacolaco.smileessence.notification.Notificator;
+import net.lacolaco.smileessence.twitter.task.BlockTask;
 
 public class UserCommandBlock extends UserCommand implements IConfirmable {
 
@@ -62,7 +62,13 @@ public class UserCommandBlock extends UserCommand implements IConfirmable {
 
     @Override
     public boolean execute() {
-        new BlockTask(account.getTwitter(), getUser().getId()).execute();
+        new BlockTask(account, getUser().getId()).onDoneUI((user)-> {
+            if (user != null) {
+                Notificator.getInstance().publish(R.string.notice_block_succeeded);
+            } else {
+                Notificator.getInstance().publish(R.string.notice_block_failed, NotificationType.ALERT);
+            }
+        }).execute();
         return true;
     }
 }

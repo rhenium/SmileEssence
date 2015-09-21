@@ -26,9 +26,7 @@ package net.lacolaco.smileessence.view;
 
 import android.os.Bundle;
 import android.widget.ListView;
-
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
-
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
@@ -38,11 +36,8 @@ import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.view.adapter.StatusListAdapter;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
-
 import twitter4j.Paging;
-import twitter4j.Twitter;
 
-import java.util.List;
 import java.util.ListIterator;
 
 public class HomeFragment extends CustomListFragment<StatusListAdapter> {
@@ -66,20 +61,16 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
             adapter.addToTop(tweet);
             adapter.update();
         });
-        final Twitter twitter = ((MainActivity) getActivity()).getCurrentAccount().getTwitter();
+        final Account account = ((MainActivity) getActivity()).getCurrentAccount();
         final Paging paging = TwitterUtils.getPaging(((MainActivity) getActivity()).getRequestCountPerPage());
-        new HomeTimelineTask(twitter, paging) {
-            @Override
-            protected void onPostExecute(List<Tweet> tweets) {
-                super.onPostExecute(tweets);
-                for (Tweet tweet : tweets) {
-                    StatusViewModel statusViewModel = new StatusViewModel(tweet);
-                    adapter.addToBottom(statusViewModel);
-                    StatusFilter.getInstance().filter(statusViewModel);
-                }
-                adapter.updateForce();
+        new HomeTimelineTask(account, paging).onDoneUI(tweets -> {
+            for (Tweet tweet : tweets) {
+                StatusViewModel statusViewModel = new StatusViewModel(tweet);
+                adapter.addToBottom(statusViewModel);
+                StatusFilter.getInstance().filter(statusViewModel);
             }
-        }.execute();
+            adapter.updateForce();
+        }).execute();
     }
 
 
@@ -97,25 +88,20 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
             return;
         }
         final Account currentAccount = activity.getCurrentAccount();
-        Twitter twitter = currentAccount.getTwitter();
         Paging paging = TwitterUtils.getPaging(activity.getRequestCountPerPage());
         if (adapter.getCount() > 0) {
             paging.setSinceId(adapter.getTopID());
         }
-        new HomeTimelineTask(twitter, paging) {
-            @Override
-            protected void onPostExecute(List<Tweet> tweets) {
-                super.onPostExecute(tweets);
-                ListIterator<Tweet> li = tweets.listIterator(tweets.size());
-                while (li.hasPrevious()) {
-                    StatusViewModel viewModel = new StatusViewModel(li.previous());
-                    adapter.addToTop(viewModel);
-                    StatusFilter.getInstance().filter(viewModel);
-                }
-                updateListViewWithNotice(refreshView.getRefreshableView(), true);
-                refreshView.onRefreshComplete();
+        new HomeTimelineTask(currentAccount, paging).onDoneUI(tweets -> {
+            ListIterator<Tweet> li = tweets.listIterator(tweets.size());
+            while (li.hasPrevious()) {
+                StatusViewModel viewModel = new StatusViewModel(li.previous());
+                adapter.addToTop(viewModel);
+                StatusFilter.getInstance().filter(viewModel);
             }
-        }.execute();
+            updateListViewWithNotice(refreshView.getRefreshableView(), true);
+            refreshView.onRefreshComplete();
+        }).execute();
     }
 
     @Override
@@ -123,23 +109,18 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
         final MainActivity activity = (MainActivity) getActivity();
         final StatusListAdapter adapter = getAdapter();
         final Account currentAccount = activity.getCurrentAccount();
-        Twitter twitter = currentAccount.getTwitter();
         Paging paging = TwitterUtils.getPaging(activity.getRequestCountPerPage());
         if (adapter.getCount() > 0) {
             paging.setMaxId(adapter.getLastID() - 1);
         }
-        new HomeTimelineTask(twitter, paging) {
-            @Override
-            protected void onPostExecute(List<Tweet> tweets) {
-                super.onPostExecute(tweets);
-                for (Tweet tweet : tweets) {
-                    StatusViewModel viewModel = new StatusViewModel(tweet);
-                    adapter.addToBottom(viewModel);
-                    StatusFilter.getInstance().filter(viewModel);
-                }
-                updateListViewWithNotice(refreshView.getRefreshableView(), false);
-                refreshView.onRefreshComplete();
+        new HomeTimelineTask(currentAccount, paging).onDoneUI(tweets -> {
+            for (Tweet tweet : tweets) {
+                StatusViewModel viewModel = new StatusViewModel(tweet);
+                adapter.addToBottom(viewModel);
+                StatusFilter.getInstance().filter(viewModel);
             }
-        }.execute();
+            updateListViewWithNotice(refreshView.getRefreshableView(), false);
+            refreshView.onRefreshComplete();
+        }).execute();
     }
 }

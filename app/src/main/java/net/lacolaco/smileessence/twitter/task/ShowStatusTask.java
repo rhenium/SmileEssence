@@ -24,23 +24,23 @@
 
 package net.lacolaco.smileessence.twitter.task;
 
+import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.logging.Logger;
-
-import twitter4j.Status;
-import twitter4j.Twitter;
+import net.lacolaco.smileessence.util.BackgroundTask;
 import twitter4j.TwitterException;
 
-public class ShowStatusTask extends TwitterTask<Tweet> {
+public class ShowStatusTask extends BackgroundTask<Tweet, Void> {
 
     // ------------------------------ FIELDS ------------------------------
 
+    private final Account account;
     private final long id;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public ShowStatusTask(Twitter twitter, long id) {
-        super(twitter);
+    public ShowStatusTask(Account account, long id) {
+        this.account = account;
         this.id = id;
     }
 
@@ -49,7 +49,7 @@ public class ShowStatusTask extends TwitterTask<Tweet> {
     @Override
     protected Tweet doInBackground(Void... params) {
         try {
-            twitter4j.Status status = twitter.tweets().showStatus(id);
+            twitter4j.Status status = account.getTwitter().tweets().showStatus(id);
             return Tweet.fromTwitter(status);
         } catch (TwitterException e) {
             e.printStackTrace();

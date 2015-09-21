@@ -24,29 +24,32 @@
 
 package net.lacolaco.smileessence.twitter.task;
 
+import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.logging.Logger;
-
-import twitter4j.*;
+import net.lacolaco.smileessence.util.BackgroundTask;
+import twitter4j.Paging;
+import twitter4j.TwitterException;
 
 import java.util.Collections;
 import java.util.List;
 
-public class UserTimelineTask extends TwitterTask<List<Tweet>> {
+public class UserTimelineTask extends BackgroundTask<List<Tweet>, Void> {
 
     // ------------------------------ FIELDS ------------------------------
 
     private final long userID;
+    private final Account account;
     private final Paging paging;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public UserTimelineTask(Twitter twitter, long userID) {
-        this(twitter, userID, null);
+    public UserTimelineTask(Account account, long userID) {
+        this(account, userID, null);
     }
 
-    public UserTimelineTask(Twitter twitter, long userID, Paging paging) {
-        super(twitter);
+    public UserTimelineTask(Account account, long userID, Paging paging) {
+        this.account = account;
         this.userID = userID;
         this.paging = paging;
     }
@@ -54,16 +57,12 @@ public class UserTimelineTask extends TwitterTask<List<Tweet>> {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected void onPostExecute(List<Tweet> tweets) {
-    }
-
-    @Override
     protected List<Tweet> doInBackground(Void... params) {
         try {
             if (paging == null) {
-                return Tweet.fromTwitter(twitter.timelines().getUserTimeline(userID));
+                return Tweet.fromTwitter(account.getTwitter().timelines().getUserTimeline(userID));
             } else {
-                return Tweet.fromTwitter(twitter.timelines().getUserTimeline(userID, paging));
+                return Tweet.fromTwitter(account.getTwitter().timelines().getUserTimeline(userID, paging));
             }
         } catch (TwitterException e) {
             e.printStackTrace();

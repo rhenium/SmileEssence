@@ -24,6 +24,7 @@
 
 package net.lacolaco.smileessence.entity;
 
+import android.os.Handler;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
@@ -31,7 +32,7 @@ import com.activeandroid.query.Delete;
 import net.lacolaco.smileessence.twitter.task.ShowDirectMessageTask;
 import net.lacolaco.smileessence.twitter.task.ShowStatusTask;
 import net.lacolaco.smileessence.twitter.task.ShowUserTask;
-import net.lacolaco.smileessence.twitter.task.TwitterTask;
+import net.lacolaco.smileessence.util.BackgroundTask;
 import net.lacolaco.smileessence.util.Consumer;
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
@@ -99,17 +100,14 @@ public class Account extends Model {
         if (message != null) {
             callback.success(message);
         } else {
-            ShowDirectMessageTask task = new ShowDirectMessageTask(getTwitter(), messageID) {
-                @Override
-                protected void onPostExecute(DirectMessage directMessage) {
-                    super.onPostExecute(directMessage);
-                    if (directMessage != null) {
-                        callback.success(directMessage);
-                    } else {
-                        callback.error();
-                    }
+            Handler handler = new Handler();
+            BackgroundTask task = new ShowDirectMessageTask(this, messageID).onDone(directMessage -> handler.post(() -> {
+                if (directMessage != null) {
+                    callback.success(directMessage);
+                } else {
+                    callback.error();
                 }
-            };
+            }));
             task.execute();
         }
     }
@@ -121,69 +119,34 @@ public class Account extends Model {
         User user = User.fetch(userID);
         if (user != null) {
             callback.success(user);
-            ShowUserTask task = new ShowUserTask(getTwitter(), userID);
+            ShowUserTask task = new ShowUserTask(this, userID);
             task.execute();
         } else {
-            ShowUserTask task = new ShowUserTask(getTwitter(), userID) {
-                @Override
-                protected void onPostExecute(User user) {
-                    super.onPostExecute(user);
-                    if (user != null) {
-                        callback.success(user);
-                    } else {
-                        callback.error();
-                    }
-
+            Handler handler = new Handler();
+            BackgroundTask task = new ShowUserTask(this, userID).onDone(gotUser -> handler.post(() -> {
+                if (gotUser != null) {
+                    callback.success(gotUser);
+                } else {
+                    callback.error();
                 }
-            };
+            }));
             task.execute();
         }
     }
 
-    public void fetchTweet(long statusId, Consumer<Tweet> callback, boolean forceRetrieve) {
+    public BackgroundTask<Tweet, Void> fetchTweet(long statusId, Consumer<Tweet> callback, boolean forceRetrieve) {
         Tweet tweet = Tweet.fetch(statusId);
         if (forceRetrieve || tweet == null) {
-            new ShowStatusTask(getTwitter(), statusId) {
-                @Override
-                protected void onPostExecute(Tweet tweet) {
-                    callback.accept(tweet);
-                }
-            }.execute();
+            Handler handler = new Handler(); // get current Looper
+            return new ShowStatusTask(this, statusId).onDone(t -> handler.post(() -> callback.accept(t))).execute();
         } else {
             callback.accept(tweet);
+            return null;
         }
     }
-    public void fetchTweet(long statusId, Consumer<Tweet> callback) {
-        fetchTweet(statusId, callback, false);
-    }
 
-    public TwitterTask<Tweet> tryGetStatus(long statusID, final StatusCallback callback) {
-        ShowStatusTask task;
-        Tweet tweet = Tweet.fetch(statusID);
-        if (tweet != null) {
-            callback.success(tweet);
-            //update cache
-            task = new ShowStatusTask(getTwitter(), statusID);
-        } else {
-            task = new ShowStatusTask(getTwitter(), statusID) {
-                @Override
-                protected void onPostExecute(Tweet tweet) {
-                    if (tweet != null) {
-                        callback.success(tweet);
-                    } else {
-                        callback.error();
-                    }
-                }
-            };
-        }
-        return (TwitterTask<Tweet>) task.execute();
-    }
-
-    public interface StatusCallback {
-
-        void success(Tweet status);
-
-        void error();
+    public BackgroundTask<Tweet, Void> fetchTweet(long statusId, Consumer<Tweet> callback) {
+        return fetchTweet(statusId, callback, false);
     }
 
     public interface UserCallback {

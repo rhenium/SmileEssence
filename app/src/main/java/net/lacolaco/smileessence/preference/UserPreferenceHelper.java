@@ -24,12 +24,9 @@
 
 package net.lacolaco.smileessence.preference;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import net.lacolaco.smileessence.Application;
-
-import java.util.Set;
 
 public class UserPreferenceHelper extends SharedPreferenceHelper {
     // --------------------------- CONSTRUCTORS ---------------------------

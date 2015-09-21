@@ -25,20 +25,21 @@
 package net.lacolaco.smileessence.twitter.task;
 
 import net.lacolaco.smileessence.logging.Logger;
-
+import net.lacolaco.smileessence.util.BackgroundTask;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.auth.RequestToken;
 
-public class RequestTokenTask extends TwitterTask<RequestToken> {
+public class RequestTokenTask extends BackgroundTask<RequestToken, Void> {
 
     // ------------------------------ FIELDS ------------------------------
 
+    private final Twitter twitter;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
     public RequestTokenTask(Twitter twitter) {
-        super(twitter);
+        this.twitter = twitter;
     }
 
     @Override

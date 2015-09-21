@@ -24,17 +24,13 @@
 
 package net.lacolaco.smileessence.twitter;
 
-import net.lacolaco.smileessence.BuildConfig;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.twitter.task.AccessTokenTask;
 import net.lacolaco.smileessence.twitter.task.RequestTokenTask;
-
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
-
-import java.util.concurrent.ExecutionException;
 
 public class OAuthSession {
 

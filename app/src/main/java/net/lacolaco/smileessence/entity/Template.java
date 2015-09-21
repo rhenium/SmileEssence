@@ -28,12 +28,10 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
-
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
-
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.viewmodel.IViewModel;
 

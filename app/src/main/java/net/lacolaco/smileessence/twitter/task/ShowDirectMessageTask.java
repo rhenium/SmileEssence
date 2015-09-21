@@ -24,35 +24,32 @@
 
 package net.lacolaco.smileessence.twitter.task;
 
-import net.lacolaco.smileessence.logging.Logger;
-
+import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.DirectMessage;
-import twitter4j.Twitter;
+import net.lacolaco.smileessence.logging.Logger;
+import net.lacolaco.smileessence.util.BackgroundTask;
 import twitter4j.TwitterException;
 
-public class ShowDirectMessageTask extends TwitterTask<DirectMessage> {
+public class ShowDirectMessageTask extends BackgroundTask<DirectMessage, Void> {
 
     // ------------------------------ FIELDS ------------------------------
 
+    private final Account account;
     private final long messageID;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public ShowDirectMessageTask(Twitter twitter, long messageID) {
-        super(twitter);
+    public ShowDirectMessageTask(Account account, long messageID) {
+        this.account = account;
         this.messageID = messageID;
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected void onPostExecute(DirectMessage directMessage) {
-    }
-
-    @Override
     protected DirectMessage doInBackground(Void... params) {
         try {
-            return DirectMessage.fromTwitter(twitter.directMessages().showDirectMessage(messageID));
+            return DirectMessage.fromTwitter(account.getTwitter().directMessages().showDirectMessage(messageID));
         } catch (TwitterException e) {
             e.printStackTrace();
             Logger.error(e.toString());

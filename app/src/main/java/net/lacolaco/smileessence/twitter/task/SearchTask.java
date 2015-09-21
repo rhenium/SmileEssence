@@ -24,51 +24,36 @@
 
 package net.lacolaco.smileessence.twitter.task;
 
-import android.content.res.Configuration;
-
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.activity.MainActivity;
-import net.lacolaco.smileessence.data.FavoriteCache;
-import net.lacolaco.smileessence.entity.Tweet;
+import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
-import net.lacolaco.smileessence.twitter.util.TwitterUtils;
-
+import net.lacolaco.smileessence.util.BackgroundTask;
 import twitter4j.Query;
 import twitter4j.QueryResult;
-import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
-public class SearchTask extends TwitterTask<QueryResult> {
+public class SearchTask extends BackgroundTask<QueryResult, Void> {
 
     // ------------------------------ FIELDS ------------------------------
 
+    private final Account account;
     private final Query query;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public SearchTask(Twitter twitter, Query query) {
-        super(twitter);
+    public SearchTask(Account account, Query query) {
+        this.account = account;
         this.query = query;
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected void onPostExecute(QueryResult queryResult) {
-        if (queryResult != null) {
-            for (twitter4j.Status status : queryResult.getTweets()) {
-                Tweet.fromTwitter(status);
-                FavoriteCache.getInstance().put(status);
-            }
-        }
-    }
-
-    @Override
     protected QueryResult doInBackground(Void... params) {
         try {
-            return twitter.search(query);
+            return account.getTwitter().search(query);
         } catch (TwitterException e) {
             e.printStackTrace();
             Logger.debug(e);

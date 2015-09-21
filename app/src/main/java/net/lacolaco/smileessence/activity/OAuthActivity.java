@@ -34,13 +34,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.OAuthSession;
-
-import java.io.File;
-
 import twitter4j.auth.AccessToken;
 
 public class OAuthActivity extends Activity implements View.OnClickListener, TextWatcher {

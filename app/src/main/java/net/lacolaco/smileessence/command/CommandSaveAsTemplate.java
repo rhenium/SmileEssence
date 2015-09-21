@@ -25,7 +25,6 @@
 package net.lacolaco.smileessence.command;
 
 import android.app.Activity;
-
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.entity.Template;
 import net.lacolaco.smileessence.notification.Notificator;

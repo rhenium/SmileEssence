@@ -33,16 +33,10 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
-import android.widget.AbsListView;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TabHost;
-import android.widget.TextView;
-
+import android.widget.*;
 import com.android.volley.toolbox.NetworkImageView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
-
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.Command;
@@ -52,6 +46,8 @@ import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.logging.Logger;
+import net.lacolaco.smileessence.notification.NotificationType;
+import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.task.FollowTask;
 import net.lacolaco.smileessence.twitter.task.ShowFriendshipTask;
 import net.lacolaco.smileessence.twitter.task.UnfollowTask;
@@ -63,12 +59,7 @@ import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 import net.lacolaco.smileessence.view.adapter.StatusListAdapter;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
-
 import twitter4j.Paging;
-import twitter4j.Relationship;
-import twitter4j.Twitter;
-
-import java.util.List;
 
 public class UserDetailDialogFragment extends StackableDialogFragment implements View.OnClickListener,
         PullToRefreshBase.OnRefreshListener2<ListView> {
@@ -172,44 +163,34 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
         final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
-        Twitter twitter = currentAccount.getTwitter();
         Paging paging = TwitterUtils.getPaging(activity.getRequestCountPerPage());
         if (adapter.getCount() > 0) {
             paging.setSinceId(adapter.getTopID());
         }
-        new UserTimelineTask(twitter, getUserID(), paging) {
-            @Override
-            protected void onPostExecute(List<Tweet> tweets) {
-                super.onPostExecute(tweets);
-                for (int i = tweets.size()- 1; i >= 0; i--) {
-                    adapter.addToTop(new StatusViewModel(tweets.get(i)));
-                }
-                updateListView(refreshView.getRefreshableView(), adapter, true);
-                refreshView.onRefreshComplete();
+        new UserTimelineTask(currentAccount, getUserID(), paging).onDoneUI(tweets -> {
+            for (int i = tweets.size() - 1; i >= 0; i--) {
+                adapter.addToTop(new StatusViewModel(tweets.get(i)));
             }
-        }.execute();
+            updateListView(refreshView.getRefreshableView(), adapter, true);
+            refreshView.onRefreshComplete();
+        }).execute();
     }
 
     @Override
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
         final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
-        Twitter twitter = currentAccount.getTwitter();
         Paging paging = TwitterUtils.getPaging(activity.getRequestCountPerPage());
         if (adapter.getCount() > 0) {
             paging.setMaxId(adapter.getLastID() - 1);
         }
-        new UserTimelineTask(twitter, getUserID(), paging) {
-            @Override
-            protected void onPostExecute(List<Tweet> tweets) {
-                super.onPostExecute(tweets);
-                for (Tweet tweet : tweets) {
-                    adapter.addToBottom(new StatusViewModel(tweet));
-                }
-                updateListView(refreshView.getRefreshableView(), adapter, false);
-                refreshView.onRefreshComplete();
+        new UserTimelineTask(currentAccount, getUserID(), paging).onDoneUI(tweets -> {
+            for (Tweet tweet : tweets) {
+                adapter.addToBottom(new StatusViewModel(tweet));
             }
-        }.execute();
+            updateListView(refreshView.getRefreshableView(), adapter, false);
+            refreshView.onRefreshComplete();
+        }).execute();
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
@@ -276,18 +257,13 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
 
     private void executeUserTimelineTask(final User user, final Account account, final StatusListAdapter adapter) {
         tabHost.getTabWidget().getChildTabViewAt(1).setVisibility(View.GONE);
-        Twitter twitter = account.getTwitter();
-        new UserTimelineTask(twitter, user.getId()) {
-            @Override
-            protected void onPostExecute(List<Tweet> tweets) {
-                super.onPostExecute(tweets);
-                for (Tweet tweet : tweets) {
-                    adapter.addToBottom(new StatusViewModel(tweet));
-                }
-                adapter.updateForce();
-                tabHost.getTabWidget().getChildTabViewAt(1).setVisibility(View.VISIBLE);
+        new UserTimelineTask(account, user.getId()).onDoneUI(tweets -> {
+            for (Tweet tweet : tweets) {
+                adapter.addToBottom(new StatusViewModel(tweet));
             }
-        }.execute();
+            adapter.updateForce();
+            tabHost.getTabWidget().getChildTabViewAt(1).setVisibility(View.VISIBLE);
+        }).execute();
     }
 
     private String getHtmlDescription(String description) {
@@ -369,25 +345,26 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
     private void toggleFollowing(final User user, final Account account, final Activity activity) {
         lockFollowButton(activity);
         Boolean isFollowing = buttonFollow.getTag() != null ? (Boolean) buttonFollow.getTag() : false;
-        Twitter twitter = account.getTwitter();
         if (isFollowing) {
-            new UnfollowTask(twitter, user.getId()) {
-                @Override
-                public void onPostExecute(User result) {
-                    super.onPostExecute(result);
-                    updateRelationship(activity, user.getId());
-                    buttonFollow.setEnabled(true);
+            new UnfollowTask(account, user.getId()).onDoneUI(result -> {
+                if (result != null) {
+                    Notificator.getInstance().publish(R.string.notice_unfollow_succeeded);
+                } else {
+                    Notificator.getInstance().publish(R.string.notice_unfollow_failed, NotificationType.ALERT);
                 }
-            }.execute();
+                updateRelationship(activity, user.getId());
+                buttonFollow.setEnabled(true);
+            }).execute();
         } else {
-            new FollowTask(twitter, user.getId()) {
-                @Override
-                public void onPostExecute(User result) {
-                    super.onPostExecute(result);
-                    updateRelationship(activity, user.getId());
-                    buttonFollow.setEnabled(true);
+            new FollowTask(account, user.getId()).onDoneUI(result -> {
+                if (result != null) {
+                    Notificator.getInstance().publish(R.string.notice_follow_succeeded);
+                } else {
+                    Notificator.getInstance().publish(R.string.notice_follow_failed, NotificationType.ALERT);
                 }
-            }.execute();
+                updateRelationship(activity, user.getId());
+                buttonFollow.setEnabled(true);
+            }).execute();
         }
     }
 
@@ -417,7 +394,6 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
     private void updateRelationship(Activity activity, final long userId) {
         MainActivity mainActivity = (MainActivity) activity;
         Account account = mainActivity.getCurrentAccount();
-        Twitter twitter = account.getTwitter();
         if (userId == account.userID) {
             textViewFollowed.setText(R.string.user_detail_followed_is_me);
             buttonFollow.setVisibility(View.GONE);
@@ -427,17 +403,14 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
             textViewFollowed.setText(R.string.user_detail_loading);
             final Drawable red = Themes.getStyledDrawable(activity, theme, R.attr.button_round_red);
             final Drawable blue = Themes.getStyledDrawable(activity, theme, R.attr.button_round_blue);
-            new ShowFriendshipTask(twitter, userId) {
-                @Override
-                protected void onPostExecute(Relationship relationship) {
-                    if (relationship != null) {
-                        boolean isFollowing = relationship.isSourceFollowingTarget();
-                        boolean isFollowed = relationship.isSourceFollowedByTarget();
-                        setFollowButtonState(isFollowing, red, blue);
-                        textViewFollowed.setText(isFollowed ? R.string.user_detail_followed : R.string.user_detail_not_followed);
-                    }
+            new ShowFriendshipTask(account, userId).onDoneUI(relationship -> {
+                if (relationship != null) {
+                    boolean isFollowing = relationship.isSourceFollowingTarget();
+                    boolean isFollowed = relationship.isSourceFollowedByTarget();
+                    setFollowButtonState(isFollowing, red, blue);
+                    textViewFollowed.setText(isFollowed ? R.string.user_detail_followed : R.string.user_detail_not_followed);
                 }
-            }.execute();
+            }).execute();
         }
     }
 }

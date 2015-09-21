@@ -24,46 +24,41 @@
 
 package net.lacolaco.smileessence.twitter.task;
 
-import android.app.Activity;
-
 import net.lacolaco.smileessence.R;
+import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
-
-import twitter4j.Status;
-import twitter4j.Twitter;
+import net.lacolaco.smileessence.util.BackgroundTask;
 import twitter4j.TwitterException;
 
-public class FavoriteTask extends TwitterTask<Tweet> {
+public class FavoriteTask extends BackgroundTask<Tweet, Void> {
 
     // ------------------------------ FIELDS ------------------------------
 
+    private final Account account;
     private final long statusID;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public FavoriteTask(Twitter twitter, long statusID) {
-        super(twitter);
+    public FavoriteTask(Account account, long statusID) {
+        this.account = account;
         this.statusID = statusID;
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected void onPostExecute(Tweet tweet) {
-        if (tweet != null) {
-            Notificator.getInstance().publish(R.string.notice_favorite_succeeded);
-        } else {
-            Notificator.getInstance().publish(R.string.notice_favorite_failed, NotificationType.ALERT);
-        }
-    }
-
-    @Override
     protected Tweet doInBackground(Void... params) {
         try {
-            return Tweet.fromTwitter(twitter.favorites().createFavorite(statusID));
+            Tweet tweet = Tweet.fromTwitter(account.getTwitter().favorites().createFavorite(statusID));
+            if (tweet != null) {
+                Notificator.getInstance().publish(R.string.notice_favorite_succeeded);
+            } else {
+                Notificator.getInstance().publish(R.string.notice_favorite_failed, NotificationType.ALERT);
+            }
+            return tweet;
         } catch (TwitterException e) {
             e.printStackTrace();
             Logger.error(e.toString());

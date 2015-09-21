@@ -25,7 +25,6 @@
 package net.lacolaco.smileessence.command.post;
 
 import android.app.Activity;
-
 import net.lacolaco.smileessence.entity.Template;
 
 public class PostCommandUseTemplate extends PostCommandInsert {

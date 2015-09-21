@@ -25,7 +25,6 @@
 package net.lacolaco.smileessence.command.status;
 
 import android.app.Activity;
-
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.command.IConfirmable;
 import net.lacolaco.smileessence.entity.Account;
@@ -65,8 +64,8 @@ public class StatusCommandFavAndRT extends StatusCommand implements IConfirmable
 
     @Override
     public boolean execute() {
-        new FavoriteTask(account.getTwitter(), getOriginalStatus().getId()).execute();
-        new RetweetTask(account.getTwitter(), getOriginalStatus().getId()).execute();
+        new FavoriteTask(account, getOriginalStatus().getId()).execute();
+        new RetweetTask(account, getOriginalStatus().getId()).execute();
         return true;
     }
 }

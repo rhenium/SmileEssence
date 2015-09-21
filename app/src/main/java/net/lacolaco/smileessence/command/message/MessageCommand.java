@@ -25,9 +25,7 @@
 package net.lacolaco.smileessence.command.message;
 
 import android.app.Activity;
-
 import net.lacolaco.smileessence.command.Command;
-
 import net.lacolaco.smileessence.entity.DirectMessage;
 
 public abstract class MessageCommand extends Command {

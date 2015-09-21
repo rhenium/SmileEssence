@@ -30,10 +30,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListView;
-
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
-
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;

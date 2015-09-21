@@ -28,7 +28,6 @@ import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-
 import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.viewmodel.IViewModel;
 

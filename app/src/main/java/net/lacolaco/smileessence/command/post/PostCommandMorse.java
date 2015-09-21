@@ -26,10 +26,9 @@ package net.lacolaco.smileessence.command.post;
 
 import android.app.Activity;
 import android.text.TextUtils;
-
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.util.Morse;
 import net.lacolaco.smileessence.data.PostState;
+import net.lacolaco.smileessence.util.Morse;
 
 public class PostCommandMorse extends PostCommand {
 

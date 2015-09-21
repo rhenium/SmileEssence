@@ -33,12 +33,13 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.CommandOpenURL;
 import net.lacolaco.smileessence.entity.Account;
+import net.lacolaco.smileessence.entity.DirectMessage;
+import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.task.DeleteMessageTask;
 import net.lacolaco.smileessence.view.DialogHelper;
@@ -47,10 +48,6 @@ import net.lacolaco.smileessence.view.listener.ListItemClickListener;
 import net.lacolaco.smileessence.viewmodel.MessageViewModel;
 
 import java.util.ArrayList;
-
-import net.lacolaco.smileessence.entity.DirectMessage;
-import twitter4j.MediaEntity;
-import twitter4j.URLEntity;
 
 public class MessageDetailDialogFragment extends StackableDialogFragment implements View.OnClickListener {
 
@@ -168,12 +165,15 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
     // -------------------------- OTHER METHODS --------------------------
 
     public void deleteMessage(final Account account, final DirectMessage message) {
-        ConfirmDialogFragment.show(getActivity(), getString(R.string.dialog_confirm_commands), new Runnable() {
-            @Override
-            public void run() {
-                new DeleteMessageTask(account.getTwitter(), message.getId()).execute();
-                dismiss();
-            }
+        ConfirmDialogFragment.show(getActivity(), getString(R.string.dialog_confirm_commands), () -> {
+            new DeleteMessageTask(account, message.getId()).onDoneUI(user -> {
+                if (message != null) {
+                    Notificator.getInstance().publish(R.string.notice_message_delete_succeeded);
+                } else {
+                    Notificator.getInstance().publish(R.string.notice_message_delete_failed, NotificationType.ALERT);
+                }
+            }).execute();
+            dismiss();
         });
     }
 

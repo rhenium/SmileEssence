@@ -26,10 +26,7 @@ package net.lacolaco.smileessence.view;
 
 import android.os.Bundle;
 import android.widget.ListView;
-
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.twitter.StatusFilter;
 import net.lacolaco.smileessence.view.adapter.EventListAdapter;
 import net.lacolaco.smileessence.viewmodel.EventViewModel;

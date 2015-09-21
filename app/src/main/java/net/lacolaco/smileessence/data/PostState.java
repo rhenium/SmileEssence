@@ -26,7 +26,6 @@ package net.lacolaco.smileessence.data;
 
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.view.DialogHelper;
-
 import twitter4j.StatusUpdate;
 
 public class PostState {

@@ -25,41 +25,38 @@
 package net.lacolaco.smileessence.twitter.task;
 
 import net.lacolaco.smileessence.R;
+import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.DirectMessage;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
-
+import net.lacolaco.smileessence.util.BackgroundTask;
 import twitter4j.Paging;
-import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
 import java.util.Collections;
 import java.util.List;
 
-public class DirectMessagesTask extends TwitterTask<List<DirectMessage>> {
+public class DirectMessagesTask extends BackgroundTask<List<DirectMessage>, Void> {
 
     // ------------------------------ FIELDS ------------------------------
 
+    private final Account account;
     private final Paging paging;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public DirectMessagesTask(Twitter twitter, Paging paging) {
-        super(twitter);
+    public DirectMessagesTask(Account account, Paging paging) {
+        this.account = account;
         this.paging = paging;
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected void onPostExecute(List<DirectMessage> directMessages) {
-    }
-
-    @Override
     protected List<DirectMessage> doInBackground(Void... params) {
         try {
-            return DirectMessage.fromTwitter(twitter.directMessages().getDirectMessages(paging));
+            return DirectMessage.fromTwitter(account.getTwitter().directMessages().getDirectMessages(paging));
         } catch (TwitterException e) {
             e.printStackTrace();
             Logger.error(e.toString());

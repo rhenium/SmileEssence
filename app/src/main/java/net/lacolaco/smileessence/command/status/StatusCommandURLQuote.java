@@ -25,11 +25,10 @@
 package net.lacolaco.smileessence.command.status;
 
 import android.app.Activity;
-
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
-import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.data.PostState;
+import net.lacolaco.smileessence.entity.Tweet;
 
 public class StatusCommandURLQuote extends StatusCommand {
 

@@ -25,11 +25,10 @@
 package net.lacolaco.smileessence.command.status;
 
 import android.app.Activity;
-
 import net.lacolaco.smileessence.R;
+import net.lacolaco.smileessence.data.PostState;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.notification.Notificator;
-import net.lacolaco.smileessence.data.PostState;
 
 public class StatusCommandAddToReply extends StatusCommand {
 

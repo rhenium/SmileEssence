@@ -24,33 +24,26 @@
 
 package net.lacolaco.smileessence.twitter.task;
 
-import net.lacolaco.smileessence.entity.MuteUserIds;
+import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.logging.Logger;
-
+import net.lacolaco.smileessence.util.BackgroundTask;
 import twitter4j.IDs;
-import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class MutesIDsTask extends TwitterTask<List<Long>> {
+public class MutesIDsTask extends BackgroundTask<List<Long>, Void> {
+    private final Account account;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public MutesIDsTask(Twitter twitter) {
-        super(twitter);
+    public MutesIDsTask(Account account) {
+        this.account = account;
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
-
-    @Override
-    protected void onPostExecute(List<Long> mutesIDs) {
-        for (Long mutesID : mutesIDs) {
-            MuteUserIds.add(mutesID);
-        }
-    }
 
     @Override
     protected List<Long> doInBackground(Void... params) {
@@ -58,7 +51,7 @@ public class MutesIDsTask extends TwitterTask<List<Long>> {
             List<Long> idList = new ArrayList<>();
             long cursor = -1;
             do {
-                IDs mutesIDs = twitter.getMutesIDs(cursor);
+                IDs mutesIDs = account.getTwitter().getMutesIDs(cursor);
                 cursor = mutesIDs.getNextCursor();
                 for (long id : mutesIDs.getIDs()) {
                     idList.add(id);

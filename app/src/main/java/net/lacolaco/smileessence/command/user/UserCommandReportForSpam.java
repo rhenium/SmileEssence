@@ -25,13 +25,13 @@
 package net.lacolaco.smileessence.command.user;
 
 import android.app.Activity;
-
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.command.IConfirmable;
 import net.lacolaco.smileessence.entity.Account;
-import net.lacolaco.smileessence.twitter.task.ReportForSpamTask;
-
 import net.lacolaco.smileessence.entity.User;
+import net.lacolaco.smileessence.notification.NotificationType;
+import net.lacolaco.smileessence.notification.Notificator;
+import net.lacolaco.smileessence.twitter.task.ReportForSpamTask;
 
 public class UserCommandReportForSpam extends UserCommand implements IConfirmable {
 
@@ -62,7 +62,13 @@ public class UserCommandReportForSpam extends UserCommand implements IConfirmabl
 
     @Override
     public boolean execute() {
-        new ReportForSpamTask(account.getTwitter(), getUser().getId()).execute();
+        new ReportForSpamTask(account, getUser().getId()).onDoneUI(user -> {
+            if (user != null) {
+                Notificator.getInstance().publish(R.string.notice_r4s_succeeded);
+            } else {
+                Notificator.getInstance().publish(R.string.notice_r4s_failed, NotificationType.ALERT);
+            }
+        }).execute();
         return true;
     }
 }

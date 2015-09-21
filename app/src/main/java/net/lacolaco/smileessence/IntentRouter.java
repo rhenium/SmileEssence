@@ -28,16 +28,13 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
-
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.CommandOpenUserDetail;
-import net.lacolaco.smileessence.entity.Account;
-import net.lacolaco.smileessence.entity.Tweet;
+import net.lacolaco.smileessence.data.PostState;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.util.UIHandler;
-import net.lacolaco.smileessence.data.PostState;
 import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.dialog.StatusDetailDialogFragment;
 

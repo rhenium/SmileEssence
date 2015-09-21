@@ -24,47 +24,34 @@
 
 package net.lacolaco.smileessence.twitter.task;
 
-import android.app.Activity;
-
-import net.lacolaco.smileessence.R;
+import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.logging.Logger;
-import net.lacolaco.smileessence.notification.NotificationType;
-import net.lacolaco.smileessence.notification.Notificator;
-
-import twitter4j.Status;
-import twitter4j.Twitter;
+import net.lacolaco.smileessence.util.BackgroundTask;
 import twitter4j.TwitterException;
 
-public class DeleteStatusTask extends TwitterTask<Tweet> {
+public class DeleteStatusTask extends BackgroundTask<Tweet, Void> {
 
     // ------------------------------ FIELDS ------------------------------
 
+    private final Account account;
     private final long statusID;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public DeleteStatusTask(Twitter twitter, long statusID) {
-        super(twitter);
+    public DeleteStatusTask(Account account, long statusID) {
+        this.account = account;
         this.statusID = statusID;
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected void onPostExecute(Tweet tweet) {
-        if (tweet != null) {
-            Tweet.remove(tweet.getId());
-            Notificator.getInstance().publish(R.string.notice_status_delete_succeeded);
-        } else {
-            Notificator.getInstance().publish(R.string.notice_status_delete_failed, NotificationType.ALERT);
-        }
-    }
-
-    @Override
     protected Tweet doInBackground(Void... params) {
         try {
-            return Tweet.fromTwitter(twitter.tweets().destroyStatus(statusID));
+            Tweet t = Tweet.fromTwitter(account.getTwitter().tweets().destroyStatus(statusID));
+            Tweet.remove(t.getId());
+            return t;
         } catch (TwitterException e) {
             e.printStackTrace();
             Logger.error(e.toString());

@@ -30,7 +30,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-
 import net.lacolaco.smileessence.R;
 
 public class SimpleDialogFragment extends StackableDialogFragment {

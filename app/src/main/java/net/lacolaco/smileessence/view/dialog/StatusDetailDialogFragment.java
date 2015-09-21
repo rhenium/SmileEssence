@@ -30,33 +30,28 @@ import android.app.Dialog;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TextView;
-
+import android.widget.*;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.CommandOpenURL;
+import net.lacolaco.smileessence.data.PostState;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.entity.User;
+import net.lacolaco.smileessence.notification.NotificationType;
+import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.TweetBuilder;
 import net.lacolaco.smileessence.twitter.task.DeleteStatusTask;
 import net.lacolaco.smileessence.twitter.task.FavoriteTask;
 import net.lacolaco.smileessence.twitter.task.RetweetTask;
 import net.lacolaco.smileessence.twitter.task.UnfavoriteTask;
 import net.lacolaco.smileessence.view.DialogHelper;
-import net.lacolaco.smileessence.data.PostState;
 import net.lacolaco.smileessence.view.adapter.StatusListAdapter;
 import net.lacolaco.smileessence.view.listener.ListItemClickListener;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 
 import java.util.ArrayList;
-
-import twitter4j.MediaEntity;
 
 public class StatusDetailDialogFragment extends StackableDialogFragment implements View.OnClickListener {
 
@@ -133,17 +128,12 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         if (inReplyToStatusId == -1) {
             listView.setVisibility(View.GONE);
         } else {
-            account.tryGetStatus(inReplyToStatusId, new Account.StatusCallback() {
-                @Override
-                public void success(Tweet tweet) {
-                    adapter.addToTop(new StatusViewModel(tweet));
+            account.fetchTweet(inReplyToStatusId, replyTo -> {
+                if (replyTo != null) {
+                    adapter.addToTop(new StatusViewModel(replyTo));
                     adapter.updateForce();
                 }
-
-                @Override
-                public void error() {
-                }
-            });
+            }, true);
         }
         return new AlertDialog.Builder(getActivity()).setView(header).create();
     }
@@ -153,12 +143,15 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
     }
 
     private void deleteStatus(final MainActivity activity, final Account account, final Tweet tweet) {
-        confirm(activity, new Runnable() {
-            @Override
-            public void run() {
-                new DeleteStatusTask(account.getTwitter(), tweet.getOriginalTweet().getId()).execute();
-                dismiss();
-            }
+        confirm(activity, () -> {
+            new DeleteStatusTask(account, tweet.getOriginalTweet().getId()).onDoneUI(t -> {
+                if (t != null) {
+                    Notificator.getInstance().publish(R.string.notice_status_delete_succeeded);
+                } else {
+                    Notificator.getInstance().publish(R.string.notice_status_delete_failed, NotificationType.ALERT);
+                }
+            }).execute();
+            dismiss();
         });
     }
 
@@ -283,21 +276,24 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
     private void toggleFavorite(MainActivity activity, Account account, Tweet tweet, Boolean isFavorited) {
         long statusID = tweet.getOriginalTweet().getId();
         if (isFavorited) {
-            new UnfavoriteTask(account.getTwitter(), statusID).execute();
+            new UnfavoriteTask(account, statusID).onDone(t -> {
+                if (t != null) {
+                    Notificator.getInstance().publish(R.string.notice_unfavorite_succeeded);
+                } else {
+                    Notificator.getInstance().publish(R.string.notice_unfavorite_failed, NotificationType.ALERT);
+                }
+            }).execute();
         } else {
-            new FavoriteTask(account.getTwitter(), statusID).execute();
+            new FavoriteTask(account, statusID).execute();
         }
     }
 
     private void toggleRetweet(final MainActivity activity, final Account account, final Tweet tweet, final Long retweetID) {
-        confirm(activity, new Runnable() {
-            @Override
-            public void run() {
-                if (retweetID != -1L) {
-                    new DeleteStatusTask(account.getTwitter(), retweetID).execute();
-                } else {
-                    new RetweetTask(account.getTwitter(), tweet.getOriginalTweet().getId()).execute();
-                }
+        confirm(activity, () -> {
+            if (retweetID != -1L) {
+                deleteStatus(activity, account, tweet);
+            } else {
+                new RetweetTask(account, tweet.getOriginalTweet().getId()).execute();
             }
         });
     }

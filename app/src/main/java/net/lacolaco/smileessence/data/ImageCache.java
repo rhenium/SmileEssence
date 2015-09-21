@@ -26,7 +26,6 @@ package net.lacolaco.smileessence.data;
 
 import android.graphics.Bitmap;
 import android.util.LruCache;
-
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.*;

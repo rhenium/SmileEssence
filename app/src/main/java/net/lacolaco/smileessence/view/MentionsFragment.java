@@ -26,9 +26,7 @@ package net.lacolaco.smileessence.view;
 
 import android.os.Bundle;
 import android.widget.ListView;
-
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
-
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.ExtractionWord;
@@ -38,11 +36,8 @@ import net.lacolaco.smileessence.twitter.task.MentionsTimelineTask;
 import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.view.adapter.StatusListAdapter;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
-
 import twitter4j.Paging;
-import twitter4j.Twitter;
 
-import java.util.List;
 import java.util.regex.Pattern;
 
 public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
@@ -71,21 +66,17 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
                 }
             }
         });
-        final Twitter twitter = ((MainActivity) getActivity()).getCurrentAccount().getTwitter();
+        final Account account = ((MainActivity) getActivity()).getCurrentAccount();
         final Paging paging = TwitterUtils.getPaging(((MainActivity) getActivity()).getRequestCountPerPage());
         final StatusListAdapter adapter_ = adapter;
-        new MentionsTimelineTask(twitter, paging) {
-            @Override
-            protected void onPostExecute(List<Tweet> tweets) {
-                super.onPostExecute(tweets);
-                for (Tweet tweet : tweets) {
-                    StatusViewModel statusViewModel = new StatusViewModel(tweet);
-                    adapter_.addToBottom(statusViewModel);
-                    StatusFilter.getInstance().filter(statusViewModel);
-                }
-                adapter_.updateForce();
+        new MentionsTimelineTask(account, paging).onDoneUI(tweets -> {
+            for (Tweet tweet : tweets) {
+                StatusViewModel statusViewModel = new StatusViewModel(tweet);
+                adapter_.addToBottom(statusViewModel);
+                StatusFilter.getInstance().filter(statusViewModel);
             }
-        }.execute();
+            adapter_.updateForce();
+        }).execute();
     }
 
     // --------------------- Interface OnRefreshListener2 ---------------------
@@ -95,22 +86,17 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
         final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
         final StatusListAdapter adapter = getAdapter();
-        Twitter twitter = currentAccount.getTwitter();
         Paging paging = TwitterUtils.getPaging(activity.getRequestCountPerPage());
         if (adapter.getCount() > 0) {
             paging.setSinceId(adapter.getTopID());
         }
-        new MentionsTimelineTask(twitter, paging) {
-            @Override
-            protected void onPostExecute(List<Tweet> tweets) {
-                super.onPostExecute(tweets);
-                for (int i = tweets.size() - 1; i >= 0; i--) {
-                    adapter.addToTop(new StatusViewModel(tweets.get(i)));
-                }
-                updateListViewWithNotice(refreshView.getRefreshableView(), true);
-                refreshView.onRefreshComplete();
+        new MentionsTimelineTask(currentAccount, paging).onDoneUI(tweets -> {
+            for (int i = tweets.size() - 1; i >= 0; i--) {
+                adapter.addToTop(new StatusViewModel(tweets.get(i)));
             }
-        }.execute();
+            updateListViewWithNotice(refreshView.getRefreshableView(), true);
+            refreshView.onRefreshComplete();
+        }).execute();
     }
 
     @Override
@@ -118,21 +104,16 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
         final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
         final StatusListAdapter adapter = getAdapter();
-        Twitter twitter = currentAccount.getTwitter();
         Paging paging = TwitterUtils.getPaging(activity.getRequestCountPerPage());
         if (adapter.getCount() > 0) {
             paging.setMaxId(adapter.getLastID() - 1);
         }
-        new MentionsTimelineTask(twitter, paging) {
-            @Override
-            protected void onPostExecute(List<Tweet> tweets) {
-                super.onPostExecute(tweets);
-                for (Tweet tweet : tweets) {
-                    adapter.addToBottom(new StatusViewModel(tweet));
-                }
-                updateListViewWithNotice(refreshView.getRefreshableView(), false);
-                refreshView.onRefreshComplete();
+        new MentionsTimelineTask(currentAccount, paging).onDoneUI(tweets -> {
+            for (Tweet tweet : tweets) {
+                adapter.addToBottom(new StatusViewModel(tweet));
             }
-        }.execute();
+            updateListViewWithNotice(refreshView.getRefreshableView(), false);
+            refreshView.onRefreshComplete();
+        }).execute();
     }
 }

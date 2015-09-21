@@ -25,7 +25,6 @@
 package net.lacolaco.smileessence.viewmodel;
 
 import android.app.Activity;
-
 import net.lacolaco.smileessence.view.adapter.StatusListAdapter;
 
 public class UserListListAdapter extends StatusListAdapter {

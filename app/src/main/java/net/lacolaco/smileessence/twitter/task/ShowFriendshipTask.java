@@ -24,29 +24,30 @@
 
 package net.lacolaco.smileessence.twitter.task;
 
+import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.logging.Logger;
-
+import net.lacolaco.smileessence.util.BackgroundTask;
 import twitter4j.Relationship;
-import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
-public class ShowFriendshipTask extends TwitterTask<Relationship> {
+public class ShowFriendshipTask extends BackgroundTask<Relationship, Void> {
 
     // ------------------------------ FIELDS ------------------------------
 
+    private final Account account;
     private final long userID;
     private final String screenName;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public ShowFriendshipTask(Twitter twitter, long userID) {
-        super(twitter);
+    public ShowFriendshipTask(Account account, long userID) {
+        this.account = account;
         this.userID = userID;
         this.screenName = null;
     }
 
-    public ShowFriendshipTask(Twitter twitter, String screenName) {
-        super(twitter);
+    public ShowFriendshipTask(Account account, String screenName) {
+        this.account = account;
         this.screenName = screenName;
         this.userID = -1;
     }
@@ -55,9 +56,9 @@ public class ShowFriendshipTask extends TwitterTask<Relationship> {
     protected Relationship doInBackground(Void... params) {
         try {
             if (screenName != null) {
-                return twitter.friendsFollowers().showFriendship(twitter.getScreenName(), screenName);
+                return account.getTwitter().friendsFollowers().showFriendship(account.getTwitter().getScreenName(), screenName);
             } else {
-                return twitter.friendsFollowers().showFriendship(twitter.getId(), userID);
+                return account.getTwitter().friendsFollowers().showFriendship(account.getTwitter().getId(), userID);
             }
         } catch (TwitterException e) {
             e.printStackTrace();

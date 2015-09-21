@@ -1,7 +1,5 @@
 package net.lacolaco.smileessence.util;
 
-import java.util.Objects;
-
 public interface Function<T, R> {
     R apply(T t);
     /*default <V> Function<V, R> compose(Function<? super V, ? extends T> before) {

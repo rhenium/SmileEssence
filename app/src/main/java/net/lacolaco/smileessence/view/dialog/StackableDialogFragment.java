@@ -1,7 +1,6 @@
 package net.lacolaco.smileessence.view.dialog;
 
 import android.app.DialogFragment;
-
 import net.lacolaco.smileessence.view.DialogHelper;
 
 public class StackableDialogFragment extends DialogFragment {

@@ -25,12 +25,10 @@
 package net.lacolaco.smileessence.command.user;
 
 import android.app.Activity;
-
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.data.PostState;
-
 import net.lacolaco.smileessence.entity.User;
+import net.lacolaco.smileessence.notification.Notificator;
 
 public class UserCommandAddToReply extends UserCommand {
 

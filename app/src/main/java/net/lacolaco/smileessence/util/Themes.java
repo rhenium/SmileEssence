@@ -27,7 +27,6 @@ package net.lacolaco.smileessence.util;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
-
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.logging.Logger;
 

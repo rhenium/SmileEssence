@@ -27,7 +27,6 @@ package net.lacolaco.smileessence.view.listener;
 import android.app.Activity;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
-
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.util.UIHandler;
 

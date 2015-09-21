@@ -31,7 +31,6 @@ import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.util.Themes;

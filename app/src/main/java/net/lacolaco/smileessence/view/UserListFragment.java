@@ -33,10 +33,8 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
-
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Account;
@@ -49,11 +47,7 @@ import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.view.dialog.SelectUserListDialogFragment;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 import net.lacolaco.smileessence.viewmodel.UserListListAdapter;
-
 import twitter4j.Paging;
-import twitter4j.Twitter;
-
-import java.util.List;
 
 public class UserListFragment extends CustomListFragment<UserListListAdapter> implements View.OnClickListener {
 
@@ -74,16 +68,15 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
 
     // ------------------------ INTERFACE METHODS ------------------------
 
-    @Override // onCreate って Fragment のインスタンスが作られるときは必ず呼ばれるって認識でいいんだよね？
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         UserListListAdapter adapter = new UserListListAdapter(getActivity());
         setAdapter(adapter);
 
-        final Twitter twitter = ((MainActivity) getActivity()).getCurrentAccount().getTwitter();
         String lastUserList = getMainActivity().getLastUserList();
         if (!TextUtils.isEmpty(lastUserList)) {
-            startUserList(twitter, lastUserList);
+            startUserList(((MainActivity) getActivity()).getCurrentAccount(), lastUserList);
         }
     }
     // --------------------- Interface OnClickListener ---------------------
@@ -105,8 +98,7 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
         final MainActivity activity = getMainActivity();
         final Account currentAccount = activity.getCurrentAccount();
-        Twitter twitter = currentAccount.getTwitter();
-        final UserListListAdapter adapter = (UserListListAdapter) getAdapter();
+        final UserListListAdapter adapter = getAdapter();
         String listFullName = adapter.getListFullName();
         if (TextUtils.isEmpty(listFullName)) {
             new UIHandler().post(() -> {
@@ -119,26 +111,21 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
         if (adapter.getCount() > 0) {
             paging.setSinceId(adapter.getTopID());
         }
-        new UserListStatusesTask(twitter, listFullName, paging) {
-            @Override
-            protected void onPostExecute(List<Tweet> tweets) {
-                super.onPostExecute(tweets);
-                for (int i = tweets.size() - 1; i >= 0; i--) {
-                    StatusViewModel statusViewModel = new StatusViewModel(tweets.get(i));
-                    adapter.addToTop(statusViewModel);
-                    StatusFilter.getInstance().filter(statusViewModel);
-                }
-                updateListViewWithNotice(refreshView.getRefreshableView(), true);
-                refreshView.onRefreshComplete();
+        new UserListStatusesTask(currentAccount, listFullName, paging).onDoneUI(tweets -> {
+            for (int i = tweets.size() - 1; i >= 0; i--) {
+                StatusViewModel statusViewModel = new StatusViewModel(tweets.get(i));
+                adapter.addToTop(statusViewModel);
+                StatusFilter.getInstance().filter(statusViewModel);
             }
-        }.execute();
+            updateListViewWithNotice(refreshView.getRefreshableView(), true);
+            refreshView.onRefreshComplete();
+        }).execute();
     }
 
     @Override
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
         final MainActivity activity = getMainActivity();
         final Account currentAccount = activity.getCurrentAccount();
-        Twitter twitter = currentAccount.getTwitter();
         final UserListListAdapter adapter = getAdapter();
         String listFullName = adapter.getListFullName();
         if (TextUtils.isEmpty(listFullName)) {
@@ -152,19 +139,15 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
         if (adapter.getCount() > 0) {
             paging.setMaxId(adapter.getLastID() - 1);
         }
-        new UserListStatusesTask(twitter, listFullName, paging) {
-            @Override
-            protected void onPostExecute(List<Tweet> tweets) {
-                super.onPostExecute(tweets);
-                for (int i = 0; i < tweets.size(); i++) {
-                    StatusViewModel statusViewModel = new StatusViewModel(tweets.get(i));
-                    adapter.addToBottom(statusViewModel);
-                    StatusFilter.getInstance().filter(statusViewModel);
-                }
-                updateListViewWithNotice(refreshView.getRefreshableView(), false);
-                refreshView.onRefreshComplete();
+        new UserListStatusesTask(currentAccount, listFullName, paging).onDoneUI(tweets -> {
+            for (int i = 0; i < tweets.size(); i++) {
+                StatusViewModel statusViewModel = new StatusViewModel(tweets.get(i));
+                adapter.addToBottom(statusViewModel);
+                StatusFilter.getInstance().filter(statusViewModel);
             }
-        }.execute();
+            updateListViewWithNotice(refreshView.getRefreshableView(), false);
+            refreshView.onRefreshComplete();
+        }).execute();
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
@@ -212,23 +195,19 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
         });
     }
 
-    public void startUserList(Twitter twitter, String listFullName) {
+    public void startUserList(Account account, String listFullName) {
         getMainActivity().setLastUserList(listFullName);
         final UserListListAdapter adapter = getAdapter();
         adapter.setListFullName(listFullName);
         adapter.clear();
         adapter.updateForce();
-        new UserListStatusesTask(twitter, listFullName, TwitterUtils.getPaging(getMainActivity().getRequestCountPerPage())) {
-            @Override
-            protected void onPostExecute(List<Tweet> tweets) {
-                super.onPostExecute(tweets);
-                for (Tweet tweet : tweets) {
-                    StatusViewModel statusViewModel = new StatusViewModel(tweet);
-                    adapter.addToBottom(statusViewModel);
-                    StatusFilter.getInstance().filter(statusViewModel);
-                }
-                adapter.updateForce();
+        new UserListStatusesTask(account, listFullName, TwitterUtils.getPaging(getMainActivity().getRequestCountPerPage())).onDoneUI(tweets -> {
+            for (Tweet tweet : tweets) {
+                StatusViewModel statusViewModel = new StatusViewModel(tweet);
+                adapter.addToBottom(statusViewModel);
+                StatusFilter.getInstance().filter(statusViewModel);
             }
-        }.execute();
+            adapter.updateForce();
+        }).execute();
     }
 }

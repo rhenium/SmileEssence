@@ -26,13 +26,9 @@ package net.lacolaco.smileessence.command.status;
 
 import android.app.Activity;
 import android.content.Intent;
-
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.entity.Tweet;
-import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.util.IntentUtils;
-
-import twitter4j.Status;
 
 public class StatusCommandShare extends StatusCommand {
 

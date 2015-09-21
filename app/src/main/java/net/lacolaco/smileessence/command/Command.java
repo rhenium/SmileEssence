@@ -28,18 +28,15 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
-
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.command.message.*;
+import net.lacolaco.smileessence.command.message.MessageCommandCopyTextToClipboard;
+import net.lacolaco.smileessence.command.message.MessageCommandSearchOnGoogle;
+import net.lacolaco.smileessence.command.message.MessageCommandShare;
+import net.lacolaco.smileessence.command.message.MessageCommandTofuBuster;
 import net.lacolaco.smileessence.command.status.*;
 import net.lacolaco.smileessence.command.user.*;
-import net.lacolaco.smileessence.entity.Account;
-import net.lacolaco.smileessence.entity.CommandSetting;
-import net.lacolaco.smileessence.entity.Tweet;
-import net.lacolaco.smileessence.entity.User;
+import net.lacolaco.smileessence.entity.*;
 import net.lacolaco.smileessence.viewmodel.IViewModel;
-
-import net.lacolaco.smileessence.entity.DirectMessage;
 
 import java.util.ArrayList;
 import java.util.Iterator;

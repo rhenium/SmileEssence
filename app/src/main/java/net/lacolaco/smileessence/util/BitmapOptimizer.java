@@ -30,7 +30,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.os.Environment;
-
 import net.lacolaco.smileessence.logging.Logger;
 
 import java.io.File;

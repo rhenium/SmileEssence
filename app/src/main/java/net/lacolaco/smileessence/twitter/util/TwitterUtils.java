@@ -24,25 +24,7 @@
 
 package net.lacolaco.smileessence.twitter.util;
 
-import android.text.TextUtils;
-
-import com.twitter.Validator;
-
-import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.activity.MainActivity;
-import net.lacolaco.smileessence.entity.*;
-import net.lacolaco.smileessence.preference.UserPreferenceHelper;
-import net.lacolaco.smileessence.twitter.task.ShowDirectMessageTask;
-import net.lacolaco.smileessence.twitter.task.ShowStatusTask;
-import net.lacolaco.smileessence.twitter.task.ShowUserTask;
-
-import net.lacolaco.smileessence.twitter.task.TwitterTask;
 import twitter4j.Paging;
-import twitter4j.URLEntity;
-import twitter4j.UserMentionEntity;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 public class TwitterUtils {
     // -------------------------- STATIC METHODS --------------------------

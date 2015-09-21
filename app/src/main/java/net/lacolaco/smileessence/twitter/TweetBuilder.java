@@ -25,14 +25,12 @@
 package net.lacolaco.smileessence.twitter;
 
 import android.text.TextUtils;
-
 import net.lacolaco.smileessence.entity.Tweet;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class TweetBuilder {

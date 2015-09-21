@@ -27,13 +27,9 @@ package net.lacolaco.smileessence.command.status;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
-
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.notification.Notificator;
-import net.lacolaco.smileessence.twitter.util.TwitterUtils;
-
-import twitter4j.Status;
 
 public class StatusCommandCopyURLToClipboard extends StatusCommand {
 

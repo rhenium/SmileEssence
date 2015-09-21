@@ -25,7 +25,6 @@
 package net.lacolaco.smileessence.view;
 
 import android.app.Activity;
-
 import net.lacolaco.smileessence.view.dialog.StackableDialogFragment;
 
 import java.util.LinkedHashSet;

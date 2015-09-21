@@ -25,7 +25,6 @@
 package net.lacolaco.smileessence.view.adapter;
 
 import android.app.Activity;
-
 import net.lacolaco.smileessence.viewmodel.MessageViewModel;
 
 import java.util.Collections;

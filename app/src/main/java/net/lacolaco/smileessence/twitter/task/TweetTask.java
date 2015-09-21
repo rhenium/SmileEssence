@@ -28,26 +28,26 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.text.TextUtils;
-
 import net.lacolaco.smileessence.R;
+import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
-
+import net.lacolaco.smileessence.util.BackgroundTask;
 import twitter4j.StatusUpdate;
-import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class TweetTask extends TwitterTask<Tweet> {
+public class TweetTask extends BackgroundTask<Tweet, Void> {
 
     // ------------------------------ FIELDS ------------------------------
 
     private static final int MEDIA_SIZE_LIMIT = 2 * 1024 * 1024;
+    private final Account account;
     private final StatusUpdate update;
     private final String mediaPath;
     private String tempFilePath;
@@ -55,12 +55,12 @@ public class TweetTask extends TwitterTask<Tweet> {
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public TweetTask(Twitter twitter, StatusUpdate update) {
-        this(twitter, update, null, false);
+    public TweetTask(Account account, StatusUpdate update) {
+        this(account, update, null, false);
     }
 
-    public TweetTask(Twitter twitter, StatusUpdate update, String mediaPath, boolean resize) {
-        super(twitter);
+    public TweetTask(Account account, StatusUpdate update, String mediaPath, boolean resize) {
+        this.account = account;
         this.update = update;
         this.mediaPath = mediaPath;
         resizeFlag = resize;
@@ -105,15 +105,6 @@ public class TweetTask extends TwitterTask<Tweet> {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected void onPostExecute(Tweet tweet) {
-        if (tweet != null) {
-            Notificator.getInstance().publish(R.string.notice_tweet_succeeded);
-        } else {
-            Notificator.getInstance().publish(R.string.notice_tweet_failed, NotificationType.ALERT);
-        }
-    }
-
-    @Override
     protected Tweet doInBackground(Void... params) {
         try {
             if (!TextUtils.isEmpty(mediaPath)) {
@@ -122,9 +113,14 @@ public class TweetTask extends TwitterTask<Tweet> {
                     update.setMedia(mediaFile);
                 }
             }
-            Tweet tweet = Tweet.fromTwitter(twitter.tweets().updateStatus(update));
+            Tweet tweet = Tweet.fromTwitter(account.getTwitter().tweets().updateStatus(update));
             if (tempFilePath != null) {
                 new File(tempFilePath).delete();
+            }
+            if (tweet != null) {
+                Notificator.getInstance().publish(R.string.notice_tweet_succeeded);
+            } else {
+                Notificator.getInstance().publish(R.string.notice_tweet_failed, NotificationType.ALERT);
             }
             return tweet;
         } catch (TwitterException e) {

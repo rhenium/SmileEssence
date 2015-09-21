@@ -24,29 +24,30 @@
 
 package net.lacolaco.smileessence.twitter.task;
 
+import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.logging.Logger;
-
-import twitter4j.Twitter;
+import net.lacolaco.smileessence.util.BackgroundTask;
 import twitter4j.TwitterException;
 
-public class ShowUserTask extends TwitterTask<User> {
+public class ShowUserTask extends BackgroundTask<User, Void> {
 
     // ------------------------------ FIELDS ------------------------------
 
+    private final Account account;
     private final long userID;
     private final String screenName;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public ShowUserTask(Twitter twitter, long userID) {
-        super(twitter);
+    public ShowUserTask(Account account, long userID) {
+        this.account = account;
         this.userID = userID;
         this.screenName = null;
     }
 
-    public ShowUserTask(Twitter twitter, String screenName) {
-        super(twitter);
+    public ShowUserTask(Account account, String screenName) {
+        this.account = account;
         this.screenName = screenName;
         this.userID = -1;
     }
@@ -54,16 +55,12 @@ public class ShowUserTask extends TwitterTask<User> {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected void onPostExecute(User user) {
-    }
-
-    @Override
     protected User doInBackground(Void... params) {
         try {
             if (screenName != null) {
-                return User.fromTwitter(twitter.users().showUser(screenName));
+                return User.fromTwitter(account.getTwitter().users().showUser(screenName));
             } else {
-                return User.fromTwitter(twitter.users().showUser(userID));
+                return User.fromTwitter(account.getTwitter().users().showUser(userID));
             }
         } catch (TwitterException e) {
             e.printStackTrace();

@@ -2,11 +2,9 @@ package net.lacolaco.smileessence.entity;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.util.ListUtils;
-import twitter4j.*;
+import twitter4j.Status;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 

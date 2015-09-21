@@ -36,10 +36,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
-
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.Command;
@@ -55,9 +53,7 @@ import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.view.adapter.SearchListAdapter;
 import net.lacolaco.smileessence.view.dialog.SelectSearchQueryDialogFragment;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
-
 import twitter4j.Query;
-import twitter4j.QueryResult;
 import twitter4j.Twitter;
 
 import java.util.List;
@@ -86,10 +82,9 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
         setAdapter(adapter);
 
         final MainActivity activity = (MainActivity) getActivity();
-        final Twitter twitter = activity.getCurrentAccount().getTwitter();
         String lastUsedSearchQuery = activity.getLastSearch();
         if (!TextUtils.isEmpty(lastUsedSearchQuery)) {
-            startSearch(twitter, lastUsedSearchQuery);
+            startSearch(activity.getCurrentAccount(), lastUsedSearchQuery);
         }
     }
 
@@ -136,7 +131,6 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
         final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
-        Twitter twitter = currentAccount.getTwitter();
         final SearchListAdapter adapter = getAdapter();
         String queryString = adapter.getQuery();
         if (TextUtils.isEmpty(queryString)) {
@@ -153,26 +147,22 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
         if (adapter.getCount() > 0) {
             query.setSinceId(adapter.getTopID());
         }
-        new SearchTask(twitter, query) {
-            @Override
-            protected void onPostExecute(QueryResult queryResult) {
-                super.onPostExecute(queryResult);
-                if (queryResult != null) {
-                    List<twitter4j.Status> tweets = queryResult.getTweets();
-                    for (int i = tweets.size() - 1; i >= 0; i--) {
-                        twitter4j.Status status = tweets.get(i);
-                        if (!status.isRetweet()) {
-                            StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status));
-                            adapter.addToTop(viewModel);
-                            StatusFilter.getInstance().filter(viewModel);
-                        }
+        new SearchTask(currentAccount, query).onDoneUI(queryResult -> {
+            if (queryResult != null) {
+                List<twitter4j.Status> tweets = queryResult.getTweets();
+                for (int i = tweets.size() - 1; i >= 0; i--) {
+                    twitter4j.Status status = tweets.get(i);
+                    if (!status.isRetweet()) {
+                        StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status));
+                        adapter.addToTop(viewModel);
+                        StatusFilter.getInstance().filter(viewModel);
                     }
-                    updateListViewWithNotice(refreshView.getRefreshableView(), true);
-                    adapter.setTopID(queryResult.getMaxId());
-                    refreshView.onRefreshComplete();
                 }
+                updateListViewWithNotice(refreshView.getRefreshableView(), true);
+                adapter.setTopID(queryResult.getMaxId());
+                refreshView.onRefreshComplete();
             }
-        }.execute();
+        }).execute();
     }
 
     @Override
@@ -196,24 +186,20 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
         if (adapter.getCount() > 0) {
             query.setMaxId(adapter.getLastID() - 1);
         }
-        new SearchTask(twitter, query) {
-            @Override
-            protected void onPostExecute(QueryResult queryResult) {
-                super.onPostExecute(queryResult);
-                if (queryResult != null) {
-                    List<twitter4j.Status> tweets = queryResult.getTweets();
-                    for (twitter4j.Status status : tweets) {
-                        if (!status.isRetweet()) {
-                            StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status));
-                            adapter.addToBottom(viewModel);
-                            StatusFilter.getInstance().filter(viewModel);
-                        }
+        new SearchTask(currentAccount, query).onDoneUI(queryResult -> {
+            if (queryResult != null) {
+                List<twitter4j.Status> tweets = queryResult.getTweets();
+                for (twitter4j.Status status : tweets) {
+                    if (!status.isRetweet()) {
+                        StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status));
+                        adapter.addToBottom(viewModel);
+                        StatusFilter.getInstance().filter(viewModel);
                     }
-                    updateListViewWithNotice(refreshView.getRefreshableView(), false);
-                    refreshView.onRefreshComplete();
                 }
+                updateListViewWithNotice(refreshView.getRefreshableView(), false);
+                refreshView.onRefreshComplete();
             }
-        }.execute();
+        }).execute();
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
@@ -339,7 +325,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
         }
     }
 
-    public void startSearch(final Twitter twitter, final String queryString) {
+    public void startSearch(final Account account, final String queryString) {
         ((MainActivity) getActivity()).setLastSearch(queryString);
         if (!TextUtils.isEmpty(queryString)) {
             final SearchListAdapter adapter = getAdapter();
@@ -350,25 +336,21 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
             query.setQuery(queryString);
             query.setCount(((MainActivity) getActivity()).getRequestCountPerPage());
             query.setResultType(Query.RECENT);
-            new SearchTask(twitter, query) {
-                @Override
-                protected void onPostExecute(QueryResult queryResult) {
-                    super.onPostExecute(queryResult);
-                    if (queryResult != null) {
-                        List<twitter4j.Status> tweets = queryResult.getTweets();
-                        for (int i = tweets.size() - 1; i >= 0; i--) {
-                            twitter4j.Status status = tweets.get(i);
-                            if (!status.isRetweet()) {
-                                StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status));
-                                adapter.addToTop(viewModel);
-                                StatusFilter.getInstance().filter(viewModel);
-                            }
+            new SearchTask(account, query).onDoneUI(queryResult -> {
+                if (queryResult != null) {
+                    List<twitter4j.Status> tweets = queryResult.getTweets();
+                    for (int i = tweets.size() - 1; i >= 0; i--) {
+                        twitter4j.Status status = tweets.get(i);
+                        if (!status.isRetweet()) {
+                            StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status));
+                            adapter.addToTop(viewModel);
+                            StatusFilter.getInstance().filter(viewModel);
                         }
-                        adapter.setTopID(queryResult.getMaxId());
-                        adapter.updateForce();
                     }
+                    adapter.setTopID(queryResult.getMaxId());
+                    adapter.updateForce();
                 }
-            }.execute();
+            }).execute();
         }
     }
 }

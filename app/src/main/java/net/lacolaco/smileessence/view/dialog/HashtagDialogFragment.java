@@ -27,7 +27,6 @@ package net.lacolaco.smileessence.view.dialog;
 import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
-
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.CommandPasteToPost;

@@ -3,9 +3,7 @@ package net.lacolaco.smileessence.entity;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import net.lacolaco.smileessence.util.ListUtils;
-import twitter4j.*;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 

@@ -26,23 +26,14 @@ package net.lacolaco.smileessence.view.dialog;
 
 import android.app.Activity;
 import android.os.Bundle;
-
 import net.lacolaco.smileessence.activity.MainActivity;
-import net.lacolaco.smileessence.command.Command;
-import net.lacolaco.smileessence.command.CommandOpenHashtagDialog;
-import net.lacolaco.smileessence.command.CommandOpenURL;
-import net.lacolaco.smileessence.command.CommandOpenUserDetail;
-import net.lacolaco.smileessence.command.CommandSaveAsTemplate;
+import net.lacolaco.smileessence.command.*;
 import net.lacolaco.smileessence.entity.Account;
+import net.lacolaco.smileessence.entity.DirectMessage;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import net.lacolaco.smileessence.entity.DirectMessage;
-import twitter4j.HashtagEntity;
-import twitter4j.MediaEntity;
-import twitter4j.URLEntity;
 
 public class MessageMenuDialogFragment extends MenuDialogFragment {
 

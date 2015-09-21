@@ -24,45 +24,32 @@
 
 package net.lacolaco.smileessence.twitter.task;
 
-import android.app.Activity;
-
-import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.logging.Logger;
-import net.lacolaco.smileessence.notification.NotificationType;
-import net.lacolaco.smileessence.notification.Notificator;
-
-import twitter4j.Twitter;
-import twitter4j.TwitterException;
+import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.User;
+import net.lacolaco.smileessence.logging.Logger;
+import net.lacolaco.smileessence.util.BackgroundTask;
+import twitter4j.TwitterException;
 
-public class UnblockTask extends TwitterTask<User> {
+public class UnblockTask extends BackgroundTask<User, Void> {
 
     // ------------------------------ FIELDS ------------------------------
 
+    private final Account account;
     private final long userID;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public UnblockTask(Twitter twitter, long userID) {
-        super(twitter);
+    public UnblockTask(Account account, long userID) {
+        this.account = account;
         this.userID = userID;
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected void onPostExecute(User user) {
-        if (user != null) {
-            Notificator.getInstance().publish(R.string.notice_unblock_succeeded);
-        } else {
-            Notificator.getInstance().publish(R.string.notice_unblock_failed, NotificationType.ALERT);
-        }
-    }
-
-    @Override
     protected User doInBackground(Void... params) {
         try {
-            return User.fromTwitter(twitter.users().destroyBlock(userID));
+            return User.fromTwitter(account.getTwitter().users().destroyBlock(userID));
         } catch (TwitterException e) {
             e.printStackTrace();
             Logger.error(e.toString());

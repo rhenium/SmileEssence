@@ -26,12 +26,9 @@ package net.lacolaco.smileessence.command.message;
 
 import android.app.Activity;
 import android.content.Intent;
-
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.twitter.util.TwitterUtils;
-import net.lacolaco.smileessence.util.IntentUtils;
-
 import net.lacolaco.smileessence.entity.DirectMessage;
+import net.lacolaco.smileessence.util.IntentUtils;
 
 public class MessageCommandShare extends MessageCommand {
 

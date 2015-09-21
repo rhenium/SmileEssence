@@ -32,7 +32,6 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.text.TextUtils;
-
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.LicenseActivity;
 import net.lacolaco.smileessence.entity.Account;

@@ -24,28 +24,28 @@
 
 package net.lacolaco.smileessence.twitter.task;
 
-import net.lacolaco.smileessence.activity.MainActivity;
-import net.lacolaco.smileessence.data.FavoriteCache;
+import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.logging.Logger;
-import net.lacolaco.smileessence.twitter.util.TwitterUtils;
-
-import twitter4j.*;
+import net.lacolaco.smileessence.util.BackgroundTask;
+import twitter4j.Paging;
+import twitter4j.TwitterException;
 
 import java.util.Collections;
 import java.util.List;
 
-public class UserListStatusesTask extends TwitterTask<List<Tweet>> {
+public class UserListStatusesTask extends BackgroundTask<List<Tweet>, Void> {
 
     // ------------------------------ FIELDS ------------------------------
 
+    private final Account account;
     private final String listFullName;
     private final Paging paging;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public UserListStatusesTask(Twitter twitter, String listFullName, Paging paging) {
-        super(twitter);
+    public UserListStatusesTask(Account account, String listFullName, Paging paging) {
+        this.account = account;
         this.listFullName = listFullName;
         this.paging = paging;
     }
@@ -53,14 +53,10 @@ public class UserListStatusesTask extends TwitterTask<List<Tweet>> {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected void onPostExecute(List<Tweet> tweets) {
-    }
-
-    @Override
     protected List<Tweet> doInBackground(Void... params) {
         try {
             String[] strings = listFullName.split("/");
-            return Tweet.fromTwitter(twitter.list().getUserListStatuses(strings[0], strings[1], paging));
+            return Tweet.fromTwitter(account.getTwitter().list().getUserListStatuses(strings[0], strings[1], paging));
         } catch (TwitterException e) {
             e.printStackTrace();
             Logger.error(e.toString());

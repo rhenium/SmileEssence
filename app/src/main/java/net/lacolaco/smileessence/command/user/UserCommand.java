@@ -25,9 +25,7 @@
 package net.lacolaco.smileessence.command.user;
 
 import android.app.Activity;
-
 import net.lacolaco.smileessence.command.Command;
-
 import net.lacolaco.smileessence.entity.User;
 
 public abstract class UserCommand extends Command {

@@ -27,7 +27,9 @@ package net.lacolaco.smileessence.twitter;
 import net.lacolaco.smileessence.util.Consumer;
 import net.lacolaco.smileessence.viewmodel.IViewModel;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 public class StatusFilter {
     private Map<Class<?>, Map<Object, Consumer<?>>> handlers = new HashMap<>();

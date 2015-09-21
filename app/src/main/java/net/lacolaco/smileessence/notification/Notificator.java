@@ -26,11 +26,9 @@ package net.lacolaco.smileessence.notification;
 
 import android.app.Activity;
 import android.widget.Toast;
-
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
-
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.util.UIHandler;
 

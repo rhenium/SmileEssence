@@ -24,22 +24,24 @@
 
 package net.lacolaco.smileessence.twitter.task;
 
+import net.lacolaco.smileessence.util.BackgroundTask;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
 
-public class AccessTokenTask extends TwitterTask<AccessToken> {
+public class AccessTokenTask extends BackgroundTask<AccessToken, Void> {
 
     // ------------------------------ FIELDS ------------------------------
 
+    private final Twitter twitter;
     private final RequestToken requestToken;
     private final String pinCode;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
     public AccessTokenTask(Twitter twitter, RequestToken requestToken, String pinCode) {
-        super(twitter);
+        this.twitter = twitter;
         this.requestToken = requestToken;
         this.pinCode = pinCode;
     }

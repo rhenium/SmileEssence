@@ -27,11 +27,9 @@ package net.lacolaco.smileessence.command.message;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.notification.Notificator;
-
 import net.lacolaco.smileessence.entity.DirectMessage;
+import net.lacolaco.smileessence.notification.Notificator;
 
 public class MessageCommandTofuBuster extends MessageCommand {
 

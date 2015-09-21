@@ -36,24 +36,20 @@ import android.text.method.ArrowKeyMovementMethod;
 import android.view.*;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
-
 import com.twitter.Validator;
-
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
+import net.lacolaco.smileessence.data.PostState;
 import net.lacolaco.smileessence.entity.Account;
-import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.twitter.task.TweetTask;
 import net.lacolaco.smileessence.util.BitmapThumbnailTask;
 import net.lacolaco.smileessence.util.IntentUtils;
 import net.lacolaco.smileessence.util.UIHandler;
-import net.lacolaco.smileessence.data.PostState;
 import net.lacolaco.smileessence.view.dialog.PostMenuDialogFragment;
 import net.lacolaco.smileessence.view.dialog.SelectImageDialogFragment;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
-
 import twitter4j.StatusUpdate;
 
 import java.io.File;
@@ -138,17 +134,13 @@ public class PostFragment extends PageFragment implements TextWatcher, View.OnFo
             if (postState.getInReplyToStatusID() >= 0) {
                 viewGroupReply.setVisibility(View.VISIBLE);
                 final Account account = activity.getCurrentAccount();
-                account.tryGetStatus(postState.getInReplyToStatusID(), new Account.StatusCallback() {
-                    @Override
-                    public void success(Tweet tweet) {
+                account.fetchTweet(postState.getInReplyToStatusID(), tweet -> {
+                    if (tweet != null) {
                         View header = viewGroupReply.findViewById(R.id.layout_post_reply_status);
                         header = new StatusViewModel(tweet).getView(activity, activity.getLayoutInflater(), header);
                         header.setBackgroundColor(getResources().getColor(R.color.transparent));
                         header.setClickable(false);
-                    }
-
-                    @Override
-                    public void error() {
+                    } else {
                         viewGroupReply.setVisibility(View.GONE);
                     }
                 });
@@ -368,7 +360,7 @@ public class PostFragment extends PageFragment implements TextWatcher, View.OnFo
         StatusUpdate statusUpdate = state.toStatusUpdate();
         MainActivity mainActivity = (MainActivity) getActivity();
         boolean resizeFlag = UserPreferenceHelper.getInstance().get(R.string.key_setting_resize_post_image, false);
-        TweetTask tweetTask = new TweetTask(mainActivity.getCurrentAccount().getTwitter(), statusUpdate, state.getMediaFilePath(), resizeFlag);
+        TweetTask tweetTask = new TweetTask(mainActivity.getCurrentAccount(), statusUpdate, state.getMediaFilePath(), resizeFlag);
         tweetTask.execute();
         PostState.newState().beginTransaction().commit();
         mainActivity.openHomePage();

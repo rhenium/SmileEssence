@@ -30,22 +30,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.android.volley.toolbox.NetworkImageView;
-
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.data.ImageCache;
 import net.lacolaco.smileessence.entity.Tweet;
+import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.util.StringUtils;
 import net.lacolaco.smileessence.util.Themes;
 import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.dialog.UserDetailDialogFragment;
 import net.lacolaco.smileessence.view.listener.ListItemClickListener;
-
-import twitter4j.Status;
-import net.lacolaco.smileessence.entity.User;
 
 import java.util.Date;
 

@@ -26,20 +26,15 @@ package net.lacolaco.smileessence.view.dialog;
 
 import android.app.Activity;
 import android.os.Bundle;
-
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.status.StatusCommandTextQuote;
 import net.lacolaco.smileessence.command.status.StatusCommandURLQuote;
-import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
-import net.lacolaco.smileessence.twitter.util.TwitterUtils;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import twitter4j.Status;
 
 public class QuoteDialogFragment extends MenuDialogFragment {
 

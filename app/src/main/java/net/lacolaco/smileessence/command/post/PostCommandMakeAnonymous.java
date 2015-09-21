@@ -26,7 +26,6 @@ package net.lacolaco.smileessence.command.post;
 
 import android.app.Activity;
 import android.text.TextUtils;
-
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.data.PostState;
 

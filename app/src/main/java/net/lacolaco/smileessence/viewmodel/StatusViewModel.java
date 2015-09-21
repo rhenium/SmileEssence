@@ -26,16 +26,13 @@ package net.lacolaco.smileessence.viewmodel;
 
 import android.app.Activity;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.android.volley.toolbox.NetworkImageView;
-
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.data.FavoriteCache;
@@ -43,10 +40,7 @@ import net.lacolaco.smileessence.data.ImageCache;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
-import net.lacolaco.smileessence.util.Morse;
-import net.lacolaco.smileessence.util.NameStyles;
-import net.lacolaco.smileessence.util.StringUtils;
-import net.lacolaco.smileessence.util.Themes;
+import net.lacolaco.smileessence.util.*;
 import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.dialog.StatusDetailDialogFragment;
 import net.lacolaco.smileessence.view.dialog.UserDetailDialogFragment;
@@ -61,7 +55,7 @@ public class StatusViewModel implements IViewModel {
     private boolean isMention;
     private boolean isRetweetOfMe;
 
-    private ArrayList<AsyncTask> lastTasks = new ArrayList<>(); // internal
+    private ArrayList<BackgroundTask> lastTasks = new ArrayList<>(); // internal
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
@@ -151,8 +145,8 @@ public class StatusViewModel implements IViewModel {
     // -------------------------- OTHER METHODS --------------------------
 
     public View getView(final Activity activity, final LayoutInflater inflater, View convertedView, boolean extendStatusURL) {
-        for (AsyncTask task : lastTasks) {
-            task.cancel(true);
+        for (BackgroundTask task : lastTasks) {
+            task.cancel();
         }
         lastTasks.clear();
 
@@ -164,12 +158,7 @@ public class StatusViewModel implements IViewModel {
         int theme = ((MainActivity) activity).getThemeIndex();
         NetworkImageView icon = (NetworkImageView) convertedView.findViewById(R.id.imageview_status_icon);
         ImageCache.getInstance().setImageToView(tweet.getUser().getProfileImageUrl(), icon);
-        icon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onIconClick(activity);
-            }
-        });
+        icon.setOnClickListener(v -> onIconClick(activity));
         TextView header = (TextView) convertedView.findViewById(R.id.textview_status_header);
         header.setTextSize(textSize);
         int colorHeader = Themes.getStyledColor(activity, theme, R.attr.color_status_text_header, 0);
@@ -218,17 +207,12 @@ public class StatusViewModel implements IViewModel {
                 embeddedStatus.setVisibility(View.VISIBLE);
                 final Account account = ((MainActivity) activity).getCurrentAccount();
                 for (long id : embeddedStatusIDs) {
-                    AsyncTask task = account.tryGetStatus(id, new Account.StatusCallback() {
-                        @Override
-                        public void success(Tweet tweet) {
+                    BackgroundTask task = account.fetchTweet(id, embeddedTweet -> {
+                        if (embeddedTweet != null) {
                             StatusViewModel viewModel = new StatusViewModel(tweet);
                             View embeddedHolder = viewModel.getView(activity, inflater, null, false);
                             embeddedStatus.addView(embeddedHolder);
                             embeddedStatus.invalidate();
-                        }
-
-                        @Override
-                        public void error() {
                         }
                     });
                     lastTasks.add(task);
@@ -245,7 +229,7 @@ public class StatusViewModel implements IViewModel {
         return tweet.getMentions().contains(screenName);
     }
 
-        private boolean isReadMorseEnabled(MainActivity activity) {
+    private boolean isReadMorseEnabled(MainActivity activity) {
         return UserPreferenceHelper.getInstance().get(R.string.key_setting_read_morse, true);
     }
 

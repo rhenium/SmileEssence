@@ -28,10 +28,15 @@ public abstract class BackgroundTask<Result, Progress> extends AsyncTask<Void, P
         return cancel(true);
     }
 
+    public final BackgroundTask<Result, Progress> execute() {
+        super.execute();
+        return this;
+    }
+
     @Override
     protected final void onProgressUpdate(Progress... values) {
         for (Progress value : values) {
-            if (!isCancelled()) {
+            if (!isCancelled() && progress != null) {
                 progress.accept(value);
             }
         }
@@ -39,7 +44,7 @@ public abstract class BackgroundTask<Result, Progress> extends AsyncTask<Void, P
 
     @Override
     protected final void onPostExecute(Result result) {
-        if (!isCancelled()) {
+        if (!isCancelled() && then != null) {
             then.accept(result);
         }
     }

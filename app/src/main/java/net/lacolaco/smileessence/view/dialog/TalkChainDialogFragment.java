@@ -29,17 +29,12 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
-
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Account;
-import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.twitter.task.GetTalkTask;
-import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.view.adapter.StatusListAdapter;
-
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
-import twitter4j.Twitter;
 
 public class TalkChainDialogFragment extends StackableDialogFragment {
 

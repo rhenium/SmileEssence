@@ -37,15 +37,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
 import com.twitter.Validator;
-
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
-import net.lacolaco.smileessence.twitter.task.SendMessageTask;
 import net.lacolaco.smileessence.data.PostState;
-
-import twitter4j.Twitter;
+import net.lacolaco.smileessence.notification.NotificationType;
+import net.lacolaco.smileessence.notification.Notificator;
+import net.lacolaco.smileessence.twitter.task.SendMessageTask;
 
 public class SendMessageDialogFragment extends StackableDialogFragment implements TextWatcher, View.OnClickListener {
 
@@ -153,11 +151,16 @@ public class SendMessageDialogFragment extends StackableDialogFragment implement
     }
 
     private void sendMessage() {
-        MainActivity activity = (MainActivity) getActivity();
-        Twitter twitter = activity.getCurrentAccount().getTwitter();
-        String text = editText.getText().toString();
-        new SendMessageTask(twitter, screenName, text).execute();
         hideIME();
+        MainActivity activity = (MainActivity) getActivity();
+        String text = editText.getText().toString();
+        new SendMessageTask(activity.getCurrentAccount(), screenName, text).onDone(message -> {
+            if (message != null) {
+                Notificator.getInstance().publish(R.string.notice_message_send_succeeded);
+            } else {
+                Notificator.getInstance().publish(R.string.notice_message_send_failed, NotificationType.ALERT);
+            }
+        }).execute();
         dismiss();
     }
 }

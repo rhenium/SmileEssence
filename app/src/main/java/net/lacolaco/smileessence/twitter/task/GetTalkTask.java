@@ -4,8 +4,6 @@ import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.util.BackgroundTask;
-import twitter4j.Status;
-import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
 import java.util.ArrayList;

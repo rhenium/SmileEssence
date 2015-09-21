@@ -34,14 +34,13 @@ import android.view.*;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
-
 import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.entity.Template;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.util.Themes;
-import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 import net.lacolaco.smileessence.view.DialogHelper;
+import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 import net.lacolaco.smileessence.view.dialog.EditTextDialogFragment;
 
 import java.util.List;
