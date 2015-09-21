@@ -58,6 +58,9 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
         StatusFilter.getInstance().register(this, StatusViewModel.class, (StatusViewModel tweet) -> {
             adapter.addToTop(tweet);
             adapter.update();
+        }, id -> {
+            adapter.removeByStatusID(id);
+            adapter.updateForce();
         });
         final Account account = ((MainActivity) getActivity()).getCurrentAccount();
         new HomeTimelineTask(account)

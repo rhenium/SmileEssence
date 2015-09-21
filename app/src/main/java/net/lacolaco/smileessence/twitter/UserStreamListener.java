@@ -102,14 +102,7 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
 
     @Override
     public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
-        // TODO: StatusFilter.getInstance().remove(StatusViewModel.class, statusDeletionNotice.getStatusId());
-        // for (CustomListAdapter<?> adapter : activity.getListAdapters()) {
-        //     if (adapter != null && adapter instanceof StatusListAdapter) {
-        //         StatusListAdapter statusListAdapter = (StatusListAdapter) adapter;
-        //         statusListAdapter.removeByStatusID(statusDeletionNotice.getStatusId());
-        //         statusListAdapter.updateForce();
-        //     }
-        // }
+        StatusFilter.getInstance().remove(StatusViewModel.class, statusDeletionNotice.getStatusId());
         Tweet.remove(statusDeletionNotice.getStatusId());
     }
 
@@ -136,10 +129,7 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
 
     @Override
     public void onDeletionNotice(long directMessageId, long userId) {
-        // TODO: StatusFilter.getInstance().remove(MessageViewModel.class, directMessageId);
-        // MessageListAdapter messages = (MessageListAdapter) activity.getListAdapter(MainActivity.AdapterID.Messages);
-        // messages.removeByMessageID(directMessageId);
-        // messages.updateForce();
+        StatusFilter.getInstance().remove(MessageViewModel.class, directMessageId);
         DirectMessage.remove(directMessageId);
     }
 

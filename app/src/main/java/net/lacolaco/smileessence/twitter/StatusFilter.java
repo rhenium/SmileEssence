@@ -32,26 +32,36 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 public class StatusFilter {
-    private Map<Class<?>, Map<Object, Consumer<?>>> handlers = new HashMap<>();
+    private Map<Class<?>, Map<Object, Consumer<?>>> addHandlers = new HashMap<>();
+    private Map<Class<?>, Map<Object, Consumer<Long>>> removeHandlers = new HashMap<>();
     private static StatusFilter instance = new StatusFilter();
 
     public static StatusFilter getInstance() {
         return instance;
     }
 
-    public synchronized <T> void register(Object key, Class<T> klass, Consumer<T> handler) {
-        Map<Object, Consumer<?>> map = handlers.get(klass);
-        if (map == null) {
-            map = new WeakHashMap<>();
-            handlers.put(klass, map);
+    public synchronized <T> void register(Object key, Class<T> klass, Consumer<T> addHandler, Consumer<Long> removeHandler) {
+        Map<Object, Consumer<?>> addMap = addHandlers.get(klass);
+        if (addMap == null) {
+            addMap = new WeakHashMap<>();
+            addHandlers.put(klass, addMap);
         }
-        map.put(key, handler);
+        addMap.put(key, addHandler);
+
+        if (removeHandler != null) {
+            Map<Object, Consumer<Long>> removeMap = removeHandlers.get(klass);
+            if (removeMap == null) {
+                removeMap = new WeakHashMap<>();
+                removeHandlers.put(klass, removeMap);
+            }
+            removeMap.put(key, removeHandler);
+        }
     }
 
     // -------------------------- STATIC METHODS --------------------------
 
     public <T extends IViewModel> void filter(T status) {
-        Map<Object, Consumer<?>> map = handlers.get(status.getClass());
+        Map<Object, Consumer<?>> map = addHandlers.get(status.getClass());
         if (map != null) {
             for(Consumer f_ : map.values()) {
                 ((Consumer<T>) f_).accept(status);
@@ -59,13 +69,12 @@ public class StatusFilter {
         }
     }
 
-    // public void remove(Class<? extends IViewModel> klass, long id) {
-    //     Map<Object, Consumer<?>> map = handlers.get(klass);
-    //
-    //     if (map != null) {
-    //         for(Consumer f_ : map.values()) {
-    //             ((Consumer<T>) f_).accept(status);
-    //         }
-    //     }
-    // }
+    public <T extends IViewModel> void remove(Class<T> klass, long id) {
+        Map<Object, Consumer<Long>> map = removeHandlers.get(klass);
+        if (map != null) {
+            for(Consumer<Long> f : map.values()) {
+                f.accept(id);
+            }
+        }
+    }
 }

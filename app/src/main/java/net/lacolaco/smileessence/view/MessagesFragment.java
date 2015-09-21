@@ -59,6 +59,9 @@ public class MessagesFragment extends CustomListFragment<MessageListAdapter> {
         StatusFilter.getInstance().register(this, MessageViewModel.class, (MessageViewModel message) -> {
             adapter.addToTop(message);
             adapter.update();
+        }, id -> {
+            adapter.removeByMessageID(id);
+            adapter.updateForce();
         });
         final Account account = ((MainActivity) getActivity()).getCurrentAccount();
         new DirectMessagesTask(account)

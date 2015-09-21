@@ -63,6 +63,9 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
                     return;
                 }
             }
+        }, id -> {
+            adapter.removeByStatusID(id);
+            adapter.updateForce();
         });
         final Account account = ((MainActivity) getActivity()).getCurrentAccount();
         final StatusListAdapter adapter_ = adapter;

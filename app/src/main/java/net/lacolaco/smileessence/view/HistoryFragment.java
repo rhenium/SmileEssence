@@ -54,7 +54,7 @@ public class HistoryFragment extends CustomListFragment<EventListAdapter> {
         StatusFilter.getInstance().register(this, EventViewModel.class, (EventViewModel vm) -> {
             adapter.addToTop(vm);
             adapter.update();
-        });
+        }, null);
     }
 
     // --------------------- Interface OnRefreshListener2 ---------------------
