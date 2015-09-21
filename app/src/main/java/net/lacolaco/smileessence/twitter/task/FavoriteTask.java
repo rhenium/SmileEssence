@@ -51,6 +51,6 @@ public class FavoriteTask extends BackgroundTask<Tweet, Void> {
 
     @Override
     protected Tweet doInBackground() throws TwitterException {
-        return Tweet.fromTwitter(account.getTwitter().favorites().createFavorite(statusID));
+        return Tweet.fromTwitter(account.getTwitter().favorites().createFavorite(statusID), account.getUserId());
     }
 }

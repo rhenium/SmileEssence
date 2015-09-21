@@ -51,6 +51,6 @@ public class RetweetTask extends BackgroundTask<Tweet, Void> {
 
     @Override
     protected Tweet doInBackground() throws TwitterException {
-        return Tweet.fromTwitter(account.getTwitter().tweets().retweetStatus(statusID));
+        return Tweet.fromTwitter(account.getTwitter().tweets().retweetStatus(statusID), account.getUserId());
     }
 }

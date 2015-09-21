@@ -35,7 +35,6 @@ import android.widget.TextView;
 import com.android.volley.toolbox.NetworkImageView;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
-import net.lacolaco.smileessence.data.FavoriteCache;
 import net.lacolaco.smileessence.data.ImageCache;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
@@ -94,13 +93,6 @@ public class StatusViewModel implements IViewModel {
         return builder.toString();
     }
 
-    public boolean isFavorited() {
-        if (tweet.isRetweet()) {
-            return FavoriteCache.getInstance().get(tweet.getRetweetedTweet().getId());
-        }
-        return FavoriteCache.getInstance().get(tweet.getId());
-    }
-
     public boolean isMention() {
         if (tweet.isRetweet()) {
             return tweet.getRetweetedTweet() == null;
@@ -153,6 +145,9 @@ public class StatusViewModel implements IViewModel {
         if (convertedView == null) {
             convertedView = inflater.inflate(R.layout.list_item_status, null);
         }
+
+        final Account account = ((MainActivity) activity).getCurrentAccount();
+
         int textSize = UserPreferenceHelper.getInstance().get(R.string.key_setting_text_size, 10);
         int nameStyle = UserPreferenceHelper.getInstance().get(R.string.key_setting_namestyle, 0);
         int theme = ((MainActivity) activity).getThemeIndex();
@@ -181,7 +176,7 @@ public class StatusViewModel implements IViewModel {
         footer.setTextColor(colorFooter);
         footer.setText(getFooterText());
         ImageView favorited = (ImageView) convertedView.findViewById(R.id.imageview_status_favorited);
-        favorited.setVisibility(isFavorited() ? View.VISIBLE : View.GONE);
+        favorited.setVisibility(tweet.getOriginalTweet().isFavoritedBy(account.getUserId()) ? View.VISIBLE : View.GONE);
         if (tweet.isRetweet()) {
             int colorBgRetweet = Themes.getStyledColor(activity, theme, R.attr.color_status_bg_retweet, 0);
             convertedView.setBackgroundColor(colorBgRetweet);
@@ -192,12 +187,7 @@ public class StatusViewModel implements IViewModel {
             int colorBgNormal = Themes.getStyledColor(activity, theme, R.attr.color_status_bg_normal, 0);
             convertedView.setBackgroundColor(colorBgNormal);
         }
-        convertedView.setOnClickListener(new ListItemClickListener(activity, new Runnable() {
-            @Override
-            public void run() {
-                onClick(activity);
-            }
-        }));
+        convertedView.setOnClickListener(new ListItemClickListener(activity, () -> onClick(activity)));
 
         final ViewGroup embeddedStatus = (ViewGroup) convertedView.findViewById(R.id.view_status_embedded_status);
         embeddedStatus.removeAllViews();
@@ -205,7 +195,6 @@ public class StatusViewModel implements IViewModel {
             List<Long> embeddedStatusIDs = getEmbeddedStatusIDs();
             if (embeddedStatusIDs.size() > 0) {
                 embeddedStatus.setVisibility(View.VISIBLE);
-                final Account account = ((MainActivity) activity).getCurrentAccount();
                 for (long id : embeddedStatusIDs) {
                     BackgroundTask task = account.fetchTweet(id, embeddedTweet -> {
                         if (embeddedTweet != null) {

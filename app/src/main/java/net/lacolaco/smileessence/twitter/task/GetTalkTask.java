@@ -26,7 +26,7 @@ public class GetTalkTask extends BackgroundTask<List<Tweet>, Tweet> {
             Tweet tweet = Tweet.fetch(id);
             if (tweet == null) {
                 try {
-                    tweet = Tweet.fromTwitter(account.getTwitter().showStatus(id));
+                    tweet = Tweet.fromTwitter(account.getTwitter().showStatus(id), account.getUserId());
                 } catch (TwitterException ignored) { }
             }
 

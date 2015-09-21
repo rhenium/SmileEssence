@@ -154,7 +154,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
                         for (int i = tweets.size() - 1; i >= 0; i--) {
                             twitter4j.Status status = tweets.get(i);
                             if (!status.isRetweet()) {
-                                StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status));
+                                StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status, currentAccount.getUserId()));
                                 adapter.addToTop(viewModel);
                                 StatusFilter.getInstance().filter(viewModel);
                             }
@@ -195,7 +195,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
                         List<twitter4j.Status> tweets = queryResult.getTweets();
                         for (twitter4j.Status status : tweets) {
                             if (!status.isRetweet()) {
-                                StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status));
+                                StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status, currentAccount.getUserId()));
                                 adapter.addToBottom(viewModel);
                                 StatusFilter.getInstance().filter(viewModel);
                             }
@@ -349,7 +349,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
                             for (int i = tweets.size() - 1; i >= 0; i--) {
                                 twitter4j.Status status = tweets.get(i);
                                 if (!status.isRetweet()) {
-                                    StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status));
+                                    StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status, account.getUserId()));
                                     adapter.addToTop(viewModel);
                                     StatusFilter.getInstance().filter(viewModel);
                                 }

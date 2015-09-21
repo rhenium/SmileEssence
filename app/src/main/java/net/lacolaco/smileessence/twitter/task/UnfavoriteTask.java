@@ -48,6 +48,6 @@ public class UnfavoriteTask extends BackgroundTask<Tweet, Void> {
 
     @Override
     protected Tweet doInBackground() throws TwitterException {
-        return Tweet.fromTwitter(account.getTwitter().favorites().destroyFavorite(statusID));
+        return Tweet.fromTwitter(account.getTwitter().favorites().destroyFavorite(statusID), account.getUserId());
     }
 }

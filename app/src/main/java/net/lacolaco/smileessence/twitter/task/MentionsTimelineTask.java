@@ -51,6 +51,6 @@ public class MentionsTimelineTask extends TimelineTask<Tweet> {
 
     @Override
     protected List<Tweet> doInBackground() throws TwitterException {
-        return Tweet.fromTwitter(account.getTwitter().timelines().getMentionsTimeline(getPaging()));
+        return Tweet.fromTwitter(account.getTwitter().timelines().getMentionsTimeline(getPaging()), account.getUserId());
     }
 }

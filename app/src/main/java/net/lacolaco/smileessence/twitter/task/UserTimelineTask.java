@@ -50,6 +50,6 @@ public class UserTimelineTask extends TimelineTask<Tweet> {
 
     @Override
     protected List<Tweet> doInBackground() throws TwitterException {
-        return Tweet.fromTwitter(account.getTwitter().timelines().getUserTimeline(userID, getPaging()));
+        return Tweet.fromTwitter(account.getTwitter().timelines().getUserTimeline(userID, getPaging()), account.getUserId());
     }
 }

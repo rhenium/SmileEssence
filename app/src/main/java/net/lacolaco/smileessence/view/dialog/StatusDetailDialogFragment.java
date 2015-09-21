@@ -192,8 +192,8 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         } else {
             retweet.setTag(-1L);
         }
-        favorite.setTag(statusViewModel.isFavorited());
-        if (statusViewModel.isFavorited()) {
+        favorite.setTag(statusViewModel.getTweet().getOriginalTweet().isFavoritedBy(activity.getCurrentAccount().getUserId()));
+        if (statusViewModel.getTweet().getOriginalTweet().isFavoritedBy(activity.getCurrentAccount().getUserId())) {
             favorite.setImageDrawable(getResources().getDrawable(R.drawable.icon_favorite_on));
         }
         boolean deletable = isDeletable(account, tweet);

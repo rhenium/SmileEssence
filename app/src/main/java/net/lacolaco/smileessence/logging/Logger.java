@@ -58,7 +58,7 @@ public class Logger {
         StackTraceElement[] st = Thread.currentThread().getStackTrace();
         for (int i = 0; i < st.length; ++i) {
             if (st[i].getMethodName().equals("getTag")) {
-                return st[i + 2].getClassName() + "." + st[i + 2].getMethodName();
+                return st[i + 2].getClassName() + ":" + st[i + 2].getMethodName();
             }
         }
         return TAG;

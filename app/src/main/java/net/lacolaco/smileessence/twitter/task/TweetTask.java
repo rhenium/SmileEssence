@@ -113,7 +113,7 @@ public class TweetTask extends BackgroundTask<Tweet, Void> {
                     update.setMedia(mediaFile);
                 }
             }
-            Tweet tweet = Tweet.fromTwitter(account.getTwitter().tweets().updateStatus(update));
+            Tweet tweet = Tweet.fromTwitter(account.getTwitter().tweets().updateStatus(update), account.getUserId());
             if (tempFilePath != null) {
                 new File(tempFilePath).delete();
             }

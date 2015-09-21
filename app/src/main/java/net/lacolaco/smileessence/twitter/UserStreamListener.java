@@ -25,8 +25,6 @@
 package net.lacolaco.smileessence.twitter;
 
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.activity.MainActivity;
-import net.lacolaco.smileessence.data.FavoriteCache;
 import net.lacolaco.smileessence.data.UserListCache;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.DirectMessage;
@@ -87,10 +85,9 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
 
     @Override
     public void onStatus(Status status) {
-        Tweet tweet = Tweet.fromTwitter(status);
+        Tweet tweet = Tweet.fromTwitter(status, account.getUserId());
         StatusViewModel vm = new StatusViewModel(tweet);
         StatusFilter.getInstance().filter(vm);
-        FavoriteCache.getInstance().put(status);
         if (tweet.isRetweet()) {
             if (tweet.getUser().getId() == account.getUserId()) {
                 addToHistory(new EventViewModel(EnumEvent.RETWEETED, tweet.getUser(), tweet));
@@ -140,29 +137,27 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
 
     @Override
     public void onFavorite(twitter4j.User source, twitter4j.User target, Status favoritedStatus) {
-        Tweet tweet = Tweet.fromTwitter(favoritedStatus);
+        Tweet tweet = Tweet.fromTwitter(favoritedStatus, account.getUserId());
         if (isMe(User.fromTwitter(target))) {
             addToHistory(new EventViewModel(EnumEvent.FAVORITED, User.fromTwitter(source), tweet));
         }
-        if (isMe(User.fromTwitter(source))) {
-            FavoriteCache.getInstance().put(favoritedStatus, true);
-            // TODO: activity.getAdapter(MainActivity.AdapterID.Home).update();
-            // TODO: activity.getAdapter(MainActivity.AdapterID.Mentions).update();
-        }
+        // unneeded?
+        // if (isMe(User.fromTwitter(source))) {
+        //     tweet.addFavoriter(source.getId());
+        // }
     }
 
     @Override
     public void onUnfavorite(twitter4j.User source, twitter4j.User target, twitter4j.Status unfavoritedStatus) {
-        Tweet tweet = Tweet.fromTwitter(unfavoritedStatus);
+        Tweet tweet = Tweet.fromTwitter(unfavoritedStatus, account.getUserId());
         boolean unfavNoticeEnabled = UserPreferenceHelper.getInstance().get(R.string.key_setting_notify_on_unfavorited, true);
-        if (isMe(User.fromTwitter(target)) && unfavNoticeEnabled) {
+        if (unfavNoticeEnabled && isMe(User.fromTwitter(target))) {
             addToHistory(new EventViewModel(EnumEvent.UNFAVORITED, User.fromTwitter(source), tweet));
         }
-        if (isMe(User.fromTwitter(source))) {
-            //FavoriteCache.getInstance().put(unfavoritedStatus, false);
-            // TODO: activity.getAdapter(MainActivity.AdapterID.Home).update();
-            // TODO: activity.getAdapter(MainActivity.AdapterID.Mentions).update();
-        }
+        // unneeded?
+        // if (isMe(User.fromTwitter(source))) {
+        //     tweet.removeFavoriter(source.getId());
+        // }
     }
 
     @Override

@@ -5,8 +5,8 @@ import com.google.common.cache.CacheBuilder;
 import net.lacolaco.smileessence.util.ListUtils;
 import twitter4j.Status;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Tweet extends EntitySupport {
     // キャッシュ こっちは soft reference
@@ -20,23 +20,19 @@ public class Tweet extends EntitySupport {
         storage.invalidate(statusId);
     }
 
-    public synchronized static Tweet fromTwitter(final twitter4j.Status st) {
-        if (st == null) {
-            return null;
-        }
-
+    public synchronized static Tweet fromTwitter(final twitter4j.Status st, long myUserId) {
         Tweet t = fetch(st.getId());
         if (t == null) {
-            t = new Tweet(st);
+            t = new Tweet();
             storage.put(st.getId(), t);
-        } else {
-            t.update(st);
         }
+
+        t.update(st, myUserId);
         return t;
     }
 
-    public synchronized static List<Tweet> fromTwitter(List<Status> sts) {
-        return ListUtils.map(sts, Tweet::fromTwitter);
+    public synchronized static List<Tweet> fromTwitter(List<Status> sts, long myUserId) {
+        return ListUtils.map(sts, st -> fromTwitter(st, myUserId));
     }
 
     // インスタンス
@@ -50,12 +46,12 @@ public class Tweet extends EntitySupport {
     private long inReplyTo;
     private int favoriteCount;
     private int retweetCount;
+    private Set<Long> favoriters;
 
-    private Tweet(twitter4j.Status st) {
-        update(st);
+    private Tweet() {
     }
 
-    private void update(twitter4j.Status status) {
+    private void update(twitter4j.Status status, long myUserId) {
         id = status.getId();
         user = User.fromTwitter(status.getUser());
         text = extractText(status, false);
@@ -67,7 +63,21 @@ public class Tweet extends EntitySupport {
         inReplyTo = status.getInReplyToStatusId();
         isRetweet = status.isRetweet();
         if (isRetweet()) {
-            retweetedTweet = Tweet.fromTwitter(status.getRetweetedStatus());
+            retweetedTweet = Tweet.fromTwitter(status.getRetweetedStatus(), myUserId);
+        }
+
+        if (favoriters == null) {
+            if (isRetweet()) {
+                favoriters = getRetweetedTweet().getFavoriters();
+            } else {
+                favoriters = Collections.newSetFromMap(new ConcurrentHashMap<>());
+            }
+        }
+
+        if (status.isFavorited()) {
+            favoriters.add(myUserId);
+        } else {
+            favoriters.remove(myUserId);
         }
 
         updateEntities(status);
@@ -123,5 +133,21 @@ public class Tweet extends EntitySupport {
 
     public long getInReplyTo() {
         return inReplyTo;
+    }
+
+    public boolean isFavoritedBy(long id) {
+        return favoriters.contains(id);
+    }
+
+    public Set<Long> getFavoriters() {
+        return favoriters;
+    }
+
+    public boolean addFavoriter(long id) {
+        return favoriters.add(id); // false means already added
+    }
+
+    public boolean removeFavoriter(long id) {
+        return favoriters.remove(id); //false means not contained
     }
 }

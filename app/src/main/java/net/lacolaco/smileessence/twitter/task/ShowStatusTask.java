@@ -48,6 +48,6 @@ public class ShowStatusTask extends BackgroundTask<Tweet, Void> {
 
     @Override
     protected Tweet doInBackground() throws TwitterException {
-        return Tweet.fromTwitter(account.getTwitter().tweets().showStatus(id));
+        return Tweet.fromTwitter(account.getTwitter().tweets().showStatus(id), account.getUserId());
     }
 }
