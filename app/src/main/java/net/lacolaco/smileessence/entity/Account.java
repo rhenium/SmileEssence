@@ -53,6 +53,9 @@ public class Account extends Model {
     @Deprecated @Column(name = "ScreenName", notNull = true)
     public String screenName;
 
+    // Required by ActiveAndroid
+    public Account() { }
+
     public Account(String token, String tokenSecret, long userID, String screenName) {
         super();
         this.accessToken = token;
