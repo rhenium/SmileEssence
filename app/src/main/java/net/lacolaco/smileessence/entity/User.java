@@ -14,12 +14,26 @@ public class User {
     public synchronized static User fromTwitter(final twitter4j.User st) {
         User u = fetch(st.getId());
         if (u == null) {
-            u = new User(st);
+            u = new User();
             storage.put(st.getId(), u);
-        } else {
-            u.update(st);
         }
+
+        u.update(st);
         return u;
+    }
+
+    // only for initialization; DO NOT have reference for this object
+    public synchronized static User _makeSkeleton(long id, String screenName) {
+        User u = fetch(id);
+        if (u != null) {
+            return u;
+        } else {
+            u = new User();
+            u.id = id;
+            u.screenName = screenName;
+            storage.put(id, u);
+            return u;
+        }
     }
 
     // インスタンス
@@ -38,8 +52,7 @@ public class User {
     private int followersCount;
     private boolean isVerified;
 
-    private User(twitter4j.User st) {
-        update(st);
+    private User() {
     }
 
     private void update(twitter4j.User user) {

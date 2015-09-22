@@ -150,7 +150,7 @@ public class StatusViewModel implements IViewModel {
         if (tweet.isRetweet()) {
             int colorBgRetweet = Themes.getStyledColor(activity, theme, R.attr.color_status_bg_retweet, 0);
             convertedView.setBackgroundColor(colorBgRetweet);
-        } else if (account.getCachedUser() != null && tweet.getOriginalTweet().getMentions().contains(account.getCachedUser().getScreenName())) {
+        } else if (tweet.getOriginalTweet().getMentions().contains(account.getUser().getScreenName())) {
             int colorBgMention = Themes.getStyledColor(activity, theme, R.attr.color_status_bg_mention, 0);
             convertedView.setBackgroundColor(colorBgMention);
         } else {

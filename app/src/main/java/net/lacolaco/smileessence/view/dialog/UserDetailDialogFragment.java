@@ -377,7 +377,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
     private void updateRelationship(Activity activity, final long userId) {
         MainActivity mainActivity = (MainActivity) activity;
         Account account = mainActivity.getCurrentAccount();
-        if (userId == account.userID) {
+        if (userId == account.getUserId()) {
             textViewFollowed.setText(R.string.user_detail_followed_is_me);
             buttonFollow.setVisibility(View.GONE);
         } else {

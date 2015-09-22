@@ -360,7 +360,7 @@ public class MainActivity extends Activity {
 
     public void updateActionBarIcon() {
         final ImageView homeIcon = (ImageView) findViewById(android.R.id.home);
-        new ShowUserTask(currentAccount, currentAccount.userID)
+        new ShowUserTask(currentAccount, currentAccount.getUserId())
                 .onDoneUI(user -> {
                     String urlHttps = user.getProfileImageUrl();
                     homeIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);

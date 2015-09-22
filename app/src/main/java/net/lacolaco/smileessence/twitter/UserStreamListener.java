@@ -91,7 +91,7 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
             if (tweet.getUser().getId() == account.getUserId()) {
                 addToHistory(new EventViewModel(EventViewModel.EnumEvent.RETWEETED, tweet.getUser(), tweet));
             }
-        } else if (account.getCachedUser() != null && tweet.getMentions().contains(account.getCachedUser().getScreenName())) {
+        } else if (tweet.getMentions().contains(account.getUser().getScreenName())) {
             EventViewModel mentioned = new EventViewModel(EventViewModel.EnumEvent.MENTIONED, tweet.getUser(), tweet);
             Notificator.getInstance().publish(mentioned.getFormattedString());
         }

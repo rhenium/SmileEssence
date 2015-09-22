@@ -71,7 +71,6 @@ public class MainActivityMenuHelper {
     }
 
     public static boolean onItemSelected(MainActivity activity, MenuItem item) {
-        User user = activity.getCurrentAccount().getCachedUser();
         switch (item.getItemId()) {
             case R.id.actionbar_post: {
                 openPostPage(activity);
@@ -107,27 +106,15 @@ public class MainActivityMenuHelper {
                 return true;
             }
             case R.id.actionbar_favstar: {
-                if (user == null) {
-                    Notificator.getInstance().publish(R.string.notice_application_starting);
-                } else {
-                    new CommandOpenURL(activity, user.getFavstarRecentURL()).execute();
-                }
+                new CommandOpenURL(activity, activity.getCurrentAccount().getUser().getFavstarRecentURL()).execute();
                 return true;
             }
             case R.id.actionbar_aclog: {
-                if (user == null) {
-                    Notificator.getInstance().publish(R.string.notice_application_starting);
-                } else {
-                    new CommandOpenURL(activity, user.getAclogTimelineURL()).execute();
-                }
+                new CommandOpenURL(activity, activity.getCurrentAccount().getUser().getAclogTimelineURL()).execute();
                 return true;
             }
             case R.id.actionbar_twilog: {
-                if (user == null) {
-                    Notificator.getInstance().publish(R.string.notice_application_starting);
-                } else {
-                    new CommandOpenURL(activity, user.getTwilogURL()).execute();
-                }
+                new CommandOpenURL(activity, activity.getCurrentAccount().getUser().getTwilogURL()).execute();
                 return true;
             }
             case R.id.actionbar_report: {

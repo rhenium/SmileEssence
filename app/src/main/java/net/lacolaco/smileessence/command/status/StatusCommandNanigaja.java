@@ -29,6 +29,7 @@ import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.command.IConfirmable;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
+import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.TweetBuilder;
@@ -64,13 +65,14 @@ public class StatusCommandNanigaja extends StatusCommand implements IConfirmable
     // -------------------------- OTHER METHODS --------------------------
 
     public String build() {
+        User user = account.getUser();
         String str = getOriginalStatus().getText();
         String header = "";
         if (str.startsWith(".")) {
             str = str.replaceFirst(".", "");
         }
-        if (str.startsWith(String.format("@%s", account.screenName))) {
-            str = str.replaceFirst(String.format("@%s", account.screenName), "").trim();
+        if (str.startsWith(String.format("@%s", user.getScreenName()))) {
+            str = str.replaceFirst(String.format("@%s", user.getScreenName()), "").trim();
             header = "@" + getOriginalStatus().getUser().getScreenName();
         }
         str = String.format("%s %s", header, String.format(getFormatString(getActivity()), str)).trim();

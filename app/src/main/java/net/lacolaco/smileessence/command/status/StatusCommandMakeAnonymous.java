@@ -29,6 +29,7 @@ import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.command.IConfirmable;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
+import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.TweetBuilder;
@@ -52,13 +53,14 @@ public class StatusCommandMakeAnonymous extends StatusCommand implements IConfir
     // --------------------------- CONSTRUCTORS ---------------------------
 
     public static String build(Activity activity, Tweet tweet, Account account) {
+        User user = account.getUser();
         String str = tweet.getText();
         String header = "";
         if (str.startsWith(".")) {
             str = str.replaceFirst(".", "");
         }
-        if (str.startsWith(String.format("@%s", account.screenName))) {
-            str = str.replaceFirst(String.format("@%s", account.screenName), "").trim();
+        if (str.startsWith(String.format("@%s", user.getScreenName()))) {
+            str = str.replaceFirst(String.format("@%s", user.getScreenName()), "").trim();
         }
         str = activity.getString(R.string.format_status_command_make_anonymous, str).trim();
         return str;

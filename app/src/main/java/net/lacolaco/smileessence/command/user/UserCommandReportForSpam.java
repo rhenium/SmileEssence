@@ -55,7 +55,7 @@ public class UserCommandReportForSpam extends UserCommand implements IConfirmabl
 
     @Override
     public boolean isEnabled() {
-        return getUser().getId() != account.userID;
+        return getUser().getId() != account.getUserId();
     }
 
     // -------------------------- OTHER METHODS --------------------------

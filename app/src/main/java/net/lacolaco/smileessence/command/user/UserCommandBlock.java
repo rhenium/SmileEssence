@@ -55,7 +55,7 @@ public class UserCommandBlock extends UserCommand implements IConfirmable {
 
     @Override
     public boolean isEnabled() {
-        return getUser().getId() != account.userID;
+        return getUser().getId() != account.getUserId();
     }
 
     // -------------------------- OTHER METHODS --------------------------

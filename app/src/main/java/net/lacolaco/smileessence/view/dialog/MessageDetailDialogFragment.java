@@ -228,7 +228,7 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
     }
 
     private boolean isDeletable(Account account, DirectMessage message) {
-        return message.getSender().getId() == account.userID;
+        return message.getSender().getId() == account.getUserId();
     }
 
     private void openMenu(MainActivity activity) {

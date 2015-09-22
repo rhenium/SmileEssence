@@ -92,8 +92,7 @@ public abstract class CustomListFragment<T extends CustomListAdapter> extends Pa
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View page = inflater.inflate(R.layout.fragment_list, container, false);
         PullToRefreshListView listView = getListView(page);
-        T adapter = getAdapter();
-        listView.setAdapter(adapter);
+        listView.setAdapter(getAdapter());
         listView.setOnScrollListener(this);
         listView.setOnRefreshListener(this);
         listView.setMode(getRefreshMode());
@@ -108,14 +107,13 @@ public abstract class CustomListFragment<T extends CustomListAdapter> extends Pa
     @Override
     public void onViewStateRestored(Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-        if (savedInstanceState != null) {
-        }
     }
 
     protected PullToRefreshListView getListView(View page) {
         return (PullToRefreshListView) page.findViewById(R.id.fragment_list_listview);
     }
 
+    // must be called in UI thread
     protected void updateListViewWithNotice(AbsListView absListView, boolean addedToTop) {
         T adapter = getAdapter();
         int before = adapter.getCount();

@@ -45,13 +45,13 @@ public class Account extends Model {
     private User user;
 
     @Column(name = "Token", notNull = true)
-    public String accessToken;
+    private String accessToken;
     @Column(name = "Secret", notNull = true)
-    public String accessSecret;
+    private String accessSecret;
     @Column(name = "UserID", notNull = true)
-    public long userID;
-    @Deprecated @Column(name = "ScreenName", notNull = true)
-    public String screenName;
+    private long userID;
+    @Column(name = "ScreenName", notNull = true)
+    private String screenName;
 
     // Required by ActiveAndroid
     public Account() { }
@@ -85,11 +85,16 @@ public class Account extends Model {
         return stream;
     }
 
-    public User getCachedUser() {
+    // MAY return incomplete object
+    public User getUser() {
         if (user == null) {
             user = User.fetch(userID); // 強い参照をもたせる
         }
-        return user; // null かも
+        if (user == null) {
+            user = User._makeSkeleton(getUserId(), screenName);
+        }
+
+        return user;
     }
 
     @Deprecated

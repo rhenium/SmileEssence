@@ -38,7 +38,6 @@ import net.lacolaco.smileessence.command.CommandOpenURL;
 import net.lacolaco.smileessence.data.PostState;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
-import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.TweetBuilder;
@@ -245,7 +244,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         TweetBuilder builder = new TweetBuilder();
         builder.addScreenName(originalTweet.getUser().getScreenName());
         for (String screenName : originalTweet.getMentions()) {
-            if (!screenName.equals(account.getCachedUser().getScreenName())) {
+            if (!screenName.equals(account.getUser().getScreenName())) {
                 builder.addScreenName(screenName);
             }
         }
