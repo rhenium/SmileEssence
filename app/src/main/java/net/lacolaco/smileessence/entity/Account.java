@@ -103,4 +103,14 @@ public class Account extends Model {
             return null;
         }
     }
+
+    //--- helper methods
+    public boolean canDelete(Tweet tweet) {
+        return tweet.getUser().getId() == getUserId();
+    }
+
+    public boolean canRetweet(Tweet tweet) {
+        return !tweet.getOriginalTweet().getUser().isProtected() &&
+                tweet.getOriginalTweet().getUser().getId() != getUserId();
+    }
 }

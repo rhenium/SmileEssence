@@ -28,6 +28,7 @@ import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ListAdapter;
 import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.viewmodel.IViewModel;
 
@@ -43,7 +44,7 @@ public class CustomListAdapter<T extends IViewModel> extends BaseAdapter {
     protected final Object LOCK = new Object();
     protected ArrayList<T> list = new ArrayList<>();
     protected List<T> frozenList = new ArrayList<>();
-    protected boolean isNotifiable = true;
+    private boolean isNotifiable = true;
     protected Activity activity;
 
     // --------------------------- CONSTRUCTORS ---------------------------
@@ -81,7 +82,7 @@ public class CustomListAdapter<T extends IViewModel> extends BaseAdapter {
     // --------------------- Interface Adapter ---------------------
 
     @Override
-    public Object getItem(int position) {
+    public T getItem(int position) {
         return frozenList.get(position);
     }
 
@@ -92,7 +93,7 @@ public class CustomListAdapter<T extends IViewModel> extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        return ((T) getItem(position)).getView(activity, activity.getLayoutInflater(), convertView);
+        return getItem(position).getView(activity, activity.getLayoutInflater(), convertView);
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
@@ -100,7 +101,7 @@ public class CustomListAdapter<T extends IViewModel> extends BaseAdapter {
     @Override
     public void notifyDataSetChanged() {
         sort();
-        frozenList = Collections.unmodifiableList((ArrayList) list.clone());
+        frozenList = Collections.unmodifiableList(new ArrayList<>(list));
         super.notifyDataSetChanged();
     }
 
@@ -152,7 +153,7 @@ public class CustomListAdapter<T extends IViewModel> extends BaseAdapter {
     }
 
     public void update() {
-        if (isNotifiable) {
+        if (isNotifiable()) {
             updateForce();
         }
     }

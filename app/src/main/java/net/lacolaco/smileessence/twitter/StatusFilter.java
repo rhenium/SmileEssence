@@ -24,8 +24,13 @@
 
 package net.lacolaco.smileessence.twitter;
 
+import net.lacolaco.smileessence.entity.MuteUserIds;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.util.Consumer;
+import net.lacolaco.smileessence.viewmodel.EventViewModel;
 import net.lacolaco.smileessence.viewmodel.IViewModel;
+import net.lacolaco.smileessence.viewmodel.MessageViewModel;
+import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -60,8 +65,22 @@ public class StatusFilter {
 
     // -------------------------- STATIC METHODS --------------------------
 
-    public <T extends IViewModel> void filter(T status) {
-        Map<Object, Consumer<?>> map = addHandlers.get(status.getClass());
+    public void filter(StatusViewModel tweet) {
+        if (!MuteUserIds.isMuted(tweet.getTweet().getOriginalTweet().getUser().getId())) {
+            filter(StatusViewModel.class, tweet);
+        }
+    }
+
+    public void filter(MessageViewModel message) {
+        filter(MessageViewModel.class, message);
+    }
+
+    public void filter(EventViewModel event) {
+        filter(EventViewModel.class, event);
+    }
+
+    public <T extends IViewModel> void filter(Class<T> klass, T status) {
+        Map<Object, Consumer<?>> map = addHandlers.get(klass);
         if (map != null) {
             for(Consumer f_ : map.values()) {
                 ((Consumer<T>) f_).accept(status);
@@ -69,7 +88,7 @@ public class StatusFilter {
         }
     }
 
-    public <T extends IViewModel> void remove(Class<T> klass, long id) {
+    public void remove(Class<? extends IViewModel> klass, long id) {
         Map<Object, Consumer<Long>> map = removeHandlers.get(klass);
         if (map != null) {
             for(Consumer<Long> f : map.values()) {

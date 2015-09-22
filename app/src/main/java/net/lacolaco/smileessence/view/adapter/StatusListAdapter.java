@@ -44,7 +44,7 @@ public class StatusListAdapter extends CustomListAdapter<StatusViewModel> {
 
     public long getLastID() {
         if (getCount() > 0) {
-            return ((StatusViewModel) getItem(getCount() - 1)).getTweet().getId();
+            return getItem(getCount() - 1).getTweet().getId();
         } else {
             return Long.MAX_VALUE;
         }
@@ -52,7 +52,7 @@ public class StatusListAdapter extends CustomListAdapter<StatusViewModel> {
 
     public long getTopID() {
         if (getCount() > 0) {
-            return ((StatusViewModel) getItem(0)).getTweet().getId();
+            return getItem(0).getTweet().getId();
         } else {
             return -1;
         }
@@ -60,38 +60,13 @@ public class StatusListAdapter extends CustomListAdapter<StatusViewModel> {
 
     // ------------------------ OVERRIDE METHODS ------------------------
 
-    @Override
-    public void addToBottom(StatusViewModel... items) {
-        for (StatusViewModel item : items) {
-            if (!preAdd(item)) {
-                continue;
-            }
-            super.addToBottom(item);
-        }
-    }
-
-    @Override
-    public void addToTop(StatusViewModel... items) {
-        for (StatusViewModel item : items) {
-            if (!preAdd(item)) {
-                continue;
-            }
-            super.addToTop(item);
-        }
-    }
-
     /**
      * Sort list by Status ID
      */
     @Override
     protected void sort() {
         synchronized (LOCK) {
-            Collections.sort(list, new Comparator<StatusViewModel>() {
-                @Override
-                public int compare(StatusViewModel lhs, StatusViewModel rhs) {
-                    return Long.valueOf(rhs.getTweet().getId()).compareTo(lhs.getTweet().getId());
-                }
-            });
+            Collections.sort(list, (lhs, rhs) -> Long.valueOf(rhs.getTweet().getId()).compareTo(lhs.getTweet().getId()));
         }
     }
 
@@ -107,14 +82,5 @@ public class StatusListAdapter extends CustomListAdapter<StatusViewModel> {
                 }
             }
         }
-    }
-
-    private boolean isBlockUser(StatusViewModel item) {
-        return MuteUserIds.isMuted(item.getTweet().getOriginalTweet().getUser().getId());
-    }
-
-    private boolean preAdd(StatusViewModel item) {
-        removeByStatusID(item.getTweet().getId());
-        return !isBlockUser(item);
     }
 }

@@ -73,7 +73,6 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
                     for (Tweet tweet : tweets) {
                         StatusViewModel statusViewModel = new StatusViewModel(tweet);
                         adapter.addToBottom(statusViewModel);
-                        StatusFilter.getInstance().filter(statusViewModel);
                     }
                     adapter.updateForce();
                 }).execute();

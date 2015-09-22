@@ -47,6 +47,7 @@ public class Tweet extends EntitySupport {
     private int favoriteCount;
     private int retweetCount;
     private Set<Long> favoriters;
+    private Map<Long, Long> retweets;
 
     private Tweet() {
     }
@@ -64,6 +65,7 @@ public class Tweet extends EntitySupport {
         isRetweet = status.isRetweet();
         if (isRetweet()) {
             retweetedTweet = Tweet.fromTwitter(status.getRetweetedStatus(), myUserId);
+            retweetedTweet.addRetweet(this);
         }
 
         if (favoriters == null) {
@@ -73,11 +75,21 @@ public class Tweet extends EntitySupport {
                 favoriters = Collections.newSetFromMap(new ConcurrentHashMap<>());
             }
         }
-
         if (status.isFavorited()) {
             favoriters.add(myUserId);
         } else {
             favoriters.remove(myUserId);
+        }
+
+        if (retweets == null) {
+            if (isRetweet()) {
+                retweets = getRetweetedTweet().getRetweets();
+            } else {
+                retweets = new ConcurrentHashMap<>();
+            }
+        }
+        if (status.getCurrentUserRetweetId() > 0) {
+            retweets.put(myUserId, status.getCurrentUserRetweetId());
         }
 
         updateEntities(status);
@@ -149,5 +161,21 @@ public class Tweet extends EntitySupport {
 
     public boolean removeFavoriter(long id) {
         return favoriters.remove(id); //false means not contained
+    }
+
+    public boolean isRetweetedBy(long id) {
+        return retweets.get(id) != null;
+    }
+
+    public long getRetweetIdBy(long id) {
+        return retweets.get(id);
+    }
+
+    public Map<Long, Long> getRetweets() {
+        return retweets;
+    }
+
+    public void addRetweet(Tweet retweet) {
+        retweets.put(retweet.getUser().getId(), retweet.getId());
     }
 }

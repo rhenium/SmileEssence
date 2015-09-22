@@ -42,44 +42,19 @@ public class MessageListAdapter extends CustomListAdapter<MessageViewModel> {
     // --------------------- GETTER / SETTER METHODS ---------------------
 
     public long getLastID() {
-        return ((MessageViewModel) getItem(getCount() - 1)).getDirectMessage().getId();
+        return getItem(getCount() - 1).getDirectMessage().getId();
     }
 
     public long getTopID() {
-        return ((MessageViewModel) getItem(0)).getDirectMessage().getId();
+        return getItem(0).getDirectMessage().getId();
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    public void addToBottom(MessageViewModel... items) {
-        for (MessageViewModel item : items) {
-            if (!preAdd(item)) {
-                continue;
-            }
-            super.addToBottom(items);
-        }
-    }
-
-    @Override
-    public void addToTop(MessageViewModel... items) {
-        for (MessageViewModel item : items) {
-            if (!preAdd(item)) {
-                continue;
-            }
-            super.addToTop(items);
-        }
-    }
-
-    @Override
     public void sort() {
         synchronized (LOCK) {
-            Collections.sort(list, new Comparator<MessageViewModel>() {
-                @Override
-                public int compare(MessageViewModel lhs, MessageViewModel rhs) {
-                    return rhs.getDirectMessage().getCreatedAt().compareTo(lhs.getDirectMessage().getCreatedAt());
-                }
-            });
+            Collections.sort(list, (lhs, rhs) -> rhs.getDirectMessage().getCreatedAt().compareTo(lhs.getDirectMessage().getCreatedAt()));
         }
     }
 
@@ -97,10 +72,5 @@ public class MessageListAdapter extends CustomListAdapter<MessageViewModel> {
             }
             return null;
         }
-    }
-
-    private boolean preAdd(MessageViewModel item) {
-        removeByMessageID(item.getDirectMessage().getId());
-        return true;
     }
 }
