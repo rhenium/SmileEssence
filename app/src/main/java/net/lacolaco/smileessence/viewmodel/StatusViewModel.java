@@ -50,9 +50,6 @@ import java.util.List;
 
 public class StatusViewModel implements IViewModel {
     private Tweet tweet;
-    private boolean isMyStatus;
-    private boolean isMention;
-    private boolean isRetweetOfMe;
 
     private ArrayList<BackgroundTask> lastTasks = new ArrayList<>(); // internal
 
@@ -85,42 +82,15 @@ public class StatusViewModel implements IViewModel {
     private String getFooterText() {
         StringBuilder builder = new StringBuilder();
         if (tweet.isRetweet()) {
-            builder.append("(RT: ").append(tweet.getUser().getScreenName()).append(") ");
+            builder
+                    .append("(RT: ")
+                    .append(tweet.getUser().getScreenName())
+                    .append(") ");
         }
-        builder.append(StringUtils.dateToString(tweet.getCreatedAt()));
+        builder.append(StringUtils.dateToString(tweet.getOriginalTweet().getCreatedAt()));
         builder.append(" via ");
-        builder.append(Html.fromHtml(tweet.getSource()));
+        builder.append(Html.fromHtml(tweet.getOriginalTweet().getSource()));
         return builder.toString();
-    }
-
-    public boolean isMention() {
-        if (tweet.isRetweet()) {
-            return tweet.getRetweetedTweet() == null;
-        }
-        return isMention;
-    }
-
-    public void setMention(boolean mention) {
-        isMention = mention;
-    }
-
-    public boolean isMyStatus() {
-        if (tweet.isRetweet()) {
-            return tweet.getRetweetedTweet() == null;
-        }
-        return isMyStatus;
-    }
-
-    public void setMyStatus(boolean myStatus) {
-        isMyStatus = myStatus;
-    }
-
-    public boolean isRetweetOfMe() {
-        return isRetweetOfMe;
-    }
-
-    public void setRetweetOfMe(boolean retweet) {
-        this.isRetweetOfMe = retweet;
     }
 
     // ------------------------ INTERFACE METHODS ------------------------
@@ -152,20 +122,20 @@ public class StatusViewModel implements IViewModel {
         int nameStyle = UserPreferenceHelper.getInstance().get(R.string.key_setting_namestyle, 0);
         int theme = ((MainActivity) activity).getThemeIndex();
         NetworkImageView icon = (NetworkImageView) convertedView.findViewById(R.id.imageview_status_icon);
-        ImageCache.getInstance().setImageToView(tweet.getUser().getProfileImageUrl(), icon);
+        ImageCache.getInstance().setImageToView(tweet.getOriginalTweet().getUser().getProfileImageUrl(), icon);
         icon.setOnClickListener(v -> onIconClick(activity));
         TextView header = (TextView) convertedView.findViewById(R.id.textview_status_header);
         header.setTextSize(textSize);
         int colorHeader = Themes.getStyledColor(activity, theme, R.attr.color_status_text_header, 0);
         int colorMineHeader = Themes.getStyledColor(activity, theme, R.attr.color_status_text_mine, 0);
-        header.setTextColor(isMyStatus() ? colorMineHeader : colorHeader);
-        header.setText(NameStyles.getNameString(nameStyle, tweet.getUser().getScreenName(), tweet.getUser().getName()));
+        header.setTextColor(tweet.getUser().getId() == account.getUserId() ? colorMineHeader : colorHeader);
+        header.setText(NameStyles.getNameString(nameStyle, tweet.getOriginalTweet().getUser()));
         TextView content = (TextView) convertedView.findViewById(R.id.textview_status_text);
         content.setTextSize(textSize);
         int colorNormal = Themes.getStyledColor(activity, theme, R.attr.color_status_text_normal, 0);
         content.setTextColor(colorNormal);
-        String rawText = tweet.getText();
-        if (isReadMorseEnabled((MainActivity) activity) && Morse.isMorse(rawText)) {
+        String rawText = tweet.getOriginalTweet().getText();
+        if (isReadMorseEnabled() && Morse.isMorse(rawText)) {
             content.setText(String.format("%s\n(%s)", rawText, Morse.morseToJa(rawText)));
         } else {
             content.setText(rawText);
@@ -176,11 +146,11 @@ public class StatusViewModel implements IViewModel {
         footer.setTextColor(colorFooter);
         footer.setText(getFooterText());
         ImageView favorited = (ImageView) convertedView.findViewById(R.id.imageview_status_favorited);
-        favorited.setVisibility(tweet.getOriginalTweet().isFavoritedBy(account.getUserId()) ? View.VISIBLE : View.GONE);
+        favorited.setVisibility(tweet.isFavoritedBy(account.getUserId()) ? View.VISIBLE : View.GONE);
         if (tweet.isRetweet()) {
             int colorBgRetweet = Themes.getStyledColor(activity, theme, R.attr.color_status_bg_retweet, 0);
             convertedView.setBackgroundColor(colorBgRetweet);
-        } else if (isMention()) {
+        } else if (account.getCachedUser() != null && tweet.getOriginalTweet().getMentions().contains(account.getCachedUser().getScreenName())) {
             int colorBgMention = Themes.getStyledColor(activity, theme, R.attr.color_status_bg_mention, 0);
             convertedView.setBackgroundColor(colorBgMention);
         } else {
@@ -198,7 +168,7 @@ public class StatusViewModel implements IViewModel {
                 for (long id : embeddedStatusIDs) {
                     BackgroundTask task = account.fetchTweet(id, embeddedTweet -> {
                         if (embeddedTweet != null) {
-                            StatusViewModel viewModel = new StatusViewModel(tweet);
+                            StatusViewModel viewModel = new StatusViewModel(embeddedTweet);
                             View embeddedHolder = viewModel.getView(activity, inflater, null, false);
                             embeddedStatus.addView(embeddedHolder);
                             embeddedStatus.invalidate();
@@ -216,11 +186,7 @@ public class StatusViewModel implements IViewModel {
         return convertedView;
     }
 
-    public boolean isMention(String screenName) {
-        return tweet.getMentions().contains(screenName);
-    }
-
-    private boolean isReadMorseEnabled(MainActivity activity) {
+    private boolean isReadMorseEnabled() {
         return UserPreferenceHelper.getInstance().get(R.string.key_setting_read_morse, true);
     }
 

@@ -25,7 +25,6 @@
 package net.lacolaco.smileessence.viewmodel;
 
 import android.app.Activity;
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -171,5 +170,33 @@ public class EventViewModel implements IViewModel {
 
     public String getFormattedString() {
         return Application.getContext().getString(event.getTextFormatResourceID(), sourceScreenName);
+    }
+
+    public enum EnumEvent {
+
+        FAVORITED(R.string.format_event_favorited),
+        UNFAVORITED(R.string.format_event_unfavorited),
+        RETWEETED(R.string.format_event_retweeted),
+        MENTIONED(R.string.format_event_mentioned),
+        FOLLOWED(R.string.format_event_followed),
+        BLOCKED(R.string.format_event_blocked),
+        UNBLOCKED(R.string.format_event_unblocked),
+        RECEIVE_MESSAGE(R.string.format_event_message);
+
+        // ------------------------------ FIELDS ------------------------------
+
+        private int textFormatResourceID;
+
+        // --------------------------- CONSTRUCTORS ---------------------------
+
+        EnumEvent(int textFormatResourceID) {
+            this.textFormatResourceID = textFormatResourceID;
+        }
+
+        // --------------------- GETTER / SETTER METHODS ---------------------
+
+        public int getTextFormatResourceID() {
+            return textFormatResourceID;
+        }
     }
 }

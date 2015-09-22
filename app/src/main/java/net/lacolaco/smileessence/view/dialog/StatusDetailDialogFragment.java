@@ -129,7 +129,8 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
                     .onDoneUI(replyTo -> {
                         adapter.addToTop(new StatusViewModel(replyTo));
                         adapter.updateForce();
-                    });
+                    })
+                    .execute();
         }
         return new AlertDialog.Builder(getActivity()).setView(header).create();
     }

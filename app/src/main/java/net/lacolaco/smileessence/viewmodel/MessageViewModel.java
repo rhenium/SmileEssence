@@ -51,14 +51,11 @@ public class MessageViewModel implements IViewModel {
     public static final String DETAIL_DIALOG = "messageDetail";
 
     private final DirectMessage directMessage;
-    private final boolean myMessage;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
     public MessageViewModel(DirectMessage mes) {
         directMessage = mes;
-        //myMessage = isMyMessage(account);
-        myMessage = true; // :wTODO
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------
@@ -67,16 +64,12 @@ public class MessageViewModel implements IViewModel {
     public DirectMessage getDirectMessage() {
         return directMessage;
     }
-    private String getFooterText() {
+    private String getFooterText(Account account) {
         String s = StringUtils.dateToString(directMessage.getCreatedAt());
-        if (isMyMessage()) {
+        if (directMessage.getSender().getId() == account.getUserId()) {
             s = String.format("%s to @%s", s, directMessage.getRecipient().getScreenName());
         }
         return s;
-    }
-
-    public boolean isMyMessage() {
-        return myMessage;
     }
 
     // ------------------------ INTERFACE METHODS ------------------------
@@ -103,7 +96,7 @@ public class MessageViewModel implements IViewModel {
         header.setTextSize(textSize);
         int colorHeader = Themes.getStyledColor(activity, theme, R.attr.color_message_text_header, 0);
         header.setTextColor(colorHeader);
-        header.setText(getNameString(nameStyle));
+        header.setText(NameStyles.getNameString(nameStyle, directMessage.getSender()));
         TextView content = (TextView) convertedView.findViewById(R.id.textview_status_text);
         content.setTextSize(textSize);
         int colorNormal = Themes.getStyledColor(activity, theme, R.attr.color_status_text_normal, 0);
@@ -113,27 +106,16 @@ public class MessageViewModel implements IViewModel {
         footer.setTextSize(textSize - 2);
         int colorFooter = Themes.getStyledColor(activity, theme, R.attr.color_status_text_footer, 0);
         footer.setTextColor(colorFooter);
-        footer.setText(getFooterText());
+        footer.setText(getFooterText(((MainActivity) activity).getCurrentAccount()));
         ImageView favorited = (ImageView) convertedView.findViewById(R.id.imageview_status_favorited);
         favorited.setVisibility(View.GONE);
         int colorBgMessage = Themes.getStyledColor(activity, theme, R.attr.color_message_bg_normal, 0);
         convertedView.setBackgroundColor(colorBgMessage);
-        convertedView.setOnClickListener(new ListItemClickListener(activity, new Runnable() {
-            @Override
-            public void run() {
-                MessageDetailDialogFragment dialogFragment = new MessageDetailDialogFragment();
-                dialogFragment.setMessageID(directMessage.getId());
-                DialogHelper.showDialog(activity, dialogFragment);
-            }
+        convertedView.setOnClickListener(new ListItemClickListener(activity, () -> {
+            MessageDetailDialogFragment dialogFragment = new MessageDetailDialogFragment();
+            dialogFragment.setMessageID(directMessage.getId());
+            DialogHelper.showDialog(activity, dialogFragment);
         }));
         return convertedView;
-    }
-
-    private String getNameString(int nameStyle) {
-        return NameStyles.getNameString(nameStyle, directMessage.getSender().getScreenName(), directMessage.getSender().getName());
-    }
-
-    private boolean isMyMessage(Account account) {
-        return directMessage.getSender().getId() == account.userID;
     }
 }

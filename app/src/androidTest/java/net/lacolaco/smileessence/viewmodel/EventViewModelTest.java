@@ -49,11 +49,11 @@ public class EventViewModelTest extends InstrumentationTestCase {
         Context context = getInstrumentation().getTargetContext();
         Status status = mock.getReplyMock();
         User source = mock.getUserMock();
-        EventViewModel event = new EventViewModel(EnumEvent.FAVORITED, source, status);
+        EventViewModel event = new EventViewModel(EventViewModel.EnumEvent.FAVORITED, source, status);
         assertEquals(source.getId(), event.getSourceUserID());
         assertEquals(status.getId(), event.getTargetStatusID());
         assertEquals(context.getString(R.string.format_event_favorited, source.getScreenName()), event.getFormattedString(context));
-        event = new EventViewModel(EnumEvent.RECEIVE_MESSAGE, source);
+        event = new EventViewModel(EventViewModel.EnumEvent.RECEIVE_MESSAGE, source);
         Configuration config = context.getResources().getConfiguration();
         config.locale = Locale.ENGLISH;
         context.getResources().updateConfiguration(config, context.getResources().getDisplayMetrics());
