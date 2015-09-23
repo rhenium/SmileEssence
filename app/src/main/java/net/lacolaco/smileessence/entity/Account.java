@@ -29,9 +29,7 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Delete;
-import net.lacolaco.smileessence.twitter.task.ShowDirectMessageTask;
 import net.lacolaco.smileessence.twitter.task.ShowStatusTask;
-import net.lacolaco.smileessence.twitter.task.ShowUserTask;
 import net.lacolaco.smileessence.util.BackgroundTask;
 import net.lacolaco.smileessence.util.Consumer;
 import twitter4j.Twitter;
@@ -85,13 +83,18 @@ public class Account extends Model {
         return stream;
     }
 
-    // MAY return incomplete object
     public User getUser() {
         if (user == null) {
             user = User.fetch(userID); // 強い参照をもたせる
-        }
-        if (user == null) {
-            user = User._makeSkeleton(getUserId(), screenName);
+            if (user == null) {
+                user = User._makeSkeleton(getUserId(), screenName);
+            }
+            user.addObserver(this, (user, objs) -> {
+                if (!this.screenName.equals(((User) user).getScreenName())) {
+                    this.screenName = ((User) user).getScreenName();
+                    this.save();
+                }
+            });
         }
 
         return user;

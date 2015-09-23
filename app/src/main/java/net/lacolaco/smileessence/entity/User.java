@@ -2,8 +2,9 @@ package net.lacolaco.smileessence.entity;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import net.lacolaco.smileessence.util.UIObservable;
 
-public class User {
+public class User extends UIObservable {
     // 重複防止用キャッシュ こっちは weak reference
     private static Cache<Long, User> storage = CacheBuilder.newBuilder().weakValues().build();
 
@@ -57,19 +58,38 @@ public class User {
 
     private void update(twitter4j.User user) {
         id = user.getId();
-        isProtected = user.isProtected();
-        screenName = user.getScreenName();
-        name = user.getName();
-        profileImageUrl = user.getProfileImageURLHttps();
-        profileBannerUrl = user.getProfileBannerURL();
-        description = user.getDescription();
-        location = user.getLocation();
-        url = user.getURL();
-        favoritesCount = user.getFavouritesCount();
-        statusesCount = user.getStatusesCount();
-        friendsCount = user.getFriendsCount();
-        followersCount = user.getFollowersCount();
-        isVerified = user.isVerified();
+        if (isProtected() != user.isProtected() ||
+                getScreenName() == null || !getScreenName().equals(user.getScreenName()) ||
+                getName() == null || !getName().equals(user.getName()) ||
+                getProfileImageUrl() == null || !getProfileImageUrl().equals(user.getProfileImageURLHttps())) {
+            isProtected = user.isProtected();
+            screenName = user.getScreenName();
+            name = user.getName();
+            profileImageUrl = user.getProfileImageURLHttps();
+
+            notifyChange(RO.BASIC);
+        }
+        if (getProfileBannerUrl() == null || !getProfileBannerUrl().equals(user.getProfileBannerURL()) ||
+                getDescription() == null || !getDescription().equals(user.getDescription()) ||
+                getLocation() == null || !getLocation().equals(user.getLocation()) ||
+                getUrl() == null || !getUrl().equals(user.getURL()) ||
+                getFavoritesCount() != user.getFavouritesCount() ||
+                getStatusesCount() != user.getStatusesCount() ||
+                getFriendsCount() != user.getFriendsCount() ||
+                getFollowersCount() != user.getFollowersCount() ||
+                isVerified() != user.isVerified()) {
+            profileBannerUrl = user.getProfileBannerURL();
+            description = user.getDescription();
+            location = user.getLocation();
+            url = user.getURL();
+            favoritesCount = user.getFavouritesCount();
+            statusesCount = user.getStatusesCount();
+            friendsCount = user.getFriendsCount();
+            followersCount = user.getFollowersCount();
+            isVerified = user.isVerified();
+
+            notifyChange(RO.DETAIL);
+        }
     }
 
     public long getId() {

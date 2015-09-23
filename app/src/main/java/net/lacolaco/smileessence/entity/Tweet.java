@@ -52,14 +52,32 @@ public class Tweet extends EntitySupport {
     private Tweet() {
     }
 
+    @Override
+    protected void finalize() throws Throwable {
+        try {
+            super.finalize();
+        } finally {
+            Tweet original = getRetweetedTweet();
+            if (original != null) {
+                original.removeRetweet(getId());
+            }
+        }
+    }
+
     private void update(twitter4j.Status status, long myUserId) {
         id = status.getId();
         user = User.fromTwitter(status.getUser());
         text = extractText(status, false);
         createdAt = status.getCreatedAt();
         source = status.getSource();
-        favoriteCount = status.getFavoriteCount();
-        retweetCount = status.getRetweetCount();
+
+        if (getFavoriteCount() != status.getFavoriteCount() ||
+                getRetweetCount() != status.getRetweetCount()) {
+            favoriteCount = status.getFavoriteCount();
+            retweetCount = status.getRetweetCount();
+
+            notifyChange(RO.REACTION_COUNT);
+        }
 
         inReplyTo = status.getInReplyToStatusId();
         isRetweet = status.isRetweet();
@@ -76,9 +94,9 @@ public class Tweet extends EntitySupport {
             }
         }
         if (status.isFavorited()) {
-            favoriters.add(myUserId);
+            addFavoriter(myUserId);
         } else {
-            favoriters.remove(myUserId);
+            removeFavoriter(myUserId);
         }
 
         if (retweets == null) {
@@ -89,7 +107,7 @@ public class Tweet extends EntitySupport {
             }
         }
         if (status.getCurrentUserRetweetId() > 0) {
-            retweets.put(myUserId, status.getCurrentUserRetweetId());
+            addRetweet(myUserId, status.getCurrentUserRetweetId());
         }
 
         updateEntities(status);
@@ -156,11 +174,15 @@ public class Tweet extends EntitySupport {
     }
 
     public boolean addFavoriter(long id) {
-        return favoriters.add(id); // false means already added
+        boolean changed = favoriters.add(id);
+        if (changed) notifyChange(RO.FAVORITERS);
+        return changed;
     }
 
     public boolean removeFavoriter(long id) {
-        return favoriters.remove(id); //false means not contained
+        boolean changed = favoriters.remove(id);
+        if (changed) notifyChange(RO.FAVORITERS);
+        return changed;
     }
 
     public boolean isRetweetedBy(long id) {
@@ -175,7 +197,19 @@ public class Tweet extends EntitySupport {
         return retweets;
     }
 
-    public void addRetweet(Tweet retweet) {
-        retweets.put(retweet.getUser().getId(), retweet.getId());
+    public boolean addRetweet(Tweet retweet) {
+        return addRetweet(retweet.getUser().getId(), retweet.getId());
+    }
+
+    public boolean addRetweet(long uid, long sid) {
+        boolean changed = retweets.put(uid, sid) != sid;
+        if (changed) notifyChange(RO.RETWEETERS);
+        return changed;
+    }
+
+    private boolean removeRetweet(long sid) {
+        boolean changed = retweets.values().remove(sid);
+        if (changed) notifyChange(RO.RETWEETERS);
+        return changed;
     }
 }
