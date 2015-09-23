@@ -60,11 +60,11 @@ public abstract class BackgroundTask<Result, Progress> {
     }
 
     protected void fail(Exception ex) {
+        exception = ex;
         ex.printStackTrace();
         Logger.error(ex);
 
         if (!task.isCancelled() && fail != null) {
-            exception = ex;
             fail.accept(ex);
         }
     }
