@@ -29,7 +29,7 @@
     <PreferenceCategory
         android:summary="@string/setting_category_display_summary"
         android:title="@string/setting_category_display_title">
-        <EditTextPreference
+        <net.lacolaco.smileessence.view.preference.IntegerEditTextPreference
             android:defaultValue="10"
             android:dialogMessage="@string/setting_text_size_dialog_message"
             android:dialogTitle="@string/setting_text_size_dialog_title"
@@ -37,14 +37,14 @@
             android:maxLength="2"
             android:numeric="decimal"
             android:title="@string/setting_text_size_title" />
-        <ListPreference
+        <net.lacolaco.smileessence.view.preference.IntegerListPreference
             android:defaultValue="0"
             android:dialogTitle="@string/setting_theme_dialog_title"
             android:entries="@array/setting_theme_names"
             android:entryValues="@array/setting_theme_ids"
             android:key="@string/key_setting_theme"
             android:title="@string/setting_theme_title" />
-        <ListPreference
+        <net.lacolaco.smileessence.view.preference.IntegerListPreference
             android:defaultValue="0"
             android:dialogTitle="@string/setting_namestyle_dialog_title"
             android:entries="@array/setting_namestyle_names"
@@ -79,7 +79,7 @@
             android:summaryOff="@string/setting_notify_on_unfavorited_summary_off"
             android:summaryOn="@string/setting_notify_on_unfavorited_summary_on"
             android:title="@string/setting_notify_on_unfavorited_title" />
-        <EditTextPreference
+        <net.lacolaco.smileessence.view.preference.IntegerEditTextPreference
             android:defaultValue="20"
             android:dialogMessage="@string/setting_timelines_dialog_message"
             android:dialogTitle="@string/setting_timelines_dialog_title"
