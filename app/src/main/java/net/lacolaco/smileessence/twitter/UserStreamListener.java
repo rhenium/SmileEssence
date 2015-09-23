@@ -137,31 +137,25 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
     @Override
     public void onFavorite(twitter4j.User source, twitter4j.User target, Status favoritedStatus) {
         Tweet tweet = Tweet.fromTwitter(favoritedStatus, account.getUserId());
-        if (isMe(User.fromTwitter(target))) {
+        tweet.addFavoriter(source.getId());
+        if (User.fromTwitter(target) == account.getUser()) {
             addToHistory(new EventViewModel(EventViewModel.EnumEvent.FAVORITED, User.fromTwitter(source), tweet));
         }
-        // unneeded?
-        // if (isMe(User.fromTwitter(source))) {
-        //     tweet.addFavoriter(source.getId());
-        // }
     }
 
     @Override
     public void onUnfavorite(twitter4j.User source, twitter4j.User target, twitter4j.Status unfavoritedStatus) {
         Tweet tweet = Tweet.fromTwitter(unfavoritedStatus, account.getUserId());
+        tweet.removeFavoriter(source.getId());
         boolean unfavNoticeEnabled = UserPreferenceHelper.getInstance().get(R.string.key_setting_notify_on_unfavorited, true);
-        if (unfavNoticeEnabled && isMe(User.fromTwitter(target))) {
+        if (unfavNoticeEnabled && User.fromTwitter(target) == account.getUser()) {
             addToHistory(new EventViewModel(EventViewModel.EnumEvent.UNFAVORITED, User.fromTwitter(source), tweet));
         }
-        // unneeded?
-        // if (isMe(User.fromTwitter(source))) {
-        //     tweet.removeFavoriter(source.getId());
-        // }
     }
 
     @Override
     public void onFollow(twitter4j.User source, twitter4j.User followedUser) {
-        if (isMe(User.fromTwitter(followedUser))) {
+        if (User.fromTwitter(followedUser) == account.getUser()) {
             addToHistory(new EventViewModel(EventViewModel.EnumEvent.FOLLOWED, User.fromTwitter(source)));
         }
     }
@@ -173,7 +167,7 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
     @Override
     public void onDirectMessage(twitter4j.DirectMessage directMessage) {
         DirectMessage message = DirectMessage.fromTwitter(directMessage);
-        if (isMe(message.getRecipient())) {
+        if (message.getRecipient() == account.getUser()) {
             addToHistory(new EventViewModel(EventViewModel.EnumEvent.RECEIVE_MESSAGE, User.fromTwitter(directMessage.getSender())));
         }
         MessageViewModel vm = new MessageViewModel(message);
@@ -226,14 +220,14 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
 
     @Override
     public void onBlock(twitter4j.User source, twitter4j.User blockedUser) {
-        if (isMe(User.fromTwitter(blockedUser))) {
+        if (User.fromTwitter(blockedUser) == account.getUser()) {
             addToHistory(new EventViewModel(EventViewModel.EnumEvent.BLOCKED, User.fromTwitter(source)));
         }
     }
 
     @Override
     public void onUnblock(twitter4j.User source, twitter4j.User unblockedUser) {
-        if (isMe(User.fromTwitter(unblockedUser))) {
+        if (User.fromTwitter(unblockedUser) == account.getUser()) {
             addToHistory(new EventViewModel(EventViewModel.EnumEvent.UNBLOCKED, User.fromTwitter(source)));
         }
     }
@@ -253,9 +247,5 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
     private void addToHistory(EventViewModel mentioned) {
         StatusFilter.getInstance().filter(mentioned);
         Notificator.getInstance().publish(mentioned.getFormattedString());
-    }
-
-    private boolean isMe(User user) {
-        return user.getId() == account.getUserId();
     }
 }

@@ -13,6 +13,12 @@ public abstract class UIObservable {
         }
     }
 
+    public UIObserver removeObserver(Object weakKey) {
+        synchronized (this) {
+            return observers.remove(weakKey);
+        }
+    }
+
     public void notifyChange(RO flag) {
         notifyChange(EnumSet.of(flag));
     }

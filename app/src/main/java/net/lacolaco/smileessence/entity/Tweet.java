@@ -202,7 +202,8 @@ public class Tweet extends EntitySupport {
     }
 
     public boolean addRetweet(long uid, long sid) {
-        boolean changed = retweets.put(uid, sid) != sid;
+        Long result = retweets.put(uid, sid);
+        boolean changed = result == null || result != sid;
         if (changed) notifyChange(RO.RETWEETERS);
         return changed;
     }
