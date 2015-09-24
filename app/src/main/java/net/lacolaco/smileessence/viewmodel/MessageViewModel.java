@@ -35,10 +35,12 @@ import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.data.ImageCache;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.DirectMessage;
+import net.lacolaco.smileessence.entity.RO;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.util.NameStyles;
 import net.lacolaco.smileessence.util.StringUtils;
 import net.lacolaco.smileessence.util.Themes;
+import net.lacolaco.smileessence.util.UIObserverBundle;
 import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.dialog.MessageDetailDialogFragment;
 import net.lacolaco.smileessence.view.dialog.UserDetailDialogFragment;
@@ -64,16 +66,17 @@ public class MessageViewModel implements IViewModel {
     public DirectMessage getDirectMessage() {
         return directMessage;
     }
+
     private String getFooterText(Account account) {
-        String s = StringUtils.dateToString(directMessage.getCreatedAt());
+        StringBuilder builder = new StringBuilder();
+        builder.append(StringUtils.dateToString(directMessage.getCreatedAt()));
         if (directMessage.getSender().getId() == account.getUserId()) {
-            s = String.format("%s to @%s", s, directMessage.getRecipient().getScreenName());
+            builder.append(" to @").append(directMessage.getRecipient().getScreenName());
         }
-        return s;
+        return builder.toString();
     }
 
     // ------------------------ INTERFACE METHODS ------------------------
-
 
     // --------------------- Interface IViewModel ---------------------
 
@@ -82,9 +85,43 @@ public class MessageViewModel implements IViewModel {
         if (convertedView == null) {
             convertedView = inflater.inflate(R.layout.list_item_status, null);
         }
+        UIObserverBundle bundle = (UIObserverBundle) convertedView.getTag();
+        if (bundle != null) {
+            bundle.detachAll();
+        } else {
+            bundle = new UIObserverBundle();
+            convertedView.setTag(bundle);
+        }
+
+        int theme = ((MainActivity) activity).getThemeIndex();
+        int colorBgMessage = Themes.getStyledColor(activity, theme, R.attr.color_message_bg_normal, 0);
+        convertedView.setBackgroundColor(colorBgMessage);
+        convertedView.setOnClickListener(new ListItemClickListener(activity, () -> {
+            MessageDetailDialogFragment dialogFragment = new MessageDetailDialogFragment();
+            dialogFragment.setMessageID(directMessage.getId());
+            DialogHelper.showDialog(activity, dialogFragment);
+        }));
+
+        ImageView favorited = (ImageView) convertedView.findViewById(R.id.imageview_status_favorited);
+        favorited.setVisibility(View.GONE);
+
+        updateViewSender(activity, convertedView);
+        updateViewBody(activity, convertedView);
+
+        final View finalView = convertedView;
+        bundle.attach(directMessage.getSender(), (x, changes) -> {
+            if (changes.contains(RO.BASIC))
+                updateViewSender(activity, finalView);
+        });
+
+        return convertedView;
+    }
+
+    private void updateViewSender(Activity activity, View convertedView) {
         int textSize = UserPreferenceHelper.getInstance().get(R.string.key_setting_text_size, 10);
         int nameStyle = UserPreferenceHelper.getInstance().get(R.string.key_setting_namestyle, 0);
         int theme = ((MainActivity) activity).getThemeIndex();
+
         NetworkImageView icon = (NetworkImageView) convertedView.findViewById(R.id.imageview_status_icon);
         ImageCache.getInstance().setImageToView(directMessage.getSender().getProfileImageUrl(), icon);
         icon.setOnClickListener(v -> {
@@ -92,11 +129,18 @@ public class MessageViewModel implements IViewModel {
             dialogFragment.setUserID(directMessage.getSender().getId());
             DialogHelper.showDialog(activity, dialogFragment);
         });
+
         TextView header = (TextView) convertedView.findViewById(R.id.textview_status_header);
         header.setTextSize(textSize);
         int colorHeader = Themes.getStyledColor(activity, theme, R.attr.color_message_text_header, 0);
         header.setTextColor(colorHeader);
         header.setText(NameStyles.getNameString(nameStyle, directMessage.getSender()));
+    }
+
+    private void updateViewBody(Activity activity, View convertedView) {
+        int textSize = UserPreferenceHelper.getInstance().get(R.string.key_setting_text_size, 10);
+        int theme = ((MainActivity) activity).getThemeIndex();
+
         TextView content = (TextView) convertedView.findViewById(R.id.textview_status_text);
         content.setTextSize(textSize);
         int colorNormal = Themes.getStyledColor(activity, theme, R.attr.color_status_text_normal, 0);
@@ -107,15 +151,5 @@ public class MessageViewModel implements IViewModel {
         int colorFooter = Themes.getStyledColor(activity, theme, R.attr.color_status_text_footer, 0);
         footer.setTextColor(colorFooter);
         footer.setText(getFooterText(((MainActivity) activity).getCurrentAccount()));
-        ImageView favorited = (ImageView) convertedView.findViewById(R.id.imageview_status_favorited);
-        favorited.setVisibility(View.GONE);
-        int colorBgMessage = Themes.getStyledColor(activity, theme, R.attr.color_message_bg_normal, 0);
-        convertedView.setBackgroundColor(colorBgMessage);
-        convertedView.setOnClickListener(new ListItemClickListener(activity, () -> {
-            MessageDetailDialogFragment dialogFragment = new MessageDetailDialogFragment();
-            dialogFragment.setMessageID(directMessage.getId());
-            DialogHelper.showDialog(activity, dialogFragment);
-        }));
-        return convertedView;
     }
 }
