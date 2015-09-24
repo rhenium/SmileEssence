@@ -46,7 +46,7 @@ import net.lacolaco.smileessence.twitter.task.UserListStatusesTask;
 import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.view.dialog.SelectUserListDialogFragment;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
-import net.lacolaco.smileessence.viewmodel.UserListListAdapter;
+import net.lacolaco.smileessence.view.adapter.UserListListAdapter;
 
 public class UserListFragment extends CustomListFragment<UserListListAdapter> implements View.OnClickListener {
 

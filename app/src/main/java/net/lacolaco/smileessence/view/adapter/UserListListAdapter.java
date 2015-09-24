@@ -22,10 +22,10 @@
  * SOFTWARE.
  */
 
-package net.lacolaco.smileessence.viewmodel;
+package net.lacolaco.smileessence.view.adapter;
 
 import android.app.Activity;
-import net.lacolaco.smileessence.view.adapter.StatusListAdapter;
+import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 
 public class UserListListAdapter extends StatusListAdapter {
 
