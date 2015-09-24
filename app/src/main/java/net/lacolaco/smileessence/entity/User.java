@@ -177,7 +177,7 @@ public class User extends UIObservable {
         return isVerified;
     }
 
-
+    // helper methods
     public String getUserHomeURL() {
         return String.format("https://twitter.com/%s", getScreenName());
     }

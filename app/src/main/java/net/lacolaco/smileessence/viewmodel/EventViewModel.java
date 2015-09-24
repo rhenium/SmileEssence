@@ -34,11 +34,13 @@ import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.data.ImageCache;
+import net.lacolaco.smileessence.entity.RO;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.util.StringUtils;
 import net.lacolaco.smileessence.util.Themes;
+import net.lacolaco.smileessence.util.UIObserverBundle;
 import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.dialog.UserDetailDialogFragment;
 import net.lacolaco.smileessence.view.listener.ListItemClickListener;
@@ -50,12 +52,8 @@ public class EventViewModel implements IViewModel {
     // ------------------------------ FIELDS ------------------------------
 
     private EnumEvent event;
-    private long sourceUserID;
-    private long targetStatusID;
-    private String sourceScreenName;
-    private String sourceName;
-    private String iconURL;
-    private String targetText;
+    private User source;
+    private Tweet targetObject;
     private Date createdAt;
 
     // --------------------------- CONSTRUCTORS ---------------------------
@@ -66,23 +64,15 @@ public class EventViewModel implements IViewModel {
 
     public EventViewModel(EnumEvent event, User source, Tweet tweet) {
         this.event = event;
+        this.source = source;
         this.createdAt = new Date();
-        this.sourceUserID = source.getId();
-        this.sourceScreenName = source.getScreenName();
-        this.sourceName = source.getName();
-        this.iconURL = source.getProfileImageUrl();
 
         if (tweet != null) {
             if (event == EnumEvent.RETWEETED) {
-                this.targetStatusID = tweet.getRetweetedTweet().getId();
-                this.targetText = tweet.getRetweetedTweet().getText();
+                this.targetObject = tweet.getRetweetedTweet();
             } else {
-                this.targetStatusID = tweet.getId();
-                this.targetText = tweet.getText();
+                this.targetObject = tweet;
             }
-        } else {
-            this.targetStatusID = -1L;
-            this.targetText = "";
         }
     }
 
@@ -96,32 +86,8 @@ public class EventViewModel implements IViewModel {
         return event;
     }
 
-    public String getIconURL() {
-        return iconURL;
-    }
-
-    public String getSourceName() {
-        return sourceName;
-    }
-
-    public String getSourceScreenName() {
-        return sourceScreenName;
-    }
-
-    public long getSourceUserID() {
-        return sourceUserID;
-    }
-
-    public long getTargetStatusID() {
-        return targetStatusID;
-    }
-
-    public String getTargetText() {
-        return targetText;
-    }
-
     public boolean isStatusEvent() {
-        return targetStatusID != -1L;
+        return targetObject != null;
     }
 
     // ------------------------ INTERFACE METHODS ------------------------
@@ -129,26 +95,43 @@ public class EventViewModel implements IViewModel {
 
     // --------------------- Interface IViewModel ---------------------
 
+    private void updateViewUser(MainActivity activity, View convertedView) {
+        NetworkImageView icon = (NetworkImageView) convertedView.findViewById(R.id.imageview_status_icon);
+        ImageCache.getInstance().setImageToView(source.getProfileImageUrl(), icon);
+
+        TextView header = (TextView) convertedView.findViewById(R.id.textview_status_header);
+        header.setText(getFormattedString());
+    }
+
     @Override
     public View getView(final Activity activity, LayoutInflater inflater, View convertedView) {
         if (convertedView == null) {
             convertedView = inflater.inflate(R.layout.list_item_status, null);
         }
+        UIObserverBundle bundle = (UIObserverBundle) convertedView.getTag();
+        if (bundle != null) {
+            bundle.detachAll();
+        } else {
+            bundle = new UIObserverBundle();
+            convertedView.setTag(bundle);
+        }
+
         int textSize = UserPreferenceHelper.getInstance().get(R.string.key_setting_text_size, 10);
         int nameStyle = UserPreferenceHelper.getInstance().get(R.string.key_setting_namestyle, 0);
         int theme = ((MainActivity) activity).getThemeIndex();
-        NetworkImageView icon = (NetworkImageView) convertedView.findViewById(R.id.imageview_status_icon);
-        ImageCache.getInstance().setImageToView(getIconURL(), icon);
+
         TextView header = (TextView) convertedView.findViewById(R.id.textview_status_header);
         header.setTextSize(textSize);
         int colorHeader = Themes.getStyledColor(activity, theme, R.attr.color_status_text_mine, 0);
         header.setTextColor(colorHeader);
-        header.setText(getFormattedString());
+
+        updateViewUser((MainActivity) activity, convertedView);
+
         TextView content = (TextView) convertedView.findViewById(R.id.textview_status_text);
         content.setTextSize(textSize);
         int colorNormal = Themes.getStyledColor(activity, theme, R.attr.color_status_text_normal, 0);
         content.setTextColor(colorNormal);
-        content.setText(getTargetText());
+        content.setText(targetObject.getText());
         TextView footer = (TextView) convertedView.findViewById(R.id.textview_status_footer);
         footer.setTextSize(textSize - 2);
         int colorFooter = Themes.getStyledColor(activity, theme, R.attr.color_status_text_footer, 0);
@@ -160,16 +143,23 @@ public class EventViewModel implements IViewModel {
         convertedView.setBackgroundColor(colorBgNormal);
         convertedView.setOnClickListener(new ListItemClickListener(activity, () -> {
             UserDetailDialogFragment fragment = new UserDetailDialogFragment();
-            fragment.setUserID(getSourceUserID());
+            fragment.setUserID(source.getId());
             DialogHelper.showDialog(activity, fragment);
         }));
+
+        final View finalView = convertedView;
+        bundle.attach(source, (x, changes) -> {
+            if (changes.contains(RO.BASIC))
+                updateViewUser((MainActivity) activity, finalView);
+        });
+
         return convertedView;
     }
 
     // -------------------------- OTHER METHODS --------------------------
 
     public String getFormattedString() {
-        return Application.getContext().getString(event.getTextFormatResourceID(), sourceScreenName);
+        return Application.getContext().getString(event.getTextFormatResourceID(), source.getScreenName());
     }
 
     public enum EnumEvent {

@@ -113,7 +113,6 @@ public abstract class CustomListFragment<T extends CustomListAdapter> extends Pa
         return (PullToRefreshListView) page.findViewById(R.id.fragment_list_listview);
     }
 
-    // must be called in UI thread
     protected void updateListViewWithNotice(AbsListView absListView, boolean addedToTop) {
         T adapter = getAdapter();
         int before = adapter.getCount();

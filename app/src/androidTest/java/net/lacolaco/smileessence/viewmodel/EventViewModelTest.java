@@ -50,8 +50,8 @@ public class EventViewModelTest extends InstrumentationTestCase {
         Status status = mock.getReplyMock();
         User source = mock.getUserMock();
         EventViewModel event = new EventViewModel(EventViewModel.EnumEvent.FAVORITED, source, status);
-        assertEquals(source.getId(), event.getSourceUserID());
-        assertEquals(status.getId(), event.getTargetStatusID());
+        assertEquals(source.getId(), event.source.getId());
+        assertEquals(status.getId(), event.targetObject.getId());
         assertEquals(context.getString(R.string.format_event_favorited, source.getScreenName()), event.getFormattedString(context));
         event = new EventViewModel(EventViewModel.EnumEvent.RECEIVE_MESSAGE, source);
         Configuration config = context.getResources().getConfiguration();
