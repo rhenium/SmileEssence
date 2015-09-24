@@ -77,8 +77,8 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
 
     @Override
     public void onClick(final View v) {
-        final MainActivity activity = (MainActivity) getActivity();
-        final Account account = activity.getCurrentAccount();
+        MainActivity activity = (MainActivity) getActivity();
+        Account account = activity.getCurrentAccount();
 
         switch (v.getId()) {
             case R.id.button_status_detail_reply: {

@@ -26,8 +26,8 @@ package net.lacolaco.smileessence.command.status;
 
 import android.app.Activity;
 import net.lacolaco.smileessence.R;
+import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.IConfirmable;
-import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.notification.NotificationType;
@@ -38,15 +38,10 @@ import net.lacolaco.smileessence.twitter.task.RetweetTask;
 
 public class StatusCommandFavAndRT extends StatusCommand implements IConfirmable {
 
-    // ------------------------------ FIELDS ------------------------------
-
-    private final Account account;
-
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public StatusCommandFavAndRT(Activity activity, Tweet tweet, Account account) {
+    public StatusCommandFavAndRT(Activity activity, Tweet tweet) {
         super(R.id.key_command_status_fav_and_rt, activity, tweet);
-        this.account = account;
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------
@@ -59,18 +54,18 @@ public class StatusCommandFavAndRT extends StatusCommand implements IConfirmable
     @Override
     public boolean isEnabled() {
         User user = getOriginalStatus().getUser();
-        return !user.isProtected() && user.getId() != account.getUserId();
+        return !user.isProtected() && user != ((MainActivity) getActivity()).getCurrentAccount().getUser();
     }
 
     // -------------------------- OTHER METHODS --------------------------
 
     @Override
     public boolean execute() {
-        new FavoriteTask(account, getOriginalStatus().getId())
+        new FavoriteTask(((MainActivity) getActivity()).getCurrentAccount(), getOriginalStatus().getId())
                 .onDone(x -> Notificator.getInstance().publish(R.string.notice_favorite_succeeded))
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_favorite_failed, NotificationType.ALERT))
                 .execute();
-        new RetweetTask(account, getOriginalStatus().getId())
+        new RetweetTask(((MainActivity) getActivity()).getCurrentAccount(), getOriginalStatus().getId())
                 .onDone(x -> Notificator.getInstance().publish(R.string.notice_retweet_succeeded))
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_retweet_failed, NotificationType.ALERT))
                 .execute();

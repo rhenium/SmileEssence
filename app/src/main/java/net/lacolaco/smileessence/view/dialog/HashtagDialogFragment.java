@@ -46,7 +46,7 @@ public class HashtagDialogFragment extends MenuDialogFragment {
     // --------------------- GETTER / SETTER METHODS ---------------------
 
     private String getHashtagText() {
-        return "#" + (String) getArguments().get(KEY_TEXT);
+        return "#" + getArguments().get(KEY_TEXT);
     }
 
     public void setText(String text) {

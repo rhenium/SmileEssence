@@ -26,6 +26,7 @@ package net.lacolaco.smileessence.command.status;
 
 import android.app.Activity;
 import net.lacolaco.smileessence.R;
+import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.IConfirmable;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
@@ -39,15 +40,10 @@ import twitter4j.StatusUpdate;
 
 public class StatusCommandMakeAnonymous extends StatusCommand implements IConfirmable {
 
-    // ------------------------------ FIELDS ------------------------------
-
-    private final Account account;
-
     // -------------------------- STATIC METHODS --------------------------
 
-    public StatusCommandMakeAnonymous(Activity activity, Tweet tweet, Account account) {
+    public StatusCommandMakeAnonymous(Activity activity, Tweet tweet) {
         super(R.id.key_command_status_make_anonymous, activity, tweet);
-        this.account = account;
     }
 
     // --------------------------- CONSTRUCTORS ---------------------------
@@ -55,7 +51,6 @@ public class StatusCommandMakeAnonymous extends StatusCommand implements IConfir
     public static String build(Activity activity, Tweet tweet, Account account) {
         User user = account.getUser();
         String str = tweet.getText();
-        String header = "";
         if (str.startsWith(".")) {
             str = str.replaceFirst(".", "");
         }
@@ -82,9 +77,9 @@ public class StatusCommandMakeAnonymous extends StatusCommand implements IConfir
 
     @Override
     public boolean execute() {
-        StatusUpdate update = new TweetBuilder().setText(build(getActivity(), getOriginalStatus(), account)).build();
-        new TweetTask(account, update).execute();
-        new FavoriteTask(account, getOriginalStatus().getId())
+        StatusUpdate update = new TweetBuilder().setText(build(getActivity(), getOriginalStatus(), ((MainActivity) getActivity()).getCurrentAccount())).build();
+        new TweetTask(((MainActivity) getActivity()).getCurrentAccount(), update).execute();
+        new FavoriteTask(((MainActivity) getActivity()).getCurrentAccount(), getOriginalStatus().getId())
                 .onDone(x -> Notificator.getInstance().publish(R.string.notice_favorite_succeeded))
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_favorite_failed, NotificationType.ALERT))
                 .execute();

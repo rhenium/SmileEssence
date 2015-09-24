@@ -53,12 +53,7 @@ public abstract class MenuDialogFragment extends StackableDialogFragment {
 
     protected abstract void setMenuItems(final CustomListAdapter<Command> adapter);
 
-    protected final AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            MenuDialogFragment.this.onItemClick(adapterView, i);
-        }
-    };
+    protected final AdapterView.OnItemClickListener onItemClickListener = (adapterView, view, i, l) -> MenuDialogFragment.this.onItemClick(adapterView, i);
 
     protected void executeCommand(Command command) {
         dismiss();
@@ -69,12 +64,7 @@ public abstract class MenuDialogFragment extends StackableDialogFragment {
         final Command command = (Command) adapterView.getItemAtPosition(i);
         if (command != null) {
             if (command instanceof IConfirmable) {
-                ConfirmDialogFragment.show(getActivity(), getString(R.string.dialog_confirm_commands), new Runnable() {
-                    @Override
-                    public void run() {
-                        executeCommand(command);
-                    }
-                });
+                ConfirmDialogFragment.show(getActivity(), getString(R.string.dialog_confirm_commands), () -> executeCommand(command));
             } else {
                 executeCommand(command);
             }

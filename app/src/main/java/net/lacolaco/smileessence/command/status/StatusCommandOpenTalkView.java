@@ -26,22 +26,16 @@ package net.lacolaco.smileessence.command.status;
 
 import android.app.Activity;
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.dialog.TalkChainDialogFragment;
 
 public class StatusCommandOpenTalkView extends StatusCommand {
 
-    // ------------------------------ FIELDS ------------------------------
-
-    private final Account account;
-
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public StatusCommandOpenTalkView(Activity activity, Tweet tweet, Account account) {
+    public StatusCommandOpenTalkView(Activity activity, Tweet tweet) {
         super(R.id.key_command_status_open_chain, activity, tweet);
-        this.account = account;
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------

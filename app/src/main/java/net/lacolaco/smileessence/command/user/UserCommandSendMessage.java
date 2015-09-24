@@ -26,22 +26,17 @@ package net.lacolaco.smileessence.command.user;
 
 import android.app.Activity;
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.entity.Account;
+import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.dialog.SendMessageDialogFragment;
 
 public class UserCommandSendMessage extends UserCommand {
 
-    // ------------------------------ FIELDS ------------------------------
-
-    private final Account account;
-
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public UserCommandSendMessage(Activity activity, User user, Account account) {
+    public UserCommandSendMessage(Activity activity, User user) {
         super(R.id.key_command_user_send_message, activity, user);
-        this.account = account;
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------
@@ -53,7 +48,7 @@ public class UserCommandSendMessage extends UserCommand {
 
     @Override
     public boolean isEnabled() {
-        return account.getUserId() != getUser().getId();
+        return getUser() != ((MainActivity) getActivity()).getCurrentAccount().getUser();
     }
 
     // -------------------------- OTHER METHODS --------------------------

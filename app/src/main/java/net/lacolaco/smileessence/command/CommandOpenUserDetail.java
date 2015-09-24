@@ -26,6 +26,7 @@ package net.lacolaco.smileessence.command;
 
 import android.app.Activity;
 import net.lacolaco.smileessence.R;
+import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
@@ -38,14 +39,12 @@ public class CommandOpenUserDetail extends Command {
     // ------------------------------ FIELDS ------------------------------
 
     private final String screenName;
-    private final Account account;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
     public CommandOpenUserDetail(Activity activity, String screenName, Account account) {
         super(-1, activity);
         this.screenName = screenName;
-        this.account = account;
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------
@@ -64,7 +63,7 @@ public class CommandOpenUserDetail extends Command {
 
     @Override
     public boolean execute() {
-        new ShowUserTask(account, screenName)
+        new ShowUserTask(((MainActivity) getActivity()).getCurrentAccount(), screenName)
                 .onDoneUI(user -> {
                     UserDetailDialogFragment fragment = new UserDetailDialogFragment();
                     fragment.setUserID(user.getId());

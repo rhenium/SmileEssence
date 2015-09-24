@@ -26,7 +26,6 @@ package net.lacolaco.smileessence.view.dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -59,18 +58,12 @@ public abstract class EditTextDialogFragment extends StackableDialogFragment {
         return new AlertDialog.Builder(getActivity())
                 .setTitle(title)
                 .setView(view)
-                .setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        onTextInput(editText.getText().toString());
-                        dialog.dismiss();
-                    }
+                .setPositiveButton(R.string.alert_dialog_ok, (dialog, which) -> {
+                    onTextInput(editText.getText().toString());
+                    dialog.dismiss();
                 })
-                .setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
+                .setNegativeButton(R.string.alert_dialog_cancel, (dialog, which) -> {
+                    dialog.dismiss();
                 })
                 .create();
     }

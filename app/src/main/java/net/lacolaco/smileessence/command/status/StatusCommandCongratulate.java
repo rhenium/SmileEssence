@@ -26,8 +26,8 @@ package net.lacolaco.smileessence.command.status;
 
 import android.app.Activity;
 import net.lacolaco.smileessence.R;
+import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.IConfirmable;
-import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
@@ -40,15 +40,10 @@ import java.util.Random;
 
 public class StatusCommandCongratulate extends StatusCommand implements IConfirmable {
 
-    // ------------------------------ FIELDS ------------------------------
-
-    private final Account account;
-
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public StatusCommandCongratulate(Activity activity, Tweet tweet, Account account) {
+    public StatusCommandCongratulate(Activity activity, Tweet tweet) {
         super(R.id.key_command_status_congratulate, activity, tweet);
-        this.account = account;
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------
@@ -89,8 +84,8 @@ public class StatusCommandCongratulate extends StatusCommand implements IConfirm
         StatusUpdate update = new TweetBuilder().setText(build())
                 .setInReplyToStatusID(getOriginalStatus().getId())
                 .build();
-        new TweetTask(account, update).execute();
-        new FavoriteTask(account, getOriginalStatus().getId())
+        new TweetTask(((MainActivity) getActivity()).getCurrentAccount(), update).execute();
+        new FavoriteTask(((MainActivity) getActivity()).getCurrentAccount(), getOriginalStatus().getId())
                 .onDone(x -> Notificator.getInstance().publish(R.string.notice_favorite_succeeded))
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_favorite_failed, NotificationType.ALERT))
                 .execute();

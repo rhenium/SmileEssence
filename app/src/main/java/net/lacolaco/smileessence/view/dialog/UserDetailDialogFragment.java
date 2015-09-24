@@ -105,8 +105,8 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
 
     @Override
     public void onClick(final View v) {
-        final MainActivity activity = (MainActivity) getActivity();
-        final Account account = activity.getCurrentAccount();
+        MainActivity activity = (MainActivity) getActivity();
+        Account account = activity.getCurrentAccount();
         User user = User.fetch(getUserID());
         if (user != null) {
             switch (v.getId()) {
@@ -139,12 +139,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
                     break;
                 }
                 case R.id.button_user_detail_follow: {
-                    ConfirmDialogFragment.show(activity, getString(R.string.dialog_confirm_commands), new Runnable() {
-                        @Override
-                        public void run() {
-                            toggleFollowing(user, account, activity);
-                        }
-                    });
+                    ConfirmDialogFragment.show(activity, getString(R.string.dialog_confirm_commands), () -> toggleFollowing(user, account, activity));
                     break;
                 }
             }
@@ -157,8 +152,8 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
 
     @Override
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
-        final MainActivity activity = (MainActivity) getActivity();
-        final Account currentAccount = activity.getCurrentAccount();
+        MainActivity activity = (MainActivity) getActivity();
+        Account currentAccount = activity.getCurrentAccount();
         new UserTimelineTask(currentAccount, getUserID())
                 .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
                 .setSinceId(adapter.getTopID())
@@ -175,8 +170,8 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
 
     @Override
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
-        final MainActivity activity = (MainActivity) getActivity();
-        final Account currentAccount = activity.getCurrentAccount();
+        MainActivity activity = (MainActivity) getActivity();
+        Account currentAccount = activity.getCurrentAccount();
         new UserTimelineTask(currentAccount, getUserID())
                 .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
                 .setMaxId(adapter.getLastID() - 1)
@@ -196,7 +191,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         MainActivity activity = (MainActivity) getActivity();
-        final Account account = activity.getCurrentAccount();
+        Account account = activity.getCurrentAccount();
         User user = User.fetch(getUserID());
         if (user == null) {
             return new DisposeDialog(activity);

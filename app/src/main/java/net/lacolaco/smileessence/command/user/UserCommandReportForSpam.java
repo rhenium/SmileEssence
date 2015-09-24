@@ -26,8 +26,8 @@ package net.lacolaco.smileessence.command.user;
 
 import android.app.Activity;
 import net.lacolaco.smileessence.R;
+import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.IConfirmable;
-import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
@@ -35,15 +35,10 @@ import net.lacolaco.smileessence.twitter.task.ReportForSpamTask;
 
 public class UserCommandReportForSpam extends UserCommand implements IConfirmable {
 
-    // ------------------------------ FIELDS ------------------------------
-
-    private final Account account;
-
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public UserCommandReportForSpam(Activity activity, User user, Account account) {
+    public UserCommandReportForSpam(Activity activity, User user) {
         super(R.id.key_command_user_r4s, activity, user);
-        this.account = account;
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------
@@ -55,14 +50,14 @@ public class UserCommandReportForSpam extends UserCommand implements IConfirmabl
 
     @Override
     public boolean isEnabled() {
-        return getUser().getId() != account.getUserId();
+        return getUser() != ((MainActivity) getActivity()).getCurrentAccount().getUser();
     }
 
     // -------------------------- OTHER METHODS --------------------------
 
     @Override
     public boolean execute() {
-        new ReportForSpamTask(account, getUser().getId())
+        new ReportForSpamTask(((MainActivity) getActivity()).getCurrentAccount(), getUser().getId())
                 .onDone(user -> Notificator.getInstance().publish(R.string.notice_r4s_succeeded))
                 .onFail(ex -> Notificator.getInstance().publish(R.string.notice_r4s_failed, NotificationType.ALERT))
                 .execute();
