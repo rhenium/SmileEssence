@@ -3,10 +3,7 @@ package net.lacolaco.smileessence.entity;
 import net.lacolaco.smileessence.util.UIObservable;
 import twitter4j.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 public abstract class EntitySupport extends UIObservable {
     private List<String> mentions;
@@ -104,18 +101,12 @@ public abstract class EntitySupport extends UIObservable {
     private String extractText(twitter4j.EntitySupport status, String text, boolean expand) {
         SortedSet<twitter4j.URLEntity> set = new TreeSet<>((a, b) -> a.getStart() - b.getStart());
         if (status.getURLEntities() != null) {
-            for (URLEntity entity : status.getURLEntities()) {
-                set.add(entity);
-            }
+            Collections.addAll(set, status.getURLEntities());
         }
         if (status.getExtendedMediaEntities() != null) {
-            for (URLEntity entity : status.getExtendedMediaEntities()) {
-                set.add(entity);
-            }
+            Collections.addAll(set, status.getExtendedMediaEntities());
         } else if (status.getMediaEntities() != null) {
-            for (URLEntity entity : status.getMediaEntities()) {
-                set.add(entity);
-            }
+            Collections.addAll(set, status.getMediaEntities());
         }
 
         for (URLEntity entity : set) {
