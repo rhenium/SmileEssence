@@ -1,5 +1,6 @@
 package net.lacolaco.smileessence.entity;
 
+import android.net.Uri;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import net.lacolaco.smileessence.util.ListUtils;
@@ -212,5 +213,20 @@ public class Tweet extends EntitySupport {
         boolean changed = retweets.values().remove(sid);
         if (changed) notifyChange(RO.RETWEETERS);
         return changed;
+    }
+
+    // helper methods::
+    public List<Long> getEmbeddedStatusIDs() {
+        ArrayList<Long> list = new ArrayList<>();
+        for (String url : getUrlsExpanded()) {
+            Uri uri = Uri.parse(url);
+            if (uri.getHost().equals("twitter.com")) {
+                String[] arr = uri.toString().split("/");
+                if (arr[arr.length - 2].equals("status")) {
+                    list.add(Long.parseLong(arr[arr.length - 1].split("\\?")[0]));
+                }
+            }
+        }
+        return list;
     }
 }

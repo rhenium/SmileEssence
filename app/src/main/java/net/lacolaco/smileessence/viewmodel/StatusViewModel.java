@@ -25,7 +25,6 @@
 package net.lacolaco.smileessence.viewmodel;
 
 import android.app.Activity;
-import android.net.Uri;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -66,20 +65,6 @@ public class StatusViewModel implements IViewModel {
         return tweet;
     }
 
-    private List<Long> getEmbeddedStatusIDs() {
-        ArrayList<Long> list = new ArrayList<>();
-        for (String url : tweet.getUrlsExpanded()) {
-            Uri uri = Uri.parse(url);
-            if (uri.getHost().equals("twitter.com")) {
-                String[] arr = uri.toString().split("/");
-                if (arr[arr.length - 2].equals("status")) {
-                    list.add(Long.parseLong(arr[arr.length - 1].split("\\?")[0]));
-                }
-            }
-        }
-        return list;
-    }
-
     private String getFooterText() {
         StringBuilder builder = new StringBuilder();
         if (tweet.isRetweet()) {
@@ -103,6 +88,41 @@ public class StatusViewModel implements IViewModel {
     public View getView(final Activity activity, final LayoutInflater inflater, View convertedView) {
         boolean extendStatusURL = UserPreferenceHelper.getInstance().get(R.string.key_setting_extend_status_url, true);
         return getView(activity, inflater, convertedView, extendStatusURL);
+    }
+
+    // -------------------------- OTHER METHODS --------------------------
+
+    public View getView(final Activity activity, final LayoutInflater inflater, View convertedView, boolean extendStatusURL) {
+        if (convertedView == null) {
+            convertedView = inflater.inflate(R.layout.list_item_status, null);
+        }
+        UIObserverBundle bundle = (UIObserverBundle) convertedView.getTag();
+        if (bundle != null) {
+            bundle.detachAll();
+        } else {
+            bundle = new UIObserverBundle();
+            convertedView.setTag(bundle);
+        }
+
+        convertedView.setOnClickListener(new ListItemClickListener(activity, () -> onClick(activity)));
+
+        final Account account = ((MainActivity) activity).getCurrentAccount();
+        updateViewUser(activity, convertedView, account);
+        updateViewBody(activity, convertedView, account);
+        updateViewFavorited(activity, convertedView, account);
+        updateViewEmbeddeds(activity, convertedView, account, extendStatusURL);
+
+        final View view = convertedView;
+        bundle.attach(tweet, (x, changes) -> {
+            if (changes.contains(RO.FAVORITERS))
+                updateViewFavorited(activity, view, account);
+        });
+        bundle.attach(tweet.getUser(), (x, changes) -> {
+            if (changes.contains(RO.BASIC))
+                updateViewUser(activity, view, account);
+        });
+
+        return convertedView;
     }
 
     private void updateViewUser(Activity activity, View convertedView, Account account) {
@@ -168,7 +188,7 @@ public class StatusViewModel implements IViewModel {
         final ViewGroup embeddedStatus = (ViewGroup) convertedView.findViewById(R.id.view_status_embedded_status);
         embeddedStatus.removeAllViews();
         if (extendStatusURL) {
-            List<Long> embeddedStatusIDs = getEmbeddedStatusIDs();
+            List<Long> embeddedStatusIDs = tweet.getEmbeddedStatusIDs();
             if (embeddedStatusIDs.size() > 0) {
                 embeddedStatus.setVisibility(View.VISIBLE);
                 for (long id : embeddedStatusIDs) {
@@ -189,39 +209,6 @@ public class StatusViewModel implements IViewModel {
         } else {
             embeddedStatus.setVisibility(View.GONE);
         }
-    }
-
-    // -------------------------- OTHER METHODS --------------------------
-
-    public View getView(final Activity activity, final LayoutInflater inflater, View convertedView, boolean extendStatusURL) {
-        if (convertedView == null) {
-            convertedView = inflater.inflate(R.layout.list_item_status, null);
-        } else {
-            UIObserverBundle bundle = (UIObserverBundle) convertedView.getTag();
-            bundle.dispose();
-        }
-        UIObserverBundle bundle = new UIObserverBundle();
-        convertedView.setTag(bundle);
-
-        convertedView.setOnClickListener(new ListItemClickListener(activity, () -> onClick(activity)));
-
-        final Account account = ((MainActivity) activity).getCurrentAccount();
-        updateViewUser(activity, convertedView, account);
-        updateViewBody(activity, convertedView, account);
-        updateViewFavorited(activity, convertedView, account);
-        updateViewEmbeddeds(activity, convertedView, account, extendStatusURL);
-
-        final View view = convertedView;
-        bundle.addObserver(tweet, (x, changes) -> {
-            if (changes.contains(RO.FAVORITERS))
-                updateViewFavorited(activity, view, account);
-        });
-        bundle.addObserver(tweet.getUser(), (x, changes) -> {
-            if (changes.contains(RO.BASIC))
-                updateViewUser(activity, view, account);
-        });
-
-        return convertedView;
     }
 
     private boolean isReadMorseEnabled() {
