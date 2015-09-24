@@ -58,17 +58,22 @@ public class User extends UIObservable {
 
     private void update(twitter4j.User user) {
         id = user.getId();
+
         if (isProtected() != user.isProtected() ||
                 getScreenName() == null || !getScreenName().equals(user.getScreenName()) ||
                 getName() == null || !getName().equals(user.getName()) ||
                 getProfileImageUrl() == null || !getProfileImageUrl().equals(user.getProfileImageURLHttps())) {
             isProtected = user.isProtected();
-            screenName = user.getScreenName();
-            name = user.getName();
-            profileImageUrl = user.getProfileImageURLHttps();
+            if (user.getScreenName() != null)
+                screenName = user.getScreenName();
+            if (user.getName() != null)
+                name = user.getName();
+            if (user.getProfileImageURLHttps() != null)
+                profileImageUrl = user.getProfileImageURLHttps();
 
             notifyChange(RO.BASIC);
         }
+
         if (getProfileBannerUrl() == null || !getProfileBannerUrl().equals(user.getProfileBannerURL()) ||
                 getDescription() == null || !getDescription().equals(user.getDescription()) ||
                 getLocation() == null || !getLocation().equals(user.getLocation()) ||
@@ -76,17 +81,24 @@ public class User extends UIObservable {
                 getFavoritesCount() != user.getFavouritesCount() ||
                 getStatusesCount() != user.getStatusesCount() ||
                 getFriendsCount() != user.getFriendsCount() ||
-                getFollowersCount() != user.getFollowersCount() ||
-                isVerified() != user.isVerified()) {
-            profileBannerUrl = user.getProfileBannerURL();
-            description = user.getDescription();
-            location = user.getLocation();
-            url = user.getURL();
-            favoritesCount = user.getFavouritesCount();
-            statusesCount = user.getStatusesCount();
-            friendsCount = user.getFriendsCount();
-            followersCount = user.getFollowersCount();
+                getFollowersCount() != user.getFollowersCount()) {
             isVerified = user.isVerified();
+            if (user.getProfileBannerURL() != null)
+                profileBannerUrl = user.getProfileBannerURL();
+            if (user.getDescription() != null)
+                description = user.getDescription();
+            if (user.getLocation() != null)
+                location = user.getLocation();
+            if (user.getURL() != null)
+                url = user.getURL();
+            if (user.getFavouritesCount() != -1)
+                favoritesCount = user.getFavouritesCount();
+            if (user.getStatusesCount() != -1)
+                statusesCount = user.getStatusesCount();
+            if (user.getFriendsCount() != -1)
+                friendsCount = user.getFriendsCount();
+            if (user.getFollowersCount() != -1)
+                followersCount = user.getFollowersCount();
 
             notifyChange(RO.DETAIL);
         }
