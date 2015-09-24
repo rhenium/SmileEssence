@@ -208,6 +208,7 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
 
     @Override
     public void onUserProfileUpdate(twitter4j.User updatedUser) {
+        User.fromTwitter(updatedUser);
     }
 
     @Override

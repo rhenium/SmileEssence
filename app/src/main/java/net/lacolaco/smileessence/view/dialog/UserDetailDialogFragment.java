@@ -43,14 +43,18 @@ import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.CommandOpenURL;
 import net.lacolaco.smileessence.data.ImageCache;
 import net.lacolaco.smileessence.entity.Account;
+import net.lacolaco.smileessence.entity.RO;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.entity.User;
-import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
-import net.lacolaco.smileessence.twitter.task.*;
+import net.lacolaco.smileessence.twitter.task.FollowTask;
+import net.lacolaco.smileessence.twitter.task.ShowFriendshipTask;
+import net.lacolaco.smileessence.twitter.task.UnfollowTask;
+import net.lacolaco.smileessence.twitter.task.UserTimelineTask;
 import net.lacolaco.smileessence.util.Themes;
 import net.lacolaco.smileessence.util.UIHandler;
+import net.lacolaco.smileessence.util.UIObserverBundle;
 import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 import net.lacolaco.smileessence.view.adapter.StatusListAdapter;
@@ -79,6 +83,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
     private Button buttonFollow;
     private PullToRefreshListView listViewTimeline;
     private TabHost tabHost;
+    private UIObserverBundle observerBundle;
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 
@@ -190,6 +195,14 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         MainActivity activity = (MainActivity) getActivity();
+        final Account account = activity.getCurrentAccount();
+        User user = User.fetch(getUserID());
+        if (user == null) {
+            return new DisposeDialog(activity);
+        }
+
+        observerBundle = new UIObserverBundle();
+
         View v = activity.getLayoutInflater().inflate(R.layout.dialog_user_detail, null);
         View menu = v.findViewById(R.id.imageview_user_detail_menu);
         menu.setOnClickListener(this);
@@ -201,6 +214,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         textViewFollowed = (TextView) v.findViewById(R.id.textview_user_detail_followed);
         textViewProtected = (TextView) v.findViewById(R.id.texttview_user_detail_protected);
         textViewDescription = (TextView) v.findViewById(R.id.textview_user_detail_description);
+        textViewDescription.setMovementMethod(LinkMovementMethod.getInstance());
         textViewTweetCount = (TextView) v.findViewById(R.id.textview_user_detail_tweet_count);
         textViewTweetCount.setOnClickListener(this);
         textViewFriendCount = (TextView) v.findViewById(R.id.textview_user_detail_friend_count);
@@ -215,6 +229,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         buttonFollow = (Button) v.findViewById(R.id.button_user_detail_follow);
         buttonFollow.setOnClickListener(this);
         listViewTimeline = (PullToRefreshListView) v.findViewById(R.id.listview_user_detail_timeline);
+        listViewTimeline.setOnRefreshListener(this);
 
         tabHost = (TabHost) v.findViewById(android.R.id.tabhost);
         tabHost.setup();
@@ -224,11 +239,8 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         tabHost.addTab(tab2);
         tabHost.setCurrentTab(0);
 
-        final Account account = activity.getCurrentAccount();
-        new ShowUserTask(account, getUserID())
-                .onDoneUI(user -> initUserData(user, account))
-                .onFailUI(x -> dismiss())
-                .execute();
+        initUserData(user, account);
+
         return new AlertDialog.Builder(activity)
                 .setView(v)
                 .setCancelable(true)
@@ -261,35 +273,53 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         return html;
     }
 
-    private void initUserData(User user, final Account account) {
+    private void updateUserDataBasic(User user) {
         textViewName.setText(user.getName());
         textViewScreenName.setText(user.getScreenName());
+        textViewProtected.setVisibility(user.isProtected() ? View.VISIBLE : View.GONE);
+        ImageCache.getInstance().setImageToView(user.getProfileImageUrlOriginal(), imageViewIcon);
+    }
+
+    private void updateUserDataDetail(User user) {
         if (TextUtils.isEmpty(user.getLocation())) {
             textViewLocate.setVisibility(View.GONE);
         } else {
             textViewLocate.setText(user.getLocation());
+            textViewLocate.setVisibility(View.VISIBLE);
         }
         if (TextUtils.isEmpty(user.getUrl())) {
             textViewURL.setVisibility(View.GONE);
         } else {
             textViewURL.setText(user.getUrl());
+            textViewURL.setVisibility(View.VISIBLE);
         }
+        String htmlDescription = getHtmlDescription(user.getDescription());
+        textViewDescription.setText(Html.fromHtml(htmlDescription));
+
         textViewTweetCount.setText(String.valueOf(user.getStatusesCount()));
         textViewFriendCount.setText(String.valueOf(user.getFriendsCount()));
         textViewFollowerCount.setText(String.valueOf(user.getFollowersCount()));
         textViewFavoriteCount.setText(String.valueOf(user.getFavoritesCount()));
-        textViewProtected.setVisibility(user.isProtected() ? View.VISIBLE : View.GONE);
-        String htmlDescription = getHtmlDescription(user.getDescription());
-        textViewDescription.setText(Html.fromHtml(htmlDescription));
-        textViewDescription.setMovementMethod(LinkMovementMethod.getInstance());
-        ImageCache.getInstance().setImageToView(user.getProfileImageUrlOriginal(), imageViewIcon);
+
         ImageCache.getInstance().setImageToView(user.getProfileBannerUrl(), imageViewHeader);
+    }
+
+    private void initUserData(User user, final Account account) {
+        updateUserDataBasic(user);
+        updateUserDataDetail(user);
+
         MainActivity activity = (MainActivity) getActivity();
         adapter = new StatusListAdapter(activity);
         listViewTimeline.setAdapter(adapter);
-        listViewTimeline.setOnRefreshListener(this);
         executeUserTimelineTask(user, account, adapter);
         updateRelationship(activity, user.getId());
+
+        observerBundle.attach(user, (x, changes) -> {
+            if (changes.contains(RO.BASIC))
+                updateUserDataBasic(user);
+            if (changes.contains(RO.DETAIL))
+                updateUserDataDetail(user);
+        });
     }
 
     private void lockFollowButton(Activity activity) {
