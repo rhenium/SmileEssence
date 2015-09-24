@@ -37,6 +37,7 @@ import android.widget.*;
 import com.android.volley.toolbox.NetworkImageView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.Command;
@@ -411,7 +412,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
             textViewFollowed.setText(R.string.user_detail_followed_is_me);
             buttonFollow.setVisibility(View.GONE);
         } else {
-            int theme = mainActivity.getThemeIndex();
+            int theme = ((Application) activity.getApplication()).getThemeResId();
             lockFollowButton(activity);
             textViewFollowed.setText(R.string.user_detail_loading);
             final Drawable red = Themes.getStyledDrawable(activity, theme, R.attr.button_round_red);

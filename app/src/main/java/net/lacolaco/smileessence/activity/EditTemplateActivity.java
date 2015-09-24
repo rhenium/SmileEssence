@@ -38,7 +38,6 @@ import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.entity.Template;
 import net.lacolaco.smileessence.logging.Logger;
-import net.lacolaco.smileessence.util.Themes;
 import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 import net.lacolaco.smileessence.view.dialog.EditTextDialogFragment;
@@ -113,7 +112,7 @@ public class EditTemplateActivity extends Activity implements AdapterView.OnItem
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(Themes.getTheme(((Application) getApplication()).getThemeIndex()));
+        setTheme(((Application) getApplication()).getThemeResId());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_edit_list);
         ActionBar actionBar = getActionBar();

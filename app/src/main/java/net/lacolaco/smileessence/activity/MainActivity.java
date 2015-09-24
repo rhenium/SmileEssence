@@ -38,7 +38,6 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import net.lacolaco.smileessence.Application;
-import net.lacolaco.smileessence.BuildConfig;
 import net.lacolaco.smileessence.IntentRouter;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.data.PostState;
@@ -53,11 +52,12 @@ import net.lacolaco.smileessence.preference.InternalPreferenceHelper;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.twitter.OAuthSession;
 import net.lacolaco.smileessence.twitter.UserStreamListener;
-import net.lacolaco.smileessence.twitter.task.BlockIDsTask;
 import net.lacolaco.smileessence.twitter.task.GetUserListsTask;
-import net.lacolaco.smileessence.twitter.task.MutesIDsTask;
 import net.lacolaco.smileessence.twitter.task.ShowUserTask;
-import net.lacolaco.smileessence.util.*;
+import net.lacolaco.smileessence.util.BitmapOptimizer;
+import net.lacolaco.smileessence.util.BitmapURLTask;
+import net.lacolaco.smileessence.util.NetworkHelper;
+import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.view.*;
 import net.lacolaco.smileessence.view.adapter.PageListAdapter;
 import net.lacolaco.smileessence.view.dialog.ConfirmDialogFragment;
@@ -122,19 +122,6 @@ public class MainActivity extends Activity {
 
     public void setLastUserList(String lastUserList) {
         InternalPreferenceHelper.getInstance().set(R.string.key_last_used_user_list, lastUserList);
-    }
-
-    public int getThemeIndex() {
-        return ((Application) getApplication()).getThemeIndex();
-    }
-
-    public String getVersion() {
-        return BuildConfig.VERSION_NAME;
-    }
-
-    private boolean isAuthorized() {
-        long lastUsedAccountID = getLastUsedAccountID();
-        return lastUsedAccountID >= 0 && Account.load(Account.class, lastUsedAccountID) != null;
     }
 
     /**
@@ -210,18 +197,19 @@ public class MainActivity extends Activity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        setTheme();
+        Logger.debug("onCreate");
+        setTheme(((Application) getApplication()).getThemeResId());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        if (isAuthorized()) {
-            setupAccount();
+        Notificator.initialize(this);
+        CommandSetting.initialize();
+
+        if (setupLastUsedAccount()) {
             startMainLogic();
             IntentRouter.onNewIntent(this, getIntent());
         } else {
             startOAuthActivity();
         }
-        Notificator.initialize(this);
-        Logger.debug("onCreate");
     }
 
     @Override
@@ -328,7 +316,6 @@ public class MainActivity extends Activity {
     }
 
     public void startMainLogic() {
-        CommandSetting.initialize();
         initializeView();
         startTwitter();
     }
@@ -352,7 +339,7 @@ public class MainActivity extends Activity {
         if (!startStream()) {
             return false;
         }
-        initInvisibleUser();
+        MuteUserIds.refresh(getCurrentAccount());
         initUserListCache();
         updateActionBarIcon();
         return true;
@@ -386,23 +373,6 @@ public class MainActivity extends Activity {
         openPostPageWithImage(uri);
     }
 
-    private void initInvisibleUser() {
-        new BlockIDsTask(getCurrentAccount()).onDone(idList -> {
-            for (Long blockID : idList) {
-                MuteUserIds.add(blockID);
-            }
-        }).execute();
-        new MutesIDsTask(getCurrentAccount()).onDone(mutesIDs -> {
-            for (Long mutesID : mutesIDs) {
-                MuteUserIds.add(mutesID);
-            }
-        }).execute();
-    }
-
-    private void initPostState() {
-        PostState.newState().beginTransaction().commit();
-    }
-
     private void initUserListCache() {
         UserListCache.getInstance().clear();
         new GetUserListsTask(getCurrentAccount())
@@ -429,7 +399,7 @@ public class MainActivity extends Activity {
             pagerAdapter.addPage(UserListFragment.class, getString(R.string.page_name_list), null, false);
         pagerAdapter.notifyDataSetChanged();
         viewPager.setOffscreenPageLimit(pagerAdapter.getCount());
-        initPostState();
+        PostState.newState().beginTransaction().commit();
         setSelectedPageIndex(pagerAdapter.getIndex(HomeFragment.class), false);
     }
 
@@ -464,14 +434,18 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void setTheme() {
-        ((Application) getApplication()).setThemeIndex(UserPreferenceHelper.getInstance().get(R.string.key_setting_theme, 0));
-        setTheme(Themes.getTheme(getThemeIndex()));
-    }
-
-    private void setupAccount() {
-        Account account = Account.load(Account.class, getLastUsedAccountID());
-        setCurrentAccount(account);
+    private boolean setupLastUsedAccount() {
+        long lastId = getLastUsedAccountID();
+        Account account = null;
+        if (lastId != -1) {
+            account = Account.load(Account.class, lastId);
+        }
+        if (account != null) {
+            setCurrentAccount(account);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private void startOAuthActivity() {

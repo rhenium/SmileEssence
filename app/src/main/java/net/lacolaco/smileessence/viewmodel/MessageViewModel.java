@@ -30,6 +30,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.android.volley.toolbox.NetworkImageView;
+import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.data.ImageCache;
@@ -93,7 +94,7 @@ public class MessageViewModel implements IViewModel {
             convertedView.setTag(bundle);
         }
 
-        int theme = ((MainActivity) activity).getThemeIndex();
+        int theme = ((Application) activity.getApplication()).getThemeResId();
         int colorBgMessage = Themes.getStyledColor(activity, theme, R.attr.color_message_bg_normal, 0);
         convertedView.setBackgroundColor(colorBgMessage);
         convertedView.setOnClickListener(new ListItemClickListener(activity, () -> {
@@ -120,7 +121,7 @@ public class MessageViewModel implements IViewModel {
     private void updateViewSender(Activity activity, View convertedView) {
         int textSize = UserPreferenceHelper.getInstance().get(R.string.key_setting_text_size, 10);
         int nameStyle = UserPreferenceHelper.getInstance().get(R.string.key_setting_namestyle, 0);
-        int theme = ((MainActivity) activity).getThemeIndex();
+        int theme = ((Application) activity.getApplication()).getThemeResId();
 
         NetworkImageView icon = (NetworkImageView) convertedView.findViewById(R.id.imageview_status_icon);
         ImageCache.getInstance().setImageToView(directMessage.getSender().getProfileImageUrl(), icon);
@@ -139,7 +140,7 @@ public class MessageViewModel implements IViewModel {
 
     private void updateViewBody(Activity activity, View convertedView) {
         int textSize = UserPreferenceHelper.getInstance().get(R.string.key_setting_text_size, 10);
-        int theme = ((MainActivity) activity).getThemeIndex();
+        int theme = ((Application) activity.getApplication()).getThemeResId();
 
         TextView content = (TextView) convertedView.findViewById(R.id.textview_status_text);
         content.setTextSize(textSize);

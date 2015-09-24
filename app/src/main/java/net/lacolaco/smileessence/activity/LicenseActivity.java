@@ -33,7 +33,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.util.Themes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +61,7 @@ public class LicenseActivity extends Activity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        setTheme(Themes.getTheme(((Application) getApplication()).getThemeIndex()));
+        setTheme(((Application) getApplication()).getThemeResId());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_license);
         ActionBar actionBar = getActionBar();

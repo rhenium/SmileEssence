@@ -88,7 +88,7 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
         StatusViewModel vm = new StatusViewModel(tweet);
         StatusFilter.getInstance().filter(vm);
         if (tweet.isRetweet()) {
-            if (tweet.getUser().getId() == account.getUserId()) {
+            if (tweet.getOriginalTweet().getUser().getId() == account.getUserId()) {
                 addToHistory(new EventViewModel(EventViewModel.EnumEvent.RETWEETED, tweet.getUser(), tweet));
             }
         } else if (tweet.getMentions().contains(account.getUser().getScreenName())) {

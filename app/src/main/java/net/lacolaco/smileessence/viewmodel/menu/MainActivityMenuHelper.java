@@ -28,12 +28,11 @@ import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
+import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.*;
 import net.lacolaco.smileessence.command.CommandOpenURL;
 import net.lacolaco.smileessence.data.PostState;
-import net.lacolaco.smileessence.entity.User;
-import net.lacolaco.smileessence.notification.Notificator;
 
 public class MainActivityMenuHelper {
 
@@ -119,7 +118,7 @@ public class MainActivityMenuHelper {
             }
             case R.id.actionbar_report: {
                 PostState.getState().beginTransaction()
-                        .appendText(activity.getString(R.string.text_message_to_author, activity.getVersion()))
+                        .appendText(activity.getString(R.string.text_message_to_author, Application.getVersion()))
                         .commitWithOpen(activity);
                 return true;
             }

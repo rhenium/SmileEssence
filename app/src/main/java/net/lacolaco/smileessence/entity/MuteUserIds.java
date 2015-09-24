@@ -1,18 +1,37 @@
 package net.lacolaco.smileessence.entity;
 
-import java.util.HashSet;
+import net.lacolaco.smileessence.twitter.task.BlockIDsTask;
+import net.lacolaco.smileessence.twitter.task.MutesIDsTask;
+
+import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MuteUserIds {
-    private static Set<Long> storage = new HashSet<>();
+    private static Set<Long> storage = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
-    public synchronized static boolean isMuted(long userId) {
+    public static boolean isMuted(long userId) {
         return storage.contains(userId);
     }
 
-    public synchronized static void remove(long userId) {
+    public static void remove(long userId) {
         storage.remove(userId);
     }
 
-    public synchronized static void add(long userId) { storage.add(userId); }
+    public static void add(long userId) {
+        storage.add(userId);
+    }
+
+    public static void refresh(Account account) {
+        new BlockIDsTask(account).onDone(idList -> {
+            for (Long blockID : idList) {
+                MuteUserIds.add(blockID);
+            }
+        }).execute();
+        new MutesIDsTask(account).onDone(mutesIDs -> {
+            for (Long mutesID : mutesIDs) {
+                MuteUserIds.add(mutesID);
+            }
+        }).execute();
+    }
 }

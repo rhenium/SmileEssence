@@ -28,7 +28,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.logging.Logger;
 
 public class Themes {
 
@@ -39,34 +38,29 @@ public class Themes {
 
     // -------------------------- STATIC METHODS --------------------------
 
-    public static int getTheme(int index) {
+    public static int getThemeResId(int index) {
         switch (index) {
             case THEME_DARK: {
-                Logger.debug("Theme:Dark");
                 return R.style.theme_dark;
             }
             case THEME_LIGHT: {
-                Logger.debug("Theme:Light");
                 return R.style.theme_light;
             }
             default: {
-                Logger.debug("Theme:Default");
                 return R.style.theme_dark;
             }
         }
     }
 
-    public static int getStyledColor(Context context, int theme, int attribute, int defaultColor) {
-        int styleResID = theme == THEME_LIGHT ? R.style.theme_light : R.style.theme_dark;
-        TypedArray array = context.obtainStyledAttributes(styleResID, new int[]{attribute});
+    public static int getStyledColor(Context context, int themeResId, int attribute, int defaultColor) {
+        TypedArray array = context.obtainStyledAttributes(themeResId, new int[]{attribute});
         int color = array.getColor(0, defaultColor);
         array.recycle();
         return color;
     }
 
-    public static Drawable getStyledDrawable(Context context, int theme, int attribute) {
-        int styleResID = theme == THEME_LIGHT ? R.style.theme_light : R.style.theme_dark;
-        TypedArray array = context.obtainStyledAttributes(styleResID, new int[]{attribute});
+    public static Drawable getStyledDrawable(Context context, int themeResId, int attribute) {
+        TypedArray array = context.obtainStyledAttributes(themeResId, new int[]{attribute});
         Drawable drawable = array.getDrawable(0);
         array.recycle();
         return drawable;

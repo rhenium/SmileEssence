@@ -38,7 +38,6 @@ import net.lacolaco.smileessence.command.status.StatusCommand;
 import net.lacolaco.smileessence.command.user.UserCommand;
 import net.lacolaco.smileessence.entity.CommandSetting;
 import net.lacolaco.smileessence.logging.Logger;
-import net.lacolaco.smileessence.util.Themes;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 import net.lacolaco.smileessence.viewmodel.CheckBoxModel;
 
@@ -85,7 +84,7 @@ public class EditCommandActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(Themes.getTheme(((Application) getApplication()).getThemeIndex()));
+        setTheme(((Application) getApplication()).getThemeResId());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_edit_list);
         ActionBar actionBar = getActionBar();

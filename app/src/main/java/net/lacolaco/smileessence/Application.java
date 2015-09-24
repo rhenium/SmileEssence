@@ -25,19 +25,25 @@
 package net.lacolaco.smileessence;
 
 import android.content.Context;
+import net.lacolaco.smileessence.preference.UserPreferenceHelper;
+import net.lacolaco.smileessence.util.Themes;
 
 public class Application extends com.activeandroid.app.Application {
 
     // ------------------------------ FIELDS ------------------------------
 
-    private int themeIndex;
     private static Context context;
+    private int resId = -1;
 
     public static Context getContext() {
         if (context == null) {
             throw new IllegalStateException("Application is not initialized");
         }
         return context;
+    }
+
+    public static String getVersion() {
+        return BuildConfig.VERSION_NAME;
     }
 
     @Override
@@ -49,12 +55,10 @@ public class Application extends com.activeandroid.app.Application {
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 
-    public int getThemeIndex() {
-        return themeIndex;
+    public int getThemeResId() {
+        if (resId == -1) {
+            resId = Themes.getThemeResId(UserPreferenceHelper.getInstance().get(R.string.key_setting_theme, 0));
+        }
+        return resId;
     }
-
-    public void setThemeIndex(int themeIndex) {
-        this.themeIndex = themeIndex;
-    }
-
 }
