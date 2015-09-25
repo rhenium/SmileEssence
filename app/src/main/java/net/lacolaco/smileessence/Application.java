@@ -35,7 +35,7 @@ public class Application extends com.activeandroid.app.Application {
 
     private static Context context;
     private static Account currentAccount;
-    private int resId = -1;
+    private static int resId = -1;
 
     @Override
     public void onCreate() {
@@ -46,13 +46,6 @@ public class Application extends com.activeandroid.app.Application {
 
     // --------------------- HELPER METHODS ---------------------
 
-    public int getThemeResId() {
-        if (resId == -1) {
-            resId = Themes.getThemeResId(UserPreferenceHelper.getInstance().getThemeIndex());
-        }
-        return resId;
-    }
-
     // --------------------- STATIC METHODS ---------------------
 
     public static Context getContext() {
@@ -62,10 +55,12 @@ public class Application extends com.activeandroid.app.Application {
         return context;
     }
 
-    public static String getVersion() {
-        return BuildConfig.VERSION_NAME;
+    public static int getThemeResId() {
+        if (resId == -1) {
+            resId = Themes.getThemeResId(UserPreferenceHelper.getInstance().getThemeIndex());
+        }
+        return resId;
     }
-
 
     public static Account getCurrentAccount() {
         return currentAccount;

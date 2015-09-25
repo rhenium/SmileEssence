@@ -151,7 +151,7 @@ public class MainActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Logger.debug("onCreate");
-        setTheme(((Application) getApplication()).getThemeResId());
+        setTheme(Application.getThemeResId());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         Notificator.initialize(this);

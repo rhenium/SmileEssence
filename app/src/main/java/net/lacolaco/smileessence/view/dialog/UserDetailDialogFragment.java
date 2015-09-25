@@ -404,7 +404,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
             textViewFollowed.setText(R.string.user_detail_followed_is_me);
             buttonFollow.setVisibility(View.GONE);
         } else {
-            int theme = ((Application) mainActivity.getApplication()).getThemeResId();
+            int theme = Application.getThemeResId();
             lockFollowButton();
             textViewFollowed.setText(R.string.user_detail_loading);
             final Drawable red = Themes.getStyledDrawable(mainActivity, theme, R.attr.button_round_red);

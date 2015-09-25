@@ -89,7 +89,7 @@ public class EditTabActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(((Application) getApplication()).getThemeResId());
+        setTheme(Application.getThemeResId());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_edit_list);
         ActionBar actionBar = getActionBar();

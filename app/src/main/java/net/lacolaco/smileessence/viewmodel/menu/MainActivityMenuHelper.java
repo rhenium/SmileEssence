@@ -29,6 +29,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import net.lacolaco.smileessence.Application;
+import net.lacolaco.smileessence.BuildConfig;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.*;
 import net.lacolaco.smileessence.command.CommandOpenURL;
@@ -118,7 +119,7 @@ public class MainActivityMenuHelper {
             }
             case R.id.actionbar_report: {
                 PostState.getState().beginTransaction()
-                        .appendText(activity.getString(R.string.text_message_to_author, Application.getVersion()))
+                        .appendText(activity.getString(R.string.text_message_to_author, BuildConfig.VERSION_NAME))
                         .commitWithOpen(activity);
                 return true;
             }

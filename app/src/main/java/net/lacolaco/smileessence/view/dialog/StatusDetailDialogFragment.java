@@ -191,8 +191,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
     }
 
     private void updateViewButtons(View view, Tweet tweet) {
-        MainActivity activity = ((MainActivity) getActivity());
-        int themeResId = ((Application) activity.getApplication()).getThemeResId();
+        int themeResId = Application.getThemeResId();
         Account account = Application.getCurrentAccount();
 
         //--- buttons

@@ -38,7 +38,7 @@ public class SettingActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(((Application) getApplication()).getThemeResId());
+        setTheme(Application.getThemeResId());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.setting);
         ActionBar actionBar = getActionBar();
