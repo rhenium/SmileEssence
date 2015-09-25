@@ -130,7 +130,7 @@ public class EventViewModel implements IViewModel {
         content.setTextSize(textSize);
         int colorNormal = Themes.getStyledColor(activity, theme, R.attr.color_status_text_normal, 0);
         content.setTextColor(colorNormal);
-        content.setText(targetObject.getText());
+        content.setText(isStatusEvent() ? targetObject.getText() : "");
         TextView footer = (TextView) convertedView.findViewById(R.id.textview_status_footer);
         footer.setTextSize(textSize - 2);
         int colorFooter = Themes.getStyledColor(activity, theme, R.attr.color_status_text_footer, 0);
