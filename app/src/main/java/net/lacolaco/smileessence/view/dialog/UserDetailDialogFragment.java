@@ -149,7 +149,6 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
 
     @Override
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
-        MainActivity activity = (MainActivity) getActivity();
         Account currentAccount = Application.getCurrentAccount();
         new UserTimelineTask(currentAccount, getUserID())
                 .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
@@ -167,7 +166,6 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
 
     @Override
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
-        MainActivity activity = (MainActivity) getActivity();
         Account currentAccount = Application.getCurrentAccount();
         new UserTimelineTask(currentAccount, getUserID())
                 .setCount(((MainActivity) getActivity()).getRequestCountPerPage())

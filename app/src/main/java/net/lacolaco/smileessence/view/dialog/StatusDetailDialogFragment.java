@@ -117,7 +117,6 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
             return new DisposeDialog(getActivity());
         }
 
-        MainActivity activity = (MainActivity) getActivity();
         Account account = Application.getCurrentAccount();
 
         View header = getTitleView(tweet);

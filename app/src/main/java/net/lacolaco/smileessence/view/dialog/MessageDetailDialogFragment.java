@@ -101,7 +101,6 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        MainActivity activity = (MainActivity) getActivity();
 
         DirectMessage selectedMessage = DirectMessage.fetch(getMessageID());
         if (selectedMessage == null) {

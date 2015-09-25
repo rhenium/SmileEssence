@@ -26,10 +26,8 @@ package net.lacolaco.smileessence.twitter.task;
 
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
-import net.lacolaco.smileessence.logging.Logger;
 import twitter4j.TwitterException;
 
-import java.util.Collections;
 import java.util.List;
 
 public class UserTimelineTask extends TimelineTask<Tweet> {

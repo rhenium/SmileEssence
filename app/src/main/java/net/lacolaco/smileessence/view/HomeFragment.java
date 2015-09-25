@@ -112,7 +112,6 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
 
     @Override
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
-        final MainActivity activity = (MainActivity) getActivity();
         final StatusListAdapter adapter = getAdapter();
         final Account currentAccount = Application.getCurrentAccount();
         new HomeTimelineTask(currentAccount)

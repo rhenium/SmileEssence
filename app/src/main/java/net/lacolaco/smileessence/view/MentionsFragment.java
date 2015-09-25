@@ -90,7 +90,6 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
 
     @Override
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
-        final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = Application.getCurrentAccount();
         final StatusListAdapter adapter = getAdapter();
         new MentionsTimelineTask(currentAccount)

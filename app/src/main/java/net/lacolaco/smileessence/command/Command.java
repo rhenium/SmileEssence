@@ -35,7 +35,10 @@ import net.lacolaco.smileessence.command.message.MessageCommandShare;
 import net.lacolaco.smileessence.command.message.MessageCommandTofuBuster;
 import net.lacolaco.smileessence.command.status.*;
 import net.lacolaco.smileessence.command.user.*;
-import net.lacolaco.smileessence.entity.*;
+import net.lacolaco.smileessence.entity.CommandSetting;
+import net.lacolaco.smileessence.entity.DirectMessage;
+import net.lacolaco.smileessence.entity.Tweet;
+import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.viewmodel.IViewModel;
 
 import java.util.ArrayList;

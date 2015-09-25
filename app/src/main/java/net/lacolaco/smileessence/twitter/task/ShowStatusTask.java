@@ -26,7 +26,6 @@ package net.lacolaco.smileessence.twitter.task;
 
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
-import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.util.BackgroundTask;
 import twitter4j.TwitterException;
 

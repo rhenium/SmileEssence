@@ -25,11 +25,9 @@
 package net.lacolaco.smileessence.view.adapter;
 
 import android.app.Activity;
-import net.lacolaco.smileessence.entity.MuteUserIds;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 
 public class StatusListAdapter extends CustomListAdapter<StatusViewModel> {

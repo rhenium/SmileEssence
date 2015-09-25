@@ -25,13 +25,11 @@
 package net.lacolaco.smileessence.twitter.task;
 
 import net.lacolaco.smileessence.entity.Account;
-import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.util.BackgroundTask;
 import twitter4j.IDs;
 import twitter4j.TwitterException;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class MutesIDsTask extends BackgroundTask<List<Long>, Void> {

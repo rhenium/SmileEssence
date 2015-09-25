@@ -25,7 +25,6 @@
 package net.lacolaco.smileessence.twitter;
 
 import net.lacolaco.smileessence.entity.MuteUserIds;
-import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.util.Consumer;
 import net.lacolaco.smileessence.viewmodel.EventViewModel;
 import net.lacolaco.smileessence.viewmodel.IViewModel;

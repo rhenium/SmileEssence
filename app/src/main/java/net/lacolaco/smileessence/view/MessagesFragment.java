@@ -92,7 +92,6 @@ public class MessagesFragment extends CustomListFragment<MessageListAdapter> {
 
     @Override
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
-        final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = Application.getCurrentAccount();
         final MessageListAdapter adapter = getAdapter();
         new DirectMessagesTask(currentAccount)
@@ -110,7 +109,6 @@ public class MessagesFragment extends CustomListFragment<MessageListAdapter> {
 
     @Override
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
-        final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = Application.getCurrentAccount();
         final MessageListAdapter adapter = getAdapter();
         new DirectMessagesTask(currentAccount)
