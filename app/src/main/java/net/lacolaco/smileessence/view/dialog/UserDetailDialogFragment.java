@@ -48,6 +48,7 @@ import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
+import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.twitter.task.FollowTask;
 import net.lacolaco.smileessence.twitter.task.ShowFriendshipTask;
 import net.lacolaco.smileessence.twitter.task.UnfollowTask;
@@ -151,7 +152,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
         Account currentAccount = Application.getCurrentAccount();
         new UserTimelineTask(currentAccount, getUserID())
-                .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
+                .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
                 .setSinceId(adapter.getTopID())
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_user_timeline, NotificationType.ALERT))
                 .onDoneUI(tweets -> {
@@ -168,7 +169,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
         Account currentAccount = Application.getCurrentAccount();
         new UserTimelineTask(currentAccount, getUserID())
-                .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
+                .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
                 .setMaxId(adapter.getLastID() - 1)
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_user_timeline, NotificationType.ALERT))
                 .onDoneUI(tweets -> {
@@ -241,7 +242,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         Account account = Application.getCurrentAccount();
         tabHost.getTabWidget().getChildTabViewAt(1).setVisibility(View.GONE);
         new UserTimelineTask(account, user.getId())
-                .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
+                .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_user_timeline, NotificationType.ALERT))
                 .onDoneUI(tweets -> {
                     for (Tweet tweet : tweets) {

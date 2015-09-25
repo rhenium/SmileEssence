@@ -42,6 +42,8 @@ import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
+import net.lacolaco.smileessence.preference.InternalPreferenceHelper;
+import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.twitter.StatusFilter;
 import net.lacolaco.smileessence.twitter.task.UserListStatusesTask;
 import net.lacolaco.smileessence.util.UIHandler;
@@ -74,7 +76,7 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
         UserListListAdapter adapter = new UserListListAdapter(getActivity());
         setAdapter(adapter);
 
-        String lastUserList = getMainActivity().getLastUserList();
+        String lastUserList = InternalPreferenceHelper.getInstance().get(R.string.key_last_used_user_list, "");
         if (!TextUtils.isEmpty(lastUserList)) {
             startUserList(lastUserList);
         }
@@ -107,7 +109,7 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
             return;
         }
         new UserListStatusesTask(currentAccount, listFullName)
-                .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
+                .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
                 .setSinceId(adapter.getTopID())
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_list, NotificationType.ALERT))
                 .onDoneUI(tweets -> {
@@ -135,7 +137,7 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
             return;
         }
         new UserListStatusesTask(currentAccount, listFullName)
-                .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
+                .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
                 .setMaxId(adapter.getLastID() - 1)
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_list, NotificationType.ALERT))
                 .onDoneUI(tweets -> {
@@ -196,13 +198,13 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
     }
 
     public void startUserList(String listFullName) {
-        getMainActivity().setLastUserList(listFullName);
+        InternalPreferenceHelper.getInstance().set(R.string.key_last_used_user_list, listFullName);
         final UserListListAdapter adapter = getAdapter();
         adapter.setListFullName(listFullName);
         adapter.clear();
         adapter.updateForce();
         new UserListStatusesTask(Application.getCurrentAccount(), listFullName)
-                .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
+                .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_list, NotificationType.ALERT))
                 .onDoneUI(tweets -> {
                     for (Tweet tweet : tweets) {

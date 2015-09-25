@@ -34,6 +34,7 @@ import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
+import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.twitter.StatusFilter;
 import net.lacolaco.smileessence.twitter.task.HomeTimelineTask;
 import net.lacolaco.smileessence.util.UIHandler;
@@ -68,7 +69,7 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
         });
         final Account account = Application.getCurrentAccount();
         new HomeTimelineTask(account)
-                .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
+                .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
                 .onFail(e -> Notificator.getInstance().publish(R.string.notice_error_get_home, NotificationType.ALERT))
                 .onDoneUI(tweets -> {
                     for (Tweet tweet : tweets) {
@@ -95,7 +96,7 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
         }
         final Account currentAccount = Application.getCurrentAccount();
         new HomeTimelineTask(currentAccount)
-                .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
+                .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
                 .setSinceId(adapter.getTopID())
                 .onFail(e -> Notificator.getInstance().publish(R.string.notice_error_get_home, NotificationType.ALERT))
                 .onDoneUI(tweets -> {
@@ -115,7 +116,7 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
         final StatusListAdapter adapter = getAdapter();
         final Account currentAccount = Application.getCurrentAccount();
         new HomeTimelineTask(currentAccount)
-                .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
+                .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
                 .setMaxId(adapter.getLastID() - 1)
                 .onFail(e -> Notificator.getInstance().publish(R.string.notice_error_get_home, NotificationType.ALERT))
                 .onDoneUI(tweets -> {

@@ -115,8 +115,7 @@ public class EventViewModel implements IViewModel {
             convertedView.setTag(bundle);
         }
 
-        int textSize = UserPreferenceHelper.getInstance().get(R.string.key_setting_text_size, 10);
-        int nameStyle = UserPreferenceHelper.getInstance().get(R.string.key_setting_namestyle, 0);
+        int textSize = UserPreferenceHelper.getInstance().getTextSize();
         int theme = ((Application) activity.getApplication()).getThemeResId();
 
         TextView header = (TextView) convertedView.findViewById(R.id.textview_status_header);

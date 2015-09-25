@@ -75,41 +75,12 @@ public class MainActivity extends Activity {
     private Uri cameraTempFilePath;
     private UserStreamListener userStreamListener;
 
-    // --------------------- GETTER / SETTER METHODS ---------------------
-    public int getRequestCountPerPage() {
-        return UserPreferenceHelper.getInstance().get(R.string.key_setting_timelines, 20);
-    }
-
     public Uri getCameraTempFilePath() {
         return cameraTempFilePath;
     }
 
     public void setCameraTempFilePath(Uri cameraTempFilePath) {
         this.cameraTempFilePath = cameraTempFilePath;
-    }
-
-    public String getLastSearch() {
-        return InternalPreferenceHelper.getInstance().get(R.string.key_last_used_search_query, "");
-    }
-
-    public void setLastSearch(String query) {
-        InternalPreferenceHelper.getInstance().set(R.string.key_last_used_search_query, query);
-    }
-
-    private long getLastUsedAccountID() {
-        return InternalPreferenceHelper.getInstance().get(R.string.key_last_used_account_id, -1L);
-    }
-
-    private void setLastUsedAccountID(Account account) {
-        InternalPreferenceHelper.getInstance().set(R.string.key_last_used_account_id, account.getId());
-    }
-
-    public String getLastUserList() {
-        return InternalPreferenceHelper.getInstance().get(R.string.key_last_used_user_list, "");
-    }
-
-    public void setLastUserList(String lastUserList) {
-        InternalPreferenceHelper.getInstance().set(R.string.key_last_used_user_list, lastUserList);
     }
 
     /**
@@ -400,13 +371,13 @@ public class MainActivity extends Activity {
                     data.getStringExtra(OAuthSession.KEY_SCREEN_NAME));
             account.save();
             Application.setCurrentAccount(account);
-            setLastUsedAccountID(account);
+            InternalPreferenceHelper.getInstance().set(R.string.key_last_used_account_id, account.getId());
             startMainLogic();
         }
     }
 
     private boolean setupLastUsedAccount() {
-        long lastId = getLastUsedAccountID();
+        long lastId = InternalPreferenceHelper.getInstance().get(R.string.key_last_used_account_id, -1L);
         Account account = null;
         if (lastId != -1) {
             account = Account.load(Account.class, lastId);

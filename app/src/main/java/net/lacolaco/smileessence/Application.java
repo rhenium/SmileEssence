@@ -48,7 +48,7 @@ public class Application extends com.activeandroid.app.Application {
 
     public int getThemeResId() {
         if (resId == -1) {
-            resId = Themes.getThemeResId(UserPreferenceHelper.getInstance().get(R.string.key_setting_theme, 0));
+            resId = Themes.getThemeResId(UserPreferenceHelper.getInstance().getThemeIndex());
         }
         return resId;
     }

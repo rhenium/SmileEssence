@@ -51,6 +51,7 @@ public class EditTabActivity extends Activity {
 
     private EditableCheckBoxModel[] getCheckBoxItems() {
         List<EditableCheckBoxModel> models = new ArrayList<>();
+        UserPreferenceHelper pref = UserPreferenceHelper.getInstance();
 
         EditableCheckBoxModel post = new EditableCheckBoxModel(getString(R.string.page_name_post));
         post.setChecked(true).setInputText(String.valueOf(0)).setFreezing(true);

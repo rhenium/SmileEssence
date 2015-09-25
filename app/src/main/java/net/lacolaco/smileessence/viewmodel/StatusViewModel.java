@@ -125,8 +125,8 @@ public class StatusViewModel implements IViewModel {
     }
 
     private void updateViewUser(MainActivity activity, View convertedView) {
-        int textSize = UserPreferenceHelper.getInstance().get(R.string.key_setting_text_size, 10);
-        int nameStyle = UserPreferenceHelper.getInstance().get(R.string.key_setting_namestyle, 0);
+        int textSize = UserPreferenceHelper.getInstance().getTextSize();
+        int nameStyle = UserPreferenceHelper.getInstance().getNameStyle();
         int theme = ((Application) activity.getApplication()).getThemeResId();
 
         NetworkImageView icon = (NetworkImageView) convertedView.findViewById(R.id.imageview_status_icon);
@@ -142,7 +142,7 @@ public class StatusViewModel implements IViewModel {
     }
 
     private void updateViewBody(MainActivity activity, View convertedView) {
-        int textSize = UserPreferenceHelper.getInstance().get(R.string.key_setting_text_size, 10);
+        int textSize = UserPreferenceHelper.getInstance().getTextSize();
         int theme = ((Application) activity.getApplication()).getThemeResId();
 
         TextView content = (TextView) convertedView.findViewById(R.id.textview_status_text);

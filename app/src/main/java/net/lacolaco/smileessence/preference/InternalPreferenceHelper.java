@@ -42,12 +42,9 @@ public class InternalPreferenceHelper extends SharedPreferenceHelper {
     private InternalPreferenceHelper() {
     }
 
-    // --------------------------- CONSTRUCTORS ---------------------------
-
+    // --------------------------- OVERRIDE ---------------------------
     @Override
     protected SharedPreferences getPreferences() {
-
         return Application.getContext().getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
-
     }
 }

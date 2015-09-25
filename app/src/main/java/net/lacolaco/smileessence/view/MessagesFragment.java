@@ -29,11 +29,11 @@ import android.widget.ListView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.DirectMessage;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
+import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.twitter.StatusFilter;
 import net.lacolaco.smileessence.twitter.task.DirectMessagesTask;
 import net.lacolaco.smileessence.twitter.task.SentDirectMessagesTask;
@@ -69,7 +69,7 @@ public class MessagesFragment extends CustomListFragment<MessageListAdapter> {
         });
         final Account account = Application.getCurrentAccount();
         new DirectMessagesTask(account)
-                .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
+                .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_messages, NotificationType.ALERT))
                 .onDoneUI(directMessages -> {
             for (DirectMessage message : directMessages) {
@@ -78,7 +78,7 @@ public class MessagesFragment extends CustomListFragment<MessageListAdapter> {
             adapter.notifyDataSetChanged();
         }).execute();
         new SentDirectMessagesTask(account)
-                .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
+                .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_messages, NotificationType.ALERT))
                 .onDoneUI(directMessages -> {
             for (DirectMessage message : directMessages) {
@@ -95,7 +95,7 @@ public class MessagesFragment extends CustomListFragment<MessageListAdapter> {
         final Account currentAccount = Application.getCurrentAccount();
         final MessageListAdapter adapter = getAdapter();
         new DirectMessagesTask(currentAccount)
-                .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
+                .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
                 .setSinceId(adapter.getTopID())
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_messages, NotificationType.ALERT))
                 .onDoneUI(directMessages -> {
@@ -112,7 +112,7 @@ public class MessagesFragment extends CustomListFragment<MessageListAdapter> {
         final Account currentAccount = Application.getCurrentAccount();
         final MessageListAdapter adapter = getAdapter();
         new DirectMessagesTask(currentAccount)
-                .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
+                .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
                 .setMaxId(adapter.getLastID() - 1)
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_messages, NotificationType.ALERT))
                 .onDoneUI(directMessages -> {

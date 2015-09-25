@@ -35,6 +35,7 @@ import net.lacolaco.smileessence.entity.ExtractionWord;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
+import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.twitter.StatusFilter;
 import net.lacolaco.smileessence.twitter.task.MentionsTimelineTask;
 import net.lacolaco.smileessence.view.adapter.StatusListAdapter;
@@ -74,7 +75,7 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
         final Account account = Application.getCurrentAccount();
         final StatusListAdapter adapter_ = adapter;
         new MentionsTimelineTask(account)
-                .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
+                .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_mentions, NotificationType.ALERT))
                 .onDoneUI(tweets -> {
                     for (Tweet tweet : tweets) {
@@ -93,7 +94,7 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
         final Account currentAccount = Application.getCurrentAccount();
         final StatusListAdapter adapter = getAdapter();
         new MentionsTimelineTask(currentAccount)
-                .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
+                .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
                 .setSinceId(adapter.getTopID())
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_mentions, NotificationType.ALERT))
                 .onDoneUI(tweets -> {
@@ -111,7 +112,7 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
         final Account currentAccount = Application.getCurrentAccount();
         final StatusListAdapter adapter = getAdapter();
         new MentionsTimelineTask(currentAccount)
-                .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
+                .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
                 .setMaxId(adapter.getLastID() - 1)
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_mentions, NotificationType.ALERT))
                 .onDoneUI(tweets -> {

@@ -48,6 +48,8 @@ import net.lacolaco.smileessence.entity.SearchQuery;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
+import net.lacolaco.smileessence.preference.InternalPreferenceHelper;
+import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.twitter.StatusFilter;
 import net.lacolaco.smileessence.twitter.task.SearchTask;
 import net.lacolaco.smileessence.util.UIHandler;
@@ -82,7 +84,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
         setAdapter(adapter);
 
         final MainActivity activity = (MainActivity) getActivity();
-        String lastUsedSearchQuery = activity.getLastSearch();
+        String lastUsedSearchQuery = InternalPreferenceHelper.getInstance().get(R.string.key_last_used_search_query, "");
         if (!TextUtils.isEmpty(lastUsedSearchQuery)) {
             startSearch(lastUsedSearchQuery);
         }
@@ -142,7 +144,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
         }
         final Query query = new Query();
         query.setQuery(queryString);
-        query.setCount(activity.getRequestCountPerPage());
+        query.setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage());
         query.setResultType(Query.RECENT);
         if (adapter.getCount() > 0) {
             query.setSinceId(adapter.getTopID());
@@ -183,7 +185,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
         }
         final Query query = new Query();
         query.setQuery(queryString);
-        query.setCount(activity.getRequestCountPerPage());
+        query.setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage());
         query.setResultType(Query.RECENT);
         if (adapter.getCount() > 0) {
             query.setMaxId(adapter.getLastID() - 1);
@@ -328,7 +330,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
     }
 
     public void startSearch(final String queryString) {
-        ((MainActivity) getActivity()).setLastSearch(queryString);
+        InternalPreferenceHelper.getInstance().set(R.string.key_last_used_search_query, queryString);
         if (!TextUtils.isEmpty(queryString)) {
             final SearchListAdapter adapter = getAdapter();
             adapter.initSearch(queryString);
@@ -336,7 +338,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
             adapter.updateForce();
             final Query query = new Query();
             query.setQuery(queryString);
-            query.setCount(((MainActivity) getActivity()).getRequestCountPerPage());
+            query.setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage());
             query.setResultType(Query.RECENT);
             new SearchTask(Application.getCurrentAccount(), query)
                     .onDoneUI(queryResult -> {

@@ -10,7 +10,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Tweet extends EntitySupport {
-    // キャッシュ こっちは soft reference
     private static Cache<Long, Tweet> storage = CacheBuilder.newBuilder().softValues().build();
 
     public synchronized static Tweet fetch(long statusId) {

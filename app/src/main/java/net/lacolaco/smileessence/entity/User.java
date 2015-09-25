@@ -5,7 +5,6 @@ import com.google.common.cache.CacheBuilder;
 import net.lacolaco.smileessence.util.UIObservable;
 
 public class User extends UIObservable {
-    // 重複防止用キャッシュ こっちは weak reference
     private static Cache<Long, User> storage = CacheBuilder.newBuilder().weakValues().build();
 
     public synchronized static User fetch(long userId) {

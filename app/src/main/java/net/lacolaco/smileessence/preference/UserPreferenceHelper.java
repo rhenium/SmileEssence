@@ -27,6 +27,8 @@ package net.lacolaco.smileessence.preference;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import net.lacolaco.smileessence.Application;
+import net.lacolaco.smileessence.R;
+import net.lacolaco.smileessence.util.Themes;
 
 public class UserPreferenceHelper extends SharedPreferenceHelper {
     // --------------------------- CONSTRUCTORS ---------------------------
@@ -41,9 +43,25 @@ public class UserPreferenceHelper extends SharedPreferenceHelper {
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------
-
     @Override
     protected SharedPreferences getPreferences() {
         return PreferenceManager.getDefaultSharedPreferences(Application.getContext());
+    }
+
+    // --------------------- HELPER METHODS ---------------------
+    public int getThemeIndex() {
+        return get(R.string.key_setting_theme, Themes.THEME_DARK);
+    }
+
+    public int getTextSize() {
+        return get(R.string.key_setting_text_size, 10);
+    }
+
+    public int getNameStyle() {
+        return get(R.string.key_setting_namestyle, 0);
+    }
+
+    public int getRequestCountPerPage() {
+        return get(R.string.key_setting_timelines, 20);
     }
 }

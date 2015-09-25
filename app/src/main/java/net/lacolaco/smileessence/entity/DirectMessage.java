@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.List;
 
 public class DirectMessage extends EntitySupport {
-    // キャッシュ これも weak reference
     private static Cache<Long, DirectMessage> storage = CacheBuilder.newBuilder().weakValues().build();
 
     public synchronized static DirectMessage fetch(long statusId) {

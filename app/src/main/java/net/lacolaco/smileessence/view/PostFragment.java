@@ -216,7 +216,7 @@ public class PostFragment extends PageFragment implements TextWatcher, View.OnFo
         buttonTweet.setOnClickListener(this);
         editText = getEditText(v);
         textViewCount = getCountTextView(v);
-        int textSize = UserPreferenceHelper.getInstance().get(R.string.key_setting_text_size, 10);
+        int textSize = UserPreferenceHelper.getInstance().getTextSize();
         editText.addTextChangedListener(this);
         editText.setOnFocusChangeListener(this);
         editText.setTextSize(textSize + 4);

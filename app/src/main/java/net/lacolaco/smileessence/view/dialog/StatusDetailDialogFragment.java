@@ -218,7 +218,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         if (tweet.isFavoritedBy(account.getUserId())) {
             favorite.setImageDrawable(getResources().getDrawable(R.drawable.icon_favorite_on));
         } else {
-            retweet.setImageDrawable(Themes.getStyledDrawable(getActivity(), themeResId, R.attr.icon_favorite_off));
+            favorite.setImageDrawable(Themes.getStyledDrawable(getActivity(), themeResId, R.attr.icon_favorite_off));
         }
 
         ImageButton delete = (ImageButton) view.findViewById(R.id.button_status_detail_delete);
