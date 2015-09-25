@@ -47,7 +47,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Table(name = "Accounts")
 public class Account extends Model {
     private User user;
-    private Set<String> listSubscriptions = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    private final Set<String> listSubscriptions = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     @Column(name = "Token", notNull = true)
     private String accessToken;
@@ -59,7 +59,9 @@ public class Account extends Model {
     private String screenName;
 
     // Required by ActiveAndroid
-    public Account() { }
+    public Account() {
+        super();
+    }
 
     public Account(String token, String tokenSecret, long userID, String screenName) {
         super();

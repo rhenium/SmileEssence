@@ -84,10 +84,6 @@ public class EditTabActivity extends Activity {
         return (ListView) findViewById(R.id.listview_edit_list);
     }
 
-    private MainActivity getMainActivity() {
-        return (MainActivity) getParent();
-    }
-
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
@@ -103,14 +99,14 @@ public class EditTabActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-        EditableCheckBoxModel messages = (EditableCheckBoxModel) adapter.getItem(3);
+        EditableCheckBoxModel messages = adapter.getItem(3);
         putVisibility(R.string.key_page_messages_visibility, messages.isChecked());
         //TODO        putPosition(R.string.key_page_messages_position, Integer.parseInt(messages.getInputText()));
-        EditableCheckBoxModel history = (EditableCheckBoxModel) adapter.getItem(4);
+        EditableCheckBoxModel history = adapter.getItem(4);
         putVisibility(R.string.key_page_history_visibility, history.isChecked());
-        EditableCheckBoxModel search = (EditableCheckBoxModel) adapter.getItem(5);
+        EditableCheckBoxModel search = adapter.getItem(5);
         putVisibility(R.string.key_page_search_visibility, search.isChecked());
-        EditableCheckBoxModel list = (EditableCheckBoxModel) adapter.getItem(6);
+        EditableCheckBoxModel list = adapter.getItem(6);
         putVisibility(R.string.key_page_list_visibility, list.isChecked());
         Notificator.getInstance().publish(R.string.notice_tab_editted);
         super.onDestroy();

@@ -167,13 +167,7 @@ public class MainActivity extends Activity {
         if (viewPager.getCurrentItem() != homeIndex) {
             viewPager.setCurrentItem(homeIndex, true);
         } else {
-            ConfirmDialogFragment.show(this, getString(R.string.dialog_confirm_finish_app), new Runnable() {
-
-                @Override
-                public void run() {
-                    forceFinish();
-                }
-            });
+            ConfirmDialogFragment.show(this, getString(R.string.dialog_confirm_finish_app), this::forceFinish);
         }
     }
 
@@ -276,6 +270,7 @@ public class MainActivity extends Activity {
                     .setMediaFilePath(rotatedPath)
                     .commitWithOpen(this);
             Notificator.getInstance().publish(R.string.notice_select_image_succeeded);
+            c.close();
         } catch (Exception e) {
             e.printStackTrace();
             Notificator.getInstance().publish(R.string.notice_select_image_failed, NotificationType.ALERT);

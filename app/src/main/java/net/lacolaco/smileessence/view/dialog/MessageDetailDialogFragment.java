@@ -36,7 +36,6 @@ import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.CommandOpenURL;
-import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.DirectMessage;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
@@ -102,7 +101,6 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         MainActivity activity = (MainActivity) getActivity();
-        final Account account = activity.getCurrentAccount();
 
         DirectMessage selectedMessage = DirectMessage.fetch(getMessageID());
         if (selectedMessage == null) {

@@ -84,11 +84,6 @@ public abstract class CustomListFragment<T extends CustomListAdapter> extends Pa
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View page = inflater.inflate(R.layout.fragment_list, container, false);
         PullToRefreshListView listView = getListView(page);
@@ -97,16 +92,6 @@ public abstract class CustomListFragment<T extends CustomListAdapter> extends Pa
         listView.setOnRefreshListener(this);
         listView.setMode(getRefreshMode());
         return page;
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void onViewStateRestored(Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
     }
 
     protected PullToRefreshListView getListView(View page) {

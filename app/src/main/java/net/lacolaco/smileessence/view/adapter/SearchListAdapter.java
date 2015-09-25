@@ -75,7 +75,7 @@ public class SearchListAdapter extends StatusListAdapter {
 
     // -------------------------- INNER CLASSES --------------------------
 
-    public static interface OnQueryChangeListener {
+    public interface OnQueryChangeListener {
 
         void onQueryChange(String newQuery);
     }

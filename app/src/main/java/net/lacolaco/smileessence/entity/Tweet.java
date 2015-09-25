@@ -220,9 +220,9 @@ public class Tweet extends EntitySupport {
         ArrayList<Long> list = new ArrayList<>();
         for (String url : getUrlsExpanded()) {
             Uri uri = Uri.parse(url);
-            if (uri.getHost().equals("twitter.com")) {
+            if ("twitter.com".equals(uri.getHost())) {
                 String[] arr = uri.toString().split("/");
-                if (arr[arr.length - 2].equals("status")) {
+                if (arr.length > 2 && "status".equals(arr[arr.length - 2])) {
                     list.add(Long.parseLong(arr[arr.length - 1].split("\\?")[0]));
                 }
             }

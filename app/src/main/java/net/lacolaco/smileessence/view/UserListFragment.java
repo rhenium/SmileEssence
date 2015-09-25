@@ -140,8 +140,8 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
                 .setMaxId(adapter.getLastID() - 1)
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_list, NotificationType.ALERT))
                 .onDoneUI(tweets -> {
-                    for (int i = 0; i < tweets.size(); i++) {
-                        StatusViewModel statusViewModel = new StatusViewModel(tweets.get(i));
+                    for (Tweet tweet : tweets) {
+                        StatusViewModel statusViewModel = new StatusViewModel(tweet);
                         adapter.addToBottom(statusViewModel);
                         StatusFilter.getInstance().filter(statusViewModel);
                     }

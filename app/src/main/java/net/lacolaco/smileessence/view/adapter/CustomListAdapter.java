@@ -28,7 +28,6 @@ import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ListAdapter;
 import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.viewmodel.IViewModel;
 
@@ -54,10 +53,6 @@ public class CustomListAdapter<T extends IViewModel> extends BaseAdapter {
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------
-
-    public Activity getActivity() {
-        return activity;
-    }
 
     @Override
     public int getCount() {

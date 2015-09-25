@@ -161,7 +161,7 @@ public class EditExtractionActivity extends Activity implements AdapterView.OnIt
     }
 
     public void openEditExtractionWordDialog(int position) {
-        final ExtractionWord extractionWord = (ExtractionWord) adapter.getItem(position);
+        final ExtractionWord extractionWord = adapter.getItem(position);
         EditTextDialogFragment dialogFragment = new EditTextDialogFragment() {
             @Override
             public void onTextInput(String text) {

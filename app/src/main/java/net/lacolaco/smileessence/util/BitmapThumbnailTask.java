@@ -24,7 +24,6 @@
 
 package net.lacolaco.smileessence.util;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
@@ -35,14 +34,12 @@ public class BitmapThumbnailTask extends AsyncTask<Void, Void, Bitmap> {
 
     // ------------------------------ FIELDS ------------------------------
 
-    private final Activity activity;
     private final String filePath;
     private final ImageView imageView;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public BitmapThumbnailTask(Activity activity, String filePath, ImageView imageView) {
-        this.activity = activity;
+    public BitmapThumbnailTask(String filePath, ImageView imageView) {
         this.filePath = filePath;
         this.imageView = imageView;
     }

@@ -61,7 +61,7 @@ public class IntentRouter {
         } else if (intent.getAction() != null) {
             switch (intent.getAction()) {
                 case Intent.ACTION_SEND: {
-                    if (intent.getType().equals("text/plain")) {
+                    if ("text/plain".equals(intent.getType())) {
                         Bundle extra = intent.getExtras();
                         if (extra != null) {
                             String text = getText(extra);

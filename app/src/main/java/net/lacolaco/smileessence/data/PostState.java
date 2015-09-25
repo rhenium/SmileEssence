@@ -132,7 +132,7 @@ public class PostState {
 
     // -------------------------- INNER CLASSES --------------------------
 
-    public static interface OnPostStateChangeListener {
+    public interface OnPostStateChangeListener {
 
         void onPostStateChange(PostState postState);
     }

@@ -159,7 +159,7 @@ public class PostFragment extends PageFragment implements TextWatcher, View.OnFo
                 viewGroupMedia.setVisibility(View.VISIBLE);
 
             }
-            new BitmapThumbnailTask(activity, postState.getMediaFilePath(), imageViewMedia).execute();
+            new BitmapThumbnailTask(postState.getMediaFilePath(), imageViewMedia).execute();
         }
     }
 
@@ -216,7 +216,6 @@ public class PostFragment extends PageFragment implements TextWatcher, View.OnFo
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Logger.debug("onCreateView");
-        MainActivity activity = (MainActivity) getActivity();
         PostState.getState().setListener(this);
         View v = inflater.inflate(R.layout.fragment_post, null);
         buttonTweet = getTweetButton(v);

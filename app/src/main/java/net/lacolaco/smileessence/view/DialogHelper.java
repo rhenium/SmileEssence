@@ -43,7 +43,7 @@ public class DialogHelper {
     }
 
     public static int showDialog(Activity activity, StackableDialogFragment dialogFragment) {
-        String tag = "stacking_dialog_" + dialogFragment.getClass().getSimpleName() + UUID.randomUUID().toString();
+        String tag = "stacking_dialog_" + dialogFragment.getClass().getSimpleName() + UUID.randomUUID();
         dialogStack.add(tag);
         return dialogFragment.show(activity.getFragmentManager().beginTransaction(), tag);
     }

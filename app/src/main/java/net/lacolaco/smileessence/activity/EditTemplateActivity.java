@@ -161,7 +161,7 @@ public class EditTemplateActivity extends Activity implements AdapterView.OnItem
     }
 
     public void openEditTemplateDialog(int position) {
-        final Template template = (Template) adapter.getItem(position);
+        final Template template = adapter.getItem(position);
         EditTextDialogFragment dialogFragment = new EditTextDialogFragment() {
             @Override
             public void onTextInput(String text) {

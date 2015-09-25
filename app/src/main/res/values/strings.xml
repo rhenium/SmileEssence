@@ -236,4 +236,5 @@
     <string name="command_search_on_google">Search on Google</string>
     <string name="notice_error_get_user_timeline">Failed to get user timeline</string>
     <string name="notice_error_get_list">Failed to get list timeline</string>
+    <string name="notices_of_files">Notices of files:</string>
 </resources>

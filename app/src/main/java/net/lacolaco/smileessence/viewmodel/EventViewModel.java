@@ -32,7 +32,6 @@ import android.widget.TextView;
 import com.android.volley.toolbox.NetworkImageView;
 import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.data.ImageCache;
 import net.lacolaco.smileessence.entity.RO;
 import net.lacolaco.smileessence.entity.Tweet;
@@ -95,7 +94,7 @@ public class EventViewModel implements IViewModel {
 
     // --------------------- Interface IViewModel ---------------------
 
-    private void updateViewUser(MainActivity activity, View convertedView) {
+    private void updateViewUser(View convertedView) {
         NetworkImageView icon = (NetworkImageView) convertedView.findViewById(R.id.imageview_status_icon);
         ImageCache.getInstance().setImageToView(source.getProfileImageUrl(), icon);
 
@@ -125,7 +124,7 @@ public class EventViewModel implements IViewModel {
         int colorHeader = Themes.getStyledColor(activity, theme, R.attr.color_status_text_mine, 0);
         header.setTextColor(colorHeader);
 
-        updateViewUser((MainActivity) activity, convertedView);
+        updateViewUser(convertedView);
 
         TextView content = (TextView) convertedView.findViewById(R.id.textview_status_text);
         content.setTextSize(textSize);
@@ -150,7 +149,7 @@ public class EventViewModel implements IViewModel {
         final View finalView = convertedView;
         bundle.attach(source, (x, changes) -> {
             if (changes.contains(RO.BASIC))
-                updateViewUser((MainActivity) activity, finalView);
+                updateViewUser(finalView);
         });
 
         return convertedView;

@@ -98,7 +98,6 @@ public class MessageMenuDialogFragment extends MenuDialogFragment {
     }
 
     public List<Command> getCommands(DirectMessage message) {
-        Activity activity = getActivity();
         ArrayList<Command> commands = new ArrayList<>();
         addMainCommands(message, commands);
         addBottomCommands(message, commands);

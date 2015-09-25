@@ -104,7 +104,7 @@ public class EditCommandActivity extends Activity {
     @Override
     protected void onDestroy() {
         for (int i = 0; i < adapter.getCount(); i++) {
-            CheckBoxModel checkBoxModel = (CheckBoxModel) adapter.getItem(i);
+            CheckBoxModel checkBoxModel = adapter.getItem(i);
             Command command = editedCommands.get(i);
             CommandSetting.setVisible(command.getKey(), checkBoxModel.isChecked());
         }
@@ -129,7 +129,7 @@ public class EditCommandActivity extends Activity {
     private void enableAll() {
         adapter.setNotifiable(false);
         for (int i = 0; i < adapter.getCount(); i++) {
-            CheckBoxModel item = (CheckBoxModel) adapter.getItem(i);
+            CheckBoxModel item = adapter.getItem(i);
             item.setChecked(true);
         }
         adapter.setNotifiable(true);

@@ -70,12 +70,6 @@ public class OAuthActivity extends Activity implements View.OnClickListener, Tex
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
-    }
-
-    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button_oauth_auth: {

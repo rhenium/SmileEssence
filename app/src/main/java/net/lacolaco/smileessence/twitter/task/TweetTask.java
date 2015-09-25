@@ -91,11 +91,13 @@ public class TweetTask extends BackgroundTask<Tweet, Void> {
                 e.printStackTrace();
                 Logger.error(e);
             } finally {
-                try {
-                    fos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Logger.error(e);
+                if (fos != null) {
+                    try {
+                        fos.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        Logger.error(e);
+                    }
                 }
             }
         }

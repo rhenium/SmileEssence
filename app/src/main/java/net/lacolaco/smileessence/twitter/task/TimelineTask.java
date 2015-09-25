@@ -30,7 +30,7 @@ import twitter4j.Paging;
 import java.util.List;
 
 public abstract class TimelineTask<T> extends BackgroundTask<List<T>, Void> {
-    private Paging paging = new Paging();;
+    private Paging paging = new Paging();
 
     public TimelineTask<T> setPage(int page) {
         paging.setPage(page);
