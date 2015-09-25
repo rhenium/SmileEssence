@@ -83,7 +83,6 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
         SearchListAdapter adapter = new SearchListAdapter(getActivity());
         setAdapter(adapter);
 
-        final MainActivity activity = (MainActivity) getActivity();
         String lastUsedSearchQuery = InternalPreferenceHelper.getInstance().get(R.string.key_last_used_search_query, "");
         if (!TextUtils.isEmpty(lastUsedSearchQuery)) {
             startSearch(lastUsedSearchQuery);
@@ -131,7 +130,6 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
 
     @Override
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
-        final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = Application.getCurrentAccount();
         final SearchListAdapter adapter = getAdapter();
         String queryString = adapter.getQuery();
@@ -172,7 +170,6 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
 
     @Override
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
-        final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = Application.getCurrentAccount();
         final SearchListAdapter adapter = getAdapter();
         String queryString = adapter.getQuery();

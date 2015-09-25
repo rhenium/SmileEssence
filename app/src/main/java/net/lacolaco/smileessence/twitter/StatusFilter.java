@@ -78,6 +78,7 @@ public class StatusFilter {
         filter(EventViewModel.class, event);
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends IViewModel> void filter(Class<T> klass, T status) {
         Map<Object, Consumer<?>> map = addHandlers.get(klass);
         if (map != null) {

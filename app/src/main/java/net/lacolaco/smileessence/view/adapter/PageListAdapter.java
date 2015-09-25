@@ -141,7 +141,7 @@ public class PageListAdapter extends FragmentPagerAdapter implements ViewPager.O
         return -1;
     }
 
-    @Deprecated
+    @Deprecated @SuppressWarnings("unchecked")
     public <T extends PageFragment> T getFragment(Class<T> fragmentClass) {
         for(PageInfo info : pages) {
             if (info.getFragmentClass() == fragmentClass) {

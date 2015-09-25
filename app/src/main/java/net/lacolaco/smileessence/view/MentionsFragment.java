@@ -29,7 +29,6 @@ import android.widget.ListView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.ExtractionWord;
 import net.lacolaco.smileessence.entity.Tweet;
@@ -108,7 +107,6 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
 
     @Override
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
-        final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = Application.getCurrentAccount();
         final StatusListAdapter adapter = getAdapter();
         new MentionsTimelineTask(currentAccount)

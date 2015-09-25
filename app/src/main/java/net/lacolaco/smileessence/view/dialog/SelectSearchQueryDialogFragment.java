@@ -49,7 +49,7 @@ public class SelectSearchQueryDialogFragment extends MenuDialogFragment implemen
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         final CommandOpenSearch command = (CommandOpenSearch) parent.getItemAtPosition(position);
-        final CustomListAdapter<Command> adapter = (CustomListAdapter<Command>) parent.getAdapter();
+        @SuppressWarnings("unchecked") final CustomListAdapter<Command> adapter = (CustomListAdapter<Command>) parent.getAdapter();
 
         ConfirmDialogFragment.show(getActivity(), getString(R.string.dialog_confirm_delete_query), () -> {
             adapter.removeItem(command);
