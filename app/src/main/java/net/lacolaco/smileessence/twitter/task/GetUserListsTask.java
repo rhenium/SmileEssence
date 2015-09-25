@@ -26,12 +26,12 @@ package net.lacolaco.smileessence.twitter.task;
 
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.util.BackgroundTask;
+import net.lacolaco.smileessence.util.ListUtils;
 import twitter4j.TwitterException;
-import twitter4j.UserList;
 
 import java.util.List;
 
-public class GetUserListsTask extends BackgroundTask<List<UserList>,Object> {
+public class GetUserListsTask extends BackgroundTask<List<String>, Void> {
 
     private final Account account;
 
@@ -44,7 +44,9 @@ public class GetUserListsTask extends BackgroundTask<List<UserList>,Object> {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected List<UserList> doInBackground() throws TwitterException {
-        return account.getTwitter().list().getUserLists(account.getTwitter().getId());
+    protected List<String> doInBackground() throws TwitterException {
+        return ListUtils.map(account.getTwitter().list().getUserLists(account.getUserId()), userLists -> {
+            return userLists.getFullName();
+        });
     }
 }

@@ -29,6 +29,7 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Delete;
+import net.lacolaco.smileessence.twitter.task.GetUserListsTask;
 import net.lacolaco.smileessence.twitter.task.ShowStatusTask;
 import net.lacolaco.smileessence.util.BackgroundTask;
 import net.lacolaco.smileessence.util.Consumer;
@@ -38,9 +39,15 @@ import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
 import twitter4j.auth.AccessToken;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 @Table(name = "Accounts")
 public class Account extends Model {
     private User user;
+    private Set<String> listSubscriptions = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     @Column(name = "Token", notNull = true)
     private String accessToken;
@@ -85,7 +92,7 @@ public class Account extends Model {
 
     public User getUser() {
         if (user == null) {
-            user = User.fetch(userID); // 強い参照をもたせる
+            user = User.fetch(userID);
             if (user == null) {
                 user = User._makeSkeleton(getUserId(), screenName);
             }
@@ -99,6 +106,7 @@ public class Account extends Model {
 
         return user;
     }
+    // --------------------- Helper methods ---------------------
 
     @Deprecated
     public BackgroundTask<Tweet, Void> fetchTweet(long statusId, Consumer<Tweet> callback) {
@@ -112,7 +120,6 @@ public class Account extends Model {
         }
     }
 
-    //--- helper methods
     public boolean canDelete(Tweet tweet) {
         return tweet.getUser() == getUser();
     }
@@ -122,8 +129,26 @@ public class Account extends Model {
                 message.getRecipient() == getUser();
     }
 
-    public boolean canRetweet(Tweet tweet) {
-        return !tweet.getOriginalTweet().getUser().isProtected() &&
-                tweet.getOriginalTweet().getUser().getId() != getUserId();
+    // --------------------- List subscription cache ---------------------
+    public BackgroundTask<List<String>, Void> refreshListSubscriptions() {
+        return new GetUserListsTask(this)
+                .onDone(lists -> {
+                    listSubscriptions.clear();
+                    listSubscriptions.addAll(lists);
+                })
+                // .onFail(x -> { }) // TODO: error message?
+                .execute();
+    }
+
+    public Set<String> getListSubscriptions() {
+        return listSubscriptions;
+    }
+
+    public boolean addListSubscription(String fullName) {
+        return listSubscriptions.add(fullName);
+    }
+
+    public boolean removeListSubscription(String fullName) {
+        return listSubscriptions.remove(fullName);
     }
 }

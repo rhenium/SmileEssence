@@ -25,7 +25,6 @@
 package net.lacolaco.smileessence.twitter;
 
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.data.UserListCache;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.DirectMessage;
 import net.lacolaco.smileessence.entity.Tweet;
@@ -184,17 +183,17 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
 
     @Override
     public void onUserListSubscription(twitter4j.User subscriber, twitter4j.User listOwner, twitter4j.UserList list) {
-        UserListCache.getInstance().put(list.getFullName());
+        account.addListSubscription(list.getFullName());
     }
 
     @Override
     public void onUserListUnsubscription(twitter4j.User subscriber, twitter4j.User listOwner, twitter4j.UserList list) {
-        UserListCache.getInstance().remove(list.getFullName());
+        account.removeListSubscription(list.getFullName());
     }
 
     @Override
     public void onUserListCreation(twitter4j.User listOwner, twitter4j.UserList list) {
-        UserListCache.getInstance().put(list.getFullName());
+        account.addListSubscription(list.getFullName());
     }
 
     @Override
@@ -203,7 +202,7 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
 
     @Override
     public void onUserListDeletion(twitter4j.User listOwner, twitter4j.UserList list) {
-        UserListCache.getInstance().remove(list.getFullName());
+        account.removeListSubscription(list.getFullName());
     }
 
     @Override

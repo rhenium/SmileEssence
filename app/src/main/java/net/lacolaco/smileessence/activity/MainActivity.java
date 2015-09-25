@@ -41,7 +41,6 @@ import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.IntentRouter;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.data.PostState;
-import net.lacolaco.smileessence.data.UserListCache;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.CommandSetting;
 import net.lacolaco.smileessence.entity.MuteUserIds;
@@ -52,7 +51,6 @@ import net.lacolaco.smileessence.preference.InternalPreferenceHelper;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.twitter.OAuthSession;
 import net.lacolaco.smileessence.twitter.UserStreamListener;
-import net.lacolaco.smileessence.twitter.task.GetUserListsTask;
 import net.lacolaco.smileessence.twitter.task.ShowUserTask;
 import net.lacolaco.smileessence.util.BitmapOptimizer;
 import net.lacolaco.smileessence.util.BitmapURLTask;
@@ -63,7 +61,6 @@ import net.lacolaco.smileessence.view.adapter.PageListAdapter;
 import net.lacolaco.smileessence.view.dialog.ConfirmDialogFragment;
 import net.lacolaco.smileessence.viewmodel.menu.MainActivityMenuHelper;
 import twitter4j.TwitterStream;
-import twitter4j.UserList;
 
 public class MainActivity extends Activity {
 
@@ -340,7 +337,7 @@ public class MainActivity extends Activity {
             return false;
         }
         MuteUserIds.refresh(getCurrentAccount());
-        initUserListCache();
+        getCurrentAccount().refreshListSubscriptions();
         updateActionBarIcon();
         return true;
     }
@@ -371,18 +368,6 @@ public class MainActivity extends Activity {
             uri = getCameraTempFilePath();
         }
         openPostPageWithImage(uri);
-    }
-
-    private void initUserListCache() {
-        UserListCache.getInstance().clear();
-        new GetUserListsTask(getCurrentAccount())
-                .onDone(lists -> {
-                    for (UserList list : lists) {
-                        UserListCache.getInstance().put(list.getFullName());
-                    }
-                })
-                .onFail(x -> { /* TODO */ })
-                .execute();
     }
 
     private void initializePages() {
