@@ -3,12 +3,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
 
 android {
-    compileSdkVersion 21
+    compileSdkVersion 23
     buildToolsVersion "23.0.1"
 
     defaultConfig {
         applicationId "jp.rhe.smileessence"
-        minSdkVersion 21
+        minSdkVersion 17
         targetSdkVersion 23
         versionCode 25
         versionName "1.0.11.1"
@@ -41,7 +41,7 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:support-v13:23.0.1'
-    //    compile 'com.android.support:appcompat-v7:22.1.0'
+    compile 'com.android.support:appcompat-v7:23.0.1'
     // volley
     compile 'com.mcxiaoke.volley:library:1.0.19'
     // ActiveAndroid
