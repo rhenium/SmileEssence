@@ -35,6 +35,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Account;
@@ -96,7 +97,7 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
     @Override
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
         final MainActivity activity = getMainActivity();
-        final Account currentAccount = activity.getCurrentAccount();
+        final Account currentAccount = Application.getCurrentAccount();
         final UserListListAdapter adapter = getAdapter();
         String listFullName = adapter.getListFullName();
         if (TextUtils.isEmpty(listFullName)) {
@@ -125,7 +126,7 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
     @Override
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
         final MainActivity activity = getMainActivity();
-        final Account currentAccount = activity.getCurrentAccount();
+        final Account currentAccount = Application.getCurrentAccount();
         final UserListListAdapter adapter = getAdapter();
         String listFullName = adapter.getListFullName();
         if (TextUtils.isEmpty(listFullName)) {
@@ -202,7 +203,7 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
         adapter.setListFullName(listFullName);
         adapter.clear();
         adapter.updateForce();
-        new UserListStatusesTask(getMainActivity().getCurrentAccount(), listFullName)
+        new UserListStatusesTask(Application.getCurrentAccount(), listFullName)
                 .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_list, NotificationType.ALERT))
                 .onDoneUI(tweets -> {

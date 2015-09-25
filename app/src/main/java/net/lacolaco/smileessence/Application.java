@@ -25,6 +25,7 @@
 package net.lacolaco.smileessence;
 
 import android.content.Context;
+import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.util.Themes;
 
@@ -33,7 +34,26 @@ public class Application extends com.activeandroid.app.Application {
     // ------------------------------ FIELDS ------------------------------
 
     private static Context context;
+    private static Account currentAccount;
     private int resId = -1;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        // onCreate は一度しか呼ばれないはずだから安全なはず
+        context = getApplicationContext();
+    }
+
+    // --------------------- HELPER METHODS ---------------------
+
+    public int getThemeResId() {
+        if (resId == -1) {
+            resId = Themes.getThemeResId(UserPreferenceHelper.getInstance().get(R.string.key_setting_theme, 0));
+        }
+        return resId;
+    }
+
+    // --------------------- STATIC METHODS ---------------------
 
     public static Context getContext() {
         if (context == null) {
@@ -46,19 +66,12 @@ public class Application extends com.activeandroid.app.Application {
         return BuildConfig.VERSION_NAME;
     }
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        // onCreate は一度しか呼ばれないはずだから安全なはず
-        context = getApplicationContext();
+
+    public static Account getCurrentAccount() {
+        return currentAccount;
     }
 
-    // --------------------- GETTER / SETTER METHODS ---------------------
-
-    public int getThemeResId() {
-        if (resId == -1) {
-            resId = Themes.getThemeResId(UserPreferenceHelper.getInstance().get(R.string.key_setting_theme, 0));
-        }
-        return resId;
+    public static void setCurrentAccount(Account val) {
+        currentAccount = val;
     }
 }

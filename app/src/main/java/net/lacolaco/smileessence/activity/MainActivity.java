@@ -71,7 +71,6 @@ public class MainActivity extends Activity {
     public static final int REQUEST_GET_PICTURE_FROM_CAMERA = 12;
     private ViewPager viewPager;
     private PageListAdapter pagerAdapter;
-    private Account currentAccount;
     private TwitterStream stream;
     private Uri cameraTempFilePath;
     private UserStreamListener userStreamListener;
@@ -87,14 +86,6 @@ public class MainActivity extends Activity {
 
     public void setCameraTempFilePath(Uri cameraTempFilePath) {
         this.cameraTempFilePath = cameraTempFilePath;
-    }
-
-    public Account getCurrentAccount() {
-        return currentAccount;
-    }
-
-    public void setCurrentAccount(Account account) {
-        this.currentAccount = account;
     }
 
     public String getLastSearch() {
@@ -319,8 +310,8 @@ public class MainActivity extends Activity {
         if (stream != null) {
             stream.shutdown();
         }
-        stream = currentAccount.getTwitterStream();
-        userStreamListener = new UserStreamListener(currentAccount);
+        stream = Application.getCurrentAccount().getTwitterStream();
+        userStreamListener = new UserStreamListener(Application.getCurrentAccount());
         stream.addListener(userStreamListener);
         stream.addConnectionLifeCycleListener(userStreamListener);
         stream.user();
@@ -331,15 +322,15 @@ public class MainActivity extends Activity {
         if (!startStream()) {
             return false;
         }
-        MuteUserIds.refresh(getCurrentAccount());
-        getCurrentAccount().refreshListSubscriptions();
+        MuteUserIds.refresh(Application.getCurrentAccount());
+        Application.getCurrentAccount().refreshListSubscriptions();
         updateActionBarIcon();
         return true;
     }
 
     public void updateActionBarIcon() {
         final ImageView homeIcon = (ImageView) findViewById(android.R.id.home);
-        new ShowUserTask(currentAccount, currentAccount.getUserId())
+        new ShowUserTask(Application.getCurrentAccount(), Application.getCurrentAccount().getUserId())
                 .onDoneUI(user -> {
                     String urlHttps = user.getProfileImageUrl();
                     homeIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
@@ -408,7 +399,7 @@ public class MainActivity extends Activity {
                     data.getLongExtra(OAuthSession.KEY_USER_ID, -1L),
                     data.getStringExtra(OAuthSession.KEY_SCREEN_NAME));
             account.save();
-            setCurrentAccount(account);
+            Application.setCurrentAccount(account);
             setLastUsedAccountID(account);
             startMainLogic();
         }
@@ -421,7 +412,7 @@ public class MainActivity extends Activity {
             account = Account.load(Account.class, lastId);
         }
         if (account != null) {
-            setCurrentAccount(account);
+            Application.setCurrentAccount(account);
             return true;
         } else {
             return false;

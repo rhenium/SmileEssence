@@ -32,7 +32,6 @@ import android.widget.TextView;
 import com.android.volley.toolbox.NetworkImageView;
 import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.data.ImageCache;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.DirectMessage;
@@ -151,6 +150,6 @@ public class MessageViewModel implements IViewModel {
         footer.setTextSize(textSize - 2);
         int colorFooter = Themes.getStyledColor(activity, theme, R.attr.color_status_text_footer, 0);
         footer.setTextColor(colorFooter);
-        footer.setText(getFooterText(((MainActivity) activity).getCurrentAccount()));
+        footer.setText(getFooterText(Application.getCurrentAccount()));
     }
 }

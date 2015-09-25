@@ -38,6 +38,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import com.twitter.Validator;
+import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.data.PostState;
@@ -154,7 +155,7 @@ public class SendMessageDialogFragment extends StackableDialogFragment implement
         hideIME();
         MainActivity activity = (MainActivity) getActivity();
         String text = editText.getText().toString();
-        new SendMessageTask(activity.getCurrentAccount(), screenName, text)
+        new SendMessageTask(Application.getCurrentAccount(), screenName, text)
                 .onDone(x -> Notificator.getInstance().publish(R.string.notice_message_send_succeeded))
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_message_send_failed, NotificationType.ALERT))
                 .execute();

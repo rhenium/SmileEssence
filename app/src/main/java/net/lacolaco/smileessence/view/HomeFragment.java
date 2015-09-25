@@ -27,6 +27,7 @@ package net.lacolaco.smileessence.view;
 import android.os.Bundle;
 import android.widget.ListView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Account;
@@ -65,7 +66,7 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
             adapter.removeByStatusID(id);
             adapter.updateForce();
         });
-        final Account account = ((MainActivity) getActivity()).getCurrentAccount();
+        final Account account = Application.getCurrentAccount();
         new HomeTimelineTask(account)
                 .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
                 .onFail(e -> Notificator.getInstance().publish(R.string.notice_error_get_home, NotificationType.ALERT))
@@ -92,7 +93,7 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
             });
             return;
         }
-        final Account currentAccount = activity.getCurrentAccount();
+        final Account currentAccount = Application.getCurrentAccount();
         new HomeTimelineTask(currentAccount)
                 .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
                 .setSinceId(adapter.getTopID())
@@ -113,7 +114,7 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
         final MainActivity activity = (MainActivity) getActivity();
         final StatusListAdapter adapter = getAdapter();
-        final Account currentAccount = activity.getCurrentAccount();
+        final Account currentAccount = Application.getCurrentAccount();
         new HomeTimelineTask(currentAccount)
                 .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
                 .setMaxId(adapter.getLastID() - 1)

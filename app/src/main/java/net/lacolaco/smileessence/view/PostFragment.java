@@ -37,6 +37,7 @@ import android.view.*;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import com.twitter.Validator;
+import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.data.PostState;
@@ -352,7 +353,7 @@ public class PostFragment extends PageFragment implements TextWatcher, View.OnFo
         PostState state = PostState.getState();
         MainActivity mainActivity = (MainActivity) getActivity();
         boolean resizeFlag = UserPreferenceHelper.getInstance().get(R.string.key_setting_resize_post_image, false);
-        TweetTask tweetTask = new TweetTask(mainActivity.getCurrentAccount(), state.toStatusUpdate(), state.getMediaFilePath(), resizeFlag);
+        TweetTask tweetTask = new TweetTask(Application.getCurrentAccount(), state.toStatusUpdate(), state.getMediaFilePath(), resizeFlag);
         tweetTask.execute();
         PostState.newState().beginTransaction().commit();
         mainActivity.openHomePage();

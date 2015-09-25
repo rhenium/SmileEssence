@@ -38,6 +38,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.Command;
@@ -129,7 +130,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
     @Override
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
         final MainActivity activity = (MainActivity) getActivity();
-        final Account currentAccount = activity.getCurrentAccount();
+        final Account currentAccount = Application.getCurrentAccount();
         final SearchListAdapter adapter = getAdapter();
         String queryString = adapter.getQuery();
         if (TextUtils.isEmpty(queryString)) {
@@ -170,7 +171,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
     @Override
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
         final MainActivity activity = (MainActivity) getActivity();
-        final Account currentAccount = activity.getCurrentAccount();
+        final Account currentAccount = Application.getCurrentAccount();
         final SearchListAdapter adapter = getAdapter();
         String queryString = adapter.getQuery();
         if (TextUtils.isEmpty(queryString)) {
@@ -337,14 +338,14 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
             query.setQuery(queryString);
             query.setCount(((MainActivity) getActivity()).getRequestCountPerPage());
             query.setResultType(Query.RECENT);
-            new SearchTask(((MainActivity) getActivity()).getCurrentAccount(), query)
+            new SearchTask(Application.getCurrentAccount(), query)
                     .onDoneUI(queryResult -> {
                         if (queryResult != null) {
                             List<twitter4j.Status> tweets = queryResult.getTweets();
                             for (int i = tweets.size() - 1; i >= 0; i--) {
                                 twitter4j.Status status = tweets.get(i);
                                 if (!status.isRetweet()) {
-                                    StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status, ((MainActivity) getActivity()).getCurrentAccount().getUserId()));
+                                    StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status, Application.getCurrentAccount().getUserId()));
                                     adapter.addToTop(viewModel);
                                     StatusFilter.getInstance().filter(viewModel);
                                 }

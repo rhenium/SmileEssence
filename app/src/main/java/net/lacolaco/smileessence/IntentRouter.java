@@ -124,7 +124,7 @@ public class IntentRouter {
     }
 
     private static void showStatusDialog(final MainActivity activity, long id) {
-        new ShowStatusTask(activity.getCurrentAccount(), id)
+        new ShowStatusTask(Application.getCurrentAccount(), id)
                 .onDoneUI(tweet -> {
                     StatusDetailDialogFragment fragment = new StatusDetailDialogFragment();
                     fragment.setStatusID(tweet.getId());

@@ -25,8 +25,8 @@
 package net.lacolaco.smileessence.command.user;
 
 import android.app.Activity;
+import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.IConfirmable;
 import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.notification.NotificationType;
@@ -50,14 +50,14 @@ public class UserCommandBlock extends UserCommand implements IConfirmable {
 
     @Override
     public boolean isEnabled() {
-        return getUser() != ((MainActivity) getActivity()).getCurrentAccount().getUser();
+        return getUser() != Application.getCurrentAccount().getUser();
     }
 
     // -------------------------- OTHER METHODS --------------------------
 
     @Override
     public boolean execute() {
-        new BlockTask(((MainActivity) getActivity()).getCurrentAccount(), getUser().getId())
+        new BlockTask(Application.getCurrentAccount(), getUser().getId())
                 .onDone(user -> Notificator.getInstance().publish(R.string.notice_block_succeeded))
                 .onFail(ex -> Notificator.getInstance().publish(R.string.notice_block_failed, NotificationType.ALERT))
                 .execute();

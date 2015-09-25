@@ -25,8 +25,8 @@
 package net.lacolaco.smileessence.command.user;
 
 import android.app.Activity;
+import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.dialog.SendMessageDialogFragment;
@@ -48,7 +48,7 @@ public class UserCommandSendMessage extends UserCommand {
 
     @Override
     public boolean isEnabled() {
-        return getUser() != ((MainActivity) getActivity()).getCurrentAccount().getUser();
+        return getUser() != Application.getCurrentAccount().getUser();
     }
 
     // -------------------------- OTHER METHODS --------------------------

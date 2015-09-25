@@ -25,8 +25,8 @@
 package net.lacolaco.smileessence.command.status;
 
 import android.app.Activity;
+import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.IConfirmable;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
@@ -77,9 +77,9 @@ public class StatusCommandMakeAnonymous extends StatusCommand implements IConfir
 
     @Override
     public boolean execute() {
-        StatusUpdate update = new TweetBuilder().setText(build(getActivity(), getOriginalStatus(), ((MainActivity) getActivity()).getCurrentAccount())).build();
-        new TweetTask(((MainActivity) getActivity()).getCurrentAccount(), update).execute();
-        new FavoriteTask(((MainActivity) getActivity()).getCurrentAccount(), getOriginalStatus().getId())
+        StatusUpdate update = new TweetBuilder().setText(build(getActivity(), getOriginalStatus(), Application.getCurrentAccount())).build();
+        new TweetTask(Application.getCurrentAccount(), update).execute();
+        new FavoriteTask(Application.getCurrentAccount(), getOriginalStatus().getId())
                 .onDone(x -> Notificator.getInstance().publish(R.string.notice_favorite_succeeded))
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_favorite_failed, NotificationType.ALERT))
                 .execute();

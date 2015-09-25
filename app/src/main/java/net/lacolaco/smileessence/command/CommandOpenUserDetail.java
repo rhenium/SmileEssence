@@ -25,8 +25,8 @@
 package net.lacolaco.smileessence.command;
 
 import android.app.Activity;
+import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.task.ShowUserTask;
@@ -62,7 +62,7 @@ public class CommandOpenUserDetail extends Command {
 
     @Override
     public boolean execute() {
-        new ShowUserTask(((MainActivity) getActivity()).getCurrentAccount(), screenName)
+        new ShowUserTask(Application.getCurrentAccount(), screenName)
                 .onDoneUI(user -> {
                     UserDetailDialogFragment fragment = new UserDetailDialogFragment();
                     fragment.setUserID(user.getId());

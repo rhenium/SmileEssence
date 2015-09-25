@@ -27,6 +27,7 @@ package net.lacolaco.smileessence.view;
 import android.os.Bundle;
 import android.widget.ListView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Account;
@@ -66,7 +67,7 @@ public class MessagesFragment extends CustomListFragment<MessageListAdapter> {
             adapter.removeByMessageID(id);
             adapter.updateForce();
         });
-        final Account account = ((MainActivity) getActivity()).getCurrentAccount();
+        final Account account = Application.getCurrentAccount();
         new DirectMessagesTask(account)
                 .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_messages, NotificationType.ALERT))
@@ -92,7 +93,7 @@ public class MessagesFragment extends CustomListFragment<MessageListAdapter> {
     @Override
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
         final MainActivity activity = (MainActivity) getActivity();
-        final Account currentAccount = activity.getCurrentAccount();
+        final Account currentAccount = Application.getCurrentAccount();
         final MessageListAdapter adapter = getAdapter();
         new DirectMessagesTask(currentAccount)
                 .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
@@ -110,7 +111,7 @@ public class MessagesFragment extends CustomListFragment<MessageListAdapter> {
     @Override
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
         final MainActivity activity = (MainActivity) getActivity();
-        final Account currentAccount = activity.getCurrentAccount();
+        final Account currentAccount = Application.getCurrentAccount();
         final MessageListAdapter adapter = getAdapter();
         new DirectMessagesTask(currentAccount)
                 .setCount(((MainActivity) getActivity()).getRequestCountPerPage())

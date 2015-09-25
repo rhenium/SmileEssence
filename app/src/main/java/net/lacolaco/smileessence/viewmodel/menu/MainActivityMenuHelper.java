@@ -105,15 +105,15 @@ public class MainActivityMenuHelper {
                 return true;
             }
             case R.id.actionbar_favstar: {
-                new CommandOpenURL(activity, activity.getCurrentAccount().getUser().getFavstarRecentURL()).execute();
+                new CommandOpenURL(activity, Application.getCurrentAccount().getUser().getFavstarRecentURL()).execute();
                 return true;
             }
             case R.id.actionbar_aclog: {
-                new CommandOpenURL(activity, activity.getCurrentAccount().getUser().getAclogTimelineURL()).execute();
+                new CommandOpenURL(activity, Application.getCurrentAccount().getUser().getAclogTimelineURL()).execute();
                 return true;
             }
             case R.id.actionbar_twilog: {
-                new CommandOpenURL(activity, activity.getCurrentAccount().getUser().getTwilogURL()).execute();
+                new CommandOpenURL(activity, Application.getCurrentAccount().getUser().getTwilogURL()).execute();
                 return true;
             }
             case R.id.actionbar_report: {

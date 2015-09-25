@@ -25,8 +25,8 @@
 package net.lacolaco.smileessence.command.status;
 
 import android.app.Activity;
+import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.IConfirmable;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.notification.NotificationType;
@@ -84,8 +84,8 @@ public class StatusCommandCongratulate extends StatusCommand implements IConfirm
         StatusUpdate update = new TweetBuilder().setText(build())
                 .setInReplyToStatusID(getOriginalStatus().getId())
                 .build();
-        new TweetTask(((MainActivity) getActivity()).getCurrentAccount(), update).execute();
-        new FavoriteTask(((MainActivity) getActivity()).getCurrentAccount(), getOriginalStatus().getId())
+        new TweetTask(Application.getCurrentAccount(), update).execute();
+        new FavoriteTask(Application.getCurrentAccount(), getOriginalStatus().getId())
                 .onDone(x -> Notificator.getInstance().publish(R.string.notice_favorite_succeeded))
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_favorite_failed, NotificationType.ALERT))
                 .execute();

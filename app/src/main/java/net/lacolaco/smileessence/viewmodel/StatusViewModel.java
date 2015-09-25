@@ -137,7 +137,7 @@ public class StatusViewModel implements IViewModel {
         header.setTextSize(textSize);
         int colorHeader = Themes.getStyledColor(activity, theme, R.attr.color_status_text_header, 0);
         int colorMineHeader = Themes.getStyledColor(activity, theme, R.attr.color_status_text_mine, 0);
-        header.setTextColor(tweet.getUser() == activity.getCurrentAccount().getUser() ? colorMineHeader : colorHeader);
+        header.setTextColor(tweet.getUser() == Application.getCurrentAccount().getUser() ? colorMineHeader : colorHeader);
         header.setText(NameStyles.getNameString(nameStyle, tweet.getOriginalTweet().getUser()));
     }
 
@@ -165,7 +165,7 @@ public class StatusViewModel implements IViewModel {
         if (tweet.isRetweet()) {
             int colorBgRetweet = Themes.getStyledColor(activity, theme, R.attr.color_status_bg_retweet, 0);
             convertedView.setBackgroundColor(colorBgRetweet);
-        } else if (tweet.getOriginalTweet().getMentions().contains(activity.getCurrentAccount().getUser().getScreenName())) {
+        } else if (tweet.getOriginalTweet().getMentions().contains(Application.getCurrentAccount().getUser().getScreenName())) {
             int colorBgMention = Themes.getStyledColor(activity, theme, R.attr.color_status_bg_mention, 0);
             convertedView.setBackgroundColor(colorBgMention);
         } else {
@@ -176,7 +176,7 @@ public class StatusViewModel implements IViewModel {
 
     private void updateViewFavorited(MainActivity activity, View convertedView) {
         ImageView favorited = (ImageView) convertedView.findViewById(R.id.imageview_status_favorited);
-        favorited.setVisibility(tweet.isFavoritedBy(activity.getCurrentAccount().getUserId()) ? View.VISIBLE : View.GONE);
+        favorited.setVisibility(tweet.isFavoritedBy(Application.getCurrentAccount().getUserId()) ? View.VISIBLE : View.GONE);
     }
 
     private void updateViewEmbeddeds(MainActivity activity, View convertedView, boolean extendStatusURL) {
@@ -191,7 +191,7 @@ public class StatusViewModel implements IViewModel {
             if (embeddedStatusIDs.size() > 0) {
                 embeddedStatus.setVisibility(View.VISIBLE);
                 for (long id : embeddedStatusIDs) {
-                    BackgroundTask task = activity.getCurrentAccount().fetchTweet(id, embeddedTweet -> {
+                    BackgroundTask task = Application.getCurrentAccount().fetchTweet(id, embeddedTweet -> {
                         if (embeddedTweet != null) {
                             StatusViewModel viewModel = new StatusViewModel(embeddedTweet);
                             View embeddedHolder = viewModel.getView(activity, activity.getLayoutInflater(), null, false);

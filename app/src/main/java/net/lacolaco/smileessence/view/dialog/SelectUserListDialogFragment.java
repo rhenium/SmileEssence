@@ -26,6 +26,7 @@ package net.lacolaco.smileessence.view.dialog;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.Command;
@@ -61,7 +62,7 @@ public class SelectUserListDialogFragment extends MenuDialogFragment {
     public List<Command> getCommands() {
         MainActivity activity = (MainActivity) getActivity();
         ArrayList<Command> commands = new ArrayList<>();
-        for (String fullName : activity.getCurrentAccount().getListSubscriptions()) {
+        for (String fullName : Application.getCurrentAccount().getListSubscriptions()) {
             commands.add(new CommandOpenUserList(activity, fullName));
         }
 

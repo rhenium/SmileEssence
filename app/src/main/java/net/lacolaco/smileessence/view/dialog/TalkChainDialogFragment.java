@@ -29,6 +29,7 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
+import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Account;
@@ -59,7 +60,7 @@ public class TalkChainDialogFragment extends StackableDialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         MainActivity activity = (MainActivity) getActivity();
-        Account account = activity.getCurrentAccount();
+        Account account = Application.getCurrentAccount();
 
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_talk_list, null);
         ListView listView = (ListView) view.findViewById(R.id.listview_dialog_talk_list);

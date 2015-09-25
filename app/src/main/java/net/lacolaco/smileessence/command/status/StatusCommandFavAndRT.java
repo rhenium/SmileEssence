@@ -25,8 +25,8 @@
 package net.lacolaco.smileessence.command.status;
 
 import android.app.Activity;
+import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.IConfirmable;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.entity.User;
@@ -54,18 +54,18 @@ public class StatusCommandFavAndRT extends StatusCommand implements IConfirmable
     @Override
     public boolean isEnabled() {
         User user = getOriginalStatus().getUser();
-        return !user.isProtected() && user != ((MainActivity) getActivity()).getCurrentAccount().getUser();
+        return !user.isProtected() && user != Application.getCurrentAccount().getUser();
     }
 
     // -------------------------- OTHER METHODS --------------------------
 
     @Override
     public boolean execute() {
-        new FavoriteTask(((MainActivity) getActivity()).getCurrentAccount(), getOriginalStatus().getId())
+        new FavoriteTask(Application.getCurrentAccount(), getOriginalStatus().getId())
                 .onDone(x -> Notificator.getInstance().publish(R.string.notice_favorite_succeeded))
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_favorite_failed, NotificationType.ALERT))
                 .execute();
-        new RetweetTask(((MainActivity) getActivity()).getCurrentAccount(), getOriginalStatus().getId())
+        new RetweetTask(Application.getCurrentAccount(), getOriginalStatus().getId())
                 .onDone(x -> Notificator.getInstance().publish(R.string.notice_retweet_succeeded))
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_retweet_failed, NotificationType.ALERT))
                 .execute();

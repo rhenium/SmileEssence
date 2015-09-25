@@ -27,6 +27,7 @@ package net.lacolaco.smileessence.view;
 import android.os.Bundle;
 import android.widget.ListView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Account;
@@ -70,7 +71,7 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
             adapter.removeByStatusID(id);
             adapter.updateForce();
         });
-        final Account account = ((MainActivity) getActivity()).getCurrentAccount();
+        final Account account = Application.getCurrentAccount();
         final StatusListAdapter adapter_ = adapter;
         new MentionsTimelineTask(account)
                 .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
@@ -90,7 +91,7 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
     @Override
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
         final MainActivity activity = (MainActivity) getActivity();
-        final Account currentAccount = activity.getCurrentAccount();
+        final Account currentAccount = Application.getCurrentAccount();
         final StatusListAdapter adapter = getAdapter();
         new MentionsTimelineTask(currentAccount)
                 .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
@@ -108,7 +109,7 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
     @Override
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
         final MainActivity activity = (MainActivity) getActivity();
-        final Account currentAccount = activity.getCurrentAccount();
+        final Account currentAccount = Application.getCurrentAccount();
         final StatusListAdapter adapter = getAdapter();
         new MentionsTimelineTask(currentAccount)
                 .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
