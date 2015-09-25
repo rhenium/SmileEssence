@@ -25,6 +25,7 @@
 package net.lacolaco.smileessence.data;
 
 import net.lacolaco.smileessence.activity.MainActivity;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.view.DialogHelper;
 import twitter4j.StatusUpdate;
 
@@ -34,9 +35,7 @@ public class PostState {
 
     private static PostState instance = new PostState();
     private String text = "";
-    private long inReplyToStatusID = -1L;
-    private String inReplyToScreenName = "";
-    private String inReplyToText = "";
+    private Tweet inReplyTo = null;
     private String mediaFilePath = "";
     private boolean directMessage = false;
     private OnPostStateChangeListener listener;
@@ -60,8 +59,8 @@ public class PostState {
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 
-    public long getInReplyToStatusID() {
-        return inReplyToStatusID;
+    public Tweet getInReplyTo() {
+        return inReplyTo;
     }
 
     public String getMediaFilePath() {
@@ -107,15 +106,16 @@ public class PostState {
      * @return StatusUpdate
      */
     public StatusUpdate toStatusUpdate() {
-        return new StatusUpdate(getText())
-                .inReplyToStatusId(getInReplyToStatusID());
+        StatusUpdate su = new StatusUpdate(getText());
+        if (getInReplyTo() != null) {
+            su.setInReplyToStatusId(getInReplyTo().getId());
+        }
+        return su;
     }
 
     private PostState copy(PostState another) {
         this.text = another.text;
-        this.inReplyToStatusID = another.inReplyToStatusID;
-        this.inReplyToScreenName = another.inReplyToScreenName;
-        this.inReplyToText = another.inReplyToText;
+        this.inReplyTo = another.getInReplyTo();
         this.mediaFilePath = another.mediaFilePath;
         this.directMessage = another.directMessage;
         this.selectionStart = another.selectionStart;
@@ -162,8 +162,8 @@ public class PostState {
             return this;
         }
 
-        public PostStateTransaction setInReplyToStatusID(long inReplyToStatusID) {
-            state.inReplyToStatusID = inReplyToStatusID;
+        public PostStateTransaction setInReplyTo(Tweet inReplyTo) {
+            state.inReplyTo = inReplyTo;
             return this;
         }
 

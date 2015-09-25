@@ -40,7 +40,7 @@ import com.twitter.Validator;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.data.PostState;
-import net.lacolaco.smileessence.entity.Account;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.twitter.task.TweetTask;
@@ -50,7 +50,6 @@ import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.view.dialog.PostMenuDialogFragment;
 import net.lacolaco.smileessence.view.dialog.SelectImageDialogFragment;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
-import twitter4j.StatusUpdate;
 
 import java.io.File;
 
@@ -131,22 +130,16 @@ public class PostFragment extends PageFragment implements TextWatcher, View.OnFo
             new UIHandler().postAtFrontOfQueue(() -> editText.setSelection(start, end));
         }
         if (viewGroupReply != null) {
-            if (postState.getInReplyToStatusID() >= 0) {
+            if (postState.getInReplyTo() != null) {
                 viewGroupReply.setVisibility(View.VISIBLE);
                 ImageButton imageButtonDeleteReply = (ImageButton) viewGroupReply.findViewById(R.id.button_post_reply_delete);
                 imageButtonDeleteReply.setOnClickListener(this);
 
-                final Account account = activity.getCurrentAccount();
-                account.fetchTweet(postState.getInReplyToStatusID(), tweet -> {
-                    if (tweet != null) {
-                        View header = viewGroupReply.findViewById(R.id.layout_post_reply_status);
-                        header = new StatusViewModel(tweet).getView(activity, activity.getLayoutInflater(), header);
-                        header.setBackgroundColor(getResources().getColor(R.color.transparent));
-                        header.setClickable(false);
-                    } else {
-                        viewGroupReply.setVisibility(View.GONE);
-                    }
-                });
+                Tweet tweet = postState.getInReplyTo();
+                View header = viewGroupReply.findViewById(R.id.layout_post_reply_status);
+                header = new StatusViewModel(tweet).getView(activity, activity.getLayoutInflater(), header);
+                header.setBackgroundColor(getResources().getColor(R.color.transparent));
+                header.setClickable(false);
             } else {
                 viewGroupReply.setVisibility(View.GONE);
             }
@@ -277,7 +270,7 @@ public class PostFragment extends PageFragment implements TextWatcher, View.OnFo
 
     private void deleteReply() {
         viewGroupReply.setVisibility(View.GONE);
-        PostState.getState().beginTransaction().setInReplyToStatusID(-1).commit();
+        PostState.getState().beginTransaction().setInReplyTo(null).commit();
     }
 
     private void displayImage() {
@@ -357,10 +350,9 @@ public class PostFragment extends PageFragment implements TextWatcher, View.OnFo
         hideIME();
         setStateFromView();
         PostState state = PostState.getState();
-        StatusUpdate statusUpdate = state.toStatusUpdate();
         MainActivity mainActivity = (MainActivity) getActivity();
         boolean resizeFlag = UserPreferenceHelper.getInstance().get(R.string.key_setting_resize_post_image, false);
-        TweetTask tweetTask = new TweetTask(mainActivity.getCurrentAccount(), statusUpdate, state.getMediaFilePath(), resizeFlag);
+        TweetTask tweetTask = new TweetTask(mainActivity.getCurrentAccount(), state.toStatusUpdate(), state.getMediaFilePath(), resizeFlag);
         tweetTask.execute();
         PostState.newState().beginTransaction().commit();
         mainActivity.openHomePage();

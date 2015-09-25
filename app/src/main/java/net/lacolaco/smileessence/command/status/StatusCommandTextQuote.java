@@ -58,7 +58,7 @@ public class StatusCommandTextQuote extends StatusCommand {
         TweetBuilder builder = new TweetBuilder().setQuotation(getOriginalStatus());
         PostState.newState().beginTransaction()
                 .setText(builder.buildText())
-                .setInReplyToStatusID(getOriginalStatus().getId())
+                .setInReplyTo(getOriginalStatus())
                 .setCursor(0)
                 .commitWithOpen((MainActivity) getActivity());
         return true;

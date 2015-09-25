@@ -295,7 +295,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
 
         PostState.newState().beginTransaction()
                 .insertText(0, text)
-                .setInReplyToStatusID(originalTweet.getId())
+                .setInReplyTo(originalTweet)
                 .setSelection(selStart, text.length())
                 .commitWithOpen((MainActivity) getActivity());
     }
