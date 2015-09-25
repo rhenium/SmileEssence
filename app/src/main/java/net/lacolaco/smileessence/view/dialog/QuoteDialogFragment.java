@@ -26,7 +26,6 @@ package net.lacolaco.smileessence.view.dialog;
 
 import android.app.Activity;
 import android.os.Bundle;
-import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.status.StatusCommandTextQuote;
 import net.lacolaco.smileessence.command.status.StatusCommandURLQuote;
@@ -58,11 +57,10 @@ public class QuoteDialogFragment extends MenuDialogFragment {
 
     @Override
     protected void setMenuItems(final CustomListAdapter<Command> adapter) {
-        final MainActivity activity = (MainActivity) getActivity();
         Tweet tweet = Tweet.fetch(getStatusID());
 
         if (tweet != null) {
-            List<Command> commands = getCommands(activity, tweet);
+            List<Command> commands = getCommands(tweet);
             Command.filter(commands);
             for (Command command : commands) {
                 adapter.addToBottom(command);
@@ -75,7 +73,8 @@ public class QuoteDialogFragment extends MenuDialogFragment {
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public List<Command> getCommands(Activity activity, Tweet tweet) {
+    public List<Command> getCommands(Tweet tweet) {
+        Activity activity = getActivity();
         ArrayList<Command> commands = new ArrayList<>();
         commands.add(new StatusCommandTextQuote(activity, tweet));
         commands.add(new StatusCommandURLQuote(activity, tweet));

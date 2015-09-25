@@ -114,7 +114,12 @@ public class Account extends Model {
 
     //--- helper methods
     public boolean canDelete(Tweet tweet) {
-        return tweet.getUser().getId() == getUserId();
+        return tweet.getUser() == getUser();
+    }
+
+    public boolean canDelete(DirectMessage message) {
+        return message.getSender() == getUser() ||
+                message.getRecipient() == getUser();
     }
 
     public boolean canRetweet(Tweet tweet) {

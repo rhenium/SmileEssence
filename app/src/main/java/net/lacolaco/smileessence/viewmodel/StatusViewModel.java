@@ -36,7 +36,6 @@ import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.data.ImageCache;
-import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.RO;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
@@ -107,26 +106,25 @@ public class StatusViewModel implements IViewModel {
 
         convertedView.setOnClickListener(new ListItemClickListener(activity, () -> onClick(activity)));
 
-        final Account account = ((MainActivity) activity).getCurrentAccount();
-        updateViewUser(activity, convertedView, account);
-        updateViewBody(activity, convertedView, account);
-        updateViewFavorited(activity, convertedView, account);
-        updateViewEmbeddeds(activity, convertedView, account, extendStatusURL);
+        updateViewUser(((MainActivity) activity), convertedView);
+        updateViewBody(((MainActivity) activity), convertedView);
+        updateViewFavorited(((MainActivity) activity), convertedView);
+        updateViewEmbeddeds(((MainActivity) activity), convertedView, extendStatusURL);
 
         final View view = convertedView;
         bundle.attach(tweet, (x, changes) -> {
             if (changes.contains(RO.FAVORITERS))
-                updateViewFavorited(activity, view, account);
+                updateViewFavorited(((MainActivity) activity), view);
         });
         bundle.attach(tweet.getUser(), (x, changes) -> {
             if (changes.contains(RO.BASIC))
-                updateViewUser(activity, view, account);
+                updateViewUser(((MainActivity) activity), view);
         });
 
         return convertedView;
     }
 
-    private void updateViewUser(Activity activity, View convertedView, Account account) {
+    private void updateViewUser(MainActivity activity, View convertedView) {
         int textSize = UserPreferenceHelper.getInstance().get(R.string.key_setting_text_size, 10);
         int nameStyle = UserPreferenceHelper.getInstance().get(R.string.key_setting_namestyle, 0);
         int theme = ((Application) activity.getApplication()).getThemeResId();
@@ -139,11 +137,11 @@ public class StatusViewModel implements IViewModel {
         header.setTextSize(textSize);
         int colorHeader = Themes.getStyledColor(activity, theme, R.attr.color_status_text_header, 0);
         int colorMineHeader = Themes.getStyledColor(activity, theme, R.attr.color_status_text_mine, 0);
-        header.setTextColor(tweet.getUser().getId() == account.getUserId() ? colorMineHeader : colorHeader);
+        header.setTextColor(tweet.getUser() == activity.getCurrentAccount().getUser() ? colorMineHeader : colorHeader);
         header.setText(NameStyles.getNameString(nameStyle, tweet.getOriginalTweet().getUser()));
     }
 
-    private void updateViewBody(Activity activity, View convertedView, Account account) {
+    private void updateViewBody(MainActivity activity, View convertedView) {
         int textSize = UserPreferenceHelper.getInstance().get(R.string.key_setting_text_size, 10);
         int theme = ((Application) activity.getApplication()).getThemeResId();
 
@@ -167,7 +165,7 @@ public class StatusViewModel implements IViewModel {
         if (tweet.isRetweet()) {
             int colorBgRetweet = Themes.getStyledColor(activity, theme, R.attr.color_status_bg_retweet, 0);
             convertedView.setBackgroundColor(colorBgRetweet);
-        } else if (tweet.getOriginalTweet().getMentions().contains(account.getUser().getScreenName())) {
+        } else if (tweet.getOriginalTweet().getMentions().contains(activity.getCurrentAccount().getUser().getScreenName())) {
             int colorBgMention = Themes.getStyledColor(activity, theme, R.attr.color_status_bg_mention, 0);
             convertedView.setBackgroundColor(colorBgMention);
         } else {
@@ -176,12 +174,12 @@ public class StatusViewModel implements IViewModel {
         }
     }
 
-    private void updateViewFavorited(Activity activity, View convertedView, Account account) {
+    private void updateViewFavorited(MainActivity activity, View convertedView) {
         ImageView favorited = (ImageView) convertedView.findViewById(R.id.imageview_status_favorited);
-        favorited.setVisibility(tweet.isFavoritedBy(account.getUserId()) ? View.VISIBLE : View.GONE);
+        favorited.setVisibility(tweet.isFavoritedBy(activity.getCurrentAccount().getUserId()) ? View.VISIBLE : View.GONE);
     }
 
-    private void updateViewEmbeddeds(Activity activity, View convertedView, Account account, boolean extendStatusURL) {
+    private void updateViewEmbeddeds(MainActivity activity, View convertedView, boolean extendStatusURL) {
         for (BackgroundTask task : lastTasks) {
             task.cancel();
         }
@@ -193,7 +191,7 @@ public class StatusViewModel implements IViewModel {
             if (embeddedStatusIDs.size() > 0) {
                 embeddedStatus.setVisibility(View.VISIBLE);
                 for (long id : embeddedStatusIDs) {
-                    BackgroundTask task = account.fetchTweet(id, embeddedTweet -> {
+                    BackgroundTask task = activity.getCurrentAccount().fetchTweet(id, embeddedTweet -> {
                         if (embeddedTweet != null) {
                             StatusViewModel viewModel = new StatusViewModel(embeddedTweet);
                             View embeddedHolder = viewModel.getView(activity, activity.getLayoutInflater(), null, false);

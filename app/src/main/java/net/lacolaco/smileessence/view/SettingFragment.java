@@ -95,13 +95,10 @@ public class SettingFragment extends PreferenceFragment implements OnSharedPrefe
                     getString(R.string.dialog_title_about));
             DialogHelper.showDialog(getActivity(), informationDialog);
         } else if (key.contentEquals(getString(R.string.key_setting_clear_account))) {
-            ConfirmDialogFragment.show(getActivity(), getString(R.string.dialog_confirm_clear_account), new Runnable() {
-                @Override
-                public void run() {
-                    Notificator.getInstance().publish(R.string.notice_cleared_account);
-                    Account.deleteAll();
-                    getActivity().finish();
-                }
+            ConfirmDialogFragment.show(getActivity(), getString(R.string.dialog_confirm_clear_account), () -> {
+                Notificator.getInstance().publish(R.string.notice_cleared_account);
+                Account.deleteAll();
+                getActivity().finish();
             }, false);
         } else if (key.contentEquals(getString(R.string.key_setting_licenses))) {
             openLicenseActivity();

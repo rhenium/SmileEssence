@@ -134,7 +134,7 @@ public class IntentRouter {
     }
 
     private static void showUserDialog(MainActivity activity, String screenName) {
-        CommandOpenUserDetail openUserDetail = new CommandOpenUserDetail(activity, screenName, activity.getCurrentAccount());
+        CommandOpenUserDetail openUserDetail = new CommandOpenUserDetail(activity, screenName);
         openUserDetail.execute();
     }
 

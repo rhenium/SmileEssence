@@ -75,7 +75,7 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
 
         String lastUserList = getMainActivity().getLastUserList();
         if (!TextUtils.isEmpty(lastUserList)) {
-            startUserList(((MainActivity) getActivity()).getCurrentAccount(), lastUserList);
+            startUserList(lastUserList);
         }
     }
     // --------------------- Interface OnClickListener ---------------------
@@ -85,7 +85,7 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
         int id = v.getId();
         switch (id) {
             case R.id.button_userlist_lists: {
-                openUserListsDialog(getMainActivity());
+                openUserListsDialog();
                 break;
             }
         }
@@ -101,7 +101,7 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
         String listFullName = adapter.getListFullName();
         if (TextUtils.isEmpty(listFullName)) {
             new UIHandler().post(() -> {
-                notifyTextEmpty(activity);
+                notifyTextEmpty();
                 refreshView.onRefreshComplete();
             });
             return;
@@ -130,7 +130,7 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
         String listFullName = adapter.getListFullName();
         if (TextUtils.isEmpty(listFullName)) {
             new UIHandler().post(() -> {
-                notifyTextEmpty(activity);
+                notifyTextEmpty();
                 refreshView.onRefreshComplete();
             });
             return;
@@ -162,7 +162,7 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View page = inflater.inflate(R.layout.fragment_userlist, container, false);
         PullToRefreshListView listView = getListView(page);
-        UserListListAdapter adapter = (UserListListAdapter) getAdapter();
+        UserListListAdapter adapter = getAdapter();
         listView.setAdapter(adapter);
         listView.setOnScrollListener(this);
         listView.setOnRefreshListener(this);
@@ -182,12 +182,12 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
         return (ImageButton) page.findViewById(R.id.button_userlist_lists);
     }
 
-    private void notifyTextEmpty(MainActivity activity) {
+    private void notifyTextEmpty() {
         Notificator.getInstance().publish(R.string.notice_userlist_not_selected);
     }
 
-    private void openUserListsDialog(final MainActivity mainActivity) {
-        DialogHelper.showDialog(mainActivity, new SelectUserListDialogFragment() {
+    private void openUserListsDialog() {
+        DialogHelper.showDialog(getActivity(), new SelectUserListDialogFragment() {
             @Override
             public void onDismiss(DialogInterface dialog) {
                 super.onDismiss(dialog);
@@ -196,13 +196,13 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
         });
     }
 
-    public void startUserList(Account account, String listFullName) {
+    public void startUserList(String listFullName) {
         getMainActivity().setLastUserList(listFullName);
         final UserListListAdapter adapter = getAdapter();
         adapter.setListFullName(listFullName);
         adapter.clear();
         adapter.updateForce();
-        new UserListStatusesTask(account, listFullName)
+        new UserListStatusesTask(getMainActivity().getCurrentAccount(), listFullName)
                 .setCount(((MainActivity) getActivity()).getRequestCountPerPage())
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_list, NotificationType.ALERT))
                 .onDoneUI(tweets -> {

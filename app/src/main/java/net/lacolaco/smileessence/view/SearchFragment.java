@@ -54,7 +54,6 @@ import net.lacolaco.smileessence.view.adapter.SearchListAdapter;
 import net.lacolaco.smileessence.view.dialog.SelectSearchQueryDialogFragment;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 import twitter4j.Query;
-import twitter4j.Twitter;
 
 import java.util.List;
 
@@ -84,7 +83,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
         final MainActivity activity = (MainActivity) getActivity();
         String lastUsedSearchQuery = activity.getLastSearch();
         if (!TextUtils.isEmpty(lastUsedSearchQuery)) {
-            startSearch(activity.getCurrentAccount(), lastUsedSearchQuery);
+            startSearch(lastUsedSearchQuery);
         }
     }
 
@@ -94,7 +93,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button_search_queries: {
-                openSearchQueryDialog((MainActivity) getActivity());
+                openSearchQueryDialog();
                 break;
             }
             case R.id.button_search_execute: {
@@ -135,7 +134,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
         String queryString = adapter.getQuery();
         if (TextUtils.isEmpty(queryString)) {
             new UIHandler().post(() -> {
-                notifyTextEmpty(activity);
+                notifyTextEmpty();
                 refreshView.onRefreshComplete();
             });
             return;
@@ -172,12 +171,11 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
         final MainActivity activity = (MainActivity) getActivity();
         final Account currentAccount = activity.getCurrentAccount();
-        Twitter twitter = currentAccount.getTwitter();
         final SearchListAdapter adapter = getAdapter();
         String queryString = adapter.getQuery();
         if (TextUtils.isEmpty(queryString)) {
             new UIHandler().post(() -> {
-                notifyTextEmpty(activity);
+                notifyTextEmpty();
                 refreshView.onRefreshComplete();
             });
             return;
@@ -239,17 +237,14 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
         editText = getEditText(page);
         editText.setOnFocusChangeListener(this);
         editText.setText(adapter.getQuery());
-        editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                if (i == EditorInfo.IME_ACTION_SEARCH ||
-                        keyEvent != null &&
-                        keyEvent.getAction() == KeyEvent.ACTION_DOWN &&
-                        keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-                    search();
-                }
-                return true;
+        editText.setOnEditorActionListener((textView, i, keyEvent) -> {
+            if (i == EditorInfo.IME_ACTION_SEARCH ||
+                    keyEvent != null &&
+                    keyEvent.getAction() == KeyEvent.ACTION_DOWN &&
+                    keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                search();
             }
+            return true;
         });
         editText.setMovementMethod(new ArrowKeyMovementMethod() {
             @Override
@@ -289,16 +284,16 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
         imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
     }
 
-    private void notifyTextEmpty(MainActivity activity) {
+    private void notifyTextEmpty() {
         Notificator.getInstance().publish(R.string.notice_search_text_empty);
     }
 
-    private void openSearchQueryDialog(final MainActivity mainActivity) {
+    private void openSearchQueryDialog() {
         if (SearchQuery.getAll().size() == 0) {
             Notificator.getInstance().publish(R.string.notice_no_query_exists);
             return;
         }
-        DialogHelper.showDialog(mainActivity, new SelectSearchQueryDialogFragment() {
+        DialogHelper.showDialog(getActivity(), new SelectSearchQueryDialogFragment() {
             @Override
             protected void executeCommand(Command command) {
                 super.executeCommand(command);
@@ -331,7 +326,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
         }
     }
 
-    public void startSearch(final Account account, final String queryString) {
+    public void startSearch(final String queryString) {
         ((MainActivity) getActivity()).setLastSearch(queryString);
         if (!TextUtils.isEmpty(queryString)) {
             final SearchListAdapter adapter = getAdapter();
@@ -342,14 +337,14 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
             query.setQuery(queryString);
             query.setCount(((MainActivity) getActivity()).getRequestCountPerPage());
             query.setResultType(Query.RECENT);
-            new SearchTask(account, query)
+            new SearchTask(((MainActivity) getActivity()).getCurrentAccount(), query)
                     .onDoneUI(queryResult -> {
                         if (queryResult != null) {
                             List<twitter4j.Status> tweets = queryResult.getTweets();
                             for (int i = tweets.size() - 1; i >= 0; i--) {
                                 twitter4j.Status status = tweets.get(i);
                                 if (!status.isRetweet()) {
-                                    StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status, account.getUserId()));
+                                    StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status, ((MainActivity) getActivity()).getCurrentAccount().getUserId()));
                                     adapter.addToTop(viewModel);
                                     StatusFilter.getInstance().filter(viewModel);
                                 }

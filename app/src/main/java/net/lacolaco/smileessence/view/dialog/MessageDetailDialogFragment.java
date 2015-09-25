@@ -24,7 +24,6 @@
 
 package net.lacolaco.smileessence.view.dialog;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.graphics.drawable.ColorDrawable;
@@ -74,9 +73,6 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
 
     @Override
     public void onClick(final View v) {
-        final MainActivity activity = (MainActivity) getActivity();
-        final Account account = activity.getCurrentAccount();
-
         DirectMessage message = DirectMessage.fetch(getMessageID());
         if (message != null) {
             switch (v.getId()) {
@@ -85,11 +81,11 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
                     break;
                 }
                 case R.id.button_status_detail_delete: {
-                    deleteMessage(account, message);
+                    deleteMessage(message);
                     break;
                 }
                 case R.id.button_status_detail_menu: {
-                    openMenu(activity);
+                    openMenu();
                     break;
                 }
                 default: {
@@ -113,7 +109,7 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
             Notificator.getInstance().publish(R.string.notice_error_get_messages);
             return new DisposeDialog(getActivity());
         }
-        View header = getTitleView(activity, account, selectedMessage);
+        View header = getTitleView(selectedMessage);
         ListView listView = (ListView) header.findViewById(R.id.listview_status_detail_reply_to);
         final MessageListAdapter adapter = new MessageListAdapter(getActivity());
         listView.setAdapter(adapter);
@@ -160,9 +156,9 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public void deleteMessage(final Account account, final DirectMessage message) {
+    public void deleteMessage(final DirectMessage message) {
         ConfirmDialogFragment.show(getActivity(), getString(R.string.dialog_confirm_commands), () -> {
-            new DeleteMessageTask(account, message.getId())
+            new DeleteMessageTask(((MainActivity) getActivity()).getCurrentAccount(), message.getId())
                     .onDone(x -> Notificator.getInstance().publish(R.string.notice_message_delete_succeeded))
                     .onFail(x -> Notificator.getInstance().publish(R.string.notice_message_delete_failed, NotificationType.ALERT))
                     .execute();
@@ -176,19 +172,20 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
         DialogHelper.showDialog(getActivity(), dialogFragment);
     }
 
-    private ArrayList<Command> getCommands(Activity activity, DirectMessage message, Account account) {
+    private ArrayList<Command> getCommands(DirectMessage message) {
         ArrayList<Command> commands = new ArrayList<>();
         // URL
         for (String url : message.getUrlsExpanded()) {
-            commands.add(new CommandOpenURL(activity, url));
+            commands.add(new CommandOpenURL(getActivity(), url));
         }
         for (String url : message.getMediaUrls()) {
-            commands.add(new CommandOpenURL(activity, url));
+            commands.add(new CommandOpenURL(getActivity(), url));
         }
         return commands;
     }
 
-    private View getTitleView(MainActivity activity, Account account, DirectMessage message) {
+    private View getTitleView(DirectMessage message) {
+        MainActivity activity = (MainActivity) getActivity();
         View view = activity.getLayoutInflater().inflate(R.layout.dialog_status_detail, null);
         View messageHeader = view.findViewById(R.id.layout_status_header);
         MessageViewModel statusViewModel = new MessageViewModel(message);
@@ -199,24 +196,19 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
         ImageButton reply = (ImageButton) view.findViewById(R.id.button_status_detail_reply);
         reply.setOnClickListener(this);
         ImageButton delete = (ImageButton) view.findViewById(R.id.button_status_detail_delete);
-        delete.setVisibility(isDeletable(account, message) ? View.VISIBLE : View.GONE);
+        delete.setVisibility(activity.getCurrentAccount().canDelete(message) ? View.VISIBLE : View.GONE);
         delete.setOnClickListener(this);
         ImageButton menuButton = (ImageButton) view.findViewById(R.id.button_status_detail_menu);
         menuButton.setOnClickListener(this);
         LinearLayout commandsLayout = (LinearLayout) view.findViewById(R.id.linearlayout_status_detail_menu);
         commandsLayout.setClickable(true);
         // commands
-        ArrayList<Command> commands = getCommands(activity, message, account);
+        ArrayList<Command> commands = getCommands(message);
         Command.filter(commands);
         for (final Command command : commands) {
             View commandView = command.getView(activity, activity.getLayoutInflater(), null);
             commandView.setBackgroundColor(getResources().getColor(R.color.transparent));
-            commandView.setOnClickListener(new ListItemClickListener(activity, new Runnable() {
-                @Override
-                public void run() {
-                    command.execute();
-                }
-            }));
+            commandView.setOnClickListener(new ListItemClickListener(activity, command::execute));
             commandsLayout.addView(commandView);
         }
         // status only parts
@@ -227,13 +219,9 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
         return view;
     }
 
-    private boolean isDeletable(Account account, DirectMessage message) {
-        return message.getSender().getId() == account.getUserId();
-    }
-
-    private void openMenu(MainActivity activity) {
+    private void openMenu() {
         MessageMenuDialogFragment fragment = new MessageMenuDialogFragment();
         fragment.setMessageID(getMessageID());
-        DialogHelper.showDialog(activity, fragment);
+        DialogHelper.showDialog(getActivity(), fragment);
     }
 }

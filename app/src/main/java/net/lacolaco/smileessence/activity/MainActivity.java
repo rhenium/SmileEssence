@@ -298,7 +298,7 @@ public class MainActivity extends Activity {
     public void openSearchPage(final String query) {
         SearchFragment fragment = pagerAdapter.getFragment(SearchFragment.class);
         if (fragment != null) {
-            fragment.startSearch(getCurrentAccount(), query);
+            fragment.startSearch(query);
             openSearchPage();
         }
     }
@@ -306,7 +306,7 @@ public class MainActivity extends Activity {
     public void openUserListPage(String listFullName) {
         UserListFragment fragment = pagerAdapter.getFragment(UserListFragment.class);
         if (fragment != null) {
-            fragment.startUserList(getCurrentAccount(), listFullName);
+            fragment.startUserList(listFullName);
             openUserListPage();
         }
     }

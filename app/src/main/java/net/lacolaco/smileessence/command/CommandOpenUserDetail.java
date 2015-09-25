@@ -27,7 +27,6 @@ package net.lacolaco.smileessence.command;
 import android.app.Activity;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
-import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.task.ShowUserTask;
@@ -42,7 +41,7 @@ public class CommandOpenUserDetail extends Command {
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public CommandOpenUserDetail(Activity activity, String screenName, Account account) {
+    public CommandOpenUserDetail(Activity activity, String screenName) {
         super(-1, activity);
         this.screenName = screenName;
     }

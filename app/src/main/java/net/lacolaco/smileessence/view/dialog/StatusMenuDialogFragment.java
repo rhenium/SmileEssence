@@ -26,9 +26,7 @@ package net.lacolaco.smileessence.view.dialog;
 
 import android.app.Activity;
 import android.os.Bundle;
-import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.*;
-import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 
@@ -57,12 +55,10 @@ public class StatusMenuDialogFragment extends MenuDialogFragment {
     // ------------------------ OVERRIDE METHODS ------------------------
     @Override
     protected void setMenuItems(final CustomListAdapter<Command> adapter) {
-        final MainActivity activity = (MainActivity) getActivity();
-        Account account = activity.getCurrentAccount();
         Tweet tweet = Tweet.fetch(getStatusID());
 
         if (tweet != null) {
-            List<Command> commands = getCommands(activity, tweet, account);
+            List<Command> commands = getCommands(tweet);
             Command.filter(commands);
             for (Command command : commands) {
                 adapter.addToBottom(command);
@@ -75,14 +71,16 @@ public class StatusMenuDialogFragment extends MenuDialogFragment {
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public void addBottomCommands(Activity activity, Tweet tweet, Account account, ArrayList<Command> commands) {
+    public void addBottomCommands(Tweet tweet, ArrayList<Command> commands) {
+        Activity activity = getActivity();
+
         commands.add(new CommandSaveAsTemplate(activity, tweet.getOriginalTweet().getText()));
         //User
-        commands.add(new CommandOpenUserDetail(activity, tweet.getUser().getScreenName(), account));
+        commands.add(new CommandOpenUserDetail(activity, tweet.getUser().getScreenName()));
         for (String screenName : new ArrayList<>(new LinkedHashSet<>(tweet.getMentions()))) { // Array#uniq
-            commands.add(new CommandOpenUserDetail(activity, screenName, account));
+            commands.add(new CommandOpenUserDetail(activity, screenName));
         }
-        for (Command command : getHashtagCommands(activity, tweet)) {
+        for (Command command : getHashtagCommands(tweet)) {
             commands.add(command);
         }
         // Media
@@ -94,18 +92,20 @@ public class StatusMenuDialogFragment extends MenuDialogFragment {
         }
     }
 
-    public boolean addMainCommands(Activity activity, Tweet tweet, Account account, ArrayList<Command> commands) {
-        return commands.addAll(Command.getStatusCommands(activity, tweet, account));
+    public boolean addMainCommands(Tweet tweet, ArrayList<Command> commands) {
+        Activity activity = getActivity();
+        return commands.addAll(Command.getStatusCommands(activity, tweet));
     }
 
-    public List<Command> getCommands(Activity activity, Tweet tweet, Account account) {
+    public List<Command> getCommands(Tweet tweet) {
         ArrayList<Command> commands = new ArrayList<>();
-        addMainCommands(activity, tweet, account, commands);
-        addBottomCommands(activity, tweet, account, commands);
+        addMainCommands(tweet, commands);
+        addBottomCommands(tweet, commands);
         return commands;
     }
 
-    private ArrayList<Command> getHashtagCommands(Activity activity, Tweet tweet) {
+    private ArrayList<Command> getHashtagCommands(Tweet tweet) {
+        Activity activity = getActivity();
         ArrayList<Command> commands = new ArrayList<>();
         for (String hashtag : tweet.getHashtags()) {
             commands.add(new CommandOpenHashtagDialog(activity, hashtag));

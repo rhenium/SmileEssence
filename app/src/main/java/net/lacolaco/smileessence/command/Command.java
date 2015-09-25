@@ -58,19 +58,19 @@ public abstract class Command implements IViewModel {
 
     public static List<Command> getAllCommands(Activity activity) {
         List<Command> commands = new ArrayList<>();
-        commands.addAll(getStatusCommands(activity, null, null));
-        commands.addAll(getUserCommands(activity, null, null));
+        commands.addAll(getStatusCommands(activity, null));
+        commands.addAll(getUserCommands(activity, null));
         return commands;
     }
 
-    public static List<Command> getUserCommands(Activity activity, User user, Account account) {
+    public static List<Command> getUserCommands(Activity activity, User user) {
         List<Command> commands = new ArrayList<>();
         commands.add(new UserCommandReply(activity, user));
         commands.add(new UserCommandAddToReply(activity, user));
-        commands.add(new UserCommandSendMessage(activity, user, account));
-        commands.add(new UserCommandBlock(activity, user, account));
-        commands.add(new UserCommandUnblock(activity, user, account));
-        commands.add(new UserCommandReportForSpam(activity, user, account));
+        commands.add(new UserCommandSendMessage(activity, user));
+        commands.add(new UserCommandBlock(activity, user));
+        commands.add(new UserCommandUnblock(activity, user));
+        commands.add(new UserCommandReportForSpam(activity, user));
         commands.add(new UserCommandOpenFavstar(activity, user));
         commands.add(new UserCommandOpenAclog(activity, user));
         commands.add(new UserCommandOpenTwilog(activity, user));
@@ -78,11 +78,11 @@ public abstract class Command implements IViewModel {
         return commands;
     }
 
-    public static List<Command> getStatusCommands(Activity activity, Tweet tweet, Account account) {
+    public static List<Command> getStatusCommands(Activity activity, Tweet tweet) {
         List<Command> commands = new ArrayList<>();
         commands.add(new StatusCommandAddToReply(activity, tweet));
-        commands.add(new StatusCommandOpenTalkView(activity, tweet, account));
-        commands.add(new StatusCommandFavAndRT(activity, tweet, account));
+        commands.add(new StatusCommandOpenTalkView(activity, tweet));
+        commands.add(new StatusCommandFavAndRT(activity, tweet));
         commands.add(new StatusCommandOpenQuoteDialog(activity, tweet));
         commands.add(new StatusCommandShare(activity, tweet));
         commands.add(new StatusCommandOpenInBrowser(activity, tweet));
@@ -91,14 +91,14 @@ public abstract class Command implements IViewModel {
         commands.add(new StatusCommandCopy(activity, tweet));
         commands.add(new StatusCommandSearchOnGoogle(activity, tweet));
         commands.add(new StatusCommandTofuBuster(activity, tweet));
-        commands.add(new StatusCommandNanigaja(activity, tweet, account));
-        commands.add(new StatusCommandMakeAnonymous(activity, tweet, account));
-        commands.add(new StatusCommandCongratulate(activity, tweet, account));
+        commands.add(new StatusCommandNanigaja(activity, tweet));
+        commands.add(new StatusCommandMakeAnonymous(activity, tweet));
+        commands.add(new StatusCommandCongratulate(activity, tweet));
         commands.add(new StatusCommandReview(activity, tweet));
         return commands;
     }
 
-    public static List<Command> getMessageCommands(Activity activity, DirectMessage message, Account account) {
+    public static List<Command> getMessageCommands(Activity activity, DirectMessage message) {
         List<Command> commands = new ArrayList<>();
         commands.add(new MessageCommandShare(activity, message));
         commands.add(new MessageCommandCopyTextToClipboard(activity, message));

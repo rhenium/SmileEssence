@@ -24,6 +24,7 @@
 
 package net.lacolaco.smileessence.view.dialog;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
@@ -50,15 +51,12 @@ public class SelectSearchQueryDialogFragment extends MenuDialogFragment implemen
         final CommandOpenSearch command = (CommandOpenSearch) parent.getItemAtPosition(position);
         final CustomListAdapter<Command> adapter = (CustomListAdapter<Command>) parent.getAdapter();
 
-        ConfirmDialogFragment.show(getActivity(), getString(R.string.dialog_confirm_delete_query), new Runnable() {
-            @Override
-            public void run() {
-                adapter.removeItem(command);
-                adapter.update();
+        ConfirmDialogFragment.show(getActivity(), getString(R.string.dialog_confirm_delete_query), () -> {
+            adapter.removeItem(command);
+            adapter.update();
 
-                command.getQuery().delete();
-                Notificator.getInstance().publish(R.string.notice_search_query_deleted);
-            }
+            command.getQuery().delete();
+            Notificator.getInstance().publish(R.string.notice_search_query_deleted);
         }, false);
 
         return true;
@@ -68,9 +66,7 @@ public class SelectSearchQueryDialogFragment extends MenuDialogFragment implemen
 
     @Override
     protected void setMenuItems(final CustomListAdapter<Command> adapter) {
-        final MainActivity activity = (MainActivity) getActivity();
-
-        List<Command> commands = getCommands(activity);
+        List<Command> commands = getCommands();
         Command.filter(commands);
         for (Command command : commands) {
             adapter.addToBottom(command);
@@ -101,7 +97,8 @@ public class SelectSearchQueryDialogFragment extends MenuDialogFragment implemen
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public List<Command> getCommands(final MainActivity activity) {
+    public List<Command> getCommands() {
+        Activity activity = getActivity();
         ArrayList<Command> commands = new ArrayList<>();
         final List<SearchQuery> queries = SearchQuery.getAll();
         if (queries != null) {

@@ -24,6 +24,7 @@
 
 package net.lacolaco.smileessence.view.dialog;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -45,9 +46,7 @@ public class SelectImageDialogFragment extends MenuDialogFragment {
 
     @Override
     protected void setMenuItems(final CustomListAdapter<Command> adapter) {
-        final MainActivity activity = (MainActivity) getActivity();
-
-        List<Command> commands = getCommands(activity);
+        List<Command> commands = getCommands();
         Command.filter(commands);
         for (Command command : commands) {
             adapter.addToBottom(command);
@@ -64,12 +63,13 @@ public class SelectImageDialogFragment extends MenuDialogFragment {
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public List<Command> getCommands(final MainActivity activity) {
+    public List<Command> getCommands() {
+        Activity activity = getActivity();
         ArrayList<Command> commands = new ArrayList<>();
         commands.add(new Command(-1, activity) {
             @Override
             public boolean execute() {
-                startGallery(activity);
+                startGallery();
                 return true;
             }
 
@@ -86,7 +86,7 @@ public class SelectImageDialogFragment extends MenuDialogFragment {
         commands.add(new Command(-1, activity) {
             @Override
             public boolean execute() {
-                startCamera(activity);
+                startCamera();
                 return true;
             }
 
@@ -103,7 +103,8 @@ public class SelectImageDialogFragment extends MenuDialogFragment {
         return commands;
     }
 
-    private void startCamera(MainActivity activity) {
+    private void startCamera() {
+        MainActivity activity = (MainActivity) getActivity();
         ContentValues values = new ContentValues();
         String filename = System.currentTimeMillis() + ".jpg";
         values.put(MediaStore.MediaColumns.TITLE, filename);
@@ -118,9 +119,9 @@ public class SelectImageDialogFragment extends MenuDialogFragment {
         IntentUtils.startActivityForResultIfFound(activity, intent, MainActivity.REQUEST_GET_PICTURE_FROM_CAMERA);
     }
 
-    private void startGallery(MainActivity activity) {
+    private void startGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
-        IntentUtils.startActivityForResultIfFound(activity, intent, MainActivity.REQUEST_GET_PICTURE_FROM_GALLERY);
+        IntentUtils.startActivityForResultIfFound(getActivity(), intent, MainActivity.REQUEST_GET_PICTURE_FROM_GALLERY);
     }
 }

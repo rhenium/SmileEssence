@@ -24,10 +24,10 @@
 
 package net.lacolaco.smileessence.view.dialog;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.CommandOpenUserList;
 import net.lacolaco.smileessence.data.UserListCache;
@@ -42,9 +42,7 @@ public class SelectUserListDialogFragment extends MenuDialogFragment {
 
     @Override
     protected void setMenuItems(final CustomListAdapter<Command> adapter) {
-        final MainActivity activity = (MainActivity) getActivity();
-
-        List<Command> commands = getCommands(activity);
+        List<Command> commands = getCommands();
         Command.filter(commands);
         for (Command command : commands) {
             adapter.addToBottom(command);
@@ -61,7 +59,8 @@ public class SelectUserListDialogFragment extends MenuDialogFragment {
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public List<Command> getCommands(final MainActivity activity) {
+    public List<Command> getCommands() {
+        Activity activity = getActivity();
         ArrayList<Command> commands = new ArrayList<>();
         final String[] lists = UserListCache.getInstance().getAll();
         if (lists != null) {

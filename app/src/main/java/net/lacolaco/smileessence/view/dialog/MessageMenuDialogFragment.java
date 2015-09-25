@@ -26,9 +26,7 @@ package net.lacolaco.smileessence.view.dialog;
 
 import android.app.Activity;
 import android.os.Bundle;
-import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.*;
-import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.DirectMessage;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 
@@ -57,12 +55,9 @@ public class MessageMenuDialogFragment extends MenuDialogFragment {
 
     @Override
     protected void setMenuItems(final CustomListAdapter<Command> adapter) {
-        final MainActivity activity = (MainActivity) getActivity();
-        final Account account = activity.getCurrentAccount();
-
         DirectMessage message = DirectMessage.fetch(getMessageID());
         if (message != null) {
-            List<Command> commands = getCommands(activity, message, account);
+            List<Command> commands = getCommands(message);
             Command.filter(commands);
             for (Command command : commands) {
                 adapter.addToBottom(command);
@@ -75,16 +70,17 @@ public class MessageMenuDialogFragment extends MenuDialogFragment {
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public void addBottomCommands(Activity activity, DirectMessage message, Account account, ArrayList<Command> commands) {
+    public void addBottomCommands(DirectMessage message, ArrayList<Command> commands) {
+        Activity activity = getActivity();
         commands.add(new CommandSaveAsTemplate(activity, message.getText()));
         //User
         if (message.getSender() != message.getRecipient()) {
-            commands.add(new CommandOpenUserDetail(activity, message.getRecipient().getScreenName(), account));
+            commands.add(new CommandOpenUserDetail(activity, message.getRecipient().getScreenName()));
         }
         for (String screenName : message.getMentions()) {
-            commands.add(new CommandOpenUserDetail(activity, screenName, account));
+            commands.add(new CommandOpenUserDetail(activity, screenName));
         }
-        for (Command command : getHashtagCommands(activity, message)) {
+        for (Command command : getHashtagCommands(message)) {
             commands.add(command);
         }
         // Media
@@ -96,18 +92,21 @@ public class MessageMenuDialogFragment extends MenuDialogFragment {
         }
     }
 
-    public boolean addMainCommands(Activity activity, DirectMessage message, Account account, ArrayList<Command> commands) {
-        return commands.addAll(Command.getMessageCommands(activity, message, account));
+    public boolean addMainCommands(DirectMessage message, ArrayList<Command> commands) {
+        Activity activity = getActivity();
+        return commands.addAll(Command.getMessageCommands(activity, message));
     }
 
-    public List<Command> getCommands(Activity activity, DirectMessage message, Account account) {
+    public List<Command> getCommands(DirectMessage message) {
+        Activity activity = getActivity();
         ArrayList<Command> commands = new ArrayList<>();
-        addMainCommands(activity, message, account, commands);
-        addBottomCommands(activity, message, account, commands);
+        addMainCommands(message, commands);
+        addBottomCommands(message, commands);
         return commands;
     }
 
-    private ArrayList<Command> getHashtagCommands(Activity activity, DirectMessage status) {
+    private ArrayList<Command> getHashtagCommands(DirectMessage status) {
+        Activity activity = getActivity();
         ArrayList<Command> commands = new ArrayList<>();
         if (status.getHashtags() != null) {
             for (String hashtag : status.getHashtags()) {

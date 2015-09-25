@@ -26,7 +26,6 @@ package net.lacolaco.smileessence.view.dialog;
 
 import android.app.Activity;
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.CommandOpenTemplateList;
 import net.lacolaco.smileessence.command.post.PostCommandMakeAnonymous;
@@ -44,9 +43,7 @@ public class PostMenuDialogFragment extends MenuDialogFragment {
 
     @Override
     protected void setMenuItems(final CustomListAdapter<Command> adapter) {
-        final MainActivity activity = (MainActivity) getActivity();
-
-        List<Command> commands = getCommands(activity);
+        List<Command> commands = getCommands();
         Command.filter(commands);
         if (commands.isEmpty()) {
             Notificator.getInstance().publish(R.string.notice_no_commands_available);
@@ -66,7 +63,8 @@ public class PostMenuDialogFragment extends MenuDialogFragment {
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public List<Command> getCommands(Activity activity) {
+    public List<Command> getCommands() {
+        Activity activity = getActivity();
         ArrayList<Command> commands = new ArrayList<>();
         commands.add(new CommandOpenTemplateList(activity));
         commands.add(new PostCommandMorse(activity));

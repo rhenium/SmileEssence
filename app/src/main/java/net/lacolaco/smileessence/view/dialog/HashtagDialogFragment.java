@@ -27,7 +27,6 @@ package net.lacolaco.smileessence.view.dialog;
 import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
-import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.CommandPasteToPost;
 import net.lacolaco.smileessence.command.CommandSaveAsTemplate;
@@ -59,10 +58,8 @@ public class HashtagDialogFragment extends MenuDialogFragment {
 
     @Override
     protected void setMenuItems(final CustomListAdapter<Command> adapter) {
-        final MainActivity activity = (MainActivity) getActivity();
-
         String text = getHashtagText();
-        List<Command> commands = getCommands(activity, text);
+        List<Command> commands = getCommands(text);
         Command.filter(commands);
         for (Command command : commands) {
             adapter.addToBottom(command);
@@ -79,7 +76,8 @@ public class HashtagDialogFragment extends MenuDialogFragment {
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public List<Command> getCommands(Activity activity, String text) {
+    public List<Command> getCommands(String text) {
+        Activity activity = getActivity();
         ArrayList<Command> commands = new ArrayList<>();
         commands.add(new CommandSaveAsTemplate(activity, text));
         commands.add(new CommandPasteToPost(activity, text));

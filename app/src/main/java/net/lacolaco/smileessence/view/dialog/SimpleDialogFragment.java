@@ -26,7 +26,6 @@ package net.lacolaco.smileessence.view.dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -70,11 +69,8 @@ public class SimpleDialogFragment extends StackableDialogFragment {
         return new AlertDialog.Builder(getActivity())
                 .setTitle(title)
                 .setView(contentView)
-                .setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
+                .setPositiveButton(R.string.alert_dialog_ok, (dialog, which) -> {
+                    dialog.dismiss();
                 })
                 .create();
     }

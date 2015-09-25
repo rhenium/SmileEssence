@@ -26,10 +26,8 @@ package net.lacolaco.smileessence.view.dialog;
 
 import android.app.Activity;
 import android.os.Bundle;
-import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.CommandSearchOnTwitter;
-import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 
@@ -58,12 +56,9 @@ public class UserMenuDialogFragment extends MenuDialogFragment {
 
     @Override
     protected void setMenuItems(final CustomListAdapter<Command> adapter) {
-        final MainActivity activity = (MainActivity) getActivity();
-        final Account account = activity.getCurrentAccount();
-
         User user = User.fetch(getUserID());
         if (user != null) {
-            List<Command> commands = getCommands(activity, user, account);
+            List<Command> commands = getCommands(user);
             Command.filter(commands);
             for (Command command : commands) {
                 adapter.addToBottom(command);
@@ -76,18 +71,20 @@ public class UserMenuDialogFragment extends MenuDialogFragment {
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public boolean addBottomCommands(Activity activity, User user, ArrayList<Command> commands) {
+    public boolean addBottomCommands(User user, ArrayList<Command> commands) {
+        Activity activity = getActivity();
         return commands.add(new CommandSearchOnTwitter(activity, user.getScreenName()));
     }
 
-    public boolean addMainCommands(Activity activity, User user, Account account, ArrayList<Command> commands) {
-        return commands.addAll(Command.getUserCommands(activity, user, account));
+    public boolean addMainCommands(User user, ArrayList<Command> commands) {
+        Activity activity = getActivity();
+        return commands.addAll(Command.getUserCommands(activity, user));
     }
 
-    public List<Command> getCommands(Activity activity, User user, Account account) {
+    public List<Command> getCommands(User user) {
         ArrayList<Command> commands = new ArrayList<>();
-        addMainCommands(activity, user, account, commands);
-        addBottomCommands(activity, user, commands);
+        addMainCommands(user, commands);
+        addBottomCommands(user, commands);
         return commands;
     }
 }

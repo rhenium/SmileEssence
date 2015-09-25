@@ -24,8 +24,6 @@
 
 package net.lacolaco.smileessence.view.dialog;
 
-import android.app.Activity;
-import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.post.PostCommandUseTemplate;
 import net.lacolaco.smileessence.entity.Template;
@@ -40,9 +38,7 @@ public class ChooseTemplateDialogFragment extends MenuDialogFragment {
 
     @Override
     protected void setMenuItems(final CustomListAdapter<Command> adapter) {
-        final MainActivity activity = (MainActivity) getActivity();
-
-        List<Command> commands = getCommands(activity);
+        List<Command> commands = getCommands();
         for (Command command : commands) {
             adapter.addToBottom(command);
         }
@@ -51,11 +47,11 @@ public class ChooseTemplateDialogFragment extends MenuDialogFragment {
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public List<Command> getCommands(Activity activity) {
+    public List<Command> getCommands() {
         ArrayList<Command> list = new ArrayList<>();
         List<Template> templates = Template.getAll();
         for (Template template : templates) {
-            list.add(new PostCommandUseTemplate(activity, template));
+            list.add(new PostCommandUseTemplate(getActivity(), template));
         }
         return list;
     }
