@@ -156,10 +156,12 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         updateViewMenu(view, tweet);
 
         bundle.attach(tweet, (x, changes) -> {
-            if (changes.contains(RO.REACTION_COUNT))
-                updateViewReactions(view, tweet);
-            if (changes.contains(RO.FAVORITERS) || changes.contains(RO.RETWEETERS))
-                updateViewButtons(view, tweet);
+            if (getActivity() != null) {
+                if (changes.contains(RO.REACTION_COUNT))
+                    updateViewReactions(view, tweet);
+                if (changes.contains(RO.FAVORITERS) || changes.contains(RO.RETWEETERS))
+                    updateViewButtons(view, tweet);
+            }
         });
 
         return view;

@@ -26,6 +26,7 @@ package net.lacolaco.smileessence;
 
 import android.content.Context;
 import net.lacolaco.smileessence.entity.Account;
+import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.util.Themes;
 
@@ -40,23 +41,21 @@ public class Application extends com.activeandroid.app.Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        // onCreate は一度しか呼ばれないはずだから安全なはず
-        context = getApplicationContext();
+        context = getApplicationContext(); // onCreate は一度しか呼ばれないはずだから安全なはず
     }
-
-    // --------------------- HELPER METHODS ---------------------
 
     // --------------------- STATIC METHODS ---------------------
 
     public static Context getContext() {
         if (context == null) {
-            throw new IllegalStateException("Application is not initialized");
+            throw new IllegalStateException("[BUG] Application is not initialized");
         }
         return context;
     }
 
     public static int getThemeResId() {
         if (resId == -1) {
+            Logger.debug("setting theme index: " + String.valueOf(UserPreferenceHelper.getInstance().getThemeIndex()));
             resId = Themes.getThemeResId(UserPreferenceHelper.getInstance().getThemeIndex());
         }
         return resId;

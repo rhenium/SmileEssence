@@ -307,10 +307,12 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         updateRelationship(user.getId());
 
         observerBundle.attach(user, (x, changes) -> {
-            if (changes.contains(RO.BASIC))
-                updateUserDataBasic(user);
-            if (changes.contains(RO.DETAIL))
-                updateUserDataDetail(user);
+            if (getActivity() != null) {
+                if (changes.contains(RO.BASIC))
+                    updateUserDataBasic(user);
+                if (changes.contains(RO.DETAIL))
+                    updateUserDataDetail(user);
+            }
         });
     }
 
