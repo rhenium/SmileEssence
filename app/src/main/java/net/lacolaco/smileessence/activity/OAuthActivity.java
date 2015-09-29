@@ -24,9 +24,9 @@
 
 package net.lacolaco.smileessence.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -39,7 +39,7 @@ import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.OAuthSession;
 import twitter4j.auth.AccessToken;
 
-public class OAuthActivity extends Activity implements View.OnClickListener, TextWatcher {
+public class OAuthActivity extends AppCompatActivity implements View.OnClickListener, TextWatcher {
 
     public static final int PIN_CODE_LENGTH = 7;
     private TextView linkTextView;

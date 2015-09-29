@@ -24,10 +24,10 @@
 
 package net.lacolaco.smileessence.activity;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
@@ -44,7 +44,7 @@ import net.lacolaco.smileessence.viewmodel.CheckBoxModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EditCommandActivity extends Activity {
+public class EditCommandActivity extends AppCompatActivity {
 
     // ------------------------------ FIELDS ------------------------------
 
@@ -87,8 +87,11 @@ public class EditCommandActivity extends Activity {
         setTheme(Application.getThemeResId());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_edit_list);
-        ActionBar actionBar = getActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         initializeViews();
         Logger.debug("onCreate");
     }

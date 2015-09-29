@@ -29,6 +29,7 @@ import android.widget.Toast;
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
+import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.util.UIHandler;
 
@@ -72,7 +73,7 @@ public class Notificator {
         new UIHandler().post(() -> {
             if (isForeground) {
                 Logger.debug(String.format("notify by crouton %s", text));
-                Crouton.makeText(activity, text, getStyle(type)).show();
+                Crouton.makeText(activity, text, getStyle(type), R.id.main_layout).show();
             } else {
                 Logger.debug(String.format("notify by toast %s", text));
                 Toast.makeText(activity, text, Toast.LENGTH_LONG).show();

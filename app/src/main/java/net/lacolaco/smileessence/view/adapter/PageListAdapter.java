@@ -24,7 +24,6 @@
 
 package net.lacolaco.smileessence.view.adapter;
 
-import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
@@ -40,12 +39,12 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PageListAdapter extends FragmentPagerAdapter implements ViewPager.OnPageChangeListener, ActionBar.OnNavigationListener {
+public class PageListAdapter extends FragmentPagerAdapter implements ViewPager.OnPageChangeListener {//, ActionBar.OnNavigationListener {
 
     // ------------------------------ FIELDS ------------------------------
 
     private final MainActivity context;
-    private final ActionBar actionBar;
+    //private final ActionBar actionBar;
     private final ViewPager viewPager;
     private final List<PageInfo> pages = new ArrayList<>();
 
@@ -54,7 +53,7 @@ public class PageListAdapter extends FragmentPagerAdapter implements ViewPager.O
     public PageListAdapter(MainActivity _activity, ViewPager _viewPager) {
         super(_activity.getFragmentManager());
         context = _activity;
-        actionBar = _activity.getActionBar();
+        //actionBar = _activity.getActionBar();
         viewPager = _viewPager;
         viewPager.setAdapter(this);
         viewPager.addOnPageChangeListener(this);
@@ -72,11 +71,11 @@ public class PageListAdapter extends FragmentPagerAdapter implements ViewPager.O
 
     // --------------------- Interface OnNavigationListener ---------------------
 
-    @Override
-    public synchronized boolean onNavigationItemSelected(int itemPosition, long itemId) {
-        viewPager.setCurrentItem(itemPosition, true);
-        return true;
-    }
+    //@Override
+    //public synchronized boolean onNavigationItemSelected(int itemPosition, long itemId) {
+    //    viewPager.setCurrentItem(itemPosition, true);
+    //    return true;
+    //}
 
     // --------------------- Interface OnPageChangeListener ---------------------
 
@@ -88,7 +87,7 @@ public class PageListAdapter extends FragmentPagerAdapter implements ViewPager.O
     public synchronized void onPageSelected(int position) {
         //Synchronize pager and navigation.
         Logger.debug(String.format("Page selected:%d", position));
-        actionBar.setSelectedNavigationItem(position);
+        //actionBar.setSelectedNavigationItem(position);
     }
 
     @Override
@@ -127,7 +126,7 @@ public class PageListAdapter extends FragmentPagerAdapter implements ViewPager.O
             itemList.add(f.getName());
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(context, R.layout.navigation_list_item, R.id.navigation_list_item_text, itemList);
-        actionBar.setListNavigationCallbacks(adapter, this);
+        //actionBar.setListNavigationCallbacks(adapter, this);
         super.notifyDataSetChanged();
     }
 

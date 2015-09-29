@@ -24,15 +24,15 @@
 
 package net.lacolaco.smileessence.activity;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 
-public class SettingActivity extends Activity {
+public class SettingActivity extends AppCompatActivity {
 
     // ------------------------ OVERRIDE METHODS ------------------------
 
@@ -40,9 +40,11 @@ public class SettingActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(Application.getThemeResId());
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.setting);
-        ActionBar actionBar = getActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        setContentView(R.layout.layout_setting);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override

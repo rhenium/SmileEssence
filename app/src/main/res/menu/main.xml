@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item   android:id="@+id/actionbar_post"
+            android:title="@string/actionbar_post"
+            android:icon="@drawable/icon_edit"
+            app:showAsAction="always" />
+    <!--TODO: <item   android:id="@+id/actionbar_search"
+            android:title="@string/actionbar_search"
+            android:icon="@drawable/icon_search_white"
+            app:showAsAction="always" /> -->
+    <item android:id="@+id/actionbar_settings"
+          android:title="@string/actionbar_settings"
+          android:icon="@drawable/icon_settings"
+          app:showAsAction="never">
+        <menu>
+            <item android:id="@+id/actionbar_setting"
+                  android:title="@string/actionbar_setting" />
+            <item android:id="@+id/actionbar_edit_templates"
+                  android:title="@string/actionbar_edit_templates" />
+            <item android:id="@+id/actionbar_edit_extraction"
+                  android:title="@string/actionbar_edit_extraction" />
+            <item android:id="@+id/actionbar_edit_commands"
+                  android:title="@string/actionbar_edit_commands" />
+            <item android:id="@+id/actionbar_edit_tabs"
+                  android:title="@string/actionbar_edit_tabs" />
+        </menu>
+    </item>
+    <item android:id="@+id/actionbar_services"
+          android:title="@string/actionbar_services"
+          android:icon="@drawable/icon_website"
+          app:showAsAction="never">
+        <menu>
+            <item android:id="@+id/actionbar_favstar"
+                  android:title="@string/actionbar_favstar" />
+            <item android:id="@+id/actionbar_aclog"
+                  android:title="@string/actionbar_aclog" />
+            <item android:id="@+id/actionbar_twilog"
+                  android:title="@string/actionbar_twilog" />
+        </menu>
+    </item>
+    <item android:id="@+id/actionbar_report"
+          android:title="@string/actionbar_report"
+          android:icon="@drawable/icon_email"
+          app:showAsAction="never" />
+</menu>

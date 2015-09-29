@@ -216,7 +216,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        menu.removeItem(R.id.actionbar_search);
+        // TODO:  menu.removeItem(R.id.actionbar_search);
     }
 
     @Override

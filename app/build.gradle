@@ -10,7 +10,7 @@ android {
         applicationId "jp.rhe.smileessence"
         minSdkVersion 17
         targetSdkVersion 23
-        versionCode 25
+        versionCode 26
         versionName "1.0.11.1"
     }
     buildTypes {
@@ -40,6 +40,7 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.android.support:support-v4:23.0.1'
     compile 'com.android.support:support-v13:23.0.1'
     compile 'com.android.support:appcompat-v7:23.0.1'
     // volley

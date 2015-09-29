@@ -24,10 +24,10 @@
 
 package net.lacolaco.smileessence.activity;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -37,7 +37,7 @@ import net.lacolaco.smileessence.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LicenseActivity extends Activity {
+public class LicenseActivity extends AppCompatActivity {
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 
@@ -64,8 +64,10 @@ public class LicenseActivity extends Activity {
         setTheme(Application.getThemeResId());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_license);
-        ActionBar actionBar = getActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         setFiles();
     }

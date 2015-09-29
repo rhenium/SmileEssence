@@ -24,22 +24,23 @@
 
 package net.lacolaco.smileessence.activity;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
-import android.widget.ImageView;
 import net.lacolaco.smileessence.Application;
+import net.lacolaco.smileessence.BuildConfig;
 import net.lacolaco.smileessence.IntentRouter;
 import net.lacolaco.smileessence.R;
+import net.lacolaco.smileessence.command.CommandOpenURL;
 import net.lacolaco.smileessence.data.PostState;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.CommandSetting;
@@ -51,18 +52,15 @@ import net.lacolaco.smileessence.preference.InternalPreferenceHelper;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.twitter.OAuthSession;
 import net.lacolaco.smileessence.twitter.UserStreamListener;
-import net.lacolaco.smileessence.twitter.task.ShowUserTask;
 import net.lacolaco.smileessence.util.BitmapOptimizer;
-import net.lacolaco.smileessence.util.BitmapURLTask;
 import net.lacolaco.smileessence.util.NetworkHelper;
 import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.view.*;
 import net.lacolaco.smileessence.view.adapter.PageListAdapter;
 import net.lacolaco.smileessence.view.dialog.ConfirmDialogFragment;
-import net.lacolaco.smileessence.viewmodel.menu.MainActivityMenuHelper;
 import twitter4j.TwitterStream;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
     // ------------------------------ FIELDS ------------------------------
 
@@ -153,7 +151,7 @@ public class MainActivity extends Activity {
         Logger.debug("onCreate");
         setTheme(Application.getThemeResId());
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        setContentView(R.layout.layout_main);
         Notificator.initialize(this);
         CommandSetting.initialize();
 
@@ -163,12 +161,6 @@ public class MainActivity extends Activity {
         } else {
             startOAuthActivity();
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MainActivityMenuHelper.addItemsToMenu(this, menu);
-        return true;
     }
 
     @Override
@@ -188,8 +180,64 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        return MainActivityMenuHelper.onItemSelected(this, item);
+        switch (item.getItemId()) {
+            case R.id.actionbar_post: {
+                openPostPage();
+                return true;
+            }
+            /* TODO: case R.id.actionbar_search: {
+                openSearchPage();
+                return true;
+            }*/
+            case R.id.actionbar_setting: {
+                startActivity(new Intent(this, SettingActivity.class));
+                return true;
+            }
+            case R.id.actionbar_edit_templates: {
+                startActivity(new Intent(this, EditTemplateActivity.class));
+                return true;
+            }
+            case R.id.actionbar_edit_extraction: {
+                startActivity(new Intent(this, EditExtractionActivity.class));
+                return true;
+            }
+            case R.id.actionbar_edit_commands: {
+                startActivity(new Intent(this, EditCommandActivity.class));
+                return true;
+            }
+            case R.id.actionbar_edit_tabs: {
+                startActivity(new Intent(this, EditTabActivity.class));
+                return true;
+            }
+            case R.id.actionbar_favstar: {
+                new CommandOpenURL(this, Application.getCurrentAccount().getUser().getFavstarRecentURL()).execute();
+                return true;
+            }
+            case R.id.actionbar_aclog: {
+                new CommandOpenURL(this, Application.getCurrentAccount().getUser().getAclogTimelineURL()).execute();
+                return true;
+            }
+            case R.id.actionbar_twilog: {
+                new CommandOpenURL(this, Application.getCurrentAccount().getUser().getTwilogURL()).execute();
+                return true;
+            }
+            case R.id.actionbar_report: {
+                PostState.getState().beginTransaction()
+                        .appendText(getString(R.string.text_message_to_author, BuildConfig.VERSION_NAME))
+                        .commitWithOpen(this);
+                return true;
+            }
+            default: {
+                return false;
+            }
+        }
     }
 
     @Override
@@ -299,7 +347,7 @@ public class MainActivity extends Activity {
         return true;
     }
 
-    public void updateActionBarIcon() {
+    public void updateActionBarIcon() {/*
         final ImageView homeIcon = (ImageView) findViewById(android.R.id.home);
         new ShowUserTask(Application.getCurrentAccount(), Application.getCurrentAccount().getUserId())
                 .onDoneUI(user -> {
@@ -308,7 +356,7 @@ public class MainActivity extends Activity {
                     new BitmapURLTask(urlHttps, homeIcon).execute();
                 })
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_show_user, NotificationType.ALERT))
-                .execute();
+                .execute();*/
     }
 
     private void getImageUri(int requestCode, int resultCode, Intent data) {
@@ -346,10 +394,12 @@ public class MainActivity extends Activity {
     }
 
     public void initializeView() {
-        ActionBar bar = getActionBar();
-        bar.setDisplayShowHomeEnabled(true);
-        bar.setDisplayShowTitleEnabled(false);
-        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        //ActionBar bar = getActionBar();
+        //bar.setDisplayShowHomeEnabled(true);
+        //bar.setDisplayShowTitleEnabled(false);
+        //bar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         pagerAdapter = new PageListAdapter(this, viewPager);
         initializePages();
