@@ -77,9 +77,9 @@ public class StatusCommandMakeAnonymous extends StatusCommand implements IConfir
 
     @Override
     public boolean execute() {
-        StatusUpdate update = new TweetBuilder().setText(build(getActivity(), getOriginalStatus(), Application.getCurrentAccount())).build();
-        new TweetTask(Application.getCurrentAccount(), update).execute();
-        new FavoriteTask(Application.getCurrentAccount(), getOriginalStatus().getId())
+        StatusUpdate update = new TweetBuilder().setText(build(getActivity(), getOriginalStatus(), Application.getInstance().getCurrentAccount())).build();
+        new TweetTask(Application.getInstance().getCurrentAccount(), update).execute();
+        new FavoriteTask(Application.getInstance().getCurrentAccount(), getOriginalStatus().getId())
                 .onDone(x -> Notificator.getInstance().publish(R.string.notice_favorite_succeeded))
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_favorite_failed, NotificationType.ALERT))
                 .execute();

@@ -67,7 +67,7 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
             adapter.removeByStatusID(id);
             adapter.updateForce();
         });
-        final Account account = Application.getCurrentAccount();
+        final Account account = Application.getInstance().getCurrentAccount();
         new HomeTimelineTask(account)
                 .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
                 .onFail(e -> Notificator.getInstance().publish(R.string.notice_error_get_home, NotificationType.ALERT))
@@ -94,7 +94,7 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
             });
             return;
         }
-        final Account currentAccount = Application.getCurrentAccount();
+        final Account currentAccount = Application.getInstance().getCurrentAccount();
         new HomeTimelineTask(currentAccount)
                 .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
                 .setSinceId(adapter.getTopID())
@@ -114,7 +114,7 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
     @Override
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
         final StatusListAdapter adapter = getAdapter();
-        final Account currentAccount = Application.getCurrentAccount();
+        final Account currentAccount = Application.getInstance().getCurrentAccount();
         new HomeTimelineTask(currentAccount)
                 .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
                 .setMaxId(adapter.getLastID() - 1)

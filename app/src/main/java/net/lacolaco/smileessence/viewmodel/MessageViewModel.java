@@ -93,7 +93,7 @@ public class MessageViewModel implements IViewModel {
             convertedView.setTag(bundle);
         }
 
-        int theme = Application.getThemeResId();
+        int theme = Application.getInstance().getThemeResId();
         int colorBgMessage = Themes.getStyledColor(activity, theme, R.attr.color_message_bg_normal, 0);
         convertedView.setBackgroundColor(colorBgMessage);
         convertedView.setOnClickListener(new ListItemClickListener(activity, () -> {
@@ -120,7 +120,7 @@ public class MessageViewModel implements IViewModel {
     private void updateViewSender(Activity activity, View convertedView) {
         int textSize = UserPreferenceHelper.getInstance().getTextSize();
         int nameStyle = UserPreferenceHelper.getInstance().getNameStyle();
-        int theme = Application.getThemeResId();
+        int theme = Application.getInstance().getThemeResId();
 
         NetworkImageView icon = (NetworkImageView) convertedView.findViewById(R.id.imageview_status_icon);
         ImageCache.getInstance().setImageToView(directMessage.getSender().getProfileImageUrl(), icon);
@@ -139,7 +139,7 @@ public class MessageViewModel implements IViewModel {
 
     private void updateViewBody(Activity activity, View convertedView) {
         int textSize = UserPreferenceHelper.getInstance().getTextSize();
-        int theme = Application.getThemeResId();
+        int theme = Application.getInstance().getThemeResId();
 
         TextView content = (TextView) convertedView.findViewById(R.id.textview_status_text);
         content.setTextSize(textSize);
@@ -150,6 +150,6 @@ public class MessageViewModel implements IViewModel {
         footer.setTextSize(textSize - 2);
         int colorFooter = Themes.getStyledColor(activity, theme, R.attr.color_status_text_footer, 0);
         footer.setTextColor(colorFooter);
-        footer.setText(getFooterText(Application.getCurrentAccount()));
+        footer.setText(getFooterText(Application.getInstance().getCurrentAccount()));
     }
 }

@@ -50,14 +50,14 @@ public class UserCommandBlock extends UserCommand implements IConfirmable {
 
     @Override
     public boolean isEnabled() {
-        return getUser() != Application.getCurrentAccount().getUser();
+        return getUser() != Application.getInstance().getCurrentAccount().getUser();
     }
 
     // -------------------------- OTHER METHODS --------------------------
 
     @Override
     public boolean execute() {
-        new BlockTask(Application.getCurrentAccount(), getUser().getId())
+        new BlockTask(Application.getInstance().getCurrentAccount(), getUser().getId())
                 .onDone(user -> Notificator.getInstance().publish(R.string.notice_block_succeeded))
                 .onFail(ex -> Notificator.getInstance().publish(R.string.notice_block_failed, NotificationType.ALERT))
                 .execute();

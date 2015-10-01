@@ -50,14 +50,14 @@ public class UserCommandReportForSpam extends UserCommand implements IConfirmabl
 
     @Override
     public boolean isEnabled() {
-        return getUser() != Application.getCurrentAccount().getUser();
+        return getUser() != Application.getInstance().getCurrentAccount().getUser();
     }
 
     // -------------------------- OTHER METHODS --------------------------
 
     @Override
     public boolean execute() {
-        new ReportForSpamTask(Application.getCurrentAccount(), getUser().getId())
+        new ReportForSpamTask(Application.getInstance().getCurrentAccount(), getUser().getId())
                 .onDone(user -> Notificator.getInstance().publish(R.string.notice_r4s_succeeded))
                 .onFail(ex -> Notificator.getInstance().publish(R.string.notice_r4s_failed, NotificationType.ALERT))
                 .execute();

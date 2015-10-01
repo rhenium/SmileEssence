@@ -37,7 +37,7 @@ public class SettingActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(Application.getThemeResId());
+        setTheme(Application.getInstance().getThemeResId());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_setting);
     }

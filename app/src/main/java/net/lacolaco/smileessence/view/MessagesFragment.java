@@ -67,7 +67,7 @@ public class MessagesFragment extends CustomListFragment<MessageListAdapter> {
             adapter.removeByMessageID(id);
             adapter.updateForce();
         });
-        final Account account = Application.getCurrentAccount();
+        final Account account = Application.getInstance().getCurrentAccount();
         new DirectMessagesTask(account)
                 .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_messages, NotificationType.ALERT))
@@ -92,7 +92,7 @@ public class MessagesFragment extends CustomListFragment<MessageListAdapter> {
 
     @Override
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
-        final Account currentAccount = Application.getCurrentAccount();
+        final Account currentAccount = Application.getInstance().getCurrentAccount();
         final MessageListAdapter adapter = getAdapter();
         new DirectMessagesTask(currentAccount)
                 .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
@@ -109,7 +109,7 @@ public class MessagesFragment extends CustomListFragment<MessageListAdapter> {
 
     @Override
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
-        final Account currentAccount = Application.getCurrentAccount();
+        final Account currentAccount = Application.getInstance().getCurrentAccount();
         final MessageListAdapter adapter = getAdapter();
         new DirectMessagesTask(currentAccount)
                 .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())

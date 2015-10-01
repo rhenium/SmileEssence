@@ -62,7 +62,7 @@ public class CommandOpenUserDetail extends Command {
 
     @Override
     public boolean execute() {
-        new ShowUserTask(Application.getCurrentAccount(), screenName)
+        new ShowUserTask(Application.getInstance().getCurrentAccount(), screenName)
                 .onDoneUI(user -> {
                     UserDetailDialogFragment fragment = new UserDetailDialogFragment();
                     fragment.setUserID(user.getId());

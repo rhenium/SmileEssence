@@ -156,7 +156,7 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
 
     public void deleteMessage(final DirectMessage message) {
         ConfirmDialogFragment.show(getActivity(), getString(R.string.dialog_confirm_commands), () -> {
-            new DeleteMessageTask(Application.getCurrentAccount(), message.getId())
+            new DeleteMessageTask(Application.getInstance().getCurrentAccount(), message.getId())
                     .onDone(x -> Notificator.getInstance().publish(R.string.notice_message_delete_succeeded))
                     .onFail(x -> Notificator.getInstance().publish(R.string.notice_message_delete_failed, NotificationType.ALERT))
                     .execute();
@@ -194,7 +194,7 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
         ImageButton reply = (ImageButton) view.findViewById(R.id.button_status_detail_reply);
         reply.setOnClickListener(this);
         ImageButton delete = (ImageButton) view.findViewById(R.id.button_status_detail_delete);
-        delete.setVisibility(Application.getCurrentAccount().canDelete(message) ? View.VISIBLE : View.GONE);
+        delete.setVisibility(Application.getInstance().getCurrentAccount().canDelete(message) ? View.VISIBLE : View.GONE);
         delete.setOnClickListener(this);
         ImageButton menuButton = (ImageButton) view.findViewById(R.id.button_status_detail_menu);
         menuButton.setOnClickListener(this);

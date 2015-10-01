@@ -45,7 +45,7 @@ public class UserPreferenceHelper extends SharedPreferenceHelper {
     // --------------------- GETTER / SETTER METHODS ---------------------
     @Override
     protected SharedPreferences getPreferences() {
-        return PreferenceManager.getDefaultSharedPreferences(Application.getContext());
+        return PreferenceManager.getDefaultSharedPreferences(Application.getInstance());
     }
 
     // --------------------- HELPER METHODS ---------------------

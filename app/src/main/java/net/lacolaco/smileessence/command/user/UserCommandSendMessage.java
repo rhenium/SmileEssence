@@ -48,7 +48,7 @@ public class UserCommandSendMessage extends UserCommand {
 
     @Override
     public boolean isEnabled() {
-        return getUser() != Application.getCurrentAccount().getUser();
+        return getUser() != Application.getInstance().getCurrentAccount().getUser();
     }
 
     // -------------------------- OTHER METHODS --------------------------

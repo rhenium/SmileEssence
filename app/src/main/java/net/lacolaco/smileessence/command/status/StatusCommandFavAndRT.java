@@ -54,18 +54,18 @@ public class StatusCommandFavAndRT extends StatusCommand implements IConfirmable
     @Override
     public boolean isEnabled() {
         User user = getOriginalStatus().getUser();
-        return !user.isProtected() && user != Application.getCurrentAccount().getUser();
+        return !user.isProtected() && user != Application.getInstance().getCurrentAccount().getUser();
     }
 
     // -------------------------- OTHER METHODS --------------------------
 
     @Override
     public boolean execute() {
-        new FavoriteTask(Application.getCurrentAccount(), getOriginalStatus().getId())
+        new FavoriteTask(Application.getInstance().getCurrentAccount(), getOriginalStatus().getId())
                 .onDone(x -> Notificator.getInstance().publish(R.string.notice_favorite_succeeded))
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_favorite_failed, NotificationType.ALERT))
                 .execute();
-        new RetweetTask(Application.getCurrentAccount(), getOriginalStatus().getId())
+        new RetweetTask(Application.getInstance().getCurrentAccount(), getOriginalStatus().getId())
                 .onDone(x -> Notificator.getInstance().publish(R.string.notice_retweet_succeeded))
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_retweet_failed, NotificationType.ALERT))
                 .execute();

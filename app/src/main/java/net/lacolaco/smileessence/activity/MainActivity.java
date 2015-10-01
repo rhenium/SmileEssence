@@ -153,7 +153,7 @@ public class MainActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Logger.debug("onCreate");
-        setTheme(Application.getThemeResId());
+        setTheme(Application.getInstance().getThemeResId());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main);
         Notificator.initialize(this);
@@ -176,6 +176,7 @@ public class MainActivity extends Activity {
             stream.shutdown();
         }
         Notificator.getInstance().onBackground();
+        Application.getInstance().resetState();
         Logger.debug("onDestroy");
     }
 
@@ -227,15 +228,15 @@ public class MainActivity extends Activity {
                 return true;
             }
             case R.id.actionbar_favstar: {
-                new CommandOpenURL(this, Application.getCurrentAccount().getUser().getFavstarRecentURL()).execute();
+                new CommandOpenURL(this, Application.getInstance().getCurrentAccount().getUser().getFavstarRecentURL()).execute();
                 return true;
             }
             case R.id.actionbar_aclog: {
-                new CommandOpenURL(this, Application.getCurrentAccount().getUser().getAclogTimelineURL()).execute();
+                new CommandOpenURL(this, Application.getInstance().getCurrentAccount().getUser().getAclogTimelineURL()).execute();
                 return true;
             }
             case R.id.actionbar_twilog: {
-                new CommandOpenURL(this, Application.getCurrentAccount().getUser().getTwilogURL()).execute();
+                new CommandOpenURL(this, Application.getInstance().getCurrentAccount().getUser().getTwilogURL()).execute();
                 return true;
             }
             case R.id.actionbar_report: {
@@ -337,8 +338,8 @@ public class MainActivity extends Activity {
         if (stream != null) {
             stream.shutdown();
         }
-        stream = Application.getCurrentAccount().getTwitterStream();
-        userStreamListener = new UserStreamListener(Application.getCurrentAccount());
+        stream = Application.getInstance().getCurrentAccount().getTwitterStream();
+        userStreamListener = new UserStreamListener(Application.getInstance().getCurrentAccount());
         stream.addListener(userStreamListener);
         stream.addConnectionLifeCycleListener(userStreamListener);
         stream.user();
@@ -350,7 +351,7 @@ public class MainActivity extends Activity {
             return; // TODO: error message?
         }
 
-        Account account = Application.getCurrentAccount();
+        Account account = Application.getInstance().getCurrentAccount();
         User user = account.getUser();
         startStream();
         MuteUserIds.refresh(account);
@@ -428,7 +429,7 @@ public class MainActivity extends Activity {
             account = Account.all().get(0);
         }
         if (account != null) {
-            Application.setCurrentAccount(account);
+            Application.getInstance().setCurrentAccount(account);
             return true;
         } else {
             return false;

@@ -24,48 +24,61 @@
 
 package net.lacolaco.smileessence;
 
-import android.content.Context;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.util.Themes;
 
+import java.lang.ref.WeakReference;
+
 public class Application extends com.activeandroid.app.Application {
 
     // ------------------------------ FIELDS ------------------------------
 
-    private static Context context;
-    private static Account currentAccount;
-    private static int resId = -1;
+    private static WeakReference<Application> instance;
+    private Account currentAccount;
+    private int resId = -1;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        context = getApplicationContext(); // onCreate は一度しか呼ばれないはずだから安全なはず
+        instance = new WeakReference<>(this);
     }
 
     // --------------------- STATIC METHODS ---------------------
 
-    public static Context getContext() {
-        if (context == null) {
-            throw new IllegalStateException("[BUG] Application is not initialized");
+    public static Application getInstance() {
+        Application obj = null;
+        if (instance != null) {
+            obj = instance.get();
         }
-        return context;
+        if (obj == null) {
+            throw new IllegalStateException("[BUG] Application is not initialized?");
+        } else {
+            return obj;
+        }
     }
 
-    public static int getThemeResId() {
+    // --------------------- INSTANCE METHODS ---------------------
+
+    public int getThemeResId() {
         if (resId == -1) {
-            Logger.debug("setting theme index: " + String.valueOf(UserPreferenceHelper.getInstance().getThemeIndex()));
+            Logger.debug("setting theme index: " + UserPreferenceHelper.getInstance().getThemeIndex());
             resId = Themes.getThemeResId(UserPreferenceHelper.getInstance().getThemeIndex());
         }
         return resId;
     }
 
-    public static Account getCurrentAccount() {
+    public Account getCurrentAccount() {
         return currentAccount;
     }
 
-    public static void setCurrentAccount(Account val) {
+    public void setCurrentAccount(Account val) {
         currentAccount = val;
+    }
+
+    public void resetState() {
+        currentAccount = null;
+        resId = -1;
     }
 }

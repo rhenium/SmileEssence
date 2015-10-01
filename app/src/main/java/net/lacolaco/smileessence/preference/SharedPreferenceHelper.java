@@ -117,7 +117,7 @@ public abstract class SharedPreferenceHelper {
 
     private String getString(int resID) {
         try {
-            return Application.getContext().getString(resID);
+            return Application.getInstance().getString(resID);
         } catch (Exception e) {
             return null;
         }

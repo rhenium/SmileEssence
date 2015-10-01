@@ -71,7 +71,7 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
             adapter.removeByStatusID(id);
             adapter.updateForce();
         });
-        final Account account = Application.getCurrentAccount();
+        final Account account = Application.getInstance().getCurrentAccount();
         final StatusListAdapter adapter_ = adapter;
         new MentionsTimelineTask(account)
                 .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
@@ -90,7 +90,7 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
 
     @Override
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
-        final Account currentAccount = Application.getCurrentAccount();
+        final Account currentAccount = Application.getInstance().getCurrentAccount();
         final StatusListAdapter adapter = getAdapter();
         new MentionsTimelineTask(currentAccount)
                 .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
@@ -107,7 +107,7 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
 
     @Override
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
-        final Account currentAccount = Application.getCurrentAccount();
+        final Account currentAccount = Application.getInstance().getCurrentAccount();
         final StatusListAdapter adapter = getAdapter();
         new MentionsTimelineTask(currentAccount)
                 .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())

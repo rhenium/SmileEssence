@@ -150,7 +150,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
 
     @Override
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
-        Account currentAccount = Application.getCurrentAccount();
+        Account currentAccount = Application.getInstance().getCurrentAccount();
         new UserTimelineTask(currentAccount, getUserID())
                 .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
                 .setSinceId(adapter.getTopID())
@@ -167,7 +167,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
 
     @Override
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
-        Account currentAccount = Application.getCurrentAccount();
+        Account currentAccount = Application.getInstance().getCurrentAccount();
         new UserTimelineTask(currentAccount, getUserID())
                 .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
                 .setMaxId(adapter.getLastID() - 1)
@@ -239,7 +239,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
     }
 
     private void executeUserTimelineTask(final User user, final StatusListAdapter adapter) {
-        Account account = Application.getCurrentAccount();
+        Account account = Application.getInstance().getCurrentAccount();
         tabHost.getTabWidget().getChildTabViewAt(1).setVisibility(View.GONE);
         new UserTimelineTask(account, user.getId())
                 .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
@@ -351,7 +351,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
     }
 
     private void toggleFollowing(final User user) {
-        Account account = Application.getCurrentAccount();
+        Account account = Application.getInstance().getCurrentAccount();
         lockFollowButton();
         Boolean isFollowing = buttonFollow.getTag() != null ? (Boolean) buttonFollow.getTag() : false;
         if (isFollowing) {
@@ -401,12 +401,12 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
 
     private void updateRelationship(final long userId) {
         MainActivity mainActivity = (MainActivity) getActivity();
-        Account account = Application.getCurrentAccount();
+        Account account = Application.getInstance().getCurrentAccount();
         if (userId == account.getUserId()) {
             textViewFollowed.setText(R.string.user_detail_followed_is_me);
             buttonFollow.setVisibility(View.GONE);
         } else {
-            int theme = Application.getThemeResId();
+            int theme = Application.getInstance().getThemeResId();
             lockFollowButton();
             textViewFollowed.setText(R.string.user_detail_loading);
             final Drawable red = Themes.getStyledDrawable(mainActivity, theme, R.attr.button_round_red);

@@ -116,7 +116,7 @@ public class EventViewModel implements IViewModel {
         }
 
         int textSize = UserPreferenceHelper.getInstance().getTextSize();
-        int theme = Application.getThemeResId();
+        int theme = Application.getInstance().getThemeResId();
 
         TextView header = (TextView) convertedView.findViewById(R.id.textview_status_header);
         header.setTextSize(textSize);
@@ -157,7 +157,7 @@ public class EventViewModel implements IViewModel {
     // -------------------------- OTHER METHODS --------------------------
 
     public String getFormattedString() {
-        return Application.getContext().getString(event.getTextFormatResourceID(), source.getScreenName());
+        return Application.getInstance().getString(event.getTextFormatResourceID(), source.getScreenName());
     }
 
     public enum EnumEvent {

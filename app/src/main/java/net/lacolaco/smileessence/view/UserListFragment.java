@@ -98,7 +98,7 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
 
     @Override
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
-        final Account currentAccount = Application.getCurrentAccount();
+        final Account currentAccount = Application.getInstance().getCurrentAccount();
         final UserListListAdapter adapter = getAdapter();
         String listFullName = adapter.getListFullName();
         if (TextUtils.isEmpty(listFullName)) {
@@ -126,7 +126,7 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
 
     @Override
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
-        final Account currentAccount = Application.getCurrentAccount();
+        final Account currentAccount = Application.getInstance().getCurrentAccount();
         final UserListListAdapter adapter = getAdapter();
         String listFullName = adapter.getListFullName();
         if (TextUtils.isEmpty(listFullName)) {
@@ -203,7 +203,7 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
         adapter.setListFullName(listFullName);
         adapter.clear();
         adapter.updateForce();
-        new UserListStatusesTask(Application.getCurrentAccount(), listFullName)
+        new UserListStatusesTask(Application.getInstance().getCurrentAccount(), listFullName)
                 .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_list, NotificationType.ALERT))
                 .onDoneUI(tweets -> {

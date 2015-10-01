@@ -50,14 +50,14 @@ public class UserCommandUnblock extends UserCommand implements IConfirmable {
 
     @Override
     public boolean isEnabled() {
-        return getUser() != Application.getCurrentAccount().getUser();
+        return getUser() != Application.getInstance().getCurrentAccount().getUser();
     }
 
     // -------------------------- OTHER METHODS --------------------------
 
     @Override
     public boolean execute() {
-        new UnblockTask(Application.getCurrentAccount(), getUser().getId())
+        new UnblockTask(Application.getInstance().getCurrentAccount(), getUser().getId())
                 .onDone(user -> Notificator.getInstance().publish(R.string.notice_unblock_succeeded))
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_unblock_failed, NotificationType.ALERT))
                 .execute();

@@ -60,7 +60,7 @@ public class StatusCommandNanigaja extends StatusCommand implements IConfirmable
     // -------------------------- OTHER METHODS --------------------------
 
     public String build() {
-        User user = Application.getCurrentAccount().getUser();
+        User user = Application.getInstance().getCurrentAccount().getUser();
         String str = getOriginalStatus().getText();
         String header = "";
         if (str.startsWith(".")) {
@@ -79,8 +79,8 @@ public class StatusCommandNanigaja extends StatusCommand implements IConfirmable
         StatusUpdate update = new TweetBuilder().setText(build())
                 .setInReplyToStatusID(getOriginalStatus().getId())
                 .build();
-        new TweetTask(Application.getCurrentAccount(), update).execute();
-        new FavoriteTask(Application.getCurrentAccount(), getOriginalStatus().getId())
+        new TweetTask(Application.getInstance().getCurrentAccount(), update).execute();
+        new FavoriteTask(Application.getInstance().getCurrentAccount(), getOriginalStatus().getId())
                 .onDone(x -> Notificator.getInstance().publish(R.string.notice_favorite_succeeded))
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_favorite_failed, NotificationType.ALERT))
                 .execute();

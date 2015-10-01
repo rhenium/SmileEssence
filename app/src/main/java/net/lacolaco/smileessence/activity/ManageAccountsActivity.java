@@ -48,7 +48,7 @@ public class ManageAccountsActivity extends Activity implements AdapterView.OnIt
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(Application.getThemeResId());
+        setTheme(Application.getInstance().getThemeResId());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_edit_list);
 
@@ -77,7 +77,7 @@ public class ManageAccountsActivity extends Activity implements AdapterView.OnIt
             ConfirmDialogFragment.show(this, getString(R.string.dialog_confirm_clear_account, account.getUser().getScreenName()), () -> {
                 adapter.removeAt(i);
                 Account.unregister(account.getModelId());
-                if (account == Application.getCurrentAccount()) {
+                if (account == Application.getInstance().getCurrentAccount()) {
                     setCurrentAccount(adapter.getItem(0));
                 }
             }, false);
@@ -116,7 +116,7 @@ public class ManageAccountsActivity extends Activity implements AdapterView.OnIt
     }
 
     private void safeFinish() {
-        if (Application.getCurrentAccount() != null) {
+        if (Application.getInstance().getCurrentAccount() != null) {
             setResult(RESULT_OK);
             finish();
         } else {
@@ -145,7 +145,7 @@ public class ManageAccountsActivity extends Activity implements AdapterView.OnIt
                     data.getLongExtra(OAuthSession.KEY_USER_ID, -1L),
                     data.getStringExtra(OAuthSession.KEY_SCREEN_NAME));
             adapter.add(account);
-            if (Application.getCurrentAccount() == null) {
+            if (Application.getInstance().getCurrentAccount() == null) {
                 setCurrentAccount(account);
             }
         } else {
@@ -155,7 +155,7 @@ public class ManageAccountsActivity extends Activity implements AdapterView.OnIt
     }
 
     private void setCurrentAccount(Account account) {
-        Application.setCurrentAccount(account);
+        Application.getInstance().setCurrentAccount(account);
         InternalPreferenceHelper.getInstance().set(R.string.key_last_used_account_id, account.getModelId());
     }
 
@@ -190,7 +190,7 @@ public class ManageAccountsActivity extends Activity implements AdapterView.OnIt
             Account account = getItem(position);
             TextView textView = (TextView) convertView.findViewById(R.id.textView_menuItem_simple);
             String text = account.getUser().getScreenName();
-            if (account == Application.getCurrentAccount()) {
+            if (account == Application.getInstance().getCurrentAccount()) {
                 text = "(*) " + text;
             }
             textView.setText(text); // TODO: show profile image

@@ -84,8 +84,8 @@ public class StatusCommandCongratulate extends StatusCommand implements IConfirm
         StatusUpdate update = new TweetBuilder().setText(build())
                 .setInReplyToStatusID(getOriginalStatus().getId())
                 .build();
-        new TweetTask(Application.getCurrentAccount(), update).execute();
-        new FavoriteTask(Application.getCurrentAccount(), getOriginalStatus().getId())
+        new TweetTask(Application.getInstance().getCurrentAccount(), update).execute();
+        new FavoriteTask(Application.getInstance().getCurrentAccount(), getOriginalStatus().getId())
                 .onDone(x -> Notificator.getInstance().publish(R.string.notice_favorite_succeeded))
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_favorite_failed, NotificationType.ALERT))
                 .execute();

@@ -60,7 +60,7 @@ public class TalkChainDialogFragment extends StackableDialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         MainActivity activity = (MainActivity) getActivity();
-        Account account = Application.getCurrentAccount();
+        Account account = Application.getInstance().getCurrentAccount();
 
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_talk_list, null);
         ListView listView = (ListView) view.findViewById(R.id.listview_dialog_talk_list);

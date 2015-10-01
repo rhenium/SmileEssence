@@ -45,6 +45,6 @@ public class InternalPreferenceHelper extends SharedPreferenceHelper {
     // --------------------------- OVERRIDE ---------------------------
     @Override
     protected SharedPreferences getPreferences() {
-        return Application.getContext().getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
+        return Application.getInstance().getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
     }
 }

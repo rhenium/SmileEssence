@@ -353,7 +353,7 @@ public class PostFragment extends PageFragment implements TextWatcher, View.OnFo
         PostState state = PostState.getState();
         MainActivity mainActivity = (MainActivity) getActivity();
         boolean resizeFlag = UserPreferenceHelper.getInstance().get(R.string.key_setting_resize_post_image, false);
-        TweetTask tweetTask = new TweetTask(Application.getCurrentAccount(), state.toStatusUpdate(), state.getMediaFilePath(), resizeFlag);
+        TweetTask tweetTask = new TweetTask(Application.getInstance().getCurrentAccount(), state.toStatusUpdate(), state.getMediaFilePath(), resizeFlag);
         tweetTask.execute();
         PostState.newState().beginTransaction().commit();
         mainActivity.openHomePage();

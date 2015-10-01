@@ -60,7 +60,7 @@ public class LicenseActivity extends Activity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        setTheme(Application.getThemeResId());
+        setTheme(Application.getInstance().getThemeResId());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_license);
 

@@ -130,7 +130,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
 
     @Override
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
-        final Account currentAccount = Application.getCurrentAccount();
+        final Account currentAccount = Application.getInstance().getCurrentAccount();
         final SearchListAdapter adapter = getAdapter();
         String queryString = adapter.getQuery();
         if (TextUtils.isEmpty(queryString)) {
@@ -170,7 +170,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
 
     @Override
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
-        final Account currentAccount = Application.getCurrentAccount();
+        final Account currentAccount = Application.getInstance().getCurrentAccount();
         final SearchListAdapter adapter = getAdapter();
         String queryString = adapter.getQuery();
         if (TextUtils.isEmpty(queryString)) {
@@ -337,14 +337,14 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
             query.setQuery(queryString);
             query.setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage());
             query.setResultType(Query.RECENT);
-            new SearchTask(Application.getCurrentAccount(), query)
+            new SearchTask(Application.getInstance().getCurrentAccount(), query)
                     .onDoneUI(queryResult -> {
                         if (queryResult != null) {
                             List<twitter4j.Status> tweets = queryResult.getTweets();
                             for (int i = tweets.size() - 1; i >= 0; i--) {
                                 twitter4j.Status status = tweets.get(i);
                                 if (!status.isRetweet()) {
-                                    StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status, Application.getCurrentAccount().getUserId()));
+                                    StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status, Application.getInstance().getCurrentAccount().getUserId()));
                                     adapter.addToTop(viewModel);
                                     StatusFilter.getInstance().filter(viewModel);
                                 }

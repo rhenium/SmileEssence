@@ -117,7 +117,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
             return new DisposeDialog(getActivity());
         }
 
-        Account account = Application.getCurrentAccount();
+        Account account = Application.getInstance().getCurrentAccount();
 
         View header = getTitleView(tweet);
 
@@ -193,8 +193,8 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
     }
 
     private void updateViewButtons(View view, Tweet tweet) {
-        int themeResId = Application.getThemeResId();
-        Account account = Application.getCurrentAccount();
+        int themeResId = Application.getInstance().getThemeResId();
+        Account account = Application.getInstance().getCurrentAccount();
 
         //--- buttons
         ImageButton message = (ImageButton) view.findViewById(R.id.button_status_detail_reply);
@@ -250,7 +250,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
 
     private void deleteStatus(final Tweet tweet) {
         confirm(() -> {
-            Account account = Application.getCurrentAccount();
+            Account account = Application.getInstance().getCurrentAccount();
 
             new DeleteStatusTask(account, tweet.getOriginalTweet().getId())
                     .onDone(t -> Notificator.getInstance().publish(R.string.notice_status_delete_succeeded))
@@ -279,7 +279,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
     }
 
     private void replyToStatus(Tweet tweet) {
-        Account account = Application.getCurrentAccount();
+        Account account = Application.getInstance().getCurrentAccount();
         Tweet originalTweet = tweet.getOriginalTweet();
 
         TweetBuilder builder = new TweetBuilder();
@@ -301,7 +301,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
     }
 
     private void toggleFavorite(Tweet tweet) {
-        Account account = Application.getCurrentAccount();
+        Account account = Application.getInstance().getCurrentAccount();
         if (tweet.isFavoritedBy(account.getUserId())) {
             new UnfavoriteTask(account, tweet.getId())
                     .onDone(x -> Notificator.getInstance().publish(R.string.notice_unfavorite_succeeded))
@@ -316,7 +316,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
     }
 
     private void toggleRetweet(final Tweet tweet) {
-        Account account = Application.getCurrentAccount();
+        Account account = Application.getInstance().getCurrentAccount();
         confirm(() -> {
             if (tweet.isRetweetedBy(account.getUserId())) {
                 new DeleteStatusTask(account, tweet.getRetweetIdBy(account.getUserId()))
