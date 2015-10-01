@@ -100,9 +100,8 @@
     <string name="setting_category_about_title">情報</string>
     <string name="setting_application_information_title">アプリ情報</string>
     <string name="setting_licenses_title">ライセンスについて</string>
-    <string name="setting_category_account_title">アカウント</string>
-    <string name="setting_delete_authentication_title">認証情報を削除する</string>
-    <string name="setting_delete_authentication_summary">次回起動時に再認証が必要です</string>
+    <string name="setting_category_accounts_title">アカウント</string>
+    <string name="setting_accounts_title">アカウントを管理する</string>
     <string name="error_setting_text_size_range">8から24の間で設定してください</string>
     <string name="error_setting_text_size_not_number">数を入力してください</string>
     <string name="error_setting_timelines_range">1から200の間で設定してください</string>
@@ -236,4 +235,6 @@
     <string name="command_search_on_google">Googleで検索する</string>
     <string name="notice_error_get_user_timeline">ユーザータイムラインの取得に失敗しました</string>
     <string name="notice_error_get_list">リストタイムラインの取得に失敗しました</string>
+    <string name="activity_manage_accounts">アカウント管理</string>
+    <string name="actionbar_accounts">アカウントの管理</string>
 </resources>

@@ -25,10 +25,10 @@
 package net.lacolaco.smileessence.entity;
 
 import android.os.Handler;
-import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Delete;
+import com.activeandroid.query.Select;
 import net.lacolaco.smileessence.twitter.task.GetUserListsTask;
 import net.lacolaco.smileessence.twitter.task.ShowStatusTask;
 import net.lacolaco.smileessence.util.BackgroundTask;
@@ -39,69 +39,99 @@ import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
 import twitter4j.auth.AccessToken;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Table(name = "Accounts")
-public class Account extends Model {
+public class Account {
+    private static Map<Long, Account> cache; // model id -> Account
     private User user;
+    private Model model;
     private final Set<String> listSubscriptions = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
-    @Column(name = "Token", notNull = true)
-    private String accessToken;
-    @Column(name = "Secret", notNull = true)
-    private String accessSecret;
-    @Column(name = "UserID", notNull = true)
-    private long userID;
-    @Column(name = "ScreenName", notNull = true)
-    private String screenName;
-
-    // Required by ActiveAndroid
-    public Account() {
-        super();
+    // --------------------- static methods ---------------------
+    public static synchronized Account get(long i) {
+        if (cache == null) {
+            throw new IllegalStateException("Load first");
+        }
+        return cache.get(i);
     }
 
-    public Account(String token, String tokenSecret, long userID, String screenName) {
-        super();
-        this.accessToken = token;
-        this.accessSecret = tokenSecret;
-        this.userID = userID;
-        this.screenName = screenName;
+    public static synchronized int count() {
+        return cache.size();
     }
 
-    @Deprecated
-    public static void deleteAll() {
-        new Delete().from(Account.class).execute();
+    public static synchronized List<Account> all() {
+        return new ArrayList<>(cache.values());
+    }
+
+    public static synchronized void load() {
+        cache = new LinkedHashMap<>();
+        List<Model> all = new Select().from(Model.class).execute();
+        for (Model model : all) {
+            cache.put(model.getId(), new Account(model));
+        }
+    }
+
+    public static synchronized Account register(String token, String tokenSecret, long userID, String screenName) {
+        Account account = Account.get(userID);
+        if (account == null) {
+            Model model = new Model(token, tokenSecret, userID, screenName);
+            model.save();
+            account = new Account(model);
+            cache.put(model.getId(), account);
+        } else {
+            Model model = account.model;
+            model.accessToken = token;
+            model.accessSecret = tokenSecret;
+            model.screenName = screenName;
+            model.save();
+        }
+        return account;
+    }
+
+    public static synchronized Account unregister(long modelId) {
+        Account account = cache.remove(modelId);
+        if (account != null) {
+            Model.delete(Model.class, modelId);
+        }
+        return account;
+    }
+
+    // --------------------- instance methods ---------------------
+    private Account(Model model) {
+        this.model = model;
     }
 
     public long getUserId() {
-        return userID;
+        return model.userID;
+    }
+
+    public long getModelId() {
+        return model.getId();
     }
 
     public Twitter getTwitter() {
         Twitter twitter = new TwitterFactory().getInstance();
-        twitter.setOAuthAccessToken(new AccessToken(accessToken, accessSecret));
+        twitter.setOAuthAccessToken(new AccessToken(model.accessToken, model.accessSecret));
         return twitter;
     }
 
     public TwitterStream getTwitterStream() {
         TwitterStream stream = new TwitterStreamFactory().getInstance();
-        stream.setOAuthAccessToken(new AccessToken(accessToken, accessSecret));
+        stream.setOAuthAccessToken(new AccessToken(model.accessToken, model.accessSecret));
         return stream;
     }
 
     public User getUser() {
         if (user == null) {
-            user = User.fetch(userID);
+            user = User.fetch(model.userID);
             if (user == null) {
-                user = User._makeSkeleton(getUserId(), screenName);
+                user = User._makeSkeleton(getUserId(), model.screenName);
             }
             user.addObserver(this, (user, objs) -> {
-                if (!this.screenName.equals(((User) user).getScreenName())) {
-                    this.screenName = ((User) user).getScreenName();
-                    this.save();
+                if (!model.screenName.equals(((User) user).getScreenName())) {
+                    model.screenName = ((User) user).getScreenName();
+                    model.save();
                 }
             });
         }
@@ -152,5 +182,35 @@ public class Account extends Model {
 
     public boolean removeListSubscription(String fullName) {
         return listSubscriptions.remove(fullName);
+    }
+
+    @Table(name = "Accounts")
+    private static class Model extends com.activeandroid.Model {
+        @Column(name = "Token", notNull = true)
+        private String accessToken;
+        @Column(name = "Secret", notNull = true)
+        private String accessSecret;
+        @Column(name = "UserID", notNull = true)
+        private long userID;
+        @Column(name = "ScreenName", notNull = true)
+        private String screenName;
+
+        // Required by ActiveAndroid
+        public Model() {
+            super();
+        }
+
+        public Model(String token, String tokenSecret, long userID, String screenName) {
+            super();
+            this.accessToken = token;
+            this.accessSecret = tokenSecret;
+            this.userID = userID;
+            this.screenName = screenName;
+        }
+
+        @Deprecated
+        public static void deleteAll() {
+            new Delete().from(Model.class).execute();
+        }
     }
 }

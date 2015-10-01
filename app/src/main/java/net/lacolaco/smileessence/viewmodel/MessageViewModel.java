@@ -35,7 +35,7 @@ import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.data.ImageCache;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.DirectMessage;
-import net.lacolaco.smileessence.entity.RO;
+import net.lacolaco.smileessence.entity.RBinding;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.util.NameStyles;
 import net.lacolaco.smileessence.util.StringUtils;
@@ -110,7 +110,7 @@ public class MessageViewModel implements IViewModel {
 
         final View finalView = convertedView;
         bundle.attach(directMessage.getSender(), (x, changes) -> {
-            if (changes.contains(RO.BASIC))
+            if (changes.contains(RBinding.BASIC))
                 updateViewSender(activity, finalView);
         });
 

@@ -27,6 +27,7 @@ package net.lacolaco.smileessence.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -41,7 +42,6 @@ import twitter4j.auth.AccessToken;
 
 public class OAuthActivity extends AppCompatActivity implements View.OnClickListener, TextWatcher {
 
-    public static final int PIN_CODE_LENGTH = 7;
     private TextView linkTextView;
     private EditText pinEditText;
     private Button authButton;
@@ -51,6 +51,10 @@ public class OAuthActivity extends AppCompatActivity implements View.OnClickList
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_oauth);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         linkTextView = (TextView) findViewById(R.id.textView_oauth_link);
         pinEditText = (EditText) findViewById(R.id.editText_oauth_pin);
@@ -96,7 +100,7 @@ public class OAuthActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        authButton.setEnabled(s.length() == PIN_CODE_LENGTH);
+        authButton.setEnabled(s.length() > 0);
     }
 
     @Override

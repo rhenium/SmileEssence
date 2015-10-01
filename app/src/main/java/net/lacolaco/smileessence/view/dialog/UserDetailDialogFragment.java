@@ -43,7 +43,7 @@ import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.CommandOpenURL;
 import net.lacolaco.smileessence.data.ImageCache;
 import net.lacolaco.smileessence.entity.Account;
-import net.lacolaco.smileessence.entity.RO;
+import net.lacolaco.smileessence.entity.RBinding;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.notification.NotificationType;
@@ -308,9 +308,9 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
 
         observerBundle.attach(user, (x, changes) -> {
             if (getActivity() != null) {
-                if (changes.contains(RO.BASIC))
+                if (changes.contains(RBinding.BASIC))
                     updateUserDataBasic(user);
-                if (changes.contains(RO.DETAIL))
+                if (changes.contains(RBinding.DETAIL))
                     updateUserDataDetail(user);
             }
         });

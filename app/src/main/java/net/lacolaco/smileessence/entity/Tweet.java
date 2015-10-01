@@ -76,7 +76,7 @@ public class Tweet extends EntitySupport {
             favoriteCount = status.getFavoriteCount();
             retweetCount = status.getRetweetCount();
 
-            notifyChange(RO.REACTION_COUNT);
+            notifyChange(RBinding.REACTION_COUNT);
         }
 
         inReplyTo = status.getInReplyToStatusId();
@@ -175,13 +175,13 @@ public class Tweet extends EntitySupport {
 
     public boolean addFavoriter(long id) {
         boolean changed = favoriters.add(id);
-        if (changed) notifyChange(RO.FAVORITERS);
+        if (changed) notifyChange(RBinding.FAVORITERS);
         return changed;
     }
 
     public boolean removeFavoriter(long id) {
         boolean changed = favoriters.remove(id);
-        if (changed) notifyChange(RO.FAVORITERS);
+        if (changed) notifyChange(RBinding.FAVORITERS);
         return changed;
     }
 
@@ -204,13 +204,13 @@ public class Tweet extends EntitySupport {
     public boolean addRetweet(long uid, long sid) {
         Long result = retweets.put(uid, sid);
         boolean changed = result == null || result != sid;
-        if (changed) notifyChange(RO.RETWEETERS);
+        if (changed) notifyChange(RBinding.RETWEETERS);
         return changed;
     }
 
     private boolean removeRetweet(long sid) {
         boolean changed = retweets.values().remove(sid);
-        if (changed) notifyChange(RO.RETWEETERS);
+        if (changed) notifyChange(RBinding.RETWEETERS);
         return changed;
     }
 

@@ -36,22 +36,23 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
+import android.widget.TextView;
+import com.android.volley.toolbox.NetworkImageView;
 import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.BuildConfig;
 import net.lacolaco.smileessence.IntentRouter;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.command.CommandOpenURL;
+import net.lacolaco.smileessence.data.ImageCache;
 import net.lacolaco.smileessence.data.PostState;
-import net.lacolaco.smileessence.entity.Account;
-import net.lacolaco.smileessence.entity.CommandSetting;
-import net.lacolaco.smileessence.entity.MuteUserIds;
+import net.lacolaco.smileessence.entity.*;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.preference.InternalPreferenceHelper;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
-import net.lacolaco.smileessence.twitter.OAuthSession;
 import net.lacolaco.smileessence.twitter.UserStreamListener;
+import net.lacolaco.smileessence.twitter.task.ShowUserTask;
 import net.lacolaco.smileessence.util.BitmapOptimizer;
 import net.lacolaco.smileessence.util.NetworkHelper;
 import net.lacolaco.smileessence.util.UIHandler;
@@ -64,14 +65,15 @@ public class MainActivity extends AppCompatActivity {
 
     // ------------------------------ FIELDS ------------------------------
 
-    public static final int REQUEST_OAUTH = 10;
     public static final int REQUEST_GET_PICTURE_FROM_GALLERY = 11;
     public static final int REQUEST_GET_PICTURE_FROM_CAMERA = 12;
+    private static final int REQUEST_MANAGE_ACCOUNT = 13;
     private ViewPager viewPager;
     private PageListAdapter pagerAdapter;
     private TwitterStream stream;
     private Uri cameraTempFilePath;
     private UserStreamListener userStreamListener;
+    private boolean waitingAccount = true;
 
     public Uri getCameraTempFilePath() {
         return cameraTempFilePath;
@@ -134,8 +136,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case REQUEST_OAUTH: {
-                receiveOAuth(requestCode, resultCode, data);
+            case REQUEST_MANAGE_ACCOUNT: {
+                if (waitingAccount) {
+                    // first run
+                    waitingAccount = false;
+                    startMainLogic();
+                }
                 break;
             }
             case REQUEST_GET_PICTURE_FROM_GALLERY:
@@ -154,12 +160,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.layout_main);
         Notificator.initialize(this);
         CommandSetting.initialize();
+        Account.load();
 
         if (setupLastUsedAccount()) {
+            waitingAccount = false;
             startMainLogic();
             IntentRouter.onNewIntent(this, getIntent());
         } else {
-            startOAuthActivity();
+            startActivityForResult(new Intent(this, ManageAccountsActivity.class), REQUEST_MANAGE_ACCOUNT);
         }
     }
 
@@ -198,6 +206,10 @@ public class MainActivity extends AppCompatActivity {
             }*/
             case R.id.actionbar_setting: {
                 startActivity(new Intent(this, SettingActivity.class));
+                return true;
+            }
+            case R.id.actionbar_accounts: {
+                startActivity(new Intent(this, ManageAccountsActivity.class));
                 return true;
             }
             case R.id.actionbar_edit_templates: {
@@ -319,13 +331,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void startMainLogic() {
         initializeView();
-        startTwitter();
+        onChangeCurrentAccount();
     }
 
     public boolean startStream() {
-        if (!new NetworkHelper(this).canConnect()) {
-            return false;
-        }
+
         if (stream != null) {
             stream.shutdown();
         }
@@ -337,26 +347,36 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    public boolean startTwitter() {
-        if (!startStream()) {
-            return false;
+    private void onChangeCurrentAccount() {
+        if (!new NetworkHelper(this).canConnect()) {
+            return; // TODO: error message?
         }
-        MuteUserIds.refresh(Application.getCurrentAccount());
-        Application.getCurrentAccount().refreshListSubscriptions();
-        updateActionBarIcon();
-        return true;
-    }
 
-    public void updateActionBarIcon() {/*
-        final ImageView homeIcon = (ImageView) findViewById(android.R.id.home);
-        new ShowUserTask(Application.getCurrentAccount(), Application.getCurrentAccount().getUserId())
-                .onDoneUI(user -> {
-                    String urlHttps = user.getProfileImageUrl();
-                    homeIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                    new BitmapURLTask(urlHttps, homeIcon).execute();
-                })
-                .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_show_user, NotificationType.ALERT))
-                .execute();*/
+        Account account = Application.getCurrentAccount();
+        User user = account.getUser();
+        startStream();
+        MuteUserIds.refresh(account);
+        account.refreshListSubscriptions();
+        
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        final TextView toolbarTitle = (TextView) findViewById(R.id.toolbar_text);
+        final NetworkImageView iconImageView = (NetworkImageView) findViewById(R.id.toolbar_icon);
+
+        Runnable update = () -> {
+            toolbarTitle.setText(account.getUser().getScreenName());
+            String oldUrl = iconImageView.getImageURL();
+            String newUrl = user.getProfileImageUrl();
+            if (newUrl != null && (oldUrl == null || !oldUrl.equals(newUrl))) {
+                ImageCache.getInstance().setImageToView(newUrl, iconImageView);
+            }
+        };
+
+        update.run();
+        user.addObserver(this, (x, changes) -> {
+            if (changes.contains(RBinding.BASIC)) update.run();
+        });
+
+        new ShowUserTask(account, account.getUserId()).execute();
     }
 
     private void getImageUri(int requestCode, int resultCode, Intent data) {
@@ -396,10 +416,7 @@ public class MainActivity extends AppCompatActivity {
     public void initializeView() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        //ActionBar bar = getActionBar();
-        //bar.setDisplayShowHomeEnabled(true);
-        //bar.setDisplayShowTitleEnabled(false);
-        //bar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         pagerAdapter = new PageListAdapter(this, viewPager);
         initializePages();
@@ -409,28 +426,14 @@ public class MainActivity extends AppCompatActivity {
         setSelectedPageIndex(pagerAdapter.getIndex(UserListFragment.class));
     }
 
-    private void receiveOAuth(int requestCode, int resultCode, Intent data) {
-        if (resultCode != RESULT_OK) {
-            Logger.error(requestCode);
-            Notificator.getInstance().publish(R.string.notice_error_authenticate);
-            finish();
-        } else {
-            Account account = new Account(data.getStringExtra(OAuthSession.KEY_TOKEN),
-                    data.getStringExtra(OAuthSession.KEY_TOKEN_SECRET),
-                    data.getLongExtra(OAuthSession.KEY_USER_ID, -1L),
-                    data.getStringExtra(OAuthSession.KEY_SCREEN_NAME));
-            account.save();
-            Application.setCurrentAccount(account);
-            InternalPreferenceHelper.getInstance().set(R.string.key_last_used_account_id, account.getId());
-            startMainLogic();
-        }
-    }
-
     private boolean setupLastUsedAccount() {
         long lastId = InternalPreferenceHelper.getInstance().get(R.string.key_last_used_account_id, -1L);
         Account account = null;
         if (lastId != -1) {
-            account = Account.load(Account.class, lastId);
+            account = Account.get(lastId);
+        }
+        if (account == null && Account.count() > 0) {
+            account = Account.all().get(0);
         }
         if (account != null) {
             Application.setCurrentAccount(account);
@@ -438,9 +441,5 @@ public class MainActivity extends AppCompatActivity {
         } else {
             return false;
         }
-    }
-
-    private void startOAuthActivity() {
-        startActivityForResult(new Intent(this, OAuthActivity.class), REQUEST_OAUTH);
     }
 }

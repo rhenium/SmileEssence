@@ -33,7 +33,7 @@ import com.android.volley.toolbox.NetworkImageView;
 import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.data.ImageCache;
-import net.lacolaco.smileessence.entity.RO;
+import net.lacolaco.smileessence.entity.RBinding;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
@@ -147,7 +147,7 @@ public class EventViewModel implements IViewModel {
 
         final View finalView = convertedView;
         bundle.attach(source, (x, changes) -> {
-            if (changes.contains(RO.BASIC))
+            if (changes.contains(RBinding.BASIC))
                 updateViewUser(finalView);
         });
 

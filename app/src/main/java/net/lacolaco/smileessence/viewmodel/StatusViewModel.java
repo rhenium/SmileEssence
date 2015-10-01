@@ -36,7 +36,7 @@ import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.data.ImageCache;
-import net.lacolaco.smileessence.entity.RO;
+import net.lacolaco.smileessence.entity.RBinding;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.util.*;
@@ -113,11 +113,11 @@ public class StatusViewModel implements IViewModel {
 
         final View view = convertedView;
         bundle.attach(tweet, (x, changes) -> {
-            if (changes.contains(RO.FAVORITERS))
+            if (changes.contains(RBinding.FAVORITERS))
                 updateViewFavorited(((MainActivity) activity), view);
         });
         bundle.attach(tweet.getUser(), (x, changes) -> {
-            if (changes.contains(RO.BASIC))
+            if (changes.contains(RBinding.BASIC))
                 updateViewUser(((MainActivity) activity), view);
         });
 

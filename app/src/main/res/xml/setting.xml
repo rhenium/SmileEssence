@@ -26,6 +26,12 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <PreferenceCategory android:title="@string/setting_category_accounts_title">
+        <Preference
+                android:key="@string/key_setting_accounts"
+                android:title="@string/setting_accounts_title" />
+    </PreferenceCategory>
+
     <PreferenceCategory
         android:summary="@string/setting_category_display_summary"
         android:title="@string/setting_category_display_title">
@@ -95,11 +101,5 @@
         <Preference
             android:key="@string/key_setting_licenses"
             android:title="@string/setting_licenses_title" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/setting_category_account_title">
-        <Preference
-            android:key="@string/key_setting_clear_account"
-            android:summary="@string/setting_delete_authentication_summary"
-            android:title="@string/setting_delete_authentication_title" />
     </PreferenceCategory>
 </PreferenceScreen>

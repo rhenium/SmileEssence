@@ -1,6 +1,6 @@
 package net.lacolaco.smileessence.util;
 
-import net.lacolaco.smileessence.entity.RO;
+import net.lacolaco.smileessence.entity.RBinding;
 
 import java.util.*;
 
@@ -19,11 +19,11 @@ public abstract class UIObservable {
         }
     }
 
-    public void notifyChange(RO flag) {
+    public void notifyChange(RBinding flag) {
         notifyChange(EnumSet.of(flag));
     }
 
-    public void notifyChange(EnumSet<RO> flags) {
+    public void notifyChange(EnumSet<RBinding> flags) {
             List<UIObserver> obs = new ArrayList<>();
         synchronized(this) {
             obs.addAll(observers.values());

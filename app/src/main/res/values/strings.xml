@@ -98,9 +98,8 @@
     <string name="setting_timelines_dialog_title">Edit number</string>
     <string name="setting_timelines_dialog_message">Set a value between 1\-200</string>
     <string name="setting_category_about_title">About</string>
-    <string name="setting_delete_authentication_title">Delete authentication</string>
-    <string name="setting_delete_authentication_summary">Please authenticate again on next launch</string>
-    <string name="setting_category_account_title">Account</string>
+    <string name="setting_accounts_title">Manage accounts</string>
+    <string name="setting_category_accounts_title">Accounts</string>
     <string name="setting_application_information_title">Application information</string>
     <string name="setting_licenses_title">Licenses</string>
     <string name="error_setting_text_size_range">Must be between 8\-24</string>
@@ -135,7 +134,7 @@
     <string name="dialog_title_select_image">Select image</string>
     <string name="dialog_title_select_search_query">Select search query</string>
     <string name="dialog_confirm_commands">Execute, OK?</string>
-    <string name="dialog_confirm_clear_account">Clear authentication, Really?</string>
+    <string name="dialog_confirm_clear_account">Are you sure you want to remove this account @%s?</string>
     <string name="dialog_title_talk_chain">Talk View</string>
     <string name="dialog_title_select_userlist">Select a list</string>
     <string name="dialog_review_rating_text">How many favs will you give?</string>
@@ -237,4 +236,6 @@
     <string name="notice_error_get_user_timeline">Failed to get user timeline</string>
     <string name="notice_error_get_list">Failed to get list timeline</string>
     <string name="notices_of_files">Notices of files:</string>
+    <string name="activity_manage_accounts">Accounts</string>
+    <string name="actionbar_accounts">Accounts</string>
 </resources>

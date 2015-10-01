@@ -37,7 +37,7 @@ import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.CommandOpenURL;
 import net.lacolaco.smileessence.data.PostState;
 import net.lacolaco.smileessence.entity.Account;
-import net.lacolaco.smileessence.entity.RO;
+import net.lacolaco.smileessence.entity.RBinding;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
@@ -157,9 +157,9 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
 
         bundle.attach(tweet, (x, changes) -> {
             if (getActivity() != null) {
-                if (changes.contains(RO.REACTION_COUNT))
+                if (changes.contains(RBinding.REACTION_COUNT))
                     updateViewReactions(view, tweet);
-                if (changes.contains(RO.FAVORITERS) || changes.contains(RO.RETWEETERS))
+                if (changes.contains(RBinding.FAVORITERS) || changes.contains(RBinding.RETWEETERS))
                     updateViewButtons(view, tweet);
             }
         });

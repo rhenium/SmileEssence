@@ -9,6 +9,9 @@
             android:title="@string/actionbar_search"
             android:icon="@drawable/icon_search_white"
             app:showAsAction="always" /> -->
+    <item android:id="@+id/actionbar_accounts"
+          android:title="@string/actionbar_accounts"
+          app:showAsAction="never" />
     <item android:id="@+id/actionbar_settings"
           android:title="@string/actionbar_settings"
           android:icon="@drawable/icon_settings"

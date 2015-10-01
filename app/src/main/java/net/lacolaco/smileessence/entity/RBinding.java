@@ -1,6 +1,6 @@
 package net.lacolaco.smileessence.entity;
 
-public enum RO {
+public enum RBinding {
     // Tweet
     REACTION_COUNT,
     FAVORITERS,

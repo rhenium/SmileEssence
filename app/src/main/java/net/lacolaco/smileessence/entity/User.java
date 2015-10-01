@@ -70,7 +70,7 @@ public class User extends UIObservable {
             if (user.getProfileImageURLHttps() != null)
                 profileImageUrl = user.getProfileImageURLHttps();
 
-            notifyChange(RO.BASIC);
+            notifyChange(RBinding.BASIC);
         }
 
         if (getProfileBannerUrl() == null || !getProfileBannerUrl().equals(user.getProfileBannerURL()) ||
@@ -99,7 +99,7 @@ public class User extends UIObservable {
             if (user.getFollowersCount() != -1)
                 followersCount = user.getFollowersCount();
 
-            notifyChange(RO.DETAIL);
+            notifyChange(RBinding.DETAIL);
         }
     }
 

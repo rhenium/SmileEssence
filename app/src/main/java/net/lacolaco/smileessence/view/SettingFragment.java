@@ -33,10 +33,9 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.text.TextUtils;
 import net.lacolaco.smileessence.R;
+import net.lacolaco.smileessence.activity.ManageAccountsActivity;
 import net.lacolaco.smileessence.activity.LicenseActivity;
-import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.notification.Notificator;
-import net.lacolaco.smileessence.view.dialog.ConfirmDialogFragment;
 import net.lacolaco.smileessence.view.dialog.SimpleDialogFragment;
 
 import static android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -94,12 +93,8 @@ public class SettingFragment extends PreferenceFragment implements OnSharedPrefe
                     R.layout.dialog_app_info,
                     getString(R.string.dialog_title_about));
             DialogHelper.showDialog(getActivity(), informationDialog);
-        } else if (key.contentEquals(getString(R.string.key_setting_clear_account))) {
-            ConfirmDialogFragment.show(getActivity(), getString(R.string.dialog_confirm_clear_account), () -> {
-                Notificator.getInstance().publish(R.string.notice_cleared_account);
-                Account.deleteAll();
-                getActivity().finish();
-            }, false);
+        } else if (key.contentEquals(getString(R.string.key_setting_accounts))) {
+            openManageAccountsActivity();
         } else if (key.contentEquals(getString(R.string.key_setting_licenses))) {
             openLicenseActivity();
         }
@@ -119,6 +114,8 @@ public class SettingFragment extends PreferenceFragment implements OnSharedPrefe
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.setting);
+        Preference manageAccounts = findPreference(R.string.key_setting_accounts);
+        manageAccounts.setOnPreferenceClickListener(this);
         EditTextPreference textSizePreference = (EditTextPreference) findPreference(R.string.key_setting_text_size);
         textSizePreference.setSummary(textSizePreference.getText());
         textSizePreference.setOnPreferenceChangeListener(this);
@@ -132,8 +129,6 @@ public class SettingFragment extends PreferenceFragment implements OnSharedPrefe
         timelinesPreference.setOnPreferenceChangeListener(this);
         Preference appInfoPreference = findPreference(R.string.key_setting_application_information);
         appInfoPreference.setOnPreferenceClickListener(this);
-        Preference clearAccount = findPreference(R.string.key_setting_clear_account);
-        clearAccount.setOnPreferenceClickListener(this);
         Preference license = findPreference(R.string.key_setting_licenses);
         license.setOnPreferenceClickListener(this);
     }
@@ -160,6 +155,11 @@ public class SettingFragment extends PreferenceFragment implements OnSharedPrefe
 
     private void openLicenseActivity() {
         Intent intent = new Intent(getActivity(), LicenseActivity.class);
+        getActivity().startActivity(intent);
+    }
+
+    private void openManageAccountsActivity() {
+        Intent intent = new Intent(getActivity(), ManageAccountsActivity.class);
         getActivity().startActivity(intent);
     }
 
