@@ -24,33 +24,18 @@
   ~ SOFTWARE.
   -->
 
-<LinearLayout
+<FrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-    <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+    <ListView
+            android:id="@+id/listview_edit_list"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
-            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+            android:layout_height="match_parent"
+            android:fastScrollEnabled="true">
 
-    <FrameLayout
-            android:id="@+id/main_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+    </ListView>
 
-        <ListView
-                android:id="@+id/listview_edit_list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:fastScrollEnabled="true">
-
-        </ListView>
-
-    </FrameLayout>
-
-</LinearLayout>
+</FrameLayout>

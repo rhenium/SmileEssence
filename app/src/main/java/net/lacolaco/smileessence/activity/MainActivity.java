@@ -24,26 +24,23 @@
 
 package net.lacolaco.smileessence.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
-import android.widget.TextView;
-import com.android.volley.toolbox.NetworkImageView;
+import android.widget.ImageView;
 import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.BuildConfig;
 import net.lacolaco.smileessence.IntentRouter;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.command.CommandOpenURL;
-import net.lacolaco.smileessence.data.ImageCache;
 import net.lacolaco.smileessence.data.PostState;
 import net.lacolaco.smileessence.entity.*;
 import net.lacolaco.smileessence.logging.Logger;
@@ -54,6 +51,7 @@ import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.twitter.UserStreamListener;
 import net.lacolaco.smileessence.twitter.task.ShowUserTask;
 import net.lacolaco.smileessence.util.BitmapOptimizer;
+import net.lacolaco.smileessence.util.BitmapURLTask;
 import net.lacolaco.smileessence.util.NetworkHelper;
 import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.view.*;
@@ -61,7 +59,7 @@ import net.lacolaco.smileessence.view.adapter.PageListAdapter;
 import net.lacolaco.smileessence.view.dialog.ConfirmDialogFragment;
 import twitter4j.TwitterStream;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     // ------------------------------ FIELDS ------------------------------
 
@@ -357,18 +355,13 @@ public class MainActivity extends AppCompatActivity {
         startStream();
         MuteUserIds.refresh(account);
         account.refreshListSubscriptions();
-        
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-        final TextView toolbarTitle = (TextView) findViewById(R.id.toolbar_text);
-        final NetworkImageView iconImageView = (NetworkImageView) findViewById(R.id.toolbar_icon);
+
+        final ImageView iconImageView = (ImageView) findViewById(android.R.id.home);
 
         Runnable update = () -> {
-            toolbarTitle.setText(account.getUser().getScreenName());
-            String oldUrl = iconImageView.getImageURL();
+            getActionBar().setTitle(user.getScreenName());
             String newUrl = user.getProfileImageUrl();
-            if (newUrl != null && (oldUrl == null || !oldUrl.equals(newUrl))) {
-                ImageCache.getInstance().setImageToView(newUrl, iconImageView);
-            }
+            new BitmapURLTask(newUrl, iconImageView).execute();
         };
 
         update.run();
@@ -414,11 +407,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void initializeView() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         pagerAdapter = new PageListAdapter(this, viewPager);
+        ImageView iconImageView = (ImageView) findViewById(android.R.id.home);
+        iconImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
         initializePages();
     }
 

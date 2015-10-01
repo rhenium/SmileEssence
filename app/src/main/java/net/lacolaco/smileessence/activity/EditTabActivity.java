@@ -24,10 +24,9 @@
 
 package net.lacolaco.smileessence.activity;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.ListView;
 import net.lacolaco.smileessence.Application;
@@ -41,7 +40,7 @@ import net.lacolaco.smileessence.viewmodel.EditableCheckBoxModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EditTabActivity extends AppCompatActivity {
+public class EditTabActivity extends Activity {
 
     // ------------------------------ FIELDS ------------------------------
 
@@ -91,10 +90,6 @@ public class EditTabActivity extends AppCompatActivity {
         setTheme(Application.getThemeResId());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_edit_list);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         initializeViews();
         Logger.debug("onCreate");

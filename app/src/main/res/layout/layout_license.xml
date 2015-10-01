@@ -23,78 +23,63 @@
   ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   ~ SOFTWARE.
   -->
-<LinearLayout
+<FrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-    <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+    <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
-            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-    <FrameLayout
-            android:id="@+id/main_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-        <ScrollView
+        <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp">
+
+
+            <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:text="@string/notices_of_files"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
 
             <LinearLayout
+                    android:id="@+id/linear_license_files"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
                     android:orientation="vertical"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="10dp" />
+
+            <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#cacaca"
                     android:padding="10dp">
 
-
                 <TextView
-                        android:id="@+id/textView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="left|center_vertical"
-                        android:text="@string/notices_of_files"
-                        android:textSize="20dp"
-                        android:textStyle="bold" />
-
-                <LinearLayout
-                        android:id="@+id/linear_license_files"
+                        android:id="@+id/textView4"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="left|center_vertical"
-                        android:orientation="vertical"
-                        android:paddingBottom="10dp"
-                        android:paddingLeft="10dp"
-                        android:paddingTop="10dp"></LinearLayout>
+                        android:layout_gravity="center_vertical|left"
+                        android:text="@string/apache"
+                        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small"
+                        android:textColor="@color/gray_dark_dark"
+                        android:typeface="monospace" />
 
-                <FrameLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="#cacaca"
-                        android:padding="10dp">
+            </FrameLayout>
 
-                    <TextView
-                            android:id="@+id/textView4"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical|left"
-                            android:text="@string/apache"
-                            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small"
-                            android:textColor="@color/gray_dark_dark"
-                            android:typeface="monospace" />
+        </LinearLayout>
 
-                </FrameLayout>
+    </ScrollView>
 
-            </LinearLayout>
-
-        </ScrollView>
-
-    </FrameLayout>
-
-</LinearLayout>
+</FrameLayout>

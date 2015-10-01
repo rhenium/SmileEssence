@@ -24,11 +24,10 @@
 
 package net.lacolaco.smileessence.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.*;
 import android.widget.*;
 import net.lacolaco.smileessence.Application;
@@ -43,7 +42,7 @@ import net.lacolaco.smileessence.view.dialog.ConfirmDialogFragment;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ManageAccountsActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, AbsListView.OnItemLongClickListener {
+public class ManageAccountsActivity extends Activity implements AdapterView.OnItemClickListener, AbsListView.OnItemLongClickListener {
     public static final int REQUEST_OAUTH = 10;
     private EditAccountsAdapter adapter;
 
@@ -52,10 +51,6 @@ public class ManageAccountsActivity extends AppCompatActivity implements Adapter
         setTheme(Application.getThemeResId());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_edit_list);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         ListView listView = (ListView) findViewById(R.id.listview_edit_list);
         adapter = new EditAccountsAdapter();

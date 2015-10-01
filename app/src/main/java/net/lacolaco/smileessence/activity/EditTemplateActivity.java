@@ -24,10 +24,9 @@
 
 package net.lacolaco.smileessence.activity;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.SparseBooleanArray;
 import android.view.*;
@@ -44,7 +43,7 @@ import net.lacolaco.smileessence.view.dialog.EditTextDialogFragment;
 
 import java.util.List;
 
-public class EditTemplateActivity extends AppCompatActivity implements AdapterView.OnItemClickListener,
+public class EditTemplateActivity extends Activity implements AdapterView.OnItemClickListener,
         AbsListView.MultiChoiceModeListener {
 
     // ------------------------------ FIELDS ------------------------------
@@ -115,10 +114,6 @@ public class EditTemplateActivity extends AppCompatActivity implements AdapterVi
         setTheme(Application.getThemeResId());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_edit_list);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         initializeViews();
         Logger.debug("onCreate");

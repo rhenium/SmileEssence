@@ -24,12 +24,7 @@
 
 <resources>
 
-    <style name="theme_dark" parent="Theme.AppCompat">
-        <item name="windowNoTitle">true</item>
-        <item name="windowActionBar">false</item>
-        <item name="colorPrimaryDark">@color/black</item>
-        <item name="colorPrimary">@color/black</item>
-        <item name="colorAccent">@color/metro_blue</item>
+    <style name="theme_dark" parent="android:Theme.Holo">
         <item name="page_background">@color/gray_dark_dark</item>
         <item name="icon_post_delete">@drawable/icon_delete_w</item>
         <item name="icon_post_picture">@drawable/icon_picture_w</item>
@@ -62,12 +57,7 @@
         <item name="icon_save">@drawable/icon_save_white</item>
     </style>
 
-    <style name="theme_light" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="windowNoTitle">true</item>
-        <item name="windowActionBar">false</item>
-        <item name="colorPrimaryDark">@color/gray_dark_dark</item>
-        <item name="colorPrimary">@color/gray_dark_dark</item>
-        <item name="colorAccent">@color/metro_blue</item>
+    <style name="theme_light" parent="android:Theme.Holo.Light.DarkActionBar">
         <item name="page_background">@color/white</item>
         <item name="icon_post_delete">@drawable/icon_delete</item>
         <item name="icon_post_picture">@drawable/icon_picture</item>
