@@ -25,8 +25,6 @@
 package net.lacolaco.smileessence.command;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.net.Uri;
 import net.lacolaco.smileessence.util.IntentUtils;
 
 public class CommandOpenURL extends Command {
@@ -58,8 +56,7 @@ public class CommandOpenURL extends Command {
 
     @Override
     public boolean execute() {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        IntentUtils.startActivityIfFound(getActivity(), intent);
+        IntentUtils.openUri(getActivity(), url);
         return true;
     }
 }

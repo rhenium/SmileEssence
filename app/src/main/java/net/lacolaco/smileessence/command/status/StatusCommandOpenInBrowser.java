@@ -26,8 +26,8 @@ package net.lacolaco.smileessence.command.status;
 
 import android.app.Activity;
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.command.CommandOpenURL;
 import net.lacolaco.smileessence.entity.Tweet;
+import net.lacolaco.smileessence.util.IntentUtils;
 
 public class StatusCommandOpenInBrowser extends StatusCommand {
 
@@ -53,6 +53,7 @@ public class StatusCommandOpenInBrowser extends StatusCommand {
 
     @Override
     public boolean execute() {
-        return new CommandOpenURL(getActivity(), getOriginalStatus().getTwitterUrl()).execute();
+        IntentUtils.openUri(getActivity(), getOriginalStatus().getTwitterUrl());
+        return true;
     }
 }

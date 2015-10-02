@@ -39,7 +39,6 @@ import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.BuildConfig;
 import net.lacolaco.smileessence.IntentRouter;
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.command.CommandOpenURL;
 import net.lacolaco.smileessence.data.PostState;
 import net.lacolaco.smileessence.entity.*;
 import net.lacolaco.smileessence.logging.Logger;
@@ -51,6 +50,7 @@ import net.lacolaco.smileessence.twitter.UserStreamListener;
 import net.lacolaco.smileessence.twitter.task.ShowUserTask;
 import net.lacolaco.smileessence.util.BitmapOptimizer;
 import net.lacolaco.smileessence.util.BitmapURLTask;
+import net.lacolaco.smileessence.util.IntentUtils;
 import net.lacolaco.smileessence.util.NetworkHelper;
 import net.lacolaco.smileessence.view.*;
 import net.lacolaco.smileessence.view.adapter.PageListAdapter;
@@ -271,15 +271,15 @@ public class MainActivity extends Activity {
                 return true;
             }
             case R.id.actionbar_favstar: {
-                new CommandOpenURL(this, Application.getInstance().getCurrentAccount().getUser().getFavstarRecentURL()).execute();
+                IntentUtils.openUri(this, Application.getInstance().getCurrentAccount().getUser().getFavstarRecentURL());
                 return true;
             }
             case R.id.actionbar_aclog: {
-                new CommandOpenURL(this, Application.getInstance().getCurrentAccount().getUser().getAclogTimelineURL()).execute();
+                IntentUtils.openUri(this, Application.getInstance().getCurrentAccount().getUser().getAclogTimelineURL());
                 return true;
             }
             case R.id.actionbar_twilog: {
-                new CommandOpenURL(this, Application.getInstance().getCurrentAccount().getUser().getTwilogURL()).execute();
+                IntentUtils.openUri(this, Application.getInstance().getCurrentAccount().getUser().getTwilogURL());
                 return true;
             }
             case R.id.actionbar_report: {

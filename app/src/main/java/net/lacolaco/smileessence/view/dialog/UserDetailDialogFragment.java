@@ -40,7 +40,6 @@ import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.Command;
-import net.lacolaco.smileessence.command.CommandOpenURL;
 import net.lacolaco.smileessence.data.ImageCache;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.RBinding;
@@ -53,6 +52,7 @@ import net.lacolaco.smileessence.twitter.task.FollowTask;
 import net.lacolaco.smileessence.twitter.task.ShowFriendshipTask;
 import net.lacolaco.smileessence.twitter.task.UnfollowTask;
 import net.lacolaco.smileessence.twitter.task.UserTimelineTask;
+import net.lacolaco.smileessence.util.IntentUtils;
 import net.lacolaco.smileessence.util.Themes;
 import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.util.UIObserverBundle;
@@ -113,27 +113,27 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
                     break;
                 }
                 case R.id.imageview_user_detail_icon: {
-                    openUrl(user.getProfileImageUrlOriginal());
+                    IntentUtils.openUri(getActivity(), user.getProfileImageUrlOriginal());
                     break;
                 }
                 case R.id.textview_user_detail_screenname: {
-                    openUrl(user.getUserHomeURL());
+                    IntentUtils.openUri(getActivity(), user.getUserHomeURL());
                     break;
                 }
                 case R.id.textview_user_detail_tweet_count: {
-                    openUrl(user.getUserHomeURL());
+                    IntentUtils.openUri(getActivity(), user.getUserHomeURL());
                     break;
                 }
                 case R.id.textview_user_detail_friend_count: {
-                    openUrl(String.format("%s/following", user.getUserHomeURL()));
+                    IntentUtils.openUri(getActivity(), String.format("%s/following", user.getUserHomeURL()));
                     break;
                 }
                 case R.id.textview_user_detail_follower_count: {
-                    openUrl(String.format("%s/followers", user.getUserHomeURL()));
+                    IntentUtils.openUri(getActivity(), String.format("%s/followers", user.getUserHomeURL()));
                     break;
                 }
                 case R.id.textview_user_detail_favorite_count: {
-                    openUrl(String.format("%s/favorites", user.getUserHomeURL()));
+                    IntentUtils.openUri(getActivity(), String.format("%s/favorites", user.getUserHomeURL()));
                     break;
                 }
                 case R.id.button_user_detail_follow: {
@@ -320,10 +320,6 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         buttonFollow.setText(R.string.user_detail_loading);
         buttonFollow.setBackground(getActivity().getResources().getDrawable(R.drawable.button_round_gray));
         buttonFollow.setEnabled(false);
-    }
-
-    private void openUrl(String url) {
-        new CommandOpenURL(getActivity(), url).execute();
     }
 
     private void openUserMenu(final User user) {

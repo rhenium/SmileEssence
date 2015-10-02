@@ -28,6 +28,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
@@ -84,5 +85,10 @@ public class IntentUtils {
             Notificator.getInstance().publish(R.string.notice_error_start_activity, NotificationType.ALERT);
         }
         return false;
+    }
+
+    public static boolean openUri(Activity activity, String uriString) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uriString));
+        return startActivityIfFound(activity, intent);
     }
 }

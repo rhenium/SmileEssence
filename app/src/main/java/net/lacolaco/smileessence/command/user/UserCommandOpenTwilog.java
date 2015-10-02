@@ -26,8 +26,8 @@ package net.lacolaco.smileessence.command.user;
 
 import android.app.Activity;
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.command.CommandOpenURL;
 import net.lacolaco.smileessence.entity.User;
+import net.lacolaco.smileessence.util.IntentUtils;
 
 public class UserCommandOpenTwilog extends UserCommand {
 
@@ -53,6 +53,7 @@ public class UserCommandOpenTwilog extends UserCommand {
 
     @Override
     public boolean execute() {
-        return new CommandOpenURL(getActivity(), getUser().getTwilogURL()).execute();
+        IntentUtils.openUri(getActivity(), getUser().getTwilogURL());
+        return true;
     }
 }
