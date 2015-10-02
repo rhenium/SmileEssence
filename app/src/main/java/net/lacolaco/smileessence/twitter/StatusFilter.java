@@ -24,7 +24,7 @@
 
 package net.lacolaco.smileessence.twitter;
 
-import net.lacolaco.smileessence.entity.MuteUserIds;
+import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.util.Consumer;
 import net.lacolaco.smileessence.viewmodel.EventViewModel;
 import net.lacolaco.smileessence.viewmodel.IViewModel;
@@ -65,7 +65,7 @@ public class StatusFilter {
     // -------------------------- STATIC METHODS --------------------------
 
     public void filter(StatusViewModel tweet) {
-        if (!MuteUserIds.isMuted(tweet.getTweet().getOriginalTweet().getUser().getId())) {
+        if (!Application.getInstance().getCurrentAccount().isMutedUserListContains(tweet.getTweet().getOriginalTweet().getUser().getId())) {
             filter(StatusViewModel.class, tweet);
         }
     }

@@ -187,6 +187,7 @@ public class MainActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Logger.debug("onCreate");
+        Application.getInstance().resetState();
         setTheme(Application.getInstance().getThemeResId());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main);
@@ -219,7 +220,6 @@ public class MainActivity extends Activity {
         if (stream != null) {
             new Thread(stream::shutdown).run();
         }
-        Application.getInstance().resetState();
         Logger.debug("onDestroy");
     }
 
@@ -347,8 +347,9 @@ public class MainActivity extends Activity {
 
         Account account = Application.getInstance().getCurrentAccount();
         User user = account.getUser();
-        MuteUserIds.refresh(account);
+
         account.refreshListSubscriptions();
+        account.refreshUserMuteList();
 
         startStream();
 

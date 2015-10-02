@@ -28,7 +28,9 @@ import android.os.Handler;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import net.lacolaco.smileessence.twitter.task.BlockIDsTask;
 import net.lacolaco.smileessence.twitter.task.GetUserListsTask;
+import net.lacolaco.smileessence.twitter.task.MutesIDsTask;
 import net.lacolaco.smileessence.twitter.task.ShowStatusTask;
 import net.lacolaco.smileessence.util.BackgroundTask;
 import net.lacolaco.smileessence.util.Consumer;
@@ -46,6 +48,7 @@ public class Account {
     private User user;
     private Model model;
     private final Set<String> listSubscriptions = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    private final Set<Long> muteUserIds = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     // --------------------- static methods ---------------------
     public static synchronized Account get(long i) {
@@ -181,6 +184,18 @@ public class Account {
 
     public boolean removeListSubscription(String fullName) {
         return listSubscriptions.remove(fullName);
+    }
+
+    // --------------------- User mute cache ---------------------
+    public List<BackgroundTask> refreshUserMuteList() {
+        List<BackgroundTask> tasks = new ArrayList<>();
+        tasks.add(new BlockIDsTask(this).onDone(muteUserIds::addAll).execute());
+        tasks.add(new MutesIDsTask(this).onDone(muteUserIds::addAll).execute());
+        return tasks;
+    }
+
+    public boolean isMutedUserListContains(long id) {
+        return muteUserIds.contains(id);
     }
 
     @Table(name = "Accounts")
