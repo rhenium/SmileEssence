@@ -30,8 +30,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.*;
+import com.android.volley.toolbox.NetworkImageView;
 import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
+import net.lacolaco.smileessence.data.ImageCache;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.notification.Notificator;
@@ -52,8 +54,8 @@ public class ManageAccountsActivity extends Activity implements AdapterView.OnIt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_edit_list);
 
-        ListView listView = (ListView) findViewById(R.id.listview_edit_list);
         adapter = new EditAccountsAdapter();
+        ListView listView = (ListView) findViewById(R.id.listview_edit_list);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
         listView.setOnItemLongClickListener(this);
@@ -67,6 +69,15 @@ public class ManageAccountsActivity extends Activity implements AdapterView.OnIt
         add.setIcon(android.R.drawable.ic_menu_add);
         add.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         return true;
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        // switch current application to this account
+        Account account = adapter.getItem(i);
+        setCurrentAccount(account);
+        adapter.notifyDataSetChanged();
+        // safeFinish(); // どうする？
     }
 
     @Override
@@ -86,14 +97,6 @@ public class ManageAccountsActivity extends Activity implements AdapterView.OnIt
             Notificator.getInstance().publish(R.string.notice_cant_remove_last_account);
             return false;
         }
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        // switch current application to this account
-        Account account = adapter.getItem(position);
-        setCurrentAccount(account);
-        safeFinish();
     }
 
     @Override
@@ -185,15 +188,18 @@ public class ManageAccountsActivity extends Activity implements AdapterView.OnIt
         public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
                 LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = inflater.inflate(R.layout.menu_item_simple_text, null);
+                convertView = inflater.inflate(R.layout.list_item_account, null);
             }
             Account account = getItem(position);
-            TextView textView = (TextView) convertView.findViewById(R.id.textView_menuItem_simple);
-            String text = account.getUser().getScreenName();
-            if (account == Application.getInstance().getCurrentAccount()) {
-                text = "(*) " + text;
-            }
-            textView.setText(text); // TODO: show profile image
+            NetworkImageView iconView = (NetworkImageView) convertView.findViewById(R.id.account_icon);
+            ImageCache.getInstance().setImageToView(account.getUser().getProfileImageUrl(), iconView);
+
+            TextView textView = (TextView) convertView.findViewById(R.id.account_text_view);
+            String text = "@" + account.getUser().getScreenName();
+            textView.setText(text);
+
+            RadioButton radioButton = (RadioButton) convertView.findViewById(R.id.account_radio_button);
+            radioButton.setChecked(account == Application.getInstance().getCurrentAccount());
 
             return convertView;
         }
