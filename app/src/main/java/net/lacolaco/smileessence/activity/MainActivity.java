@@ -51,19 +51,20 @@ import net.lacolaco.smileessence.twitter.task.ShowUserTask;
 import net.lacolaco.smileessence.util.BitmapOptimizer;
 import net.lacolaco.smileessence.util.BitmapURLTask;
 import net.lacolaco.smileessence.util.IntentUtils;
-import net.lacolaco.smileessence.util.NetworkHelper;
+import net.lacolaco.smileessence.util.UIObserverBundle;
 import net.lacolaco.smileessence.view.*;
 import net.lacolaco.smileessence.view.adapter.PageListAdapter;
 import net.lacolaco.smileessence.view.dialog.ConfirmDialogFragment;
 import twitter4j.TwitterStream;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements Application.OnCurrentAccountChangedListener {
     // ------------------------------ FIELDS ------------------------------
 
     public static final int REQUEST_GET_PICTURE_FROM_GALLERY = 11;
     public static final int REQUEST_GET_PICTURE_FROM_CAMERA = 12;
     private static final int REQUEST_MANAGE_ACCOUNT = 13;
     private ViewPager viewPager;
+    private ImageView currentAccountIconImageView;
     private PageListAdapter pagerAdapter;
     private TwitterStream stream;
     private Uri cameraTempFilePath;
@@ -172,7 +173,6 @@ public class MainActivity extends Activity {
                     // first run
                     waitingAccount = false;
                     initializePages();
-                    onChangeCurrentAccount();
                 }
                 break;
             }
@@ -187,15 +187,17 @@ public class MainActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Logger.debug("onCreate");
-        Application.getInstance().resetState();
-        setTheme(Application.getInstance().getThemeResId());
+        Application app = (Application) getApplication();
+        app.resetState();
+        app.addOnCurrentAccountChangedListener(this);
+        setTheme(app.getThemeResId());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main);
 
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         pagerAdapter = new PageListAdapter(this, viewPager);
-        ImageView iconImageView = (ImageView) findViewById(android.R.id.home);
-        iconImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        currentAccountIconImageView = (ImageView) findViewById(android.R.id.home);
+        currentAccountIconImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
         Notificator.initialize(this);
         CommandSetting.initialize();
@@ -205,9 +207,8 @@ public class MainActivity extends Activity {
         Account account = getLastUsedAccount();
         if (account != null) {
             waitingAccount = false;
-            Application.getInstance().setCurrentAccount(account);
+            app.setCurrentAccount(account);
             initializePages();
-            onChangeCurrentAccount();
             IntentRouter.onNewIntent(this, getIntent());
         } else {
             startActivityForResult(new Intent(this, ManageAccountsActivity.class), REQUEST_MANAGE_ACCOUNT);
@@ -340,35 +341,35 @@ public class MainActivity extends Activity {
         return true;
     }
 
-    private void onChangeCurrentAccount() {
-        if (!new NetworkHelper(this).canConnect()) {
-            return; // TODO: error message?
-        }
-
-        Account account = Application.getInstance().getCurrentAccount();
+    @Override
+    public void onCurrentAccountChanged(Account account) {
         User user = account.getUser();
 
         account.refreshListSubscriptions();
         account.refreshUserMuteList();
-
-        startStream();
-
-        final ImageView iconImageView = (ImageView) findViewById(android.R.id.home);
+        new ShowUserTask(account, account.getUserId()).execute();
 
         Runnable update = () -> {
             getActionBar().setTitle(user.getScreenName());
             String newUrl = user.getProfileImageUrl();
             if (newUrl != null) {
-                new BitmapURLTask(newUrl, iconImageView).execute();
+                new BitmapURLTask(newUrl, currentAccountIconImageView).execute();
             }
         };
+        update.run(); //first run
 
-        update.run();
-        user.addObserver(this, (x, changes) -> {
+        UIObserverBundle bundle = (UIObserverBundle) currentAccountIconImageView.getTag();
+        if (bundle == null) {
+            bundle = new UIObserverBundle();
+            currentAccountIconImageView.setTag(bundle);
+        } else {
+            bundle.detachAll();
+        }
+        bundle.attach(user, (x, changes) -> {
             if (changes.contains(RBinding.BASIC)) update.run();
         });
 
-        new ShowUserTask(account, account.getUserId()).execute();
+        startStream();
     }
 
     // TODO: page fragments requires Application#getCurrentAccount returns Account

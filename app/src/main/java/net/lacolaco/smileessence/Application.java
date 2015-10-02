@@ -29,30 +29,39 @@ import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.util.Themes;
 
-import java.lang.ref.WeakReference;
+import java.util.Collections;
+import java.util.Set;
+import java.util.WeakHashMap;
 
+/**
+ * プロセスと同期しているオブジェクト
+ * 現在のテーマのリソース ID と現在のアカウント（およびアカウント変更イベントリスナー）を保持します
+ * MainActivity の onCreate で resetState を呼び、保持しているデータを破棄すること
+ */
 public class Application extends com.activeandroid.app.Application {
-
-    // ------------------------------ FIELDS ------------------------------
-
-    private static WeakReference<Application> instance;
+    private static Application instance;
     private Account currentAccount;
-    private int resId = -1;
+    private Set<OnCurrentAccountChangedListener> currentAccountChangedListeners;
+    private int resId;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        instance = new WeakReference<>(this);
+        instance = this; // プロセスの寿命の間 1 度しか呼ばれないので安全
         Logger.debug("onCreate");
     }
 
-    // --------------------- STATIC METHODS ---------------------
+    // --------------------- reset ---------------------
+    public void resetState() {
+        currentAccount = null;
+        currentAccountChangedListeners = Collections.newSetFromMap(new WeakHashMap<>());
+        resId = -1;
+    }
+
+    // --------------------- get instance ---------------------
 
     public static Application getInstance() {
-        Application obj = null;
-        if (instance != null) {
-            obj = instance.get();
-        }
+        Application obj = instance;
         if (obj == null) {
             throw new IllegalStateException("[BUG] Application is not initialized?");
         } else {
@@ -60,8 +69,7 @@ public class Application extends com.activeandroid.app.Application {
         }
     }
 
-    // --------------------- INSTANCE METHODS ---------------------
-
+    // --------------------- theme ---------------------
     public int getThemeResId() {
         if (resId == -1) {
             Logger.debug("setting theme index: " + UserPreferenceHelper.getInstance().getThemeIndex());
@@ -70,16 +78,23 @@ public class Application extends com.activeandroid.app.Application {
         return resId;
     }
 
+    // --------------------- current account ---------------------
     public Account getCurrentAccount() {
         return currentAccount;
     }
 
     public void setCurrentAccount(Account val) {
         currentAccount = val;
+        for (OnCurrentAccountChangedListener listener : currentAccountChangedListeners) {
+            listener.onCurrentAccountChanged(val);
+        }
     }
 
-    public void resetState() {
-        currentAccount = null;
-        resId = -1;
+    public void addOnCurrentAccountChangedListener(OnCurrentAccountChangedListener listener) {
+        currentAccountChangedListeners.add(listener);
+    }
+
+    public interface OnCurrentAccountChangedListener {
+        void onCurrentAccountChanged(Account newAccount);
     }
 }
