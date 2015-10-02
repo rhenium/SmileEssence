@@ -159,6 +159,7 @@ public class MainActivity extends Activity {
         Notificator.initialize(this);
         CommandSetting.initialize();
         Account.load();
+        ExtractionWord.load();
 
         if (setupLastUsedAccount()) {
             waitingAccount = false;

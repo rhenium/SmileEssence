@@ -33,6 +33,7 @@ import android.view.*;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.entity.ExtractionWord;
@@ -40,22 +41,15 @@ import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 import net.lacolaco.smileessence.view.dialog.EditTextDialogFragment;
+import net.lacolaco.smileessence.viewmodel.IViewModel;
 
-import java.util.List;
-
-public class EditExtractionActivity extends Activity implements AdapterView.OnItemClickListener,
-        AbsListView.MultiChoiceModeListener {
+public class EditExtractionActivity extends Activity implements AdapterView.OnItemClickListener, AbsListView.MultiChoiceModeListener {
 
     // ------------------------------ FIELDS ------------------------------
 
-    private CustomListAdapter<ExtractionWord> adapter;
+    private CustomListAdapter<ExtractionWordViewModel> adapter;
 
     // --------------------- GETTER / SETTER METHODS ---------------------
-
-    private ExtractionWord[] getExtractionWords() {
-        List<ExtractionWord> all = ExtractionWord.getAll();
-        return all.toArray(new ExtractionWord[all.size()]);
-    }
 
     private ListView getListView() {
         return (ListView) findViewById(R.id.listview_edit_list);
@@ -149,8 +143,8 @@ public class EditExtractionActivity extends Activity implements AdapterView.OnIt
         adapter.setNotifiable(false);
         for (int i = adapter.getCount() - 1; i > -1; i--) {
             if (checkedItems.get(i)) {
-                ExtractionWord extractionWord = adapter.removeItem(i);
-                extractionWord.delete();
+                ExtractionWordViewModel vm = adapter.removeItem(i);
+                vm.getExtractionWord().remove();
             }
         }
         adapter.setNotifiable(true);
@@ -159,34 +153,31 @@ public class EditExtractionActivity extends Activity implements AdapterView.OnIt
     }
 
     public void openEditExtractionWordDialog(int position) {
-        final ExtractionWord extractionWord = adapter.getItem(position);
+        final ExtractionWord extractionWord = adapter.getItem(position).getExtractionWord();
         EditTextDialogFragment dialogFragment = new EditTextDialogFragment() {
             @Override
             public void onTextInput(String text) {
                 if (TextUtils.isEmpty(text.trim())) {
                     return;
                 }
-                extractionWord.text = text;
-                extractionWord.save();
+                extractionWord.update(text);
                 adapter.notifyDataSetChanged();
                 updateListView();
             }
         };
-        dialogFragment.setParams(getString(R.string.dialog_title_edit), extractionWord.text);
+        dialogFragment.setParams(getString(R.string.dialog_title_edit), extractionWord.getPatternString());
         DialogHelper.showDialog(this, dialogFragment);
     }
 
     private void addNewExtractionWord() {
-        final ExtractionWord extractionWord = new ExtractionWord();
         EditTextDialogFragment dialogFragment = new EditTextDialogFragment() {
             @Override
             public void onTextInput(String text) {
                 if (TextUtils.isEmpty(text.trim())) {
                     return;
                 }
-                extractionWord.text = text;
-                extractionWord.save();
-                adapter.addToBottom(extractionWord);
+                ExtractionWord extractionWord = ExtractionWord.add(text);
+                adapter.addToBottom(new ExtractionWordViewModel(extractionWord));
                 adapter.notifyDataSetChanged();
                 updateListView();
             }
@@ -198,9 +189,11 @@ public class EditExtractionActivity extends Activity implements AdapterView.OnIt
     private void initializeViews() {
         ListView listView = getListView();
         adapter = new CustomListAdapter<>(this);
-        listView.setAdapter(adapter);
-        adapter.addToTop(getExtractionWords());
+        for (ExtractionWord ew : ExtractionWord.all()) {
+            adapter.addToBottom(new ExtractionWordViewModel(ew));
+        }
         adapter.update();
+        listView.setAdapter(adapter);
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         listView.setOnItemClickListener(this);
         listView.setMultiChoiceModeListener(this);
@@ -208,5 +201,31 @@ public class EditExtractionActivity extends Activity implements AdapterView.OnIt
 
     private void updateListView() {
         getListView().requestLayout();
+    }
+
+
+    // --------------------- Interface IViewModel ---------------------
+
+
+    private static class ExtractionWordViewModel implements IViewModel {
+        private final ExtractionWord ew;
+
+        public ExtractionWordViewModel(ExtractionWord ew) {
+            this.ew = ew;
+        }
+
+        public ExtractionWord getExtractionWord() {
+            return ew;
+        }
+
+        @Override
+        public View getView(Activity activity, LayoutInflater inflater, View convertedView) {
+            if (convertedView == null) {
+                convertedView = inflater.inflate(R.layout.menu_item_simple_text, null);
+            }
+            TextView textView = (TextView) convertedView.findViewById(R.id.textView_menuItem_simple);
+            textView.setText(ew.getPatternString());
+            return convertedView;
+        }
     }
 }

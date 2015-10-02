@@ -27,7 +27,6 @@ package net.lacolaco.smileessence.entity;
 import android.os.Handler;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
-import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import net.lacolaco.smileessence.twitter.task.GetUserListsTask;
 import net.lacolaco.smileessence.twitter.task.ShowStatusTask;
@@ -206,11 +205,6 @@ public class Account {
             this.accessSecret = tokenSecret;
             this.userID = userID;
             this.screenName = screenName;
-        }
-
-        @Deprecated
-        public static void deleteAll() {
-            new Delete().from(Model.class).execute();
         }
     }
 }

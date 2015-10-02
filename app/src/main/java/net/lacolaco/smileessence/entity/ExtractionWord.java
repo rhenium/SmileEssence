@@ -24,56 +24,93 @@
 
 package net.lacolaco.smileessence.entity;
 
-import android.app.Activity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.TextView;
-import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
-import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.viewmodel.IViewModel;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 
-@Table(name = "Extraction")
-public class ExtractionWord extends Model implements IViewModel {
 
-    // ------------------------------ FIELDS ------------------------------
+public class ExtractionWord {
+    private static Map<Long, ExtractionWord> cache; // model id -> Account
+    private Pattern pattern;
+    private Model model;
 
-    @Column(name = "Text", notNull = true)
-    public String text;
-
-    // -------------------------- STATIC METHODS --------------------------
-
-    public ExtractionWord() {
-        super();
+    // --------------------- static methods ---------------------
+    public static synchronized int count() {
+        return cache.size();
     }
 
-    // --------------------------- CONSTRUCTORS ---------------------------
-
-    public ExtractionWord(String text) {
-        super();
-        this.text = text;
+    public static synchronized List<ExtractionWord> all() {
+        return new ArrayList<>(cache.values());
     }
 
-    public static List<ExtractionWord> getAll() {
-        return new Select().from(ExtractionWord.class).execute();
-    }
-
-    // ------------------------ INTERFACE METHODS ------------------------
-
-
-    // --------------------- Interface IViewModel ---------------------
-
-    @Override
-    public View getView(Activity activity, LayoutInflater inflater, View convertedView) {
-        if (convertedView == null) {
-            convertedView = inflater.inflate(R.layout.menu_item_simple_text, null);
+    public static synchronized void load() {
+        cache = new LinkedHashMap<>();
+        List<Model> all = new Select().from(Model.class).execute();
+        for (Model model : all) {
+            cache.put(model.getId(), new ExtractionWord(model));
         }
-        TextView textView = (TextView) convertedView.findViewById(R.id.textView_menuItem_simple);
-        textView.setText(this.text);
-        return convertedView;
+    }
+
+    public static synchronized ExtractionWord add(String patternString) {
+        Model model = new Model();
+        model.text = patternString;
+        model.save();
+        ExtractionWord extractionWord = new ExtractionWord(model);
+        cache.put(model.getId(), extractionWord);
+        return extractionWord;
+    }
+
+    public static synchronized ExtractionWord remove(long modelId) {
+        ExtractionWord extractionWord = cache.remove(modelId);
+        if (extractionWord != null) {
+            Model.delete(Model.class, modelId);
+        }
+        return extractionWord;
+    }
+
+    // --------------------- instance methods ---------------------
+    private ExtractionWord(Model model) {
+        this.model = model;
+        this.pattern = Pattern.compile(model.text);
+    }
+
+    public Pattern getPattern() {
+        return pattern;
+    }
+
+    public String getPatternString() {
+        return model.text;
+    }
+
+    public void remove() {
+        Model.delete(Model.class, getModelId());
+        cache.remove(getModelId());
+    }
+
+    public void update(String newString) {
+        model.text = newString;
+        model.save();
+        pattern = Pattern.compile(newString);
+    }
+
+    public long getModelId() {
+        return model.getId();
+    }
+
+    @Table(name = "Extraction")
+    private static class Model extends com.activeandroid.Model {
+        @Column(name = "Text", notNull = true)
+        public String text;
+
+        // required by ActiveAndroid
+        public Model() {
+            super();
+        }
     }
 }

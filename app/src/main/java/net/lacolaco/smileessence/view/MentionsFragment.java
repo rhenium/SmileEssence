@@ -40,8 +40,6 @@ import net.lacolaco.smileessence.twitter.task.MentionsTimelineTask;
 import net.lacolaco.smileessence.view.adapter.StatusListAdapter;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 
-import java.util.regex.Pattern;
-
 public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
 
     // --------------------- GETTER / SETTER METHODS ---------------------
@@ -59,12 +57,16 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
         setAdapter(adapter);
 
         StatusFilter.getInstance().register(this, StatusViewModel.class, (StatusViewModel tweet) -> {
-            for (ExtractionWord word : ExtractionWord.getAll()) {
-                Pattern pattern = Pattern.compile(word.text);
-                if (pattern.matcher(tweet.getTweet().getText()).find()) {
-                    adapter.addToTop(tweet);
-                    adapter.update();
-                    return;
+            if (tweet.getTweet().getMentions().contains(Application.getInstance().getCurrentAccount().getUser().getScreenName())) {
+                adapter.addToTop(tweet);
+                adapter.update();
+            } else {
+                for (ExtractionWord word : ExtractionWord.all()) {
+                    if (word.getPattern().matcher(tweet.getTweet().getText()).find()) {
+                        adapter.addToTop(tweet);
+                        adapter.update();
+                        return;
+                    }
                 }
             }
         }, id -> {
