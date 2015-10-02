@@ -29,7 +29,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
@@ -218,12 +217,8 @@ public class MainActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         if (stream != null) {
-            new Handler().post(() -> {
-                stream.shutdown();
-                stream = null;
-            });
+            new Thread(stream::shutdown).run();
         }
-        Notificator.getInstance().onBackground();
         Application.getInstance().resetState();
         Logger.debug("onDestroy");
     }

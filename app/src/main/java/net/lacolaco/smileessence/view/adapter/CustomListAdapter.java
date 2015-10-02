@@ -41,7 +41,7 @@ public class CustomListAdapter<T extends IViewModel> extends BaseAdapter {
     // ------------------------------ FIELDS ------------------------------
 
     protected final Object LOCK = new Object();
-    protected ArrayList<T> list = new ArrayList<>();
+    protected List<T> list = new ArrayList<>();
     protected List<T> frozenList = new ArrayList<>();
     private boolean isNotifiable = true;
     protected Activity activity;

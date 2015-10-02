@@ -43,6 +43,7 @@ public class Application extends com.activeandroid.app.Application {
     public void onCreate() {
         super.onCreate();
         instance = new WeakReference<>(this);
+        Logger.debug("onCreate");
     }
 
     // --------------------- STATIC METHODS ---------------------
