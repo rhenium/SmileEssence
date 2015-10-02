@@ -362,7 +362,9 @@ public class MainActivity extends Activity {
         Runnable update = () -> {
             getActionBar().setTitle(user.getScreenName());
             String newUrl = user.getProfileImageUrl();
-            new BitmapURLTask(newUrl, iconImageView).execute();
+            if (newUrl != null) {
+                new BitmapURLTask(newUrl, iconImageView).execute();
+            }
         };
 
         update.run();
