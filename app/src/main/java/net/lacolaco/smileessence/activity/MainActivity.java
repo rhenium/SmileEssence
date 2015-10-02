@@ -29,9 +29,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -53,14 +53,12 @@ import net.lacolaco.smileessence.twitter.task.ShowUserTask;
 import net.lacolaco.smileessence.util.BitmapOptimizer;
 import net.lacolaco.smileessence.util.BitmapURLTask;
 import net.lacolaco.smileessence.util.NetworkHelper;
-import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.view.*;
 import net.lacolaco.smileessence.view.adapter.PageListAdapter;
 import net.lacolaco.smileessence.view.dialog.ConfirmDialogFragment;
 import twitter4j.TwitterStream;
 
 public class MainActivity extends Activity {
-
     // ------------------------------ FIELDS ------------------------------
 
     public static final int REQUEST_GET_PICTURE_FROM_GALLERY = 11;
@@ -81,41 +79,73 @@ public class MainActivity extends Activity {
         this.cameraTempFilePath = cameraTempFilePath;
     }
 
-    /**
-     * Returns whether twitter stream is running
-     *
-     * @return
-     */
     public boolean isStreaming() {
         return userStreamListener != null && userStreamListener.isConnected();
     }
 
     public void setSelectedPageIndex(int position) {
-        viewPager.setCurrentItem(position, true);
+        setSelectedPageIndex(position, true);
     }
 
-    // ------------------------ INTERFACE METHODS ------------------------
+    public void setSelectedPageIndex(int position, boolean smooth) {
+        viewPager.setCurrentItem(position, smooth);
+    }
 
+    public void openHomePage() {
+        setSelectedPageIndex(pagerAdapter.getIndex(HomeFragment.class));
+    }
 
-    // --------------------- Interface Callback ---------------------
+    public void openPostPage() {
+        setSelectedPageIndex(pagerAdapter.getIndex(PostFragment.class));
+    }
 
-    @Override
-    public boolean dispatchKeyEvent(KeyEvent event) {
-        if (event.getAction() != KeyEvent.ACTION_DOWN) {
-            return super.dispatchKeyEvent(event);
+    public void openPostPageWithImage(Uri uri) {
+        try {
+            Cursor c = getContentResolver().query(uri, null, null, null, null);
+            c.moveToFirst();
+            String path = c.getString(c.getColumnIndex(MediaStore.MediaColumns.DATA));
+            String rotatedPath = BitmapOptimizer.rotateImageByExif(this, path);
+            PostState.getState().beginTransaction()
+                    .setMediaFilePath(rotatedPath)
+                    .commitWithOpen(this);
+            Notificator.getInstance().publish(R.string.notice_select_image_succeeded);
+            c.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Notificator.getInstance().publish(R.string.notice_select_image_failed, NotificationType.ALERT);
         }
-        switch (event.getKeyCode()) {
-            case KeyEvent.KEYCODE_BACK: {
-                finish();
-                return false;
-            }
-            default: {
-                return super.dispatchKeyEvent(event);
-            }
+    }
+
+    public void openSearchPage() {
+        setSelectedPageIndex(pagerAdapter.getIndex(SearchFragment.class));
+    }
+
+    public void openSearchPage(String query) {
+        SearchFragment fragment = pagerAdapter.getFragment(SearchFragment.class);
+        if (fragment != null) {
+            fragment.startSearch(query);
+            openSearchPage();
         }
+    }
+
+    public void openUserListPage(String listFullName) {
+        UserListFragment fragment = pagerAdapter.getFragment(UserListFragment.class);
+        if (fragment != null) {
+            fragment.startUserList(listFullName);
+            openUserListPage();
+        }
+    }
+
+    private void openUserListPage() {
+        setSelectedPageIndex(pagerAdapter.getIndex(UserListFragment.class));
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
+
+    @Override
+    public void onBackPressed() {
+        this.finish();
+    }
 
     @Override
     public void finish() {
@@ -131,6 +161,10 @@ public class MainActivity extends Activity {
         }
     }
 
+    public void forceFinish() {
+        super.finish();
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -138,7 +172,8 @@ public class MainActivity extends Activity {
                 if (waitingAccount) {
                     // first run
                     waitingAccount = false;
-                    startMainLogic();
+                    initializePages();
+                    onChangeCurrentAccount();
                 }
                 break;
             }
@@ -156,14 +191,23 @@ public class MainActivity extends Activity {
         setTheme(Application.getInstance().getThemeResId());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main);
+
+        viewPager = (ViewPager) findViewById(R.id.viewPager);
+        pagerAdapter = new PageListAdapter(this, viewPager);
+        ImageView iconImageView = (ImageView) findViewById(android.R.id.home);
+        iconImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
         Notificator.initialize(this);
         CommandSetting.initialize();
         Account.load();
         ExtractionWord.load();
 
-        if (setupLastUsedAccount()) {
+        Account account = getLastUsedAccount();
+        if (account != null) {
             waitingAccount = false;
-            startMainLogic();
+            Application.getInstance().setCurrentAccount(account);
+            initializePages();
+            onChangeCurrentAccount();
             IntentRouter.onNewIntent(this, getIntent());
         } else {
             startActivityForResult(new Intent(this, ManageAccountsActivity.class), REQUEST_MANAGE_ACCOUNT);
@@ -174,7 +218,10 @@ public class MainActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         if (stream != null) {
-            stream.shutdown();
+            new Handler().post(() -> {
+                stream.shutdown();
+                stream = null;
+            });
         }
         Notificator.getInstance().onBackground();
         Application.getInstance().resetState();
@@ -270,72 +317,23 @@ public class MainActivity extends Activity {
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public void forceFinish() {
-        super.finish();
-    }
-
-    public void openHomePage() {
-        setSelectedPageIndex(pagerAdapter.getIndex(HomeFragment.class));
-    }
-
-    public void openPostPage() {
-        setSelectedPageIndex(pagerAdapter.getIndex(PostFragment.class));
-    }
-
-    public void openPostPageWithImage(Uri uri) {
-        try {
-            Cursor c = getContentResolver().query(uri, null, null, null, null);
-            c.moveToFirst();
-            String path = c.getString(c.getColumnIndex(MediaStore.MediaColumns.DATA));
-            String rotatedPath = BitmapOptimizer.rotateImageByExif(this, path);
-            PostState.getState().beginTransaction()
-                    .setMediaFilePath(rotatedPath)
-                    .commitWithOpen(this);
-            Notificator.getInstance().publish(R.string.notice_select_image_succeeded);
-            c.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            Notificator.getInstance().publish(R.string.notice_select_image_failed, NotificationType.ALERT);
+    private void getImageUri(int requestCode, int resultCode, Intent data) {
+        if (resultCode != RESULT_OK) {
+            Logger.error(requestCode);
+            Notificator.getInstance().publish(R.string.notice_select_image_failed);
+            finish();
+            return;
         }
-    }
-
-    /**
-     * Open search page
-     */
-    public void openSearchPage() {
-        setSelectedPageIndex(pagerAdapter.getIndex(SearchFragment.class));
-    }
-
-    /**
-     * Open search page with given query
-     */
-    public void openSearchPage(final String query) {
-        SearchFragment fragment = pagerAdapter.getFragment(SearchFragment.class);
-        if (fragment != null) {
-            fragment.startSearch(query);
-            openSearchPage();
+        Uri uri;
+        if (requestCode == REQUEST_GET_PICTURE_FROM_GALLERY) {
+            uri = data.getData();
+        } else {
+            uri = getCameraTempFilePath();
         }
-    }
-
-    public void openUserListPage(String listFullName) {
-        UserListFragment fragment = pagerAdapter.getFragment(UserListFragment.class);
-        if (fragment != null) {
-            fragment.startUserList(listFullName);
-            openUserListPage();
-        }
-    }
-
-    public void setSelectedPageIndex(final int position, final boolean smooth) {
-        new UIHandler().post(() -> viewPager.setCurrentItem(position, smooth));
-    }
-
-    public void startMainLogic() {
-        initializeView();
-        onChangeCurrentAccount();
+        openPostPageWithImage(uri);
     }
 
     public boolean startStream() {
-
         if (stream != null) {
             stream.shutdown();
         }
@@ -354,9 +352,10 @@ public class MainActivity extends Activity {
 
         Account account = Application.getInstance().getCurrentAccount();
         User user = account.getUser();
-        startStream();
         MuteUserIds.refresh(account);
         account.refreshListSubscriptions();
+
+        startStream();
 
         final ImageView iconImageView = (ImageView) findViewById(android.R.id.home);
 
@@ -376,22 +375,7 @@ public class MainActivity extends Activity {
         new ShowUserTask(account, account.getUserId()).execute();
     }
 
-    private void getImageUri(int requestCode, int resultCode, Intent data) {
-        if (resultCode != RESULT_OK) {
-            Logger.error(requestCode);
-            Notificator.getInstance().publish(R.string.notice_select_image_failed);
-            finish();
-            return;
-        }
-        Uri uri;
-        if (requestCode == REQUEST_GET_PICTURE_FROM_GALLERY) {
-            uri = data.getData();
-        } else {
-            uri = getCameraTempFilePath();
-        }
-        openPostPageWithImage(uri);
-    }
-
+    // TODO: page fragments requires Application#getCurrentAccount returns Account
     private void initializePages() {
         pagerAdapter.addPage(PostFragment.class, getString(R.string.page_name_post), null, false);
         pagerAdapter.addPage(HomeFragment.class, getString(R.string.page_name_home), null, false);
@@ -410,19 +394,7 @@ public class MainActivity extends Activity {
         setSelectedPageIndex(pagerAdapter.getIndex(HomeFragment.class), false);
     }
 
-    public void initializeView() {
-        viewPager = (ViewPager) findViewById(R.id.viewPager);
-        pagerAdapter = new PageListAdapter(this, viewPager);
-        ImageView iconImageView = (ImageView) findViewById(android.R.id.home);
-        iconImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        initializePages();
-    }
-
-    private void openUserListPage() {
-        setSelectedPageIndex(pagerAdapter.getIndex(UserListFragment.class));
-    }
-
-    private boolean setupLastUsedAccount() {
+    private Account getLastUsedAccount() {
         long lastId = InternalPreferenceHelper.getInstance().get(R.string.key_last_used_account_id, -1L);
         Account account = null;
         if (lastId != -1) {
@@ -431,11 +403,6 @@ public class MainActivity extends Activity {
         if (account == null && Account.count() > 0) {
             account = Account.all().get(0);
         }
-        if (account != null) {
-            Application.getInstance().setCurrentAccount(account);
-            return true;
-        } else {
-            return false;
-        }
+        return account;
     }
 }
