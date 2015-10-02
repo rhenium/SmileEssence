@@ -23,15 +23,7 @@ public class MuteUserIds {
     }
 
     public static void refresh(Account account) {
-        new BlockIDsTask(account).onDone(idList -> {
-            for (Long blockID : idList) {
-                MuteUserIds.add(blockID);
-            }
-        }).execute();
-        new MutesIDsTask(account).onDone(mutesIDs -> {
-            for (Long mutesID : mutesIDs) {
-                MuteUserIds.add(mutesID);
-            }
-        }).execute();
+        new BlockIDsTask(account).onDone(idList -> storage.addAll(idList)).execute();
+        new MutesIDsTask(account).onDone(mutesIDs -> storage.addAll(mutesIDs)).execute();
     }
 }

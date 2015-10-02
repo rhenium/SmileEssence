@@ -94,7 +94,6 @@ public class IntentRouter {
             Matcher userMatcher = TWITTER_USER_PATTERN.matcher(uri.getPath());
             if (userMatcher.find()) {
                 showUserDialog(activity, statusMatcher.group(1));
-                return;
             }
         }
     }

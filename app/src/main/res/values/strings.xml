@@ -238,4 +238,6 @@
     <string name="notices_of_files">Notices of files:</string>
     <string name="activity_manage_accounts">Accounts</string>
     <string name="actionbar_accounts">Accounts</string>
+    <string name="notice_cant_remove_last_account">You can\'t remove last account</string>
+    <string name="notice_no_account_selected">No account selected</string>
 </resources>

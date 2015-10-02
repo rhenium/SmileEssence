@@ -83,7 +83,7 @@ public class ManageAccountsActivity extends Activity implements AdapterView.OnIt
             }, false);
             return true;
         } else {
-            Notificator.getInstance().publish("You can't remove last account");
+            Notificator.getInstance().publish(R.string.notice_cant_remove_last_account);
             return false;
         }
     }
@@ -120,7 +120,7 @@ public class ManageAccountsActivity extends Activity implements AdapterView.OnIt
             setResult(RESULT_OK);
             finish();
         } else {
-            Notificator.getInstance().publish("[TODO] No account selected"); // TODO
+            Notificator.getInstance().publish(R.string.notice_no_account_selected); // TODO
         }
     }
 
