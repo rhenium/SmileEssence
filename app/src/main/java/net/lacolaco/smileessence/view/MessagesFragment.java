@@ -29,7 +29,6 @@ import android.widget.ListView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.DirectMessage;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
@@ -37,6 +36,7 @@ import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.twitter.StatusFilter;
 import net.lacolaco.smileessence.twitter.task.DirectMessagesTask;
 import net.lacolaco.smileessence.twitter.task.SentDirectMessagesTask;
+import net.lacolaco.smileessence.twitter.task.TimelineTask;
 import net.lacolaco.smileessence.view.adapter.MessageListAdapter;
 import net.lacolaco.smileessence.viewmodel.MessageViewModel;
 
@@ -67,60 +67,52 @@ public class MessagesFragment extends CustomListFragment<MessageListAdapter> {
             adapter.removeByMessageID(id);
             adapter.updateForce();
         });
-        final Account account = Application.getInstance().getCurrentAccount();
-        new DirectMessagesTask(account)
-                .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
-                .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_messages, NotificationType.ALERT))
-                .onDoneUI(directMessages -> {
-            for (DirectMessage message : directMessages) {
-                adapter.addToBottom(new MessageViewModel(message));
-            }
-            adapter.notifyDataSetChanged();
-        }).execute();
-        new SentDirectMessagesTask(account)
-                .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
-                .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_messages, NotificationType.ALERT))
-                .onDoneUI(directMessages -> {
-            for (DirectMessage message : directMessages) {
-                adapter.addToBottom(new MessageViewModel(message));
-            }
-            adapter.notifyDataSetChanged();
-        }).execute();
+
+        if (Application.getInstance().getCurrentAccount() != null) {
+            refresh();
+        }
+    }
+
+    @Override
+    public void refresh() {
+        runRefreshTask(new DirectMessagesTask(Application.getInstance().getCurrentAccount()), () -> getAdapter().updateForce());
+        runRefreshTask(new SentDirectMessagesTask(Application.getInstance().getCurrentAccount()), () -> getAdapter().updateForce());
     }
 
     // --------------------- Interface OnRefreshListener2 ---------------------
 
     @Override
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
-        final Account currentAccount = Application.getInstance().getCurrentAccount();
-        final MessageListAdapter adapter = getAdapter();
-        new DirectMessagesTask(currentAccount)
-                .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
-                .setSinceId(adapter.getTopID())
-                .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_messages, NotificationType.ALERT))
-                .onDoneUI(directMessages -> {
-            for (int i = directMessages.size() - 1; i >= 0; i--) {
-                adapter.addToTop(new MessageViewModel(directMessages.get(i)));
-            }
-            updateListViewWithNotice(refreshView.getRefreshableView(), true);
-            refreshView.onRefreshComplete();
-        }).execute();
+        runRefreshTask(
+                new DirectMessagesTask(Application.getInstance().getCurrentAccount())
+                        .setSinceId(getAdapter().getTopID()),
+                () -> {
+                    updateListViewWithNotice(refreshView.getRefreshableView(), true);
+                    refreshView.onRefreshComplete();
+                }); // TODO: sent?
     }
 
     @Override
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
-        final Account currentAccount = Application.getInstance().getCurrentAccount();
-        final MessageListAdapter adapter = getAdapter();
-        new DirectMessagesTask(currentAccount)
+        runRefreshTask(
+                new DirectMessagesTask(Application.getInstance().getCurrentAccount())
+                        .setMaxId(getAdapter().getLastID() - 1),
+                () -> {
+                    updateListViewWithNotice(refreshView.getRefreshableView(), false);
+                    refreshView.onRefreshComplete();
+                }); // TODO: sent?
+    }
+
+    private void runRefreshTask(TimelineTask<DirectMessage> task, Runnable onFinish) {
+        task
                 .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
-                .setMaxId(adapter.getLastID() - 1)
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_messages, NotificationType.ALERT))
-                .onDoneUI(directMessages -> {
-            for (DirectMessage directMessage : directMessages) {
-                adapter.addToBottom(new MessageViewModel(directMessage));
-            }
-            updateListViewWithNotice(refreshView.getRefreshableView(), false);
-            refreshView.onRefreshComplete();
-        }).execute();
+                .onDoneUI(messages -> {
+                    for (DirectMessage message : messages) {
+                        StatusFilter.getInstance().filter(new MessageViewModel(message));
+                    }
+                })
+                .onFinishUI(onFinish)
+                .execute();
     }
 }

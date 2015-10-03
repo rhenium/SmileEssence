@@ -7,6 +7,7 @@ public abstract class BackgroundTask<Result, Progress> {
     private Consumer<Result> then;
     private Consumer<Progress> progress;
     private Consumer<Exception> fail;
+    private Runnable finish;
     private Exception exception;
     private final InnerAsyncTask task;
 
@@ -29,6 +30,11 @@ public abstract class BackgroundTask<Result, Progress> {
         return this;
     }
 
+    public BackgroundTask<Result, Progress> onFinish(Runnable cb) {
+        this.finish = cb;
+        return this;
+    }
+
     public BackgroundTask<Result, Progress> onDoneUI(Consumer<Result> cb) {
         return onDone(r -> new UIHandler().post(() -> cb.accept(r)));
     }
@@ -39,6 +45,10 @@ public abstract class BackgroundTask<Result, Progress> {
 
     public BackgroundTask<Result, Progress> onFailUI(Consumer<Exception> cb) {
         return onFail(e -> new UIHandler().post(() -> cb.accept(e)));
+    }
+
+    public BackgroundTask<Result, Progress> onFinishUI(Runnable cb) {
+        return onFinish(() -> new UIHandler().post(cb::run));
     }
 
     public boolean cancel() {
@@ -82,6 +92,9 @@ public abstract class BackgroundTask<Result, Progress> {
         protected final void onPostExecute(Result result) {
             if (!isCancelled() && exception == null && then != null) {
                 then.accept(result);
+            }
+            if (finish != null) {
+                finish.run();
             }
         }
 

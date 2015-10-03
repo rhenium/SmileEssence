@@ -25,7 +25,6 @@
 package net.lacolaco.smileessence.view;
 
 import android.os.Bundle;
-import android.widget.ListView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import net.lacolaco.smileessence.twitter.StatusFilter;
 import net.lacolaco.smileessence.view.adapter.EventListAdapter;
@@ -57,13 +56,7 @@ public class HistoryFragment extends CustomListFragment<EventListAdapter> {
         }, null);
     }
 
-    // --------------------- Interface OnRefreshListener2 ---------------------
-
     @Override
-    public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
-    }
-
-    @Override
-    public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
+    public void refresh() {
     }
 }

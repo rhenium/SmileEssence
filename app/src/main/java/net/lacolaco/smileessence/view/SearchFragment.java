@@ -40,7 +40,6 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.CommandOpenSearch;
 import net.lacolaco.smileessence.entity.Account;
@@ -52,7 +51,6 @@ import net.lacolaco.smileessence.preference.InternalPreferenceHelper;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.twitter.StatusFilter;
 import net.lacolaco.smileessence.twitter.task.SearchTask;
-import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.view.adapter.SearchListAdapter;
 import net.lacolaco.smileessence.view.dialog.SelectSearchQueryDialogFragment;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
@@ -83,6 +81,13 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
         SearchListAdapter adapter = new SearchListAdapter(getActivity());
         setAdapter(adapter);
 
+        if (Application.getInstance().getCurrentAccount() != null) {
+            refresh();
+        }
+    }
+
+    @Override
+    public void refresh() { //TODO
         String lastUsedSearchQuery = InternalPreferenceHelper.getInstance().get(R.string.key_last_used_search_query, "");
         if (!TextUtils.isEmpty(lastUsedSearchQuery)) {
             startSearch(lastUsedSearchQuery);
@@ -130,14 +135,11 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
 
     @Override
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
-        final Account currentAccount = Application.getInstance().getCurrentAccount();
         final SearchListAdapter adapter = getAdapter();
         String queryString = adapter.getQuery();
         if (TextUtils.isEmpty(queryString)) {
-            new UIHandler().post(() -> {
-                notifyTextEmpty();
-                refreshView.onRefreshComplete();
-            });
+            notifyTextEmpty();
+            refreshView.onRefreshComplete();
             return;
         }
         final Query query = new Query();
@@ -147,25 +149,12 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
         if (adapter.getCount() > 0) {
             query.setSinceId(adapter.getTopID());
         }
-        new SearchTask(currentAccount, query)
-                .onDoneUI(queryResult -> {
-                    if (queryResult != null) {
-                        List<twitter4j.Status> tweets = queryResult.getTweets();
-                        for (int i = tweets.size() - 1; i >= 0; i--) {
-                            twitter4j.Status status = tweets.get(i);
-                            if (!status.isRetweet()) {
-                                StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status, currentAccount.getUserId()));
-                                adapter.addToTop(viewModel);
-                                StatusFilter.getInstance().filter(viewModel);
-                            }
-                        }
-                        updateListViewWithNotice(refreshView.getRefreshableView(), true);
-                        adapter.setTopID(queryResult.getMaxId());
-                        refreshView.onRefreshComplete();
-                    }
-                })
-                .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_search, NotificationType.ALERT))
-                .execute();
+        runRefreshTask(
+                new SearchTask(Application.getInstance().getCurrentAccount(), query),
+                () -> {
+                    updateListViewWithNotice(refreshView.getRefreshableView(), true);
+                    refreshView.onRefreshComplete();
+                });
     }
 
     @Override
@@ -174,10 +163,8 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
         final SearchListAdapter adapter = getAdapter();
         String queryString = adapter.getQuery();
         if (TextUtils.isEmpty(queryString)) {
-            new UIHandler().post(() -> {
-                notifyTextEmpty();
-                refreshView.onRefreshComplete();
-            });
+            notifyTextEmpty();
+            refreshView.onRefreshComplete();
             return;
         }
         final Query query = new Query();
@@ -187,23 +174,12 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
         if (adapter.getCount() > 0) {
             query.setMaxId(adapter.getLastID() - 1);
         }
-        new SearchTask(currentAccount, query)
-                .onDoneUI(queryResult -> {
-                    if (queryResult != null) {
-                        List<twitter4j.Status> tweets = queryResult.getTweets();
-                        for (twitter4j.Status status : tweets) {
-                            if (!status.isRetweet()) {
-                                StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status, currentAccount.getUserId()));
-                                adapter.addToBottom(viewModel);
-                                StatusFilter.getInstance().filter(viewModel);
-                            }
-                        }
-                        updateListViewWithNotice(refreshView.getRefreshableView(), false);
-                        refreshView.onRefreshComplete();
-                    }
-                })
-                .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_search, NotificationType.ALERT))
-                .execute();
+        runRefreshTask(
+                new SearchTask(Application.getInstance().getCurrentAccount(), query),
+                () -> {
+                    updateListViewWithNotice(refreshView.getRefreshableView(), false);
+                    refreshView.onRefreshComplete();
+                });
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
@@ -320,7 +296,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
             if (TextUtils.isEmpty(text)) {
                 Notificator.getInstance().publish(R.string.notice_query_is_empty, NotificationType.ALERT);
             } else {
-                ((MainActivity) getActivity()).openSearchPage(text);
+                startSearch(text);
                 hideIME();
             }
         }
@@ -331,30 +307,37 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
         if (!TextUtils.isEmpty(queryString)) {
             final SearchListAdapter adapter = getAdapter();
             adapter.initSearch(queryString);
-            adapter.clear();
             adapter.updateForce();
             final Query query = new Query();
             query.setQuery(queryString);
             query.setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage());
             query.setResultType(Query.RECENT);
-            new SearchTask(Application.getInstance().getCurrentAccount(), query)
-                    .onDoneUI(queryResult -> {
-                        if (queryResult != null) {
-                            List<twitter4j.Status> tweets = queryResult.getTweets();
-                            for (int i = tweets.size() - 1; i >= 0; i--) {
-                                twitter4j.Status status = tweets.get(i);
-                                if (!status.isRetweet()) {
-                                    StatusViewModel viewModel = new StatusViewModel(Tweet.fromTwitter(status, Application.getInstance().getCurrentAccount().getUserId()));
-                                    adapter.addToTop(viewModel);
-                                    StatusFilter.getInstance().filter(viewModel);
-                                }
-                            }
-                            adapter.setTopID(queryResult.getMaxId());
-                            adapter.updateForce();
-                        }
-                    })
-                    .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_search, NotificationType.ALERT))
-                    .execute();
+            runRefreshTask(
+                    new SearchTask(Application.getInstance().getCurrentAccount(), query),
+                    () -> {
+                        adapter.updateForce();
+                    });
         }
+    }
+
+    private void runRefreshTask(SearchTask task, Runnable onFinish) {
+        final SearchListAdapter adapter = getAdapter();
+        final Account account = Application.getInstance().getCurrentAccount();
+        task
+                .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_search, NotificationType.ALERT))
+                .onDoneUI(queryResult -> {
+                    if (queryResult != null) {
+                        List<Tweet> tweets = Tweet.fromTwitter(queryResult.getTweets(), account.getUserId());
+                        for (Tweet tweet : tweets) {
+                            if (!tweet.isRetweet()) {
+                                StatusViewModel viewModel = new StatusViewModel(tweet);
+                                StatusFilter.getInstance().filter(viewModel);
+                                adapter.addToTop(viewModel);
+                            }
+                        }
+                    }
+                })
+                .onFinishUI(onFinish)
+                .execute();
     }
 }

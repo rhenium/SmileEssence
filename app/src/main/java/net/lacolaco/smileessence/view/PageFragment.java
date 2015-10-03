@@ -14,4 +14,6 @@ public abstract class PageFragment<T extends Adapter> extends Fragment {
     protected void setAdapter(T _adapter) {
         adapter = _adapter;
     }
+
+    public abstract void refresh();
 }

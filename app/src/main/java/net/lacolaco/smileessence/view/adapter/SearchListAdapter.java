@@ -30,7 +30,7 @@ public class SearchListAdapter extends StatusListAdapter {
 
     // ------------------------------ FIELDS ------------------------------
 
-    private long topID;
+    //private long topID;
     private String query;
     private OnQueryChangeListener listener;
 
@@ -50,14 +50,14 @@ public class SearchListAdapter extends StatusListAdapter {
         return query;
     }
 
-    @Override
-    public long getTopID() {
-        return topID;
-    }
+    //@Override
+    //public long getTopID() {
+    //    return topID;
+    //}
 
-    public void setTopID(long topID) {
-        this.topID = topID;
-    }
+    //public void setTopID(long topID) {
+    //    this.topID = topID;
+    //}
 
     public void setOnQueryChangeListener(OnQueryChangeListener listener) {
         this.listener = listener;
@@ -67,7 +67,8 @@ public class SearchListAdapter extends StatusListAdapter {
 
     public void initSearch(String query) {
         this.query = query;
-        topID = 0;
+        clear();
+    //    topID = 0;
         if (listener != null) {
             listener.onQueryChange(query);
         }

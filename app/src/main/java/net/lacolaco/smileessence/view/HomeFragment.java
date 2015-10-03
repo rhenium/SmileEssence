@@ -30,18 +30,16 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
-import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
+import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.twitter.StatusFilter;
 import net.lacolaco.smileessence.twitter.task.HomeTimelineTask;
-import net.lacolaco.smileessence.util.UIHandler;
+import net.lacolaco.smileessence.twitter.task.TimelineTask;
 import net.lacolaco.smileessence.view.adapter.StatusListAdapter;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
-
-import java.util.ListIterator;
 
 public class HomeFragment extends CustomListFragment<StatusListAdapter> {
 
@@ -67,66 +65,58 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
             adapter.removeByStatusID(id);
             adapter.updateForce();
         });
-        final Account account = Application.getInstance().getCurrentAccount();
-        new HomeTimelineTask(account)
-                .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
-                .onFail(e -> Notificator.getInstance().publish(R.string.notice_error_get_home, NotificationType.ALERT))
-                .onDoneUI(tweets -> {
-                    for (Tweet tweet : tweets) {
-                        StatusViewModel statusViewModel = new StatusViewModel(tweet);
-                        adapter.addToBottom(statusViewModel);
-                    }
-                    adapter.updateForce();
-                }).execute();
+
+        if (Application.getInstance().getCurrentAccount() != null) {
+            Logger.debug(String.format("Current account %s is set; refreshing", Application.getInstance().getCurrentAccount().getUser().getScreenName()));
+            refresh();
+        }
     }
 
+    @Override
+    public void refresh() {
+        runRefreshTask(new HomeTimelineTask(Application.getInstance().getCurrentAccount()), () -> getAdapter().updateForce());
+    }
 
     // --------------------- Interface OnRefreshListener2 ---------------------
 
     @Override
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
         final MainActivity activity = (MainActivity) getActivity();
-        final StatusListAdapter adapter = getAdapter();
         if (activity.isStreaming()) {
-            new UIHandler().post(() -> {
-                updateListViewWithNotice(refreshView.getRefreshableView(), true);
-                refreshView.onRefreshComplete();
-            });
-            return;
+            updateListViewWithNotice(refreshView.getRefreshableView(), true);
+            refreshView.onRefreshComplete();
+        } else {
+            runRefreshTask(
+                    new HomeTimelineTask(Application.getInstance().getCurrentAccount())
+                            .setSinceId(getAdapter().getTopID()),
+                    () -> {
+                        updateListViewWithNotice(refreshView.getRefreshableView(), true);
+                        refreshView.onRefreshComplete();
+                    });
         }
-        final Account currentAccount = Application.getInstance().getCurrentAccount();
-        new HomeTimelineTask(currentAccount)
-                .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
-                .setSinceId(adapter.getTopID())
-                .onFail(e -> Notificator.getInstance().publish(R.string.notice_error_get_home, NotificationType.ALERT))
-                .onDoneUI(tweets -> {
-                    ListIterator<Tweet> li = tweets.listIterator(tweets.size());
-                    while (li.hasPrevious()) {
-                        StatusViewModel viewModel = new StatusViewModel(li.previous());
-                        adapter.addToTop(viewModel);
-                        StatusFilter.getInstance().filter(viewModel);
-                    }
-                    updateListViewWithNotice(refreshView.getRefreshableView(), true);
-                    refreshView.onRefreshComplete();
-                }).execute();
     }
 
     @Override
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
-        final StatusListAdapter adapter = getAdapter();
-        final Account currentAccount = Application.getInstance().getCurrentAccount();
-        new HomeTimelineTask(currentAccount)
+        runRefreshTask(
+                new HomeTimelineTask(Application.getInstance().getCurrentAccount())
+                        .setMaxId(getAdapter().getLastID() - 1),
+                () -> {
+                    updateListViewWithNotice(refreshView.getRefreshableView(), false);
+                    refreshView.onRefreshComplete();
+                });
+    }
+
+    private void runRefreshTask(TimelineTask<Tweet> task, Runnable onFinish) {
+        task
                 .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
-                .setMaxId(adapter.getLastID() - 1)
                 .onFail(e -> Notificator.getInstance().publish(R.string.notice_error_get_home, NotificationType.ALERT))
                 .onDoneUI(tweets -> {
                     for (Tweet tweet : tweets) {
-                        StatusViewModel viewModel = new StatusViewModel(tweet);
-                        adapter.addToBottom(viewModel);
-                        StatusFilter.getInstance().filter(viewModel);
+                        StatusFilter.getInstance().filter(new StatusViewModel(tweet));
                     }
-                    updateListViewWithNotice(refreshView.getRefreshableView(), false);
-                    refreshView.onRefreshComplete();
-                }).execute();
+                })
+                .onFinishUI(onFinish)
+                .execute();
     }
 }

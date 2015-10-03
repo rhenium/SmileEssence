@@ -64,8 +64,9 @@ public class PostFragment extends PageFragment implements TextWatcher, View.OnFo
     private ViewGroup viewGroupReply;
     private ViewGroup viewGroupMedia;
 
-    // ------------------------ INTERFACE METHODS ------------------------
-
+    @Override
+    public void refresh() {
+    }
 
     // --------------------- Interface OnClickListener ---------------------
 

@@ -38,15 +38,14 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
-import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.preference.InternalPreferenceHelper;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.twitter.StatusFilter;
+import net.lacolaco.smileessence.twitter.task.TimelineTask;
 import net.lacolaco.smileessence.twitter.task.UserListStatusesTask;
-import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.view.adapter.UserListListAdapter;
 import net.lacolaco.smileessence.view.dialog.SelectUserListDialogFragment;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
@@ -76,11 +75,19 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
         UserListListAdapter adapter = new UserListListAdapter(getActivity());
         setAdapter(adapter);
 
+        if (Application.getInstance().getCurrentAccount() != null) {
+            refresh();
+        }
+    }
+
+    @Override
+    public void refresh() {//TODO
         String lastUserList = InternalPreferenceHelper.getInstance().get(R.string.key_last_used_user_list, "");
         if (!TextUtils.isEmpty(lastUserList)) {
             startUserList(lastUserList);
         }
     }
+
     // --------------------- Interface OnClickListener ---------------------
 
     @Override
@@ -98,58 +105,38 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
 
     @Override
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
-        final Account currentAccount = Application.getInstance().getCurrentAccount();
         final UserListListAdapter adapter = getAdapter();
         String listFullName = adapter.getListFullName();
         if (TextUtils.isEmpty(listFullName)) {
-            new UIHandler().post(() -> {
-                notifyTextEmpty();
-                refreshView.onRefreshComplete();
-            });
+            notifyTextEmpty();
+            refreshView.onRefreshComplete();
             return;
         }
-        new UserListStatusesTask(currentAccount, listFullName)
-                .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
-                .setSinceId(adapter.getTopID())
-                .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_list, NotificationType.ALERT))
-                .onDoneUI(tweets -> {
-                    for (int i = tweets.size() - 1; i >= 0; i--) {
-                        StatusViewModel statusViewModel = new StatusViewModel(tweets.get(i));
-                        adapter.addToTop(statusViewModel);
-                        StatusFilter.getInstance().filter(statusViewModel);
-                    }
+        runRefreshTask(
+                new UserListStatusesTask(Application.getInstance().getCurrentAccount(), listFullName)
+                        .setSinceId(adapter.getTopID()),
+                () -> {
                     updateListViewWithNotice(refreshView.getRefreshableView(), true);
                     refreshView.onRefreshComplete();
-                })
-                .execute();
+                });
     }
 
     @Override
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
-        final Account currentAccount = Application.getInstance().getCurrentAccount();
         final UserListListAdapter adapter = getAdapter();
         String listFullName = adapter.getListFullName();
         if (TextUtils.isEmpty(listFullName)) {
-            new UIHandler().post(() -> {
-                notifyTextEmpty();
-                refreshView.onRefreshComplete();
-            });
+            notifyTextEmpty();
+            refreshView.onRefreshComplete();
             return;
         }
-        new UserListStatusesTask(currentAccount, listFullName)
-                .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
-                .setMaxId(adapter.getLastID() - 1)
-                .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_list, NotificationType.ALERT))
-                .onDoneUI(tweets -> {
-                    for (Tweet tweet : tweets) {
-                        StatusViewModel statusViewModel = new StatusViewModel(tweet);
-                        adapter.addToBottom(statusViewModel);
-                        StatusFilter.getInstance().filter(statusViewModel);
-                    }
+        runRefreshTask(
+                new UserListStatusesTask(Application.getInstance().getCurrentAccount(), listFullName)
+                        .setMaxId(adapter.getLastID() - 1),
+                () -> {
                     updateListViewWithNotice(refreshView.getRefreshableView(), false);
                     refreshView.onRefreshComplete();
-                })
-                .execute();
+                });
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
@@ -203,17 +190,24 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
         adapter.setListFullName(listFullName);
         adapter.clear();
         adapter.updateForce();
-        new UserListStatusesTask(Application.getInstance().getCurrentAccount(), listFullName)
+        runRefreshTask(
+                new UserListStatusesTask(Application.getInstance().getCurrentAccount(), listFullName),
+                () -> adapter.updateForce());
+    }
+
+    private void runRefreshTask(TimelineTask<Tweet> task, Runnable onFinish) {
+        final UserListListAdapter adapter = getAdapter();
+        task
                 .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
                 .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_list, NotificationType.ALERT))
                 .onDoneUI(tweets -> {
                     for (Tweet tweet : tweets) {
                         StatusViewModel statusViewModel = new StatusViewModel(tweet);
-                        adapter.addToBottom(statusViewModel);
                         StatusFilter.getInstance().filter(statusViewModel);
+                        adapter.addToBottom(statusViewModel);
                     }
-                    adapter.updateForce();
                 })
+                .onFinishUI(onFinish)
                 .execute();
     }
 }

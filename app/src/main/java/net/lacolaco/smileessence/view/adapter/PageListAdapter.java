@@ -24,42 +24,57 @@
 
 package net.lacolaco.smileessence.view.adapter;
 
-import android.app.Fragment;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.widget.ArrayAdapter;
-import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.view.PageFragment;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class PageListAdapter extends FragmentPagerAdapter implements ViewPager.OnPageChangeListener {//, ActionBar.OnNavigationListener {
+public class PageListAdapter extends FragmentPagerAdapter implements ViewPager.OnPageChangeListener {
 
     // ------------------------------ FIELDS ------------------------------
 
-    private final MainActivity context;
-    //private final ActionBar actionBar;
-    private final ViewPager viewPager;
     private final List<PageInfo> pages = new ArrayList<>();
+    private final Map<Integer, WeakReference<PageFragment>> fragmentCache = new HashMap<>();
 
-    // --------------------------- CONSTRUCTORS ---------------------------
+    // --------------------------- FragmentPagerAdapter ---------------------------
 
     public PageListAdapter(MainActivity _activity, ViewPager _viewPager) {
         super(_activity.getFragmentManager());
-        context = _activity;
-        //actionBar = _activity.getActionBar();
-        viewPager = _viewPager;
-        viewPager.setAdapter(this);
-        viewPager.addOnPageChangeListener(this);
+        _viewPager.addOnPageChangeListener(this);
     }
 
-    // --------------------- GETTER / SETTER METHODS ---------------------
+    @Override
+    public synchronized PageFragment getItem(int position) {
+        PageFragment pf;
+        PageInfo info = pages.get(position);
+        try {
+            pf = info.getFragmentClass().newInstance();
+        } catch (Exception e) {
+            Logger.error("should not happen: fragmentClass is private or Android is broken?");
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        pf.setArguments(info.getArgs());
+        fragmentCache.put(position, new WeakReference<>(pf));
+        return pf;
+    }
+
+    public synchronized PageFragment getCachedFragment(int pos) {
+        WeakReference<PageFragment> wpf = fragmentCache.get(pos);
+        if (wpf == null) {
+            return null;
+        } else {
+            return wpf.get();
+        }
+    }
 
     @Override
     public synchronized int getCount() {
@@ -67,15 +82,6 @@ public class PageListAdapter extends FragmentPagerAdapter implements ViewPager.O
     }
 
     // ------------------------ INTERFACE METHODS ------------------------
-
-
-    // --------------------- Interface OnNavigationListener ---------------------
-
-    //@Override
-    //public synchronized boolean onNavigationItemSelected(int itemPosition, long itemId) {
-    //    viewPager.setCurrentItem(itemPosition, true);
-    //    return true;
-    //}
 
     // --------------------- Interface OnPageChangeListener ---------------------
 
@@ -86,7 +92,7 @@ public class PageListAdapter extends FragmentPagerAdapter implements ViewPager.O
     @Override
     public synchronized void onPageSelected(int position) {
         //Synchronize pager and navigation.
-        Logger.debug(String.format("Page selected:%d", position));
+        Logger.debug(String.format("Page selected: %d", position));
         //actionBar.setSelectedNavigationItem(position);
     }
 
@@ -95,12 +101,6 @@ public class PageListAdapter extends FragmentPagerAdapter implements ViewPager.O
     }
 
     // -------------------------- OTHER METHODS --------------------------
-
-    @Override
-    public synchronized Fragment getItem(int position) {
-        PageInfo info = pages.get(position);
-        return info.instantiate(context);
-    }
 
     public void addPage(Class<? extends PageFragment> klass, String name, Bundle args) {
         this.addPage(klass, name, args, true);
@@ -125,7 +125,7 @@ public class PageListAdapter extends FragmentPagerAdapter implements ViewPager.O
         for (PageInfo f : pages) {
             itemList.add(f.getName());
         }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(context, R.layout.navigation_list_item, R.id.navigation_list_item_text, itemList);
+        //ArrayAdapter<String> adapter = new ArrayAdapter<>(context, R.layout.navigation_list_item, R.id.navigation_list_item_text, itemList);
         //actionBar.setListNavigationCallbacks(adapter, this);
         super.notifyDataSetChanged();
     }
@@ -140,21 +140,10 @@ public class PageListAdapter extends FragmentPagerAdapter implements ViewPager.O
         return -1;
     }
 
-    @Deprecated @SuppressWarnings("unchecked")
-    public <T extends PageFragment> T getFragment(Class<T> fragmentClass) {
-        for(PageInfo info : pages) {
-            if (info.getFragmentClass() == fragmentClass) {
-                return (T) info.getCachedInstance();
-            }
-        }
-        return null;
-    }
-
     private static final class PageInfo {
         private final Class<? extends PageFragment> fragmentClass;
         private final Bundle args;
         private final String name;
-        private WeakReference<PageFragment> fragmentCache;
 
         PageInfo(Class<? extends PageFragment> _fragmentClass, String _name, Bundle _args) {
             fragmentClass = _fragmentClass;
@@ -170,16 +159,6 @@ public class PageListAdapter extends FragmentPagerAdapter implements ViewPager.O
 
         public Bundle getArgs() {
             return args;
-        }
-
-        public PageFragment instantiate(Context context) {
-            PageFragment fragment = (PageFragment) Fragment.instantiate(context, getFragmentClass().getName(), getArgs());
-            fragmentCache = new WeakReference<>(fragment);
-            return fragment;
-        }
-
-        public PageFragment getCachedInstance() {
-            return fragmentCache.get();
         }
     }
 }

@@ -69,7 +69,6 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
     private TwitterStream stream;
     private Uri cameraTempFilePath;
     private UserStreamListener userStreamListener;
-    private boolean waitingAccount = true;
 
     public Uri getCameraTempFilePath() {
         return cameraTempFilePath;
@@ -121,7 +120,7 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
     }
 
     public void openSearchPage(String query) {
-        SearchFragment fragment = pagerAdapter.getFragment(SearchFragment.class);
+        SearchFragment fragment = (SearchFragment) pagerAdapter.getCachedFragment(pagerAdapter.getIndex(SearchFragment.class));
         if (fragment != null) {
             fragment.startSearch(query);
             openSearchPage();
@@ -129,7 +128,7 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
     }
 
     public void openUserListPage(String listFullName) {
-        UserListFragment fragment = pagerAdapter.getFragment(UserListFragment.class);
+        UserListFragment fragment = (UserListFragment) pagerAdapter.getCachedFragment(pagerAdapter.getIndex(UserListFragment.class));
         if (fragment != null) {
             fragment.startUserList(listFullName);
             openUserListPage();
@@ -168,14 +167,6 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case REQUEST_MANAGE_ACCOUNT: {
-                if (waitingAccount) {
-                    // first run
-                    waitingAccount = false;
-                    initializePages();
-                }
-                break;
-            }
             case REQUEST_GET_PICTURE_FROM_GALLERY:
             case REQUEST_GET_PICTURE_FROM_CAMERA: {
                 getImageUri(requestCode, resultCode, data);
@@ -189,7 +180,6 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
         Logger.debug("onCreate");
         Application app = (Application) getApplication();
         app.resetState();
-        app.addOnCurrentAccountChangedListener(this);
         setTheme(app.getThemeResId());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main);
@@ -203,12 +193,12 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
         CommandSetting.initialize();
         Account.load();
         ExtractionWord.load();
+        initializePages();
+        app.addOnCurrentAccountChangedListener(this);
 
         Account account = getLastUsedAccount();
         if (account != null) {
-            waitingAccount = false;
             app.setCurrentAccount(account);
-            initializePages();
             IntentRouter.onNewIntent(this, getIntent());
         } else {
             startActivityForResult(new Intent(this, ManageAccountsActivity.class), REQUEST_MANAGE_ACCOUNT);
@@ -219,7 +209,7 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
     protected void onDestroy() {
         super.onDestroy();
         if (stream != null) {
-            new Thread(stream::shutdown).run();
+            new Thread(stream::shutdown).start();
         }
         Logger.debug("onDestroy");
     }
@@ -329,9 +319,9 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
         openPostPageWithImage(uri);
     }
 
-    public boolean startStream() {
+    private boolean startStream() {
         if (stream != null) {
-            stream.shutdown();
+            new Thread(stream::cleanUp).start();
         }
         stream = Application.getInstance().getCurrentAccount().getTwitterStream();
         userStreamListener = new UserStreamListener(Application.getInstance().getCurrentAccount());
@@ -343,12 +333,15 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
 
     @Override
     public void onCurrentAccountChanged(Account account) {
+        Logger.debug(String.format("onCurrentAccountChanged: %s", account.getUser().getScreenName()));
         User user = account.getUser();
 
+        // update cache
         account.refreshListSubscriptions();
         account.refreshUserMuteList();
         new ShowUserTask(account, account.getUserId()).execute();
 
+        // update actionbar
         Runnable update = () -> {
             getActionBar().setTitle(user.getScreenName());
             String newUrl = user.getProfileImageUrl();
@@ -369,10 +362,20 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
             if (changes.contains(RBinding.BASIC)) update.run();
         });
 
+        // refresh all pages
+        for (int i = 0; i < pagerAdapter.getCount(); ++i) {
+            PageFragment pf = pagerAdapter.getCachedFragment(i);
+            if (pf != null && pf.isAdded()) {
+                Logger.debug(String.format("PageFragment %s is already attached; refreshing", pf.getClass().getName()));
+                pf.refresh();
+            }
+        }
+
+        // start user stream
         startStream();
     }
 
-    // TODO: page fragments requires Application#getCurrentAccount returns Account
+    // TODO: tab order?
     private void initializePages() {
         pagerAdapter.addPage(PostFragment.class, getString(R.string.page_name_post), null, false);
         pagerAdapter.addPage(HomeFragment.class, getString(R.string.page_name_home), null, false);
@@ -387,8 +390,9 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
             pagerAdapter.addPage(UserListFragment.class, getString(R.string.page_name_list), null, false);
         pagerAdapter.notifyDataSetChanged();
         viewPager.setOffscreenPageLimit(pagerAdapter.getCount());
-        PostState.newState().beginTransaction().commit();
+        viewPager.setAdapter(pagerAdapter);
         setSelectedPageIndex(pagerAdapter.getIndex(HomeFragment.class), false);
+        PostState.newState().beginTransaction().commit();
     }
 
     private Account getLastUsedAccount() {

@@ -55,12 +55,10 @@ public abstract class CustomListFragment<T extends CustomListAdapter> extends Pa
 
     @Override
     public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
-
     }
 
     @Override
     public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
-
     }
 
     // --------------------- Interface OnScrollListener ---------------------
