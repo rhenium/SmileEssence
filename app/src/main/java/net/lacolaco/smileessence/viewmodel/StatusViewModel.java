@@ -112,7 +112,7 @@ public class StatusViewModel implements IViewModel {
         updateViewEmbeddeds(((MainActivity) activity), convertedView, extendStatusURL);
 
         final View view = convertedView;
-        bundle.attach(tweet, (x, changes) -> {
+        bundle.attach(tweet.getOriginalTweet(), (x, changes) -> {
             if (changes.contains(RBinding.FAVORITERS))
                 updateViewFavorited(((MainActivity) activity), view);
         });

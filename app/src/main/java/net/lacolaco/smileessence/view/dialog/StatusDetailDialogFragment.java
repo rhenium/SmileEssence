@@ -112,7 +112,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         tweet = Tweet.fetch(getStatusID());
         if (tweet == null) { // trying open deleted tweet
-            Notificator.getInstance().alert(R.string.notice_error_show_status);
+            Notificator.getInstance().publish(R.string.notice_error_show_status);
             return new DisposeDialog(getActivity());
         }
 
@@ -154,7 +154,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         updateViewButtons(view, tweet);
         updateViewMenu(view, tweet);
 
-        bundle.attach(tweet, (x, changes) -> {
+        bundle.attach(tweet.getOriginalTweet(), (x, changes) -> {
             if (getActivity() != null) {
                 if (changes.contains(RBinding.REACTION_COUNT))
                     updateViewReactions(view, tweet);

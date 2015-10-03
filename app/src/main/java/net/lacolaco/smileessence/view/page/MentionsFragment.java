@@ -61,7 +61,7 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
                 adapter.update();
             } else {
                 for (ExtractionWord word : ExtractionWord.all()) {
-                    if (word.getPattern().matcher(tweet.getTweet().getText()).find()) {
+                    if (word.getPattern().matcher(tweet.getTweet().getOriginalTweet().getText()).find()) {
                         adapter.addToTop(tweet);
                         adapter.update();
                         return;

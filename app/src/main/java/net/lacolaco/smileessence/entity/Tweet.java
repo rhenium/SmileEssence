@@ -67,54 +67,46 @@ public class Tweet extends EntitySupport {
     private void update(twitter4j.Status status, long myUserId) {
         id = status.getId();
         user = User.fromTwitter(status.getUser());
-        text = extractText(status, false);
         createdAt = status.getCreatedAt();
         source = status.getSource();
-
-        if (getFavoriteCount() != status.getFavoriteCount() ||
-                getRetweetCount() != status.getRetweetCount()) {
-            favoriteCount = status.getFavoriteCount();
-            retweetCount = status.getRetweetCount();
-
-            notifyChange(RBinding.REACTION_COUNT);
-        }
-
-        inReplyTo = status.getInReplyToStatusId();
         isRetweet = status.isRetweet();
-        if (isRetweet()) {
+
+        if (!isRetweet) {
+            text = extractText(status, false);
+            inReplyTo = status.getInReplyToStatusId();
+            updateEntities(status);
+            if (favoriters == null) favoriters = Collections.newSetFromMap(new ConcurrentHashMap<>());
+            if (retweets == null) retweets = new ConcurrentHashMap<>();
+
+            if (favoriteCount != status.getFavoriteCount() || retweetCount != status.getRetweetCount()) {
+                favoriteCount = status.getFavoriteCount();
+                retweetCount = status.getRetweetCount();
+
+                notifyChange(RBinding.REACTION_COUNT);
+            }
+
+            if (status.isFavorited()) {
+                addFavoriter(myUserId);
+            } else {
+                removeFavoriter(myUserId);
+            }
+            if (status.getCurrentUserRetweetId() > 0) {
+                addRetweet(myUserId, status.getCurrentUserRetweetId());
+            }
+        } else {
             retweetedTweet = Tweet.fromTwitter(status.getRetweetedStatus(), myUserId);
             retweetedTweet.addRetweet(this);
-        }
-
-        if (favoriters == null) {
-            if (isRetweet()) {
-                favoriters = getRetweetedTweet().getFavoriters();
-            } else {
-                favoriters = Collections.newSetFromMap(new ConcurrentHashMap<>());
+            if (status.isFavorited()) {
+                retweetedTweet.addFavoriter(myUserId);
+            }
+            if (status.getCurrentUserRetweetId() > 0) {
+                retweetedTweet.addRetweet(myUserId, status.getCurrentUserRetweetId());
             }
         }
-        if (status.isFavorited()) {
-            addFavoriter(myUserId);
-        } else {
-            removeFavoriter(myUserId);
-        }
-
-        if (retweets == null) {
-            if (isRetweet()) {
-                retweets = getRetweetedTweet().getRetweets();
-            } else {
-                retweets = new ConcurrentHashMap<>();
-            }
-        }
-        if (status.getCurrentUserRetweetId() > 0) {
-            addRetweet(myUserId, status.getCurrentUserRetweetId());
-        }
-
-        updateEntities(status);
     }
 
     public String getTwitterUrl() {
-        return String.format("https://twitter.com/%s/status/%s", getOriginalTweet().getUser().getScreenName(), getOriginalTweet().getId());
+        return String.format("https://twitter.com/%s/status/%s", getUser().getScreenName(), id);
     }
 
     public long getId() {
@@ -126,7 +118,7 @@ public class Tweet extends EntitySupport {
     }
 
     public String getText() {
-        return text;
+        return getOriginalTweet().text;
     }
 
     public Date getCreatedAt() {
@@ -154,47 +146,47 @@ public class Tweet extends EntitySupport {
     }
 
     public int getFavoriteCount() {
-        return favoriteCount;
+        return getOriginalTweet().favoriteCount;
     }
 
     public int getRetweetCount() {
-        return retweetCount;
+        return getOriginalTweet().retweetCount;
     }
 
     public long getInReplyTo() {
-        return inReplyTo;
+        return getOriginalTweet().inReplyTo;
     }
 
     public boolean isFavoritedBy(long id) {
-        return favoriters.contains(id);
+        return getOriginalTweet().favoriters.contains(id);
     }
 
     public Set<Long> getFavoriters() {
-        return favoriters;
+        return getOriginalTweet().favoriters;
     }
 
     public boolean addFavoriter(long id) {
-        boolean changed = favoriters.add(id);
+        boolean changed = getOriginalTweet().favoriters.add(id);
         if (changed) notifyChange(RBinding.FAVORITERS);
         return changed;
     }
 
     public boolean removeFavoriter(long id) {
-        boolean changed = favoriters.remove(id);
+        boolean changed = getOriginalTweet().favoriters.remove(id);
         if (changed) notifyChange(RBinding.FAVORITERS);
         return changed;
     }
 
     public boolean isRetweetedBy(long id) {
-        return retweets.get(id) != null;
+        return getOriginalTweet().retweets.get(id) != null;
     }
 
     public long getRetweetIdBy(long id) {
-        return retweets.get(id);
+        return getOriginalTweet().retweets.get(id);
     }
 
     public Map<Long, Long> getRetweets() {
-        return retweets;
+        return getOriginalTweet().retweets;
     }
 
     public boolean addRetweet(Tweet retweet) {
@@ -202,14 +194,14 @@ public class Tweet extends EntitySupport {
     }
 
     public boolean addRetweet(long uid, long sid) {
-        Long result = retweets.put(uid, sid);
+        Long result = getOriginalTweet().retweets.put(uid, sid);
         boolean changed = result == null || result != sid;
         if (changed) notifyChange(RBinding.RETWEETERS);
         return changed;
     }
 
     private boolean removeRetweet(long sid) {
-        boolean changed = retweets.values().remove(sid);
+        boolean changed = getOriginalTweet().retweets.values().remove(sid);
         if (changed) notifyChange(RBinding.RETWEETERS);
         return changed;
     }
@@ -227,5 +219,51 @@ public class Tweet extends EntitySupport {
             }
         }
         return list;
+    }
+
+    // override EntitySupport
+    @Override
+    public List<String> getMentions() {
+        if (isRetweet) {
+            return getOriginalTweet().getMentions();
+        } else {
+            return super.getMentions();
+        }
+    }
+
+    @Override
+    public List<String> getHashtags() {
+        if (isRetweet) {
+            return getOriginalTweet().getHashtags();
+        } else {
+            return super.getHashtags();
+        }
+    }
+
+    @Override
+    public List<String> getMediaUrls() {
+        if (isRetweet) {
+            return getOriginalTweet().getMediaUrls();
+        } else {
+            return super.getMediaUrls();
+        }
+    }
+
+    @Override
+    public List<String> getUrlsExpanded() {
+        if (isRetweet) {
+            return getOriginalTweet().getUrlsExpanded();
+        } else {
+            return super.getUrlsExpanded();
+        }
+    }
+
+    @Override
+    public List<String> getSymbols() {
+        if (isRetweet) {
+            return getOriginalTweet().getSymbols();
+        } else {
+            return super.getSymbols();
+        }
     }
 }

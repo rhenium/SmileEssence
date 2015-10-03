@@ -90,11 +90,11 @@ public abstract class EntitySupport extends UIObservable {
         return names;
     }
 
-    public String extractText(twitter4j.Status status, boolean expand) {
+    protected String extractText(twitter4j.Status status, boolean expand) {
         return extractText(status, status.getText(), expand);
     }
 
-    public String extractText(twitter4j.DirectMessage status, boolean expand) {
+    protected String extractText(twitter4j.DirectMessage status, boolean expand) {
         return extractText(status, status.getText(), expand);
     }
 

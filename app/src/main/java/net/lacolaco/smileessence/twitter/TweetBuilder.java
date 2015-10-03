@@ -55,6 +55,7 @@ public class TweetBuilder {
     }
 
     public TweetBuilder setQuotation(Tweet tweet) {
+        tweet = tweet.getOriginalTweet();
         return setText(String.format(" RT @%s: %s", tweet.getUser().getScreenName(), tweet.getText()));
     }
 
