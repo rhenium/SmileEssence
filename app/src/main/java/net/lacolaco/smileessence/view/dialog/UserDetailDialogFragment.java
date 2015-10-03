@@ -305,7 +305,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         executeUserTimelineTask(user, adapter);
         updateRelationship(user.getId());
 
-        observerBundle.attach(user, (x, changes) -> {
+        observerBundle.attach(user, changes -> {
             if (getActivity() != null) {
                 if (changes.contains(RBinding.BASIC))
                     updateUserDataBasic(user);

@@ -31,7 +31,7 @@ public abstract class UIObservable {
 
         new UIHandler().post(() -> {
             for (UIObserver observer : obs) {
-                observer.update(this, flags);
+                observer.update(flags);
             }
         });
     }

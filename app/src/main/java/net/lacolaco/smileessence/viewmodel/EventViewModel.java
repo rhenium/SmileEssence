@@ -146,7 +146,7 @@ public class EventViewModel implements IViewModel {
         }));
 
         final View finalView = convertedView;
-        bundle.attach(source, (x, changes) -> {
+        bundle.attach(source, changes -> {
             if (changes.contains(RBinding.BASIC))
                 updateViewUser(finalView);
         });

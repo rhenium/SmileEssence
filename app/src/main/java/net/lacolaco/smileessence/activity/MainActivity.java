@@ -357,7 +357,7 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
         } else {
             bundle.detachAll();
         }
-        bundle.attach(user, (x, changes) -> {
+        bundle.attach(user, changes -> {
             if (changes.contains(RBinding.BASIC)) update.run();
         });
 

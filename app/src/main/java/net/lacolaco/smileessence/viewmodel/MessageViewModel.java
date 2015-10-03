@@ -109,7 +109,7 @@ public class MessageViewModel implements IViewModel {
         updateViewBody(activity, convertedView);
 
         final View finalView = convertedView;
-        bundle.attach(directMessage.getSender(), (x, changes) -> {
+        bundle.attach(directMessage.getSender(), changes -> {
             if (changes.contains(RBinding.BASIC))
                 updateViewSender(activity, finalView);
         });

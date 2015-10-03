@@ -130,9 +130,9 @@ public class Account {
             if (user == null) {
                 user = User._makeSkeleton(getUserId(), model.screenName);
             }
-            user.addObserver(this, (user, objs) -> {
-                if (!model.screenName.equals(((User) user).getScreenName())) {
-                    model.screenName = ((User) user).getScreenName();
+            user.addObserver(this, (objs) -> {
+                if (!model.screenName.equals(user.getScreenName())) {
+                    model.screenName = user.getScreenName();
                     model.save();
                 }
             });
