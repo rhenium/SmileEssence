@@ -68,6 +68,7 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
     private TwitterStream stream;
     private Uri cameraTempFilePath;
     private UserStreamListener userStreamListener;
+    private final UIObserverBundle currentUserBundle = new UIObserverBundle();
 
     public Uri getCameraTempFilePath() {
         return cameraTempFilePath;
@@ -207,6 +208,7 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        currentUserBundle.detachAll();
         if (stream != null) {
             new Thread(stream::shutdown).start();
         }
@@ -351,14 +353,8 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
         };
         update.run(); //first run
 
-        UIObserverBundle bundle = (UIObserverBundle) currentAccountIconImageView.getTag();
-        if (bundle == null) {
-            bundle = new UIObserverBundle();
-            currentAccountIconImageView.setTag(bundle);
-        } else {
-            bundle.detachAll();
-        }
-        bundle.attach(user, changes -> {
+        currentUserBundle.detachAll();
+        currentUserBundle.attach(user, changes -> {
             if (changes.contains(RBinding.BASIC)) update.run();
         });
 
