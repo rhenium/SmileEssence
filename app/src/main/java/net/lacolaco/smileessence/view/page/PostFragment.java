@@ -28,6 +28,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.TextUtils;
@@ -141,7 +143,7 @@ public class PostFragment extends PageFragment implements TextWatcher, View.OnFo
                 Tweet tweet = postState.getInReplyTo();
                 View header = viewGroupReply.findViewById(R.id.layout_post_reply_status);
                 header = new StatusViewModel(tweet).getView(activity, activity.getLayoutInflater(), header);
-                header.setBackgroundColor(getResources().getColor(R.color.transparent));
+                header.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.transparent));
                 header.setClickable(false);
             } else {
                 viewGroupReply.setVisibility(View.GONE);
@@ -177,11 +179,8 @@ public class PostFragment extends PageFragment implements TextWatcher, View.OnFo
             remainingCount -= validator.getShortUrlLength();
         }
         textViewCount.setText(String.valueOf(remainingCount));
-        if (remainingCount == 140) {
-            textViewCount.setTextColor(getResources().getColor(R.color.red));
-            buttonTweet.setEnabled(false);
-        } else if (remainingCount < 0) {
-            textViewCount.setTextColor(getResources().getColor(R.color.red));
+        if (remainingCount == 140 || remainingCount < 0) {
+            textViewCount.setTextColor(ContextCompat.getColor(getActivity(), R.color.red));
             buttonTweet.setEnabled(false);
         } else {
             textViewCount.setTextAppearance(getActivity(), android.R.style.TextAppearance_Widget_TextView);
@@ -224,7 +223,7 @@ public class PostFragment extends PageFragment implements TextWatcher, View.OnFo
         editText.setTextSize(textSize + 4);
         editText.setMovementMethod(new ArrowKeyMovementMethod() {
             @Override
-            protected boolean right(TextView widget, Spannable buffer) {
+            protected boolean right(@NonNull TextView widget, Spannable buffer) {
                 //Don't back to Home
                 return widget.getSelectionEnd() == widget.length() || super.right(widget, buffer);
             }

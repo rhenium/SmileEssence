@@ -28,6 +28,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -96,11 +97,8 @@ public class SendMessageDialogFragment extends StackableDialogFragment implement
             remainingCount -= validator.getShortUrlLength();
         }
         textViewCount.setText(String.valueOf(remainingCount));
-        if (remainingCount == 140) {
-            textViewCount.setTextColor(getResources().getColor(R.color.red));
-            buttonSend.setEnabled(false);
-        } else if (remainingCount < 0) {
-            textViewCount.setTextColor(getResources().getColor(R.color.red));
+        if (remainingCount == 140 || remainingCount < 0) {
+            textViewCount.setTextColor(ContextCompat.getColor(getActivity(), R.color.red));
             buttonSend.setEnabled(false);
         } else {
             textViewCount.setTextAppearance(getActivity(), android.R.style.TextAppearance_Widget_TextView);

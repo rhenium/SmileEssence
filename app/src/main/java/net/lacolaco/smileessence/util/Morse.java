@@ -55,7 +55,7 @@ public class Morse {
             return false;
         } else {
             for (String s : list) {
-                if (!s.equals("・・・") && !s.equals("・・") && !s.equals("・")) {
+                if (!"・・・".equals(s) && !"・・".equals(s) && !"・".equals(s)) {
                     return true;
                 }
             }

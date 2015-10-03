@@ -26,6 +26,7 @@ package net.lacolaco.smileessence.view.listener;
 
 import android.app.Activity;
 import android.graphics.drawable.ColorDrawable;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.util.UIHandler;
@@ -52,7 +53,7 @@ public class ListItemClickListener implements View.OnClickListener {
     @Override
     public void onClick(final View v) {
         final int currentBgColor = ((ColorDrawable) v.getBackground()).getColor();
-        v.setBackgroundColor(activity.getResources().getColor(R.color.metro_blue));
+        v.setBackgroundColor(ContextCompat.getColor(activity, R.color.metro_blue));
         v.invalidate();
         new UIHandler().post(() -> {
             v.setBackgroundColor(currentBgColor);

@@ -26,6 +26,7 @@ package net.lacolaco.smileessence.view.page;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.method.ArrowKeyMovementMethod;
@@ -228,13 +229,13 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
         });
         editText.setMovementMethod(new ArrowKeyMovementMethod() {
             @Override
-            protected boolean right(TextView widget, Spannable buffer) {
+            protected boolean right(@NonNull TextView widget, Spannable buffer) {
                 //Don't move page
                 return widget.getSelectionEnd() == widget.length() || super.right(widget, buffer);
             }
 
             @Override
-            protected boolean left(TextView widget, Spannable buffer) {
+            protected boolean left(@NonNull TextView widget, Spannable buffer) {
                 //Don't move page
                 return widget.getSelectionStart() == 0 || super.left(widget, buffer);
             }
@@ -318,9 +319,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
             query.setResultType(Query.RECENT);
             runRefreshTask(
                     new SearchTask(Application.getInstance().getCurrentAccount(), query),
-                    () -> {
-                        adapter.updateForce();
-                    });
+                    adapter::updateForce);
         }
     }
 

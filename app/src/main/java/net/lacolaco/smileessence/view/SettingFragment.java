@@ -33,8 +33,8 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.text.TextUtils;
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.activity.ManageAccountsActivity;
 import net.lacolaco.smileessence.activity.LicenseActivity;
+import net.lacolaco.smileessence.activity.ManageAccountsActivity;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.view.dialog.SimpleDialogFragment;
 

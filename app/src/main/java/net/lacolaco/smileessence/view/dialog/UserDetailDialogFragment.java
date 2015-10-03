@@ -28,6 +28,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
@@ -317,7 +318,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
 
     private void lockFollowButton() {
         buttonFollow.setText(R.string.user_detail_loading);
-        buttonFollow.setBackground(getActivity().getResources().getDrawable(R.drawable.button_round_gray));
+        buttonFollow.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.button_round_gray));
         buttonFollow.setEnabled(false);
     }
 

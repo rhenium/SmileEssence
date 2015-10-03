@@ -28,6 +28,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.*;
 import net.lacolaco.smileessence.Application;
@@ -207,7 +208,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         } else {
             retweet.setVisibility(View.VISIBLE);
             if (tweet.isRetweetedBy(account.getUserId())) {
-                retweet.setImageDrawable(getResources().getDrawable(R.drawable.icon_retweet_on));
+                retweet.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.icon_retweet_on));
             } else {
                 retweet.setImageDrawable(Themes.getStyledDrawable(getActivity(), themeResId, R.attr.icon_retweet_off));
             }
@@ -216,7 +217,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         ImageButton favorite = (ImageButton) view.findViewById(R.id.button_status_detail_favorite);
         favorite.setOnClickListener(this);
         if (tweet.isFavoritedBy(account.getUserId())) {
-            favorite.setImageDrawable(getResources().getDrawable(R.drawable.icon_favorite_on));
+            favorite.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.icon_favorite_on));
         } else {
             favorite.setImageDrawable(Themes.getStyledDrawable(getActivity(), themeResId, R.attr.icon_favorite_off));
         }
@@ -237,7 +238,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         Command.filter(commands);
         for (final Command command : commands) {
             View commandView = command.getView(activity, activity.getLayoutInflater(), null);
-            commandView.setBackgroundColor(getResources().getColor(R.color.transparent));
+            commandView.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.transparent));
             commandView.setOnClickListener(new ListItemClickListener(activity, command::execute));
             commandsLayout.addView(commandView);
         }

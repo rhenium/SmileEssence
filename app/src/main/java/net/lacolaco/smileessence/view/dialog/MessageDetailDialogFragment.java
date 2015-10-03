@@ -28,6 +28,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -204,7 +205,7 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
         Command.filter(commands);
         for (final Command command : commands) {
             View commandView = command.getView(activity, activity.getLayoutInflater(), null);
-            commandView.setBackgroundColor(getResources().getColor(R.color.transparent));
+            commandView.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.transparent));
             commandView.setOnClickListener(new ListItemClickListener(activity, command::execute));
             commandsLayout.addView(commandView);
         }

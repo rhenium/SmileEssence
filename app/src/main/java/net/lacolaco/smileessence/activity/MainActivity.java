@@ -330,6 +330,7 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
         return true;
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void onCurrentAccountChanged(Account account) {
         Logger.debug(String.format("onCurrentAccountChanged: %s", account.getUser().getScreenName()));

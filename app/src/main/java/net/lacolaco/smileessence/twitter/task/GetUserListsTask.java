@@ -28,6 +28,7 @@ import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.util.BackgroundTask;
 import net.lacolaco.smileessence.util.ListUtils;
 import twitter4j.TwitterException;
+import twitter4j.UserList;
 
 import java.util.List;
 
@@ -45,8 +46,6 @@ public class GetUserListsTask extends BackgroundTask<List<String>, Void> {
 
     @Override
     protected List<String> doInBackground() throws TwitterException {
-        return ListUtils.map(account.getTwitter().list().getUserLists(account.getUserId()), userLists -> {
-            return userLists.getFullName();
-        });
+        return ListUtils.map(account.getTwitter().list().getUserLists(account.getUserId()), UserList::getFullName);
     }
 }

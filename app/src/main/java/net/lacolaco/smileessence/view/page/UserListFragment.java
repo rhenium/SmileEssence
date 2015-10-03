@@ -197,7 +197,7 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
         adapter.updateForce();
         runRefreshTask(
                 new UserListStatusesTask(Application.getInstance().getCurrentAccount(), listFullName),
-                () -> adapter.updateForce());
+                adapter::updateForce);
     }
 
     private void runRefreshTask(TimelineTask<Tweet> task, Runnable onFinish) {
