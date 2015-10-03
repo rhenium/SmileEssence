@@ -25,6 +25,7 @@
 package net.lacolaco.smileessence.notification;
 
 import android.app.Activity;
+import android.support.annotation.StringRes;
 import android.widget.Toast;
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
@@ -53,19 +54,23 @@ public class Notificator {
         activity = a;
     }
 
-    public void publish(int resID) {
-        publish(activity.getString(resID));
-    }
-
     public void publish(String text) {
         publish(text, NotificationType.INFO);
     }
 
-    public void publish(int resID, NotificationType type) {
-        publish(activity.getString(resID), type);
+    public void publish(@StringRes int resId, Object... formatArgs) {
+        publish(activity.getString(resId, formatArgs), NotificationType.INFO);
     }
 
-    public void publish(String text, NotificationType type) {
+    public void alert(String text) {
+        publish(text, NotificationType.ALERT);
+    }
+
+    public void alert(@StringRes int resId, Object... formatArgs) {
+        publish(activity.getString(resId, formatArgs), NotificationType.ALERT);
+    }
+
+    private void publish(String text, NotificationType type) {
         if (activity.isFinishing()) {
             return;
         }

@@ -30,7 +30,6 @@ import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.command.IConfirmable;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.entity.User;
-import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.task.FavoriteTask;
 import net.lacolaco.smileessence.twitter.task.RetweetTask;
@@ -63,11 +62,11 @@ public class StatusCommandFavAndRT extends StatusCommand implements IConfirmable
     public boolean execute() {
         new FavoriteTask(Application.getInstance().getCurrentAccount(), getOriginalStatus().getId())
                 .onDone(x -> Notificator.getInstance().publish(R.string.notice_favorite_succeeded))
-                .onFail(x -> Notificator.getInstance().publish(R.string.notice_favorite_failed, NotificationType.ALERT))
+                .onFail(x -> Notificator.getInstance().alert(R.string.notice_favorite_failed))
                 .execute();
         new RetweetTask(Application.getInstance().getCurrentAccount(), getOriginalStatus().getId())
                 .onDone(x -> Notificator.getInstance().publish(R.string.notice_retweet_succeeded))
-                .onFail(x -> Notificator.getInstance().publish(R.string.notice_retweet_failed, NotificationType.ALERT))
+                .onFail(x -> Notificator.getInstance().alert(R.string.notice_retweet_failed))
                 .execute();
         return true;
     }

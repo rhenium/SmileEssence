@@ -61,9 +61,9 @@ public class SettingFragment extends PreferenceFragment implements OnSharedPrefe
                 if (TEXT_SIZE_MIN <= newTextSize && newTextSize <= TEXT_SIZE_MAX) {
                     return true;
                 }
-                Notificator.getInstance().publish(R.string.error_setting_text_size_range);
+                Notificator.getInstance().alert(R.string.error_setting_text_size_range);
             } else {
-                Notificator.getInstance().publish(R.string.error_setting_text_size_not_number);
+                Notificator.getInstance().alert(R.string.error_setting_text_size_not_number);
             }
             return false;
         } else if (preference.getKey().contentEquals(getString(R.string.key_setting_timelines))) {
@@ -72,9 +72,9 @@ public class SettingFragment extends PreferenceFragment implements OnSharedPrefe
                 if (TIMELINES_MIN <= newTextSize && newTextSize <= TIMELINES_MAX) {
                     return true;
                 }
-                Notificator.getInstance().publish(R.string.error_setting_timelines_range);
+                Notificator.getInstance().alert(R.string.error_setting_timelines_range);
             } else {
-                Notificator.getInstance().publish(R.string.error_setting_timelines_not_number);
+                Notificator.getInstance().alert(R.string.error_setting_timelines_not_number);
             }
             return false;
         } else if (preference.getKey().contentEquals(getString(R.string.key_setting_theme))) {

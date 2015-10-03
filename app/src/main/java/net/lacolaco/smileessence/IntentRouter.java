@@ -32,7 +32,6 @@ import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.CommandOpenUserDetail;
 import net.lacolaco.smileessence.data.PostState;
 import net.lacolaco.smileessence.logging.Logger;
-import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.task.ShowStatusTask;
 import net.lacolaco.smileessence.util.UIHandler;
@@ -129,7 +128,7 @@ public class IntentRouter {
                     fragment.setStatusID(tweet.getId());
                     DialogHelper.showDialog(activity, fragment);
                 })
-                .onFail(x -> Notificator.getInstance().publish(R.string.error_intent_status_cannot_load, NotificationType.ALERT));
+                .onFail(x -> Notificator.getInstance().alert(R.string.error_intent_status_cannot_load));
     }
 
     private static void showUserDialog(MainActivity activity, String screenName) {

@@ -1,4 +1,4 @@
-package net.lacolaco.smileessence.view;
+package net.lacolaco.smileessence.view.page;
 
 import android.app.Fragment;
 import android.widget.Adapter;

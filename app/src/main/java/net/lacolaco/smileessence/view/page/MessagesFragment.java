@@ -22,25 +22,27 @@
  * SOFTWARE.
  */
 
-package net.lacolaco.smileessence.view;
+package net.lacolaco.smileessence.view.page;
 
 import android.os.Bundle;
 import android.widget.ListView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.entity.ExtractionWord;
-import net.lacolaco.smileessence.entity.Tweet;
-import net.lacolaco.smileessence.notification.NotificationType;
+import net.lacolaco.smileessence.entity.DirectMessage;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.twitter.StatusFilter;
-import net.lacolaco.smileessence.twitter.task.MentionsTimelineTask;
+import net.lacolaco.smileessence.twitter.task.DirectMessagesTask;
+import net.lacolaco.smileessence.twitter.task.SentDirectMessagesTask;
 import net.lacolaco.smileessence.twitter.task.TimelineTask;
-import net.lacolaco.smileessence.view.adapter.StatusListAdapter;
-import net.lacolaco.smileessence.viewmodel.StatusViewModel;
+import net.lacolaco.smileessence.view.adapter.MessageListAdapter;
+import net.lacolaco.smileessence.viewmodel.MessageViewModel;
 
-public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
+/**
+ * Fragment of messages list
+ */
+public class MessagesFragment extends CustomListFragment<MessageListAdapter> {
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 
@@ -50,27 +52,18 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
     }
 
     // ------------------------ INTERFACE METHODS ------------------------
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        StatusListAdapter adapter = new StatusListAdapter(getActivity());
+        MessageListAdapter adapter = new MessageListAdapter(getActivity());
         setAdapter(adapter);
 
-        StatusFilter.getInstance().register(this, StatusViewModel.class, (StatusViewModel tweet) -> {
-            if (tweet.getTweet().getMentions().contains(Application.getInstance().getCurrentAccount().getUser().getScreenName())) {
-                adapter.addToTop(tweet);
-                adapter.update();
-            } else {
-                for (ExtractionWord word : ExtractionWord.all()) {
-                    if (word.getPattern().matcher(tweet.getTweet().getText()).find()) {
-                        adapter.addToTop(tweet);
-                        adapter.update();
-                        return;
-                    }
-                }
-            }
+        StatusFilter.getInstance().register(this, MessageViewModel.class, (MessageViewModel message) -> {
+            adapter.addToTop(message);
+            adapter.update();
         }, id -> {
-            adapter.removeByStatusID(id);
+            adapter.removeByMessageID(id);
             adapter.updateForce();
         });
 
@@ -81,7 +74,8 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
 
     @Override
     public void refresh() {
-        runRefreshTask(new MentionsTimelineTask(Application.getInstance().getCurrentAccount()), () -> getAdapter().updateForce());
+        runRefreshTask(new DirectMessagesTask(Application.getInstance().getCurrentAccount()), () -> getAdapter().updateForce());
+        runRefreshTask(new SentDirectMessagesTask(Application.getInstance().getCurrentAccount()), () -> getAdapter().updateForce());
     }
 
     // --------------------- Interface OnRefreshListener2 ---------------------
@@ -89,32 +83,32 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
     @Override
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
         runRefreshTask(
-                new MentionsTimelineTask(Application.getInstance().getCurrentAccount())
+                new DirectMessagesTask(Application.getInstance().getCurrentAccount())
                         .setSinceId(getAdapter().getTopID()),
                 () -> {
                     updateListViewWithNotice(refreshView.getRefreshableView(), true);
                     refreshView.onRefreshComplete();
-                });
+                }); // TODO: sent?
     }
 
     @Override
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
         runRefreshTask(
-                new MentionsTimelineTask(Application.getInstance().getCurrentAccount())
+                new DirectMessagesTask(Application.getInstance().getCurrentAccount())
                         .setMaxId(getAdapter().getLastID() - 1),
                 () -> {
                     updateListViewWithNotice(refreshView.getRefreshableView(), false);
                     refreshView.onRefreshComplete();
-                });
+                }); // TODO: sent?
     }
 
-    private void runRefreshTask(TimelineTask<Tweet> task, Runnable onFinish) {
+    private void runRefreshTask(TimelineTask<DirectMessage> task, Runnable onFinish) {
         task
                 .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
-                .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_mentions, NotificationType.ALERT))
-                .onDoneUI(tweets -> {
-                    for (Tweet tweet : tweets) {
-                        StatusFilter.getInstance().filter(new StatusViewModel(tweet));
+                .onFail(x -> Notificator.getInstance().alert(R.string.notice_error_get_messages))
+                .onDoneUI(messages -> {
+                    for (DirectMessage message : messages) {
+                        StatusFilter.getInstance().filter(new MessageViewModel(message));
                     }
                 })
                 .onFinishUI(onFinish)

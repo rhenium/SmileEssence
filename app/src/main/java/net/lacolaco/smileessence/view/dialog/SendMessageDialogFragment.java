@@ -41,7 +41,6 @@ import com.twitter.Validator;
 import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.data.PostState;
-import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.task.SendMessageTask;
 
@@ -155,7 +154,7 @@ public class SendMessageDialogFragment extends StackableDialogFragment implement
         String text = editText.getText().toString();
         new SendMessageTask(Application.getInstance().getCurrentAccount(), screenName, text)
                 .onDone(x -> Notificator.getInstance().publish(R.string.notice_message_send_succeeded))
-                .onFail(x -> Notificator.getInstance().publish(R.string.notice_message_send_failed, NotificationType.ALERT))
+                .onFail(x -> Notificator.getInstance().alert(R.string.notice_message_send_failed))
                 .execute();
         dismiss();
     }

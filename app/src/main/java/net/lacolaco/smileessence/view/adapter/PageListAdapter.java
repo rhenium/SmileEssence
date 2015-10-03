@@ -29,7 +29,7 @@ import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.logging.Logger;
-import net.lacolaco.smileessence.view.PageFragment;
+import net.lacolaco.smileessence.view.page.PageFragment;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;

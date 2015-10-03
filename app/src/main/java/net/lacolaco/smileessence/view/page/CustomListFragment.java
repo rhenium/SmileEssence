@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package net.lacolaco.smileessence.view;
+package net.lacolaco.smileessence.view.page;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -104,7 +104,7 @@ public abstract class CustomListFragment<T extends CustomListAdapter> extends Pa
         int increments = after - before;
         if (increments > 0) {
             adapter.setNotifiable(false);
-            Notificator.getInstance().publish(getString(R.string.notice_timeline_new, increments));
+            Notificator.getInstance().publish(R.string.notice_timeline_new, increments);
             if (addedToTop) {
                 absListView.setSelection(increments + 1);
                 absListView.smoothScrollToPositionFromTop(increments, 0);

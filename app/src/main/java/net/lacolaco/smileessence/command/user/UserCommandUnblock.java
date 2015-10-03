@@ -29,7 +29,6 @@ import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.command.IConfirmable;
 import net.lacolaco.smileessence.entity.User;
-import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.task.UnblockTask;
 
@@ -59,7 +58,7 @@ public class UserCommandUnblock extends UserCommand implements IConfirmable {
     public boolean execute() {
         new UnblockTask(Application.getInstance().getCurrentAccount(), getUser().getId())
                 .onDone(user -> Notificator.getInstance().publish(R.string.notice_unblock_succeeded))
-                .onFail(x -> Notificator.getInstance().publish(R.string.notice_unblock_failed, NotificationType.ALERT))
+                .onFail(x -> Notificator.getInstance().alert(R.string.notice_unblock_failed))
                 .execute();
         return true;
     }

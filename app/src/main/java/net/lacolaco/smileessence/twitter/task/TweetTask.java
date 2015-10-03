@@ -32,7 +32,6 @@ import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.logging.Logger;
-import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.util.BackgroundTask;
 import twitter4j.StatusUpdate;
@@ -122,7 +121,7 @@ public class TweetTask extends BackgroundTask<Tweet, Void> {
             if (tweet != null) {
                 Notificator.getInstance().publish(R.string.notice_tweet_succeeded);
             } else {
-                Notificator.getInstance().publish(R.string.notice_tweet_failed, NotificationType.ALERT);
+                Notificator.getInstance().alert(R.string.notice_tweet_failed);
             }
             return tweet;
         } catch (TwitterException e) {

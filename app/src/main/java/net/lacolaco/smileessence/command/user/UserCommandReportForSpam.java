@@ -29,7 +29,6 @@ import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.command.IConfirmable;
 import net.lacolaco.smileessence.entity.User;
-import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.task.ReportForSpamTask;
 
@@ -59,7 +58,7 @@ public class UserCommandReportForSpam extends UserCommand implements IConfirmabl
     public boolean execute() {
         new ReportForSpamTask(Application.getInstance().getCurrentAccount(), getUser().getId())
                 .onDone(user -> Notificator.getInstance().publish(R.string.notice_r4s_succeeded))
-                .onFail(ex -> Notificator.getInstance().publish(R.string.notice_r4s_failed, NotificationType.ALERT))
+                .onFail(ex -> Notificator.getInstance().alert(R.string.notice_r4s_failed))
                 .execute();
         return true;
     }

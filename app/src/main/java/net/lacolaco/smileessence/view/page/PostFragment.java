@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package net.lacolaco.smileessence.view;
+package net.lacolaco.smileessence.view.page;
 
 import android.content.Context;
 import android.content.Intent;
@@ -48,6 +48,7 @@ import net.lacolaco.smileessence.twitter.task.TweetTask;
 import net.lacolaco.smileessence.util.BitmapThumbnailTask;
 import net.lacolaco.smileessence.util.IntentUtils;
 import net.lacolaco.smileessence.util.UIHandler;
+import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.dialog.PostMenuDialogFragment;
 import net.lacolaco.smileessence.view.dialog.SelectImageDialogFragment;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;

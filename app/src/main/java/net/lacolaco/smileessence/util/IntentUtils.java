@@ -30,7 +30,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 
 import java.util.List;
@@ -51,7 +50,7 @@ public class IntentUtils {
             activity.startActivity(intent);
             return true;
         } else {
-            Notificator.getInstance().publish(R.string.notice_error_start_activity, NotificationType.ALERT);
+            Notificator.getInstance().alert(R.string.notice_error_start_activity);
         }
         return false;
     }
@@ -82,7 +81,7 @@ public class IntentUtils {
             activity.startActivityForResult(intent, requestCode);
             return true;
         } else {
-            Notificator.getInstance().publish(R.string.notice_error_start_activity, NotificationType.ALERT);
+            Notificator.getInstance().alert(R.string.notice_error_start_activity);
         }
         return false;
     }

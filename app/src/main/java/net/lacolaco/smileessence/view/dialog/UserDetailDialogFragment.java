@@ -45,7 +45,6 @@ import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.RBinding;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.entity.User;
-import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.twitter.task.FollowTask;
@@ -154,7 +153,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         new UserTimelineTask(currentAccount, getUserID())
                 .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
                 .setSinceId(adapter.getTopID())
-                .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_user_timeline, NotificationType.ALERT))
+                .onFail(x -> Notificator.getInstance().alert(R.string.notice_error_get_user_timeline))
                 .onDoneUI(tweets -> {
                     for (int i = tweets.size() - 1; i >= 0; i--) {
                         adapter.addToTop(new StatusViewModel(tweets.get(i)));
@@ -171,7 +170,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         new UserTimelineTask(currentAccount, getUserID())
                 .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
                 .setMaxId(adapter.getLastID() - 1)
-                .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_user_timeline, NotificationType.ALERT))
+                .onFail(x -> Notificator.getInstance().alert(R.string.notice_error_get_user_timeline))
                 .onDoneUI(tweets -> {
                     for (Tweet tweet : tweets) {
                         adapter.addToBottom(new StatusViewModel(tweet));
@@ -243,7 +242,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         tabHost.getTabWidget().getChildTabViewAt(1).setVisibility(View.GONE);
         new UserTimelineTask(account, user.getId())
                 .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
-                .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_user_timeline, NotificationType.ALERT))
+                .onFail(x -> Notificator.getInstance().alert(R.string.notice_error_get_user_timeline))
                 .onDoneUI(tweets -> {
                     for (Tweet tweet : tweets) {
                         adapter.addToBottom(new StatusViewModel(tweet));
@@ -358,7 +357,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
                         buttonFollow.setEnabled(true);
                     })
                     .onFail(x ->
-                            Notificator.getInstance().publish(R.string.notice_unfollow_failed, NotificationType.ALERT))
+                            Notificator.getInstance().alert(R.string.notice_unfollow_failed))
                     .execute();
         } else {
             new FollowTask(account, user.getId())
@@ -367,7 +366,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
                         updateRelationship(user.getId());
                         buttonFollow.setEnabled(true);
                     })
-                    .onFail(x -> Notificator.getInstance().publish(R.string.notice_follow_failed, NotificationType.ALERT))
+                    .onFail(x -> Notificator.getInstance().alert(R.string.notice_follow_failed))
                     .execute();
         }
     }

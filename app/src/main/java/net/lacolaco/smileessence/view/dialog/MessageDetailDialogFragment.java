@@ -38,7 +38,6 @@ import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.CommandOpenURL;
 import net.lacolaco.smileessence.entity.DirectMessage;
-import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.task.DeleteMessageTask;
 import net.lacolaco.smileessence.view.DialogHelper;
@@ -104,7 +103,7 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
 
         DirectMessage selectedMessage = DirectMessage.fetch(getMessageID());
         if (selectedMessage == null) {
-            Notificator.getInstance().publish(R.string.notice_error_get_messages);
+            Notificator.getInstance().alert(R.string.notice_error_get_messages);
             return new DisposeDialog(getActivity());
         }
         View header = getTitleView(selectedMessage);
@@ -158,7 +157,7 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
         ConfirmDialogFragment.show(getActivity(), getString(R.string.dialog_confirm_commands), () -> {
             new DeleteMessageTask(Application.getInstance().getCurrentAccount(), message.getId())
                     .onDone(x -> Notificator.getInstance().publish(R.string.notice_message_delete_succeeded))
-                    .onFail(x -> Notificator.getInstance().publish(R.string.notice_message_delete_failed, NotificationType.ALERT))
+                    .onFail(x -> Notificator.getInstance().alert(R.string.notice_message_delete_failed))
                     .execute();
             dismiss();
         });

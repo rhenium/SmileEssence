@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package net.lacolaco.smileessence.view;
+package net.lacolaco.smileessence.view.page;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -39,13 +39,13 @@ import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Tweet;
-import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.preference.InternalPreferenceHelper;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.twitter.StatusFilter;
 import net.lacolaco.smileessence.twitter.task.TimelineTask;
 import net.lacolaco.smileessence.twitter.task.UserListStatusesTask;
+import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.adapter.UserListListAdapter;
 import net.lacolaco.smileessence.view.dialog.SelectUserListDialogFragment;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
@@ -171,7 +171,7 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
     }
 
     private void notifyTextEmpty() {
-        Notificator.getInstance().publish(R.string.notice_userlist_not_selected);
+        Notificator.getInstance().alert(R.string.notice_userlist_not_selected);
     }
 
     private void openUserListsDialog() {
@@ -199,7 +199,7 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
         final UserListListAdapter adapter = getAdapter();
         task
                 .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
-                .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_get_list, NotificationType.ALERT))
+                .onFail(x -> Notificator.getInstance().alert(R.string.notice_error_get_list))
                 .onDoneUI(tweets -> {
                     for (Tweet tweet : tweets) {
                         StatusViewModel statusViewModel = new StatusViewModel(tweet);

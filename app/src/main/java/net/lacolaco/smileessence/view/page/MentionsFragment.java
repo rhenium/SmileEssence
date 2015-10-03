@@ -22,26 +22,24 @@
  * SOFTWARE.
  */
 
-package net.lacolaco.smileessence.view;
+package net.lacolaco.smileessence.view.page;
 
 import android.os.Bundle;
 import android.widget.ListView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.activity.MainActivity;
+import net.lacolaco.smileessence.entity.ExtractionWord;
 import net.lacolaco.smileessence.entity.Tweet;
-import net.lacolaco.smileessence.logging.Logger;
-import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.twitter.StatusFilter;
-import net.lacolaco.smileessence.twitter.task.HomeTimelineTask;
+import net.lacolaco.smileessence.twitter.task.MentionsTimelineTask;
 import net.lacolaco.smileessence.twitter.task.TimelineTask;
 import net.lacolaco.smileessence.view.adapter.StatusListAdapter;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 
-public class HomeFragment extends CustomListFragment<StatusListAdapter> {
+public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 
@@ -51,55 +49,57 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
     }
 
     // ------------------------ INTERFACE METHODS ------------------------
-
-    @Override // onCreate って Fragment のインスタンスが作られるときは必ず呼ばれるって認識でいいんだよね？
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         StatusListAdapter adapter = new StatusListAdapter(getActivity());
         setAdapter(adapter);
 
         StatusFilter.getInstance().register(this, StatusViewModel.class, (StatusViewModel tweet) -> {
-            adapter.addToTop(tweet);
-            adapter.update();
+            if (tweet.getTweet().getMentions().contains(Application.getInstance().getCurrentAccount().getUser().getScreenName())) {
+                adapter.addToTop(tweet);
+                adapter.update();
+            } else {
+                for (ExtractionWord word : ExtractionWord.all()) {
+                    if (word.getPattern().matcher(tweet.getTweet().getText()).find()) {
+                        adapter.addToTop(tweet);
+                        adapter.update();
+                        return;
+                    }
+                }
+            }
         }, id -> {
             adapter.removeByStatusID(id);
             adapter.updateForce();
         });
 
         if (Application.getInstance().getCurrentAccount() != null) {
-            Logger.debug(String.format("Current account %s is set; refreshing", Application.getInstance().getCurrentAccount().getUser().getScreenName()));
             refresh();
         }
     }
 
     @Override
     public void refresh() {
-        runRefreshTask(new HomeTimelineTask(Application.getInstance().getCurrentAccount()), () -> getAdapter().updateForce());
+        runRefreshTask(new MentionsTimelineTask(Application.getInstance().getCurrentAccount()), () -> getAdapter().updateForce());
     }
 
     // --------------------- Interface OnRefreshListener2 ---------------------
 
     @Override
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
-        final MainActivity activity = (MainActivity) getActivity();
-        if (activity.isStreaming()) {
-            updateListViewWithNotice(refreshView.getRefreshableView(), true);
-            refreshView.onRefreshComplete();
-        } else {
-            runRefreshTask(
-                    new HomeTimelineTask(Application.getInstance().getCurrentAccount())
-                            .setSinceId(getAdapter().getTopID()),
-                    () -> {
-                        updateListViewWithNotice(refreshView.getRefreshableView(), true);
-                        refreshView.onRefreshComplete();
-                    });
-        }
+        runRefreshTask(
+                new MentionsTimelineTask(Application.getInstance().getCurrentAccount())
+                        .setSinceId(getAdapter().getTopID()),
+                () -> {
+                    updateListViewWithNotice(refreshView.getRefreshableView(), true);
+                    refreshView.onRefreshComplete();
+                });
     }
 
     @Override
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
         runRefreshTask(
-                new HomeTimelineTask(Application.getInstance().getCurrentAccount())
+                new MentionsTimelineTask(Application.getInstance().getCurrentAccount())
                         .setMaxId(getAdapter().getLastID() - 1),
                 () -> {
                     updateListViewWithNotice(refreshView.getRefreshableView(), false);
@@ -110,7 +110,7 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
     private void runRefreshTask(TimelineTask<Tweet> task, Runnable onFinish) {
         task
                 .setCount(UserPreferenceHelper.getInstance().getRequestCountPerPage())
-                .onFail(e -> Notificator.getInstance().publish(R.string.notice_error_get_home, NotificationType.ALERT))
+                .onFail(x -> Notificator.getInstance().alert(R.string.notice_error_get_mentions))
                 .onDoneUI(tweets -> {
                     for (Tweet tweet : tweets) {
                         StatusFilter.getInstance().filter(new StatusViewModel(tweet));

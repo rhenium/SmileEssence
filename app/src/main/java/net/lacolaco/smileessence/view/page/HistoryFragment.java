@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package net.lacolaco.smileessence.view;
+package net.lacolaco.smileessence.view.page;
 
 import android.os.Bundle;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;

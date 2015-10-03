@@ -39,7 +39,6 @@ import net.lacolaco.smileessence.data.PostState;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.RBinding;
 import net.lacolaco.smileessence.entity.Tweet;
-import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.TweetBuilder;
 import net.lacolaco.smileessence.twitter.task.*;
@@ -113,7 +112,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         tweet = Tweet.fetch(getStatusID());
         if (tweet == null) { // trying open deleted tweet
-            Notificator.getInstance().publish(R.string.notice_error_show_status);
+            Notificator.getInstance().alert(R.string.notice_error_show_status);
             return new DisposeDialog(getActivity());
         }
 
@@ -254,7 +253,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
 
             new DeleteStatusTask(account, tweet.getOriginalTweet().getId())
                     .onDone(t -> Notificator.getInstance().publish(R.string.notice_status_delete_succeeded))
-                    .onFail(e -> Notificator.getInstance().publish(R.string.notice_status_delete_failed, NotificationType.ALERT))
+                    .onFail(e -> Notificator.getInstance().alert(R.string.notice_status_delete_failed))
                     .execute();
             dismiss();
         });
@@ -305,12 +304,12 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         if (tweet.isFavoritedBy(account.getUserId())) {
             new UnfavoriteTask(account, tweet.getId())
                     .onDone(x -> Notificator.getInstance().publish(R.string.notice_unfavorite_succeeded))
-                    .onFail(x -> Notificator.getInstance().publish(R.string.notice_unfavorite_failed, NotificationType.ALERT))
+                    .onFail(x -> Notificator.getInstance().alert(R.string.notice_unfavorite_failed))
                     .execute();
         } else {
             new FavoriteTask(account, tweet.getId())
                     .onDone(x -> Notificator.getInstance().publish(R.string.notice_favorite_succeeded))
-                    .onFail(x -> Notificator.getInstance().publish(R.string.notice_favorite_failed, NotificationType.ALERT))
+                    .onFail(x -> Notificator.getInstance().alert(R.string.notice_favorite_failed))
                     .execute();
         }
     }
@@ -321,13 +320,13 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
             if (tweet.isRetweetedBy(account.getUserId())) {
                 new DeleteStatusTask(account, tweet.getRetweetIdBy(account.getUserId()))
                         .onDone(t -> Notificator.getInstance().publish(R.string.notice_status_delete_succeeded))
-                        .onFail(e -> Notificator.getInstance().publish(R.string.notice_status_delete_failed, NotificationType.ALERT))
+                        .onFail(e -> Notificator.getInstance().alert(R.string.notice_status_delete_failed))
                         .execute();
                 dismiss();
             } else {
                 new RetweetTask(account, tweet.getId())
                         .onDone(x -> Notificator.getInstance().publish(R.string.notice_retweet_succeeded))
-                        .onFail(x -> Notificator.getInstance().publish(R.string.notice_retweet_failed, NotificationType.ALERT))
+                        .onFail(x -> Notificator.getInstance().alert(R.string.notice_retweet_failed))
                         .execute();
             }
         });

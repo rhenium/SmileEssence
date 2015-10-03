@@ -31,7 +31,6 @@ import net.lacolaco.smileessence.command.IConfirmable;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.entity.User;
-import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.TweetBuilder;
 import net.lacolaco.smileessence.twitter.task.FavoriteTask;
@@ -81,7 +80,7 @@ public class StatusCommandMakeAnonymous extends StatusCommand implements IConfir
         new TweetTask(Application.getInstance().getCurrentAccount(), update).execute();
         new FavoriteTask(Application.getInstance().getCurrentAccount(), getOriginalStatus().getId())
                 .onDone(x -> Notificator.getInstance().publish(R.string.notice_favorite_succeeded))
-                .onFail(x -> Notificator.getInstance().publish(R.string.notice_favorite_failed, NotificationType.ALERT))
+                .onFail(x -> Notificator.getInstance().alert(R.string.notice_favorite_failed))
                 .execute();
         return true;
     }

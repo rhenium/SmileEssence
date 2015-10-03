@@ -42,7 +42,6 @@ import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.data.PostState;
 import net.lacolaco.smileessence.entity.*;
 import net.lacolaco.smileessence.logging.Logger;
-import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.preference.InternalPreferenceHelper;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
@@ -52,9 +51,9 @@ import net.lacolaco.smileessence.util.BitmapOptimizer;
 import net.lacolaco.smileessence.util.BitmapURLTask;
 import net.lacolaco.smileessence.util.IntentUtils;
 import net.lacolaco.smileessence.util.UIObserverBundle;
-import net.lacolaco.smileessence.view.*;
 import net.lacolaco.smileessence.view.adapter.PageListAdapter;
 import net.lacolaco.smileessence.view.dialog.ConfirmDialogFragment;
+import net.lacolaco.smileessence.view.page.*;
 import twitter4j.TwitterStream;
 
 public class MainActivity extends Activity implements Application.OnCurrentAccountChangedListener {
@@ -111,7 +110,7 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
             c.close();
         } catch (Exception e) {
             e.printStackTrace();
-            Notificator.getInstance().publish(R.string.notice_select_image_failed, NotificationType.ALERT);
+            Notificator.getInstance().alert(R.string.notice_select_image_failed);
         }
     }
 
@@ -306,7 +305,7 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
     private void getImageUri(int requestCode, int resultCode, Intent data) {
         if (resultCode != RESULT_OK) {
             Logger.error(requestCode);
-            Notificator.getInstance().publish(R.string.notice_select_image_failed);
+            Notificator.getInstance().alert(R.string.notice_select_image_failed);
             finish();
             return;
         }

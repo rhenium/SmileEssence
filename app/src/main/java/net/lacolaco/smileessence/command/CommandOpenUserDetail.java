@@ -27,7 +27,6 @@ package net.lacolaco.smileessence.command;
 import android.app.Activity;
 import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.notification.NotificationType;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.task.ShowUserTask;
 import net.lacolaco.smileessence.view.DialogHelper;
@@ -68,7 +67,7 @@ public class CommandOpenUserDetail extends Command {
                     fragment.setUserID(user.getId());
                     DialogHelper.showDialog(getActivity(), fragment);
                 })
-                .onFail(x -> Notificator.getInstance().publish(R.string.notice_error_show_user, NotificationType.ALERT))
+                .onFail(x -> Notificator.getInstance().alert(R.string.notice_error_show_user))
                 .execute();
 
         return false;

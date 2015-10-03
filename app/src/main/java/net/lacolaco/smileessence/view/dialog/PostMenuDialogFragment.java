@@ -46,7 +46,7 @@ public class PostMenuDialogFragment extends MenuDialogFragment {
         List<Command> commands = getCommands();
         Command.filter(commands);
         if (commands.isEmpty()) {
-            Notificator.getInstance().publish(R.string.notice_no_commands_available);
+            Notificator.getInstance().alert(R.string.notice_no_commands_available);
             dismiss();
         }
         for (Command command : commands) {
