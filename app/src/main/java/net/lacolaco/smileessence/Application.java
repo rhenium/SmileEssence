@@ -24,6 +24,7 @@
 
 package net.lacolaco.smileessence;
 
+import com.squareup.leakcanary.LeakCanary;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
@@ -48,6 +49,7 @@ public class Application extends com.activeandroid.app.Application {
     public void onCreate() {
         super.onCreate();
         instance = this; // プロセスの寿命の間 1 度しか呼ばれないので安全
+        LeakCanary.install(this);
         Logger.debug("onCreate");
     }
 
