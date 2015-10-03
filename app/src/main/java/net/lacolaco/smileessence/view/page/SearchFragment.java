@@ -50,6 +50,7 @@ import net.lacolaco.smileessence.preference.InternalPreferenceHelper;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.twitter.StatusFilter;
 import net.lacolaco.smileessence.twitter.task.SearchTask;
+import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.adapter.SearchListAdapter;
 import net.lacolaco.smileessence.view.dialog.SelectSearchQueryDialogFragment;
@@ -138,8 +139,10 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
         final SearchListAdapter adapter = getAdapter();
         String queryString = adapter.getQuery();
         if (TextUtils.isEmpty(queryString)) {
-            notifyTextEmpty();
-            refreshView.onRefreshComplete();
+            new UIHandler().post(() -> {
+                notifyTextEmpty();
+                refreshView.onRefreshComplete();
+            });
             return;
         }
         final Query query = new Query();
@@ -159,12 +162,13 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
 
     @Override
     public void onPullUpToRefresh(final PullToRefreshBase<ListView> refreshView) {
-        final Account currentAccount = Application.getInstance().getCurrentAccount();
         final SearchListAdapter adapter = getAdapter();
         String queryString = adapter.getQuery();
         if (TextUtils.isEmpty(queryString)) {
-            notifyTextEmpty();
-            refreshView.onRefreshComplete();
+            new UIHandler().post(() -> {
+                notifyTextEmpty();
+                refreshView.onRefreshComplete();
+            });
             return;
         }
         final Query query = new Query();

@@ -45,6 +45,7 @@ import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.twitter.StatusFilter;
 import net.lacolaco.smileessence.twitter.task.TimelineTask;
 import net.lacolaco.smileessence.twitter.task.UserListStatusesTask;
+import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.adapter.UserListListAdapter;
 import net.lacolaco.smileessence.view.dialog.SelectUserListDialogFragment;
@@ -108,8 +109,10 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
         final UserListListAdapter adapter = getAdapter();
         String listFullName = adapter.getListFullName();
         if (TextUtils.isEmpty(listFullName)) {
-            notifyTextEmpty();
-            refreshView.onRefreshComplete();
+            new UIHandler().post(() -> {
+                notifyTextEmpty();
+                refreshView.onRefreshComplete();
+            });
             return;
         }
         runRefreshTask(
@@ -126,8 +129,10 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
         final UserListListAdapter adapter = getAdapter();
         String listFullName = adapter.getListFullName();
         if (TextUtils.isEmpty(listFullName)) {
-            notifyTextEmpty();
-            refreshView.onRefreshComplete();
+            new UIHandler().post(() -> {
+                notifyTextEmpty();
+                refreshView.onRefreshComplete();
+            });
             return;
         }
         runRefreshTask(

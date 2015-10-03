@@ -37,6 +37,7 @@ import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.twitter.StatusFilter;
 import net.lacolaco.smileessence.twitter.task.HomeTimelineTask;
 import net.lacolaco.smileessence.twitter.task.TimelineTask;
+import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.view.adapter.StatusListAdapter;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 
@@ -82,8 +83,10 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
     public void onPullDownToRefresh(final PullToRefreshBase<ListView> refreshView) {
         final MainActivity activity = (MainActivity) getActivity();
         if (activity.isStreaming()) {
-            updateListViewWithNotice(refreshView.getRefreshableView(), true);
-            refreshView.onRefreshComplete();
+            new UIHandler().post(() -> {
+                updateListViewWithNotice(refreshView.getRefreshableView(), true);
+                refreshView.onRefreshComplete();
+            });
         } else {
             runRefreshTask(
                     new HomeTimelineTask(Application.getInstance().getCurrentAccount())
