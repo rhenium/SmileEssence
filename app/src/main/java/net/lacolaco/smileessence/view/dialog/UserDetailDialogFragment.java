@@ -181,6 +181,13 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         user = User.fetch(getUserID());
+        observerBundle = new UIObserverBundle();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        observerBundle.detachAll();
     }
 
     @Override
@@ -190,8 +197,6 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
             Notificator.getInstance().publish(R.string.notice_error_show_user);
             return new DisposeDialog(activity);
         }
-
-        observerBundle = new UIObserverBundle();
 
         View v = activity.getLayoutInflater().inflate(R.layout.dialog_user_detail, null);
         View menu = v.findViewById(R.id.imageview_user_detail_menu);
