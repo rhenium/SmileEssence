@@ -116,8 +116,9 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
         // TODO: 効率的な探索どうする
         DirectMessage replyTo = null;
         for (DirectMessage mes : DirectMessage.cached()) {
-            if (message.getRecipient() == mes.getSender() &&
-                    message.getId() > mes.getId() &&
+            if (message.getId() > mes.getId() &&
+                    message.getRecipient() == mes.getSender() &&
+                    message.getSender() == mes.getRecipient() &&
                     (replyTo == null || replyTo.getId() < mes.getId())) {
                 replyTo = mes;
             }
