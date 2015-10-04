@@ -81,7 +81,7 @@ public class SelectSearchQueryDialogFragment extends MenuDialogFragment implemen
         ListView listView = (ListView) body.findViewById(R.id.listview_dialog_menu_list);
         final CustomListAdapter<Command> adapter = new CustomListAdapter<>(activity);
         listView.setAdapter(adapter);
-        listView.setOnItemClickListener(onItemClickListener);
+        listView.setOnItemClickListener(this);
 
         // addition
         listView.setOnItemLongClickListener(this);

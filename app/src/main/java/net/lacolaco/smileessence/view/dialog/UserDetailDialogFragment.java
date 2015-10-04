@@ -85,6 +85,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
     private PullToRefreshListView listViewTimeline;
     private TabHost tabHost;
     private UIObserverBundle observerBundle;
+    private User user;
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 
@@ -105,44 +106,36 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
 
     @Override
     public void onClick(final View v) {
-        User user = User.fetch(getUserID());
-        if (user != null) {
-            switch (v.getId()) {
-                case R.id.imageview_user_detail_menu: {
-                    openUserMenu(user);
-                    break;
-                }
-                case R.id.imageview_user_detail_icon: {
-                    IntentUtils.openUri(getActivity(), user.getProfileImageUrlOriginal());
-                    break;
-                }
-                case R.id.textview_user_detail_screenname: {
-                    IntentUtils.openUri(getActivity(), user.getUserHomeURL());
-                    break;
-                }
-                case R.id.textview_user_detail_tweet_count: {
-                    IntentUtils.openUri(getActivity(), user.getUserHomeURL());
-                    break;
-                }
-                case R.id.textview_user_detail_friend_count: {
-                    IntentUtils.openUri(getActivity(), String.format("%s/following", user.getUserHomeURL()));
-                    break;
-                }
-                case R.id.textview_user_detail_follower_count: {
-                    IntentUtils.openUri(getActivity(), String.format("%s/followers", user.getUserHomeURL()));
-                    break;
-                }
-                case R.id.textview_user_detail_favorite_count: {
-                    IntentUtils.openUri(getActivity(), String.format("%s/favorites", user.getUserHomeURL()));
-                    break;
-                }
-                case R.id.button_user_detail_follow: {
-                    ConfirmDialogFragment.show(getActivity(), getString(R.string.dialog_confirm_commands), () -> toggleFollowing(user));
-                    break;
-                }
+        switch (v.getId()) {
+            case R.id.imageview_user_detail_menu: {
+                openUserMenu();
+                break;
             }
-        } else {
-            dismiss(); // BUG
+            case R.id.imageview_user_detail_icon: {
+                IntentUtils.openUri(getActivity(), user.getProfileImageUrlOriginal());
+                break;
+            }
+            case R.id.textview_user_detail_screenname:
+            case R.id.textview_user_detail_tweet_count:{
+                IntentUtils.openUri(getActivity(), user.getUserHomeURL());
+                break;
+            }
+            case R.id.textview_user_detail_friend_count: {
+                IntentUtils.openUri(getActivity(), String.format("%s/following", user.getUserHomeURL()));
+                break;
+            }
+            case R.id.textview_user_detail_follower_count: {
+                IntentUtils.openUri(getActivity(), String.format("%s/followers", user.getUserHomeURL()));
+                break;
+            }
+            case R.id.textview_user_detail_favorite_count: {
+                IntentUtils.openUri(getActivity(), String.format("%s/favorites", user.getUserHomeURL()));
+                break;
+            }
+            case R.id.button_user_detail_follow: {
+                ConfirmDialogFragment.show(getActivity(), getString(R.string.dialog_confirm_commands), this::toggleFollowing);
+                break;
+            }
         }
     }
 
@@ -185,10 +178,16 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        user = User.fetch(getUserID());
+    }
+
+    @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         MainActivity activity = (MainActivity) getActivity();
-        User user = User.fetch(getUserID());
         if (user == null) {
+            Notificator.getInstance().publish(R.string.notice_error_show_user);
             return new DisposeDialog(activity);
         }
 
@@ -230,7 +229,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         tabHost.addTab(tab2);
         tabHost.setCurrentTab(0);
 
-        initUserData(user);
+        initUserData();
 
         return new AlertDialog.Builder(activity)
                 .setView(v)
@@ -238,7 +237,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
                 .create();
     }
 
-    private void executeUserTimelineTask(final User user, final StatusListAdapter adapter) {
+    private void executeUserTimelineTask(final StatusListAdapter adapter) {
         Account account = Application.getInstance().getCurrentAccount();
         tabHost.getTabWidget().getChildTabViewAt(1).setVisibility(View.GONE);
         new UserTimelineTask(account, user.getId())
@@ -254,7 +253,8 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
                 .execute();
     }
 
-    private String getHtmlDescription(String description) {
+    private String getHtmlDescription() {
+        String description = user.getDescription();
         if (TextUtils.isEmpty(description)) {
             return "";
         }
@@ -265,14 +265,14 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         return html;
     }
 
-    private void updateUserDataBasic(User user) {
+    private void updateUserDataBasic() {
         textViewName.setText(user.getName());
         textViewScreenName.setText(user.getScreenName());
         textViewProtected.setVisibility(user.isProtected() ? View.VISIBLE : View.GONE);
         ImageCache.getInstance().setImageToView(user.getProfileImageUrlOriginal(), imageViewIcon);
     }
 
-    private void updateUserDataDetail(User user) {
+    private void updateUserDataDetail() {
         if (TextUtils.isEmpty(user.getLocation())) {
             textViewLocate.setVisibility(View.GONE);
         } else {
@@ -285,8 +285,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
             textViewURL.setText(user.getUrl());
             textViewURL.setVisibility(View.VISIBLE);
         }
-        String htmlDescription = getHtmlDescription(user.getDescription());
-        textViewDescription.setText(Html.fromHtml(htmlDescription));
+        textViewDescription.setText(Html.fromHtml(getHtmlDescription()));
 
         textViewTweetCount.setText(String.valueOf(user.getStatusesCount()));
         textViewFriendCount.setText(String.valueOf(user.getFriendsCount()));
@@ -296,22 +295,22 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         ImageCache.getInstance().setImageToView(user.getProfileBannerUrl(), imageViewHeader);
     }
 
-    private void initUserData(User user) {
-        updateUserDataBasic(user);
-        updateUserDataDetail(user);
+    private void initUserData() {
+        updateUserDataBasic();
+        updateUserDataDetail();
 
         MainActivity activity = (MainActivity) getActivity();
         adapter = new StatusListAdapter(activity);
         listViewTimeline.setAdapter(adapter);
-        executeUserTimelineTask(user, adapter);
-        updateRelationship(user.getId());
+        executeUserTimelineTask(adapter);
+        updateRelationship();
 
         observerBundle.attach(user, changes -> {
             if (getActivity() != null) {
                 if (changes.contains(RBinding.BASIC))
-                    updateUserDataBasic(user);
+                    updateUserDataBasic();
                 if (changes.contains(RBinding.DETAIL))
-                    updateUserDataDetail(user);
+                    updateUserDataDetail();
             }
         });
     }
@@ -322,7 +321,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         buttonFollow.setEnabled(false);
     }
 
-    private void openUserMenu(final User user) {
+    private void openUserMenu() {
         UserMenuDialogFragment menuFragment = new UserMenuDialogFragment() {
             @Override
             protected void executeCommand(Command command) {
@@ -331,7 +330,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
                     if (UserDetailDialogFragment.this.isDetached()) {
                         return;
                     }
-                    updateRelationship(user.getId());
+                    updateRelationship();
                 }, 1000);
             }
         };
@@ -339,14 +338,18 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         DialogHelper.showDialog(getActivity(), menuFragment);
     }
 
-    private void setFollowButtonState(boolean isFollowing, Drawable unfollowColor, Drawable followColor) {
+    private void setFollowButtonState(boolean isFollowing) {
+        MainActivity mainActivity = (MainActivity) getActivity();
+        int theme = Application.getInstance().getThemeResId();
+        final Drawable unfollowColor = Themes.getStyledDrawable(mainActivity, theme, R.attr.button_round_red);
+        final Drawable followColor = Themes.getStyledDrawable(mainActivity, theme, R.attr.button_round_blue);
         buttonFollow.setText(isFollowing ? R.string.user_detail_unfollow : R.string.user_detail_follow);
         buttonFollow.setBackground(isFollowing ? unfollowColor : followColor);
         buttonFollow.setTag(isFollowing);
         buttonFollow.setEnabled(true);
     }
 
-    private void toggleFollowing(final User user) {
+    private void toggleFollowing() {
         Account account = Application.getInstance().getCurrentAccount();
         lockFollowButton();
         Boolean isFollowing = buttonFollow.getTag() != null ? (Boolean) buttonFollow.getTag() : false;
@@ -354,7 +357,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
             new UnfollowTask(account, user.getId())
                     .onDoneUI(result -> {
                         Notificator.getInstance().publish(R.string.notice_unfollow_succeeded);
-                        updateRelationship(user.getId());
+                        updateRelationship();
                         buttonFollow.setEnabled(true);
                     })
                     .onFail(x ->
@@ -364,7 +367,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
             new FollowTask(account, user.getId())
                     .onDoneUI(result -> {
                         Notificator.getInstance().publish(R.string.notice_follow_succeeded);
-                        updateRelationship(user.getId());
+                        updateRelationship();
                         buttonFollow.setEnabled(true);
                     })
                     .onFail(x -> Notificator.getInstance().alert(R.string.notice_follow_failed))
@@ -395,22 +398,18 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         }
     }
 
-    private void updateRelationship(final long userId) {
-        MainActivity mainActivity = (MainActivity) getActivity();
+    private void updateRelationship() {
         Account account = Application.getInstance().getCurrentAccount();
-        if (userId == account.getUserId()) {
+        if (user == account.getUser()) {
             textViewFollowed.setText(R.string.user_detail_followed_is_me);
             buttonFollow.setVisibility(View.GONE);
         } else {
-            int theme = Application.getInstance().getThemeResId();
             lockFollowButton();
             textViewFollowed.setText(R.string.user_detail_loading);
-            final Drawable red = Themes.getStyledDrawable(mainActivity, theme, R.attr.button_round_red);
-            final Drawable blue = Themes.getStyledDrawable(mainActivity, theme, R.attr.button_round_blue);
-            new ShowFriendshipTask(account, userId).onDoneUI(relationship -> {
+            new ShowFriendshipTask(account, user.getId()).onDoneUI(relationship -> {
                 boolean isFollowing = relationship.isSourceFollowingTarget();
                 boolean isFollowed = relationship.isSourceFollowedByTarget();
-                setFollowButtonState(isFollowing, red, blue);
+                setFollowButtonState(isFollowing);
                 textViewFollowed.setText(isFollowed ? R.string.user_detail_followed : R.string.user_detail_not_followed);
             }).execute();
         }

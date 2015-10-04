@@ -53,6 +53,7 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
     // ------------------------------ FIELDS ------------------------------
 
     private static final String KEY_MESSAGE_ID = "messageID";
+    private DirectMessage message;
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 
@@ -73,88 +74,68 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
 
     @Override
     public void onClick(final View v) {
-        DirectMessage message = DirectMessage.fetch(getMessageID());
-        if (message != null) {
-            switch (v.getId()) {
-                case R.id.button_status_detail_reply: {
-                    openSendMessageDialog(message);
-                    break;
-                }
-                case R.id.button_status_detail_delete: {
-                    deleteMessage(message);
-                    break;
-                }
-                case R.id.button_status_detail_menu: {
-                    openMenu();
-                    break;
-                }
-                default: {
-                    dismiss();
-                }
+        switch (v.getId()) {
+            case R.id.button_status_detail_reply: {
+                openSendMessageDialog();
+                break;
             }
-        } else {
-            dismiss(); // BUG
+            case R.id.button_status_detail_delete: {
+                deleteMessage();
+                break;
+            }
+            case R.id.button_status_detail_menu: {
+                openMenu();
+                break;
+            }
+            default: {
+                dismiss();
+            }
         }
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        message = DirectMessage.fetch(getMessageID());
+    }
 
-        DirectMessage selectedMessage = DirectMessage.fetch(getMessageID());
-        if (selectedMessage == null) {
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        if (message == null) {
             Notificator.getInstance().alert(R.string.notice_error_get_messages);
             return new DisposeDialog(getActivity());
         }
-        View header = getTitleView(selectedMessage);
+
+        View header = getTitleView();
         ListView listView = (ListView) header.findViewById(R.id.listview_status_detail_reply_to);
         final MessageListAdapter adapter = new MessageListAdapter(getActivity());
         listView.setAdapter(adapter);
-        long replyToMessageId = -1;
-        // ArrayList<DirectMessage> allMessages = Lists.newArrayList(DirectMessageCache.getInstance().all());
-        // Collections.sort(allMessages, new Comparator<DirectMessage>() {
-        //     @Override
-        //     public int compare(DirectMessage lhs, DirectMessage rhs) {
-        //         return rhs.getCreatedAt().compareTo(lhs.getCreatedAt());
-        //     }
-        // });
-        // for (DirectMessage directMessage : allMessages) {
-        //     if (selectedMessage.getId() == directMessage.getId()) {
-        //         continue;
-        //     }
-        //     if (directMessage.getCreatedAt().getTime() > selectedMessage.getCreatedAt().getTime()) {
-        //         continue;
-        //     }
-        //     if (directMessage.getSender().getId() == selectedMessage.getRecipient().getId() &&
-        //             directMessage.getRecipient().getId() == selectedMessage.getSender().getId()) {
-        //         replyToMessageId = directMessage.getId();
-        //         break;
-        //     }
-        // }
 
-        // if (replyToMessageId == -1) {
-        listView.setVisibility(View.GONE);
-        // } else {
-        //     TwitterUtils.tryGetMessage(account, replyToMessageId, new TwitterUtils.MessageCallback() {
-        //         @Override
-        //         public void success(DirectMessage message) {
-        //             adapter.addToTop(new MessageViewModel(message));
-        //             adapter.updateForce();
-        //         }
+        // TODO: 効率的な探索どうする
+        DirectMessage replyTo = null;
+        for (DirectMessage mes : DirectMessage.cached()) {
+            if (message.getRecipient() == mes.getSender() &&
+                    message.getId() > mes.getId() &&
+                    (replyTo == null || replyTo.getId() < mes.getId())) {
+                replyTo = mes;
+            }
+        }
+        if (replyTo != null) {
+            listView.setVisibility(View.VISIBLE);
+            adapter.addToTop(new MessageViewModel(replyTo));
+            adapter.updateForce();
+        } else {
+            listView.setVisibility(View.GONE);
+        }
 
-        //         @Override
-        //         public void error() {
-
-        //         }
-        //     });
-        // }
         return new AlertDialog.Builder(getActivity()).setView(header).create();
     }
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public void deleteMessage(final DirectMessage message) {
+    public void deleteMessage() {
         ConfirmDialogFragment.show(getActivity(), getString(R.string.dialog_confirm_commands), () -> {
             new DeleteMessageTask(Application.getInstance().getCurrentAccount(), message.getId())
                     .onDone(x -> Notificator.getInstance().publish(R.string.notice_message_delete_succeeded))
@@ -164,13 +145,13 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
         });
     }
 
-    public void openSendMessageDialog(DirectMessage message) {
+    public void openSendMessageDialog() {
         SendMessageDialogFragment dialogFragment = new SendMessageDialogFragment();
         dialogFragment.setScreenName(message.getSender().getScreenName());
         DialogHelper.showDialog(getActivity(), dialogFragment);
     }
 
-    private ArrayList<Command> getCommands(DirectMessage message) {
+    private ArrayList<Command> getCommands() {
         ArrayList<Command> commands = new ArrayList<>();
         // URL
         for (String url : message.getUrlsExpanded()) {
@@ -182,7 +163,7 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
         return commands;
     }
 
-    private View getTitleView(DirectMessage message) {
+    private View getTitleView() {
         MainActivity activity = (MainActivity) getActivity();
         View view = activity.getLayoutInflater().inflate(R.layout.dialog_status_detail, null);
         View messageHeader = view.findViewById(R.id.layout_status_header);
@@ -201,7 +182,7 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
         LinearLayout commandsLayout = (LinearLayout) view.findViewById(R.id.linearlayout_status_detail_menu);
         commandsLayout.setClickable(true);
         // commands
-        ArrayList<Command> commands = getCommands(message);
+        ArrayList<Command> commands = getCommands();
         Command.filter(commands);
         for (final Command command : commands) {
             View commandView = command.getView(activity, activity.getLayoutInflater(), null);

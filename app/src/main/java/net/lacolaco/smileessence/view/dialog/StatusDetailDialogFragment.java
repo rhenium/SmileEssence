@@ -79,27 +79,25 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
 
     @Override
     public void onClick(final View v) {
-        MainActivity activity = (MainActivity) getActivity();
-
         switch (v.getId()) {
             case R.id.button_status_detail_reply: {
-                replyToStatus(tweet);
+                replyToStatus();
                 break;
             }
             case R.id.button_status_detail_retweet: {
-                toggleRetweet(tweet);
+                toggleRetweet();
                 break;
             }
             case R.id.button_status_detail_favorite: {
-                toggleFavorite(tweet);
+                toggleFavorite();
                 break;
             }
             case R.id.button_status_detail_delete: {
-                deleteStatus(tweet);
+                deleteStatus();
                 break;
             }
             case R.id.button_status_detail_menu: {
-                openMenu(activity);
+                openMenu();
                 break;
             }
             default: {
@@ -111,16 +109,21 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         tweet = Tweet.fetch(getStatusID());
-        if (tweet == null) { // trying open deleted tweet
+    }
+
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        if (tweet == null) { // trying to open deleted tweet?
             Notificator.getInstance().publish(R.string.notice_error_show_status);
             return new DisposeDialog(getActivity());
         }
 
         Account account = Application.getInstance().getCurrentAccount();
 
-        View header = getTitleView(tweet);
+        View header = getTitleView();
 
         ListView listView = (ListView) header.findViewById(R.id.listview_status_detail_reply_to);
         final StatusListAdapter adapter = new StatusListAdapter(getActivity());
@@ -141,7 +144,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         return new AlertDialog.Builder(getActivity()).setView(header).create();
     }
 
-    private View getTitleView(Tweet tweet) {
+    private View getTitleView() {
         MainActivity activity = ((MainActivity) getActivity());
 
         View view = activity.getLayoutInflater().inflate(R.layout.dialog_status_detail, null);
@@ -152,25 +155,25 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         statusHeader.setClickable(false);
 
         view.setBackgroundColor(((ColorDrawable) statusHeader.getBackground()).getColor());
-        updateViewReactions(view, tweet);
-        updateViewButtons(view, tweet);
-        updateViewMenu(view, tweet);
+        updateViewReactions(view);
+        updateViewButtons(view);
+        updateViewMenu(view);
 
         final WeakReference<View> weakView = new WeakReference<>(view);
         bundle.attach(tweet.getOriginalTweet(), changes -> {
             View strongView = weakView.get();
             if (strongView != null && getActivity() != null) {
                 if (changes.contains(RBinding.REACTION_COUNT))
-                    updateViewReactions(strongView, tweet);
+                    updateViewReactions(strongView);
                 if (changes.contains(RBinding.FAVORITERS) || changes.contains(RBinding.RETWEETERS))
-                    updateViewButtons(strongView, tweet);
+                    updateViewButtons(strongView);
             }
         });
 
         return view;
     }
 
-    private void updateViewReactions(View view, Tweet tweet) {
+    private void updateViewReactions(View view) {
         //--- favs/RTs count
         ImageView favCountIcon = (ImageView) view.findViewById(R.id.image_status_detail_fav_count);
         TextView favCountText = (TextView) view.findViewById(R.id.textview_status_detail_fav_count);
@@ -195,7 +198,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         }
     }
 
-    private void updateViewButtons(View view, Tweet tweet) {
+    private void updateViewButtons(View view) {
         int themeResId = Application.getInstance().getThemeResId();
         Account account = Application.getInstance().getCurrentAccount();
 
@@ -230,14 +233,14 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         delete.setVisibility(account.canDelete(tweet) ? View.VISIBLE : View.GONE);
     }
 
-    private void updateViewMenu(View view, Tweet tweet) {
+    private void updateViewMenu(View view) {
         MainActivity activity = ((MainActivity) getActivity());
         //--- menu
         ImageButton menu = (ImageButton) view.findViewById(R.id.button_status_detail_menu);
         menu.setOnClickListener(this);
         LinearLayout commandsLayout = (LinearLayout) view.findViewById(R.id.linearlayout_status_detail_menu);
         commandsLayout.setClickable(true);
-        ArrayList<Command> commands = getCommands(tweet);
+        ArrayList<Command> commands = getCommands();
         Command.filter(commands);
         for (final Command command : commands) {
             View commandView = command.getView(activity, activity.getLayoutInflater(), null);
@@ -251,7 +254,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         ConfirmDialogFragment.show(getActivity(), getString(R.string.dialog_confirm_commands), onYes);
     }
 
-    private void deleteStatus(final Tweet tweet) {
+    private void deleteStatus() {
         confirm(() -> {
             Account account = Application.getInstance().getCurrentAccount();
 
@@ -263,7 +266,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         });
     }
 
-    private ArrayList<Command> getCommands(Tweet tweet) {
+    private ArrayList<Command> getCommands() {
         ArrayList<Command> commands = new ArrayList<>();
         // URL
         for (String url : tweet.getUrlsExpanded()) {
@@ -275,13 +278,13 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         return commands;
     }
 
-    private void openMenu(MainActivity activity) {
+    private void openMenu() {
         StatusMenuDialogFragment fragment = new StatusMenuDialogFragment();
         fragment.setStatusID(getStatusID());
-        DialogHelper.showDialog(activity, fragment);
+        DialogHelper.showDialog(getActivity(), fragment);
     }
 
-    private void replyToStatus(Tweet tweet) {
+    private void replyToStatus() {
         Account account = Application.getInstance().getCurrentAccount();
         Tweet originalTweet = tweet.getOriginalTweet();
 
@@ -303,7 +306,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
                 .commitWithOpen((MainActivity) getActivity());
     }
 
-    private void toggleFavorite(Tweet tweet) {
+    private void toggleFavorite() {
         Account account = Application.getInstance().getCurrentAccount();
         if (tweet.isFavoritedBy(account.getUserId())) {
             new UnfavoriteTask(account, tweet.getId())
@@ -318,7 +321,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         }
     }
 
-    private void toggleRetweet(final Tweet tweet) {
+    private void toggleRetweet() {
         Account account = Application.getInstance().getCurrentAccount();
         confirm(() -> {
             if (tweet.isRetweetedBy(account.getUserId())) {

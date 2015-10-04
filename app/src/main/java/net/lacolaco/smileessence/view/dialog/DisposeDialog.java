@@ -36,14 +36,6 @@ public final class DisposeDialog extends Dialog {
         super(context);
     }
 
-    public DisposeDialog(Context context, int theme) {
-        super(context, theme);
-    }
-
-    protected DisposeDialog(Context context, boolean cancelable, OnCancelListener cancelListener) {
-        super(context, cancelable, cancelListener);
-    }
-
     @Override
     public void show() {
         dismiss();

@@ -36,7 +36,7 @@ import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.IConfirmable;
 import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
 
-public abstract class MenuDialogFragment extends StackableDialogFragment {
+public abstract class MenuDialogFragment extends StackableDialogFragment implements AdapterView.OnItemClickListener {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final MainActivity activity = (MainActivity) getActivity();
@@ -44,7 +44,7 @@ public abstract class MenuDialogFragment extends StackableDialogFragment {
         ListView listView = (ListView) body.findViewById(R.id.listview_dialog_menu_list);
         final CustomListAdapter<Command> adapter = new CustomListAdapter<>(activity);
         listView.setAdapter(adapter);
-        listView.setOnItemClickListener(onItemClickListener);
+        listView.setOnItemClickListener(this);
 
         setMenuItems(adapter);
 
@@ -53,15 +53,14 @@ public abstract class MenuDialogFragment extends StackableDialogFragment {
 
     protected abstract void setMenuItems(final CustomListAdapter<Command> adapter);
 
-    protected final AdapterView.OnItemClickListener onItemClickListener = (adapterView, view, i, l) -> MenuDialogFragment.this.onItemClick(adapterView, i);
-
     protected void executeCommand(Command command) {
         dismiss();
         command.execute();
     }
 
-    protected void onItemClick(AdapterView<?> adapterView, int i) {
-        final Command command = (Command) adapterView.getItemAtPosition(i);
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        final Command command = (Command) parent.getItemAtPosition(position);
         if (command != null) {
             if (command instanceof IConfirmable) {
                 ConfirmDialogFragment.show(getActivity(), getString(R.string.dialog_confirm_commands), () -> executeCommand(command));

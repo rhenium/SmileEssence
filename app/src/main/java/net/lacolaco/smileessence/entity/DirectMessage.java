@@ -4,6 +4,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import net.lacolaco.smileessence.util.ListUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -12,6 +13,11 @@ public class DirectMessage extends EntitySupport {
 
     public synchronized static DirectMessage fetch(long statusId) {
         return storage.getIfPresent(statusId);
+    }
+
+    @Deprecated
+    public synchronized static List<DirectMessage> cached() {
+        return new ArrayList<>(storage.asMap().values());
     }
 
     public synchronized static void remove(long statusId) {

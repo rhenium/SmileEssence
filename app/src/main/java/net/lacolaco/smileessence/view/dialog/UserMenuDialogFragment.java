@@ -39,6 +39,7 @@ public class UserMenuDialogFragment extends MenuDialogFragment {
     // ------------------------------ FIELDS ------------------------------
 
     private static final String KEY_USER_ID = "userID";
+    private User user;
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 
@@ -55,10 +56,15 @@ public class UserMenuDialogFragment extends MenuDialogFragment {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        user = User.fetch(getUserID());
+    }
+
+    @Override
     protected void setMenuItems(final CustomListAdapter<Command> adapter) {
-        User user = User.fetch(getUserID());
         if (user != null) {
-            List<Command> commands = getCommands(user);
+            List<Command> commands = getCommands();
             Command.filter(commands);
             for (Command command : commands) {
                 adapter.addToBottom(command);
@@ -71,20 +77,20 @@ public class UserMenuDialogFragment extends MenuDialogFragment {
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public boolean addBottomCommands(User user, ArrayList<Command> commands) {
+    public boolean addBottomCommands(ArrayList<Command> commands) {
         Activity activity = getActivity();
         return commands.add(new CommandSearchOnTwitter(activity, user.getScreenName()));
     }
 
-    public boolean addMainCommands(User user, ArrayList<Command> commands) {
+    public boolean addMainCommands(ArrayList<Command> commands) {
         Activity activity = getActivity();
         return commands.addAll(Command.getUserCommands(activity, user));
     }
 
-    public List<Command> getCommands(User user) {
+    public List<Command> getCommands() {
         ArrayList<Command> commands = new ArrayList<>();
-        addMainCommands(user, commands);
-        addBottomCommands(user, commands);
+        addMainCommands(commands);
+        addBottomCommands(commands);
         return commands;
     }
 }

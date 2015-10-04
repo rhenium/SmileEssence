@@ -39,6 +39,7 @@ public class StatusMenuDialogFragment extends MenuDialogFragment {
     // ------------------------------ FIELDS ------------------------------
 
     private static final String KEY_STATUS_ID = "statusID";
+    private Tweet tweet;
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 
@@ -53,12 +54,17 @@ public class StatusMenuDialogFragment extends MenuDialogFragment {
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        tweet = Tweet.fetch(getStatusID());
+    }
+
     @Override
     protected void setMenuItems(final CustomListAdapter<Command> adapter) {
-        Tweet tweet = Tweet.fetch(getStatusID());
-
         if (tweet != null) {
-            List<Command> commands = getCommands(tweet);
+            List<Command> commands = getCommands();
             Command.filter(commands);
             for (Command command : commands) {
                 adapter.addToBottom(command);
@@ -71,7 +77,7 @@ public class StatusMenuDialogFragment extends MenuDialogFragment {
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public void addBottomCommands(Tweet tweet, ArrayList<Command> commands) {
+    public void addBottomCommands(ArrayList<Command> commands) {
         Activity activity = getActivity();
 
         commands.add(new CommandSaveAsTemplate(activity, tweet.getOriginalTweet().getText()));
@@ -80,7 +86,7 @@ public class StatusMenuDialogFragment extends MenuDialogFragment {
         for (String screenName : new ArrayList<>(new LinkedHashSet<>(tweet.getMentions()))) { // Array#uniq
             commands.add(new CommandOpenUserDetail(activity, screenName));
         }
-        for (Command command : getHashtagCommands(tweet)) {
+        for (Command command : getHashtagCommands()) {
             commands.add(command);
         }
         // Media
@@ -92,19 +98,19 @@ public class StatusMenuDialogFragment extends MenuDialogFragment {
         }
     }
 
-    public boolean addMainCommands(Tweet tweet, ArrayList<Command> commands) {
+    public boolean addMainCommands(ArrayList<Command> commands) {
         Activity activity = getActivity();
         return commands.addAll(Command.getStatusCommands(activity, tweet));
     }
 
-    public List<Command> getCommands(Tweet tweet) {
+    public List<Command> getCommands() {
         ArrayList<Command> commands = new ArrayList<>();
-        addMainCommands(tweet, commands);
-        addBottomCommands(tweet, commands);
+        addMainCommands(commands);
+        addBottomCommands(commands);
         return commands;
     }
 
-    private ArrayList<Command> getHashtagCommands(Tweet tweet) {
+    private ArrayList<Command> getHashtagCommands() {
         Activity activity = getActivity();
         ArrayList<Command> commands = new ArrayList<>();
         for (String hashtag : tweet.getHashtags()) {

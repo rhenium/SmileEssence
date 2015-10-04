@@ -38,6 +38,7 @@ public class MessageMenuDialogFragment extends MenuDialogFragment {
     // ------------------------------ FIELDS ------------------------------
 
     private static final String KEY_MESSAGE_ID = "messageID";
+    private DirectMessage message;
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 
@@ -54,10 +55,15 @@ public class MessageMenuDialogFragment extends MenuDialogFragment {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        message = DirectMessage.fetch(getMessageID());
+    }
+
+    @Override
     protected void setMenuItems(final CustomListAdapter<Command> adapter) {
-        DirectMessage message = DirectMessage.fetch(getMessageID());
         if (message != null) {
-            List<Command> commands = getCommands(message);
+            List<Command> commands = getCommands();
             Command.filter(commands);
             for (Command command : commands) {
                 adapter.addToBottom(command);
@@ -70,7 +76,7 @@ public class MessageMenuDialogFragment extends MenuDialogFragment {
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public void addBottomCommands(DirectMessage message, ArrayList<Command> commands) {
+    public void addBottomCommands(ArrayList<Command> commands) {
         Activity activity = getActivity();
         commands.add(new CommandSaveAsTemplate(activity, message.getText()));
         //User
@@ -80,7 +86,7 @@ public class MessageMenuDialogFragment extends MenuDialogFragment {
         for (String screenName : message.getMentions()) {
             commands.add(new CommandOpenUserDetail(activity, screenName));
         }
-        for (Command command : getHashtagCommands(message)) {
+        for (Command command : getHashtagCommands()) {
             commands.add(command);
         }
         // Media
@@ -92,23 +98,23 @@ public class MessageMenuDialogFragment extends MenuDialogFragment {
         }
     }
 
-    public boolean addMainCommands(DirectMessage message, ArrayList<Command> commands) {
+    public boolean addMainCommands(ArrayList<Command> commands) {
         Activity activity = getActivity();
         return commands.addAll(Command.getMessageCommands(activity, message));
     }
 
-    public List<Command> getCommands(DirectMessage message) {
+    public List<Command> getCommands() {
         ArrayList<Command> commands = new ArrayList<>();
-        addMainCommands(message, commands);
-        addBottomCommands(message, commands);
+        addMainCommands(commands);
+        addBottomCommands(commands);
         return commands;
     }
 
-    private ArrayList<Command> getHashtagCommands(DirectMessage status) {
+    private ArrayList<Command> getHashtagCommands() {
         Activity activity = getActivity();
         ArrayList<Command> commands = new ArrayList<>();
-        if (status.getHashtags() != null) {
-            for (String hashtag : status.getHashtags()) {
+        if (message.getHashtags() != null) {
+            for (String hashtag : message.getHashtags()) {
                 commands.add(new CommandOpenHashtagDialog(activity, hashtag));
             }
         }
