@@ -73,6 +73,12 @@ public class MessagesFragment extends CustomListFragment<MessageListAdapter> {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        StatusFilter.getInstance().unregister(this);
+    }
+
+    @Override
     public void refresh() {
         runRefreshTask(new DirectMessagesTask(Application.getInstance().getCurrentAccount()), () -> getAdapter().updateForce());
         runRefreshTask(new SentDirectMessagesTask(Application.getInstance().getCurrentAccount()), () -> getAdapter().updateForce());

@@ -25,9 +25,11 @@
 package net.lacolaco.smileessence.activity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
@@ -35,6 +37,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import de.keyboardsurfer.android.widget.crouton.Crouton;
 import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.BuildConfig;
 import net.lacolaco.smileessence.IntentRouter;
@@ -55,6 +58,8 @@ import net.lacolaco.smileessence.view.adapter.PageListAdapter;
 import net.lacolaco.smileessence.view.dialog.ConfirmDialogFragment;
 import net.lacolaco.smileessence.view.page.*;
 import twitter4j.TwitterStream;
+
+import java.lang.reflect.Field;
 
 public class MainActivity extends Activity implements Application.OnCurrentAccountChangedListener {
     // ------------------------------ FIELDS ------------------------------
@@ -167,6 +172,12 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
+            case REQUEST_MANAGE_ACCOUNT: {
+                if (resultCode == RESULT_CANCELED && Application.getInstance().getCurrentAccount() == null) {
+                    forceFinish();
+                }
+                break;
+            }
             case REQUEST_GET_PICTURE_FROM_GALLERY:
             case REQUEST_GET_PICTURE_FROM_CAMERA: {
                 getImageUri(requestCode, resultCode, data);
@@ -189,7 +200,7 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
         currentAccountIconImageView = (ImageView) findViewById(android.R.id.home);
         currentAccountIconImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
-        Notificator.initialize(this);
+        Notificator.getInstance().setDefault(this);
         CommandSetting.initialize();
         Account.load();
         ExtractionWord.load();
@@ -209,10 +220,31 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
     protected void onDestroy() {
         super.onDestroy();
         currentUserBundle.detachAll();
+        Crouton.cancelAllCroutons();
         if (stream != null) {
             new Thread(stream::shutdown).start();
         }
+        if (BuildConfig.DEBUG) fixInputMethodManager(); // LeakCanary shows
         Logger.debug("onDestroy");
+    }
+
+    private void fixInputMethodManager() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            try {
+                Object imm = getSystemService(Context.INPUT_METHOD_SERVICE);
+                Field mCurRootView = imm.getClass().getDeclaredField("mCurRootView");
+                mCurRootView.setAccessible(true);
+                mCurRootView.set(imm, null);
+                Field mServedView = imm.getClass().getDeclaredField("mServedView");
+                mServedView.setAccessible(true);
+                mServedView.set(imm, null);
+                Field mNextServedView = imm.getClass().getDeclaredField("mNextServedView");
+                mNextServedView.setAccessible(true);
+                mNextServedView.set(imm, null);
+            } catch (Exception e) {
+                Logger.error("imm fix error: " + e);
+            }
+        }
     }
 
     @Override

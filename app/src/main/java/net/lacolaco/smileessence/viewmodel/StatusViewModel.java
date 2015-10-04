@@ -45,6 +45,7 @@ import net.lacolaco.smileessence.view.dialog.StatusDetailDialogFragment;
 import net.lacolaco.smileessence.view.dialog.UserDetailDialogFragment;
 import net.lacolaco.smileessence.view.listener.ListItemClickListener;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -108,17 +109,21 @@ public class StatusViewModel implements IViewModel {
 
         updateViewUser(((MainActivity) activity), convertedView);
         updateViewBody(((MainActivity) activity), convertedView);
-        updateViewFavorited(((MainActivity) activity), convertedView);
+        updateViewFavorited(convertedView);
         updateViewEmbeddeds(((MainActivity) activity), convertedView, extendStatusURL);
 
-        final View view = convertedView;
+        final WeakReference<View> weakView = new WeakReference<>(convertedView);
+        final WeakReference<MainActivity> weakActivity = new WeakReference<>((MainActivity) activity);
         bundle.attach(tweet.getOriginalTweet(), changes -> {
-            if (changes.contains(RBinding.FAVORITERS))
-                updateViewFavorited(((MainActivity) activity), view);
+            View strongView = weakView.get();
+            if (strongView != null && changes.contains(RBinding.FAVORITERS))
+                updateViewFavorited(strongView);
         });
         bundle.attach(tweet.getUser(), changes -> {
-            if (changes.contains(RBinding.BASIC))
-                updateViewUser(((MainActivity) activity), view);
+            View strongView = weakView.get();
+            MainActivity strongActivity = weakActivity.get();
+            if (strongView != null && strongActivity != null && changes.contains(RBinding.BASIC))
+                updateViewUser(strongActivity, strongView);
         });
 
         return convertedView;
@@ -174,7 +179,7 @@ public class StatusViewModel implements IViewModel {
         }
     }
 
-    private void updateViewFavorited(MainActivity activity, View convertedView) {
+    private void updateViewFavorited(View convertedView) {
         ImageView favorited = (ImageView) convertedView.findViewById(R.id.imageview_status_favorited);
         favorited.setVisibility(tweet.isFavoritedBy(Application.getInstance().getCurrentAccount().getUserId()) ? View.VISIBLE : View.GONE);
     }

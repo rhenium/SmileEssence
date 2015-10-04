@@ -32,6 +32,7 @@ import android.widget.TextView;
 import com.android.volley.toolbox.NetworkImageView;
 import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
+import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.data.ImageCache;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.DirectMessage;
@@ -45,6 +46,8 @@ import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.dialog.MessageDetailDialogFragment;
 import net.lacolaco.smileessence.view.dialog.UserDetailDialogFragment;
 import net.lacolaco.smileessence.view.listener.ListItemClickListener;
+
+import java.lang.ref.WeakReference;
 
 public class MessageViewModel implements IViewModel {
 
@@ -108,10 +111,13 @@ public class MessageViewModel implements IViewModel {
         updateViewSender(activity, convertedView);
         updateViewBody(activity, convertedView);
 
-        final View finalView = convertedView;
+        final WeakReference<View> weakView = new WeakReference<>(convertedView);
+        final WeakReference<MainActivity> weakActivity = new WeakReference<>((MainActivity) activity);
         bundle.attach(directMessage.getSender(), changes -> {
-            if (changes.contains(RBinding.BASIC))
-                updateViewSender(activity, finalView);
+            View strongView = weakView.get();
+            MainActivity strongActivity = weakActivity.get();
+            if (strongView != null && strongActivity != null && changes.contains(RBinding.BASIC))
+                updateViewSender(strongActivity, strongView);
         });
 
         return convertedView;

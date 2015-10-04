@@ -44,6 +44,7 @@ import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.dialog.UserDetailDialogFragment;
 import net.lacolaco.smileessence.view.listener.ListItemClickListener;
 
+import java.lang.ref.WeakReference;
 import java.util.Date;
 
 public class EventViewModel implements IViewModel {
@@ -145,10 +146,11 @@ public class EventViewModel implements IViewModel {
             DialogHelper.showDialog(activity, fragment);
         }));
 
-        final View finalView = convertedView;
+        final WeakReference<View> weakView = new WeakReference<>(convertedView);
         bundle.attach(source, changes -> {
-            if (changes.contains(RBinding.BASIC))
-                updateViewUser(finalView);
+            View strongView = weakView.get();
+            if (strongView != null && changes.contains(RBinding.BASIC))
+                updateViewUser(strongView);
         });
 
         return convertedView;

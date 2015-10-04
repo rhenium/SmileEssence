@@ -79,6 +79,12 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        StatusFilter.getInstance().unregister(this);
+    }
+
+    @Override
     public void refresh() {
         runRefreshTask(new MentionsTimelineTask(Application.getInstance().getCurrentAccount()), () -> getAdapter().updateForce());
     }

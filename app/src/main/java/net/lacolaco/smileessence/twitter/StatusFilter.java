@@ -62,6 +62,15 @@ public class StatusFilter {
         }
     }
 
+    public synchronized <T> void unregister(Object key) {
+        for (Map<Object, ?> aMap : addHandlers.values()) {
+            aMap.remove(key);
+        }
+        for (Map<Object, ?> rMap : removeHandlers.values()) {
+            rMap.remove(key);
+        }
+    }
+
     // -------------------------- STATIC METHODS --------------------------
 
     public void filter(StatusViewModel tweet) {

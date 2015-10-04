@@ -73,6 +73,12 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        StatusFilter.getInstance().unregister(this);
+    }
+
+    @Override
     public void refresh() {
         runRefreshTask(new HomeTimelineTask(Application.getInstance().getCurrentAccount()), () -> getAdapter().updateForce());
     }

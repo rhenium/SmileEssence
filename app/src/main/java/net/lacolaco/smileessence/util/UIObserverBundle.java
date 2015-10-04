@@ -19,4 +19,13 @@ public class UIObserverBundle {
         map.put(observable, observer);
         return observer;
     }
+
+    @Override
+    protected void finalize() throws Throwable {
+        try {
+            super.finalize();
+        } finally {
+            detachAll();
+        }
+    }
 }

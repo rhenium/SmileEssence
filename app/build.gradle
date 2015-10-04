@@ -71,4 +71,3 @@ retrolambda {
     jdk System.getenv("JAVA_HOME")
     oldJdk System.getenv("JAVA7_HOME")
 }
-

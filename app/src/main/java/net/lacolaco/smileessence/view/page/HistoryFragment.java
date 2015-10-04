@@ -57,6 +57,12 @@ public class HistoryFragment extends CustomListFragment<EventListAdapter> {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        StatusFilter.getInstance().unregister(this);
+    }
+
+    @Override
     public void refresh() {
     }
 }

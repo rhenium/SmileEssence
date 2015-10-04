@@ -30,59 +30,65 @@ import android.widget.Toast;
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
+import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.util.UIHandler;
 
+import java.lang.ref.WeakReference;
+
 public class Notificator {
-    private static Notificator instance;
+    private static final Notificator instance = new Notificator();
     private static final int DURATION = 1000;
-    private Activity activity;
+    private WeakReference<Activity> weakActivity;
     private boolean isForeground;
 
-    public static void initialize(Activity activity) {
-        instance = new Notificator(activity);
-    }
-
     public static Notificator getInstance() {
-        if (instance == null) {
-            throw new IllegalStateException("Notificatior is not initialized");
-        }
         return instance;
     }
 
-    private Notificator(Activity a) {
-        activity = a;
+    private Notificator() {
+    }
+
+    public void setDefault(Activity activity) {
+        weakActivity = new WeakReference<>(activity);
     }
 
     public void publish(String text) {
-        publish(text, NotificationType.INFO);
+        publish(NotificationType.INFO, text);
     }
 
     public void publish(@StringRes int resId, Object... formatArgs) {
-        publish(activity.getString(resId, formatArgs), NotificationType.INFO);
+        publish(NotificationType.INFO, resId, formatArgs);
     }
 
     public void alert(String text) {
-        publish(text, NotificationType.ALERT);
+        publish(NotificationType.ALERT, text);
     }
 
     public void alert(@StringRes int resId, Object... formatArgs) {
-        publish(activity.getString(resId, formatArgs), NotificationType.ALERT);
+        publish(NotificationType.ALERT, resId, formatArgs);
     }
 
-    private void publish(String text, NotificationType type) {
-        if (activity.isFinishing()) {
-            return;
+    private void publish(NotificationType type, @StringRes int resId, Object... formatArgs) {
+        String text = Application.getInstance().getApplicationContext().getString(resId, formatArgs);
+        publish(type, text);
+    }
+
+    private void publish(NotificationType type, String text) {
+        Activity activity = weakActivity.get();
+        if (activity == null || activity.isFinishing()) {
+            Logger.debug(String.format("notify(log): %s", text));
+        } else {
+            new UIHandler().post(() -> {
+                if (isForeground) {
+                    Logger.debug(String.format("notify(crouton): %s", text));
+                    Crouton.makeText(activity, text, getStyle(type)).show();
+                } else {
+                    Logger.debug(String.format("notify(toast): %s", text));
+                    Toast.makeText(activity, text, Toast.LENGTH_LONG).show();
+                }
+            });
         }
-        new UIHandler().post(() -> {
-            if (isForeground) {
-                Logger.debug(String.format("notify by crouton %s", text));
-                Crouton.makeText(activity, text, getStyle(type)).show();
-            } else {
-                Logger.debug(String.format("notify by toast %s", text));
-                Toast.makeText(activity, text, Toast.LENGTH_LONG).show();
-            }
-        });
     }
 
     public void onForeground() {

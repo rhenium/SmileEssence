@@ -50,6 +50,7 @@ import net.lacolaco.smileessence.view.adapter.StatusListAdapter;
 import net.lacolaco.smileessence.view.listener.ListItemClickListener;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 public class StatusDetailDialogFragment extends StackableDialogFragment implements View.OnClickListener {
@@ -143,7 +144,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
     private View getTitleView(Tweet tweet) {
         MainActivity activity = ((MainActivity) getActivity());
 
-        final View view = activity.getLayoutInflater().inflate(R.layout.dialog_status_detail, null);
+        View view = activity.getLayoutInflater().inflate(R.layout.dialog_status_detail, null);
         UIObserverBundle bundle = new UIObserverBundle();
         view.setTag(bundle);
 
@@ -155,12 +156,14 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         updateViewButtons(view, tweet);
         updateViewMenu(view, tweet);
 
+        final WeakReference<View> weakView = new WeakReference<>(view);
         bundle.attach(tweet.getOriginalTweet(), changes -> {
-            if (getActivity() != null) {
+            View strongView = weakView.get();
+            if (strongView != null && getActivity() != null) {
                 if (changes.contains(RBinding.REACTION_COUNT))
-                    updateViewReactions(view, tweet);
+                    updateViewReactions(strongView, tweet);
                 if (changes.contains(RBinding.FAVORITERS) || changes.contains(RBinding.RETWEETERS))
-                    updateViewButtons(view, tweet);
+                    updateViewButtons(strongView, tweet);
             }
         });
 

@@ -25,6 +25,7 @@
 package net.lacolaco.smileessence;
 
 import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
@@ -44,12 +45,13 @@ public class Application extends com.activeandroid.app.Application {
     private Account currentAccount;
     private Set<OnCurrentAccountChangedListener> currentAccountChangedListeners;
     private int resId;
+    private RefWatcher refWatcher;
 
     @Override
     public void onCreate() {
         super.onCreate();
         instance = this; // プロセスの寿命の間 1 度しか呼ばれないので安全
-        LeakCanary.install(this);
+        refWatcher = LeakCanary.install(this);
         Logger.debug("onCreate");
     }
 
@@ -98,5 +100,10 @@ public class Application extends com.activeandroid.app.Application {
 
     public interface OnCurrentAccountChangedListener {
         void onCurrentAccountChanged(Account newAccount);
+    }
+
+    // --------------------- LeakCanary ---------------------
+    public RefWatcher getRefWatcher() {
+        return refWatcher;
     }
 }

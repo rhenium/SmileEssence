@@ -123,7 +123,10 @@ public class ManageAccountsActivity extends Activity implements AdapterView.OnIt
             setResult(RESULT_OK);
             finish();
         } else {
-            Notificator.getInstance().alert(R.string.notice_no_account_selected);
+            ConfirmDialogFragment.show(this, getString(R.string.notice_no_account_selected), () -> {
+                setResult(RESULT_CANCELED);
+                finish();
+            });
         }
     }
 
