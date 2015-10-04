@@ -224,11 +224,12 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
         if (stream != null) {
             new Thread(stream::shutdown).start();
         }
-        if (BuildConfig.DEBUG) fixInputMethodManager(); // LeakCanary shows
+        if (BuildConfig.DEBUG) fixIMMLeak(); // LeakCanary shows
+        fixCroutonLeak();
         Logger.debug("onDestroy");
     }
 
-    private void fixInputMethodManager() {
+    private void fixIMMLeak() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             try {
                 Object imm = getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -242,8 +243,22 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
                 mNextServedView.setAccessible(true);
                 mNextServedView.set(imm, null);
             } catch (Exception e) {
-                Logger.error("imm fix error: " + e);
+                Logger.debug("imm fix error: " + e);
             }
+        }
+    }
+
+    private void fixCroutonLeak() {
+        try {
+            Class klass = Class.forName("de.keyboardsurfer.android.widget.crouton.DefaultAnimationsBuilder");
+            Field slideInDownAnimation = klass.getDeclaredField("slideInDownAnimation");
+            slideInDownAnimation.setAccessible(true);
+            slideInDownAnimation.set(null, null);
+            Field slideOutUpAnimation = klass.getDeclaredField("slideOutUpAnimation");
+            slideOutUpAnimation.setAccessible(true);
+            slideOutUpAnimation.set(null, null);
+        } catch (Exception e) {
+            Logger.error("crouton fix error: " + e);
         }
     }
 
