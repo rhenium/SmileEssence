@@ -35,8 +35,8 @@ public abstract class EditTextDialogFragment extends StackableDialogFragment {
 
     // ------------------------------ FIELDS ------------------------------
 
-    private static String titleKey = "title";
-    private static String textKey = "text";
+    private static final String titleKey = "title";
+    private static final String textKey = "text";
     private String title;
     private String text;
 

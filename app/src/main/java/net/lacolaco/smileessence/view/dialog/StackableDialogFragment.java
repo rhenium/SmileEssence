@@ -4,10 +4,6 @@ import android.app.DialogFragment;
 import net.lacolaco.smileessence.view.DialogHelper;
 
 public class StackableDialogFragment extends DialogFragment {
-    public int show() {
-        return DialogHelper.showDialog(this.getActivity(), this);
-    }
-
     @Override
     public void dismiss() {
         super.dismiss();

@@ -35,8 +35,8 @@ public class SimpleDialogFragment extends StackableDialogFragment {
 
     // ------------------------------ FIELDS ------------------------------
 
-    public static final String ARG_LAYOUT = "layout";
-    public static final String ARG_TITLE = "title";
+    private static final String ARG_LAYOUT = "layout";
+    private static final String ARG_TITLE = "title";
     private int layoutResourceID;
     private String title;
 

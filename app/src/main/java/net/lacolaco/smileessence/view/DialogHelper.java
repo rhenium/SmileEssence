@@ -27,28 +27,30 @@ package net.lacolaco.smileessence.view;
 import android.app.Activity;
 import net.lacolaco.smileessence.view.dialog.StackableDialogFragment;
 
-import java.util.LinkedHashSet;
-import java.util.UUID;
+import java.util.*;
 
+/**
+ * DialogFragment のタグの一覧を保持し「全てのダイアログを閉じる」機能を提供するヘルパークラス
+ */
 public class DialogHelper {
-    private static LinkedHashSet<String> dialogStack = new LinkedHashSet<>();
+    private static Set<String> dialogStack = new LinkedHashSet<>();
 
-    public static void closeAllDialogs(Activity activity) {
-        for (String tag : new LinkedHashSet<>(dialogStack)) {
-            StackableDialogFragment dialog = (StackableDialogFragment) activity.getFragmentManager().findFragmentByTag(tag);
-            if (dialog != null) {
-                dialog.dismiss();
+    public synchronized static void closeAll(Activity activity) {
+        for (String tag : new ArrayList<>(dialogStack)) {
+            StackableDialogFragment dialogFragment = (StackableDialogFragment) activity.getFragmentManager().findFragmentByTag(tag);
+            if (dialogFragment != null) {
+                dialogFragment.dismiss();
             }
         }
     }
 
-    public static int showDialog(Activity activity, StackableDialogFragment dialogFragment) {
-        String tag = "stacking_dialog_" + dialogFragment.getClass().getSimpleName() + UUID.randomUUID();
+    public synchronized static int showDialog(Activity activity, StackableDialogFragment dialogFragment) {
+        String tag = "stackingDialog:" + dialogFragment.getClass().getSimpleName() + ":" + UUID.randomUUID();
         dialogStack.add(tag);
         return dialogFragment.show(activity.getFragmentManager().beginTransaction(), tag);
     }
 
-    public static void unregisterDialog(String tag) {
+    public synchronized static void unregisterDialog(String tag) {
         dialogStack.remove(tag);
     }
 }

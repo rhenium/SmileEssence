@@ -41,7 +41,7 @@ public class TalkChainDialogFragment extends StackableDialogFragment {
 
     // ------------------------------ FIELDS ------------------------------
 
-    public static final String KEY_STATUS_ID = "statusID";
+    private static final String KEY_STATUS_ID = "statusID";
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 

@@ -49,7 +49,7 @@ public class SendMessageDialogFragment extends StackableDialogFragment implement
 
     // ------------------------------ FIELDS ------------------------------
 
-    private static String screenNameKey = "screenName";
+    private static final String screenNameKey = "screenName";
     private String screenName;
     private EditText editText;
     private TextView textViewCount;

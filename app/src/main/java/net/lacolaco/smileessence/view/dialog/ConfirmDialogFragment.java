@@ -37,7 +37,7 @@ public abstract class ConfirmDialogFragment extends StackableDialogFragment {
 
     // ------------------------------ FIELDS ------------------------------
 
-    public static final String ARG_TEXT = "text";
+    private static final String ARG_TEXT = "text";
     private final DialogInterface.OnClickListener listener = (dialog, which) -> {
         onButtonClick(which);
         dialog.dismiss();

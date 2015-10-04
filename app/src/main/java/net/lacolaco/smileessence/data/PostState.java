@@ -188,7 +188,7 @@ public class PostState {
         }
 
         public void commitWithOpen(MainActivity activity) {
-            DialogHelper.closeAllDialogs(activity);
+            DialogHelper.closeAll(activity);
             PostState.getState().copy(state).postStateChange();
             activity.openPostPage();
         }

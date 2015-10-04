@@ -41,7 +41,7 @@ public class ReviewDialogFragment extends StackableDialogFragment implements Vie
 
     // ------------------------------ FIELDS ------------------------------
 
-    private static String statusIDKey = "key";
+    private static final String statusIDKey = "key";
     private long statusID;
     private RatingBar ratingBar;
 

@@ -40,7 +40,7 @@ public class HashtagDialogFragment extends MenuDialogFragment {
 
     // ------------------------------ FIELDS ------------------------------
 
-    public static final String KEY_TEXT = "text";
+    private static final String KEY_TEXT = "text";
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 

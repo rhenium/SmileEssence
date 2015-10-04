@@ -44,7 +44,7 @@ public class SearchOnGoogleDialogFragment extends StackableDialogFragment implem
 
     // ------------------------------ FIELDS ------------------------------
 
-    private static String textKey = "key";
+    private static final String textKey = "key";
     private String text;
     private EditText editText;
     private Button button;
@@ -126,6 +126,6 @@ public class SearchOnGoogleDialogFragment extends StackableDialogFragment implem
         Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
         intent.putExtra(SearchManager.QUERY, editText.getText().toString());
         getActivity().startActivity(intent);
-        DialogHelper.closeAllDialogs(getActivity());
+        DialogHelper.closeAll(getActivity());
     }
 }
