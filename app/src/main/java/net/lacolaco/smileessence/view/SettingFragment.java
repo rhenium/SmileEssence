@@ -32,6 +32,7 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.text.TextUtils;
+import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.LicenseActivity;
 import net.lacolaco.smileessence.activity.ManageAccountsActivity;
@@ -145,6 +146,12 @@ public class SettingFragment extends PreferenceFragment implements OnSharedPrefe
         super.onResume();
         SharedPreferences sharedPreferences = getPreferenceScreen().getSharedPreferences();
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Application.getInstance().getRefWatcher().watch(this);
     }
 
     // -------------------------- OTHER METHODS --------------------------

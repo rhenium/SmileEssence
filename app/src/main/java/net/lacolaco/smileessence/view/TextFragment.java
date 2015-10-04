@@ -31,6 +31,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import net.lacolaco.smileessence.Application;
 
 public class TextFragment extends Fragment {
 
@@ -51,5 +52,11 @@ public class TextFragment extends Fragment {
             }
         }
         return textView;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Application.getInstance().getRefWatcher().watch(this);
     }
 }
