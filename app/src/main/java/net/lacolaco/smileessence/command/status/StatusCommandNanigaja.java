@@ -69,8 +69,8 @@ public class StatusCommandNanigaja extends StatusCommand implements IConfirmable
             str = str.replaceFirst(String.format("@%s", user.getScreenName()), "").trim();
             header = "@" + getOriginalStatus().getUser().getScreenName();
         }
-        str = String.format("%s %s", header, String.format(getFormatString(getActivity()), str)).trim();
-        return str;
+        str = header + " " + String.format(getActivity().getString(R.string.format_status_command_nanigaja), str);
+        return str.trim();
     }
 
     @Override
@@ -84,9 +84,5 @@ public class StatusCommandNanigaja extends StatusCommand implements IConfirmable
                 .onFail(x -> Notificator.getInstance().alert(R.string.notice_favorite_failed))
                 .execute();
         return true;
-    }
-
-    private String getFormatString(Activity activity) {
-        return activity.getString(R.string.format_status_command_nanigaja);
     }
 }

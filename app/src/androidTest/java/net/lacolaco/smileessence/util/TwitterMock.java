@@ -26,22 +26,17 @@ package net.lacolaco.smileessence.util;
 
 import android.content.Context;
 import android.content.res.AssetManager;
-
 import net.lacolaco.smileessence.entity.Account;
+import net.lacolaco.smileessence.entity.DirectMessage;
+import net.lacolaco.smileessence.entity.Tweet;
+import net.lacolaco.smileessence.entity.User;
+import twitter4j.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Properties;
-
-import net.lacolaco.smileessence.entity.DirectMessage;
-import twitter4j.JSONException;
-import twitter4j.Status;
-import twitter4j.Twitter;
-import twitter4j.TwitterException;
-import twitter4j.TwitterObjectFactory;
-import net.lacolaco.smileessence.entity.User;
 
 public class TwitterMock {
 
@@ -88,24 +83,44 @@ public class TwitterMock {
         }
     }
 
-    public Status getStatusMock() throws IOException, TwitterException {
+    public Status getTweetRawMock() throws IOException, TwitterException {
         return TwitterObjectFactory.createStatus(getJson("status.json"));
     }
 
-    public Status getReplyMock() throws IOException, TwitterException {
+    public Tweet getTweetMock() throws IOException, TwitterException {
+        return Tweet.fromTwitter(getTweetRawMock(), getUserMock().getId());
+    }
+
+    public Status getReplyRawMock() throws IOException, TwitterException {
         return TwitterObjectFactory.createStatus(getJson("reply.json"));
     }
 
-    public Status getRetweetMock() throws IOException, TwitterException {
+    public Tweet getReplyMock() throws IOException, TwitterException {
+        return Tweet.fromTwitter(getReplyRawMock(), getUserMock().getId());
+    }
+
+    public Status getRetweetRawMock() throws IOException, TwitterException {
         return TwitterObjectFactory.createStatus(getJson("retweet.json"));
     }
 
-    public User getUserMock() throws IOException, TwitterException {
+    public Tweet getRetweetMock() throws IOException, TwitterException {
+        return Tweet.fromTwitter(getRetweetRawMock(), getUserMock().getId());
+    }
+
+    public twitter4j.User getUserRawMock() throws IOException, TwitterException {
         return TwitterObjectFactory.createUser(getJson("user.json"));
     }
 
-    public DirectMessage getDirectMessageMock() throws IOException, TwitterException {
+    public User getUserMock() throws IOException, TwitterException {
+        return User.fromTwitter(getUserRawMock());
+    }
+
+    public twitter4j.DirectMessage getDirectMessageRawMock() throws IOException, TwitterException {
         return TwitterObjectFactory.createDirectMessage(getJson("directmessage.json"));
+    }
+
+    public DirectMessage getDirectMessageMock() throws IOException, TwitterException {
+        return DirectMessage.fromTwitter(getDirectMessageRawMock());
     }
 
     public String getAccessToken() throws IOException, JSONException {
@@ -116,11 +131,7 @@ public class TwitterMock {
         return getOAuthToken("accessTokenSecret");
     }
 
-    public Twitter getTwitterMock() throws IOException, JSONException {
-        return getAccount().getTwitter();
-    }
-
     public Account getAccount() throws IOException, TwitterException, JSONException {
-        return new Account(getAccessToken(), getAccessTokenSecret(), getUserMock().getId(), getUserMock().getScreenName());
+        return Account.register(getAccessToken(), getAccessTokenSecret(), getUserMock().getId(), getUserMock().getScreenName());
     }
 }

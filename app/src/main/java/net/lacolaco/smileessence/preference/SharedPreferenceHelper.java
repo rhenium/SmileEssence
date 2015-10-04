@@ -40,6 +40,11 @@ public abstract class SharedPreferenceHelper {
         return getPreferences().getString(getString(key), defaultValue);
     }
 
+    @Deprecated
+    public String get(String key, String defaultValue) {
+        return getPreferences().getString(key, defaultValue);
+    }
+
     // int, long, float value may be stored in String format (old versions)
     public int get(int key, int defaultValue) {
         try {
@@ -82,6 +87,13 @@ public abstract class SharedPreferenceHelper {
     public boolean set(int key, String value) {
         return getPreferences().edit()
                 .putString(getString(key), value)
+                .commit();
+    }
+
+    @Deprecated
+    public boolean set(String key, String value) {
+        return getPreferences().edit()
+                .putString(key, value)
                 .commit();
     }
 

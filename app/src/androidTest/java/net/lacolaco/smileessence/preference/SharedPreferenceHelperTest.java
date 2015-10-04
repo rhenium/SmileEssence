@@ -24,6 +24,8 @@
 
 package net.lacolaco.smileessence.preference;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.test.InstrumentationTestCase;
 
 public class SharedPreferenceHelperTest extends InstrumentationTestCase {
@@ -33,28 +35,33 @@ public class SharedPreferenceHelperTest extends InstrumentationTestCase {
     @Override
     public void setUp() throws Exception {
         //can't create on test context.
-        helper = new SharedPreferenceHelper(getInstrumentation().getTargetContext(), "TestPreference");
-        assertTrue(helper.putValue("test.sample", "test"));
-        assertTrue(helper.putValue("test.empty", ""));
+        helper = new SharedPreferenceHelper() {
+            @Override
+            protected SharedPreferences getPreferences() {
+                return getInstrumentation().getTargetContext().getSharedPreferences("TestPreference", Context.MODE_PRIVATE);
+            }
+        };
+        assertTrue(helper.set("test.sample", "test"));
+        assertTrue(helper.set("test.empty", ""));
     }
 
     public void testGetProperty() throws Exception {
-        String sample = helper.getValue("test.sample", "");
+        String sample = helper.get("test.sample", "");
         assertEquals("test", sample);
     }
 
     public void testSetProperty() throws Exception {
-        assertTrue(helper.putValue("test.sample", "test1"));
-        assertEquals("test1", helper.getValue("test.sample", ""));
+        assertTrue(helper.set("test.sample", "test1"));
+        assertEquals("test1", helper.get("test.sample", "notCorrect"));
     }
 
     public void testGetEmptyValue() throws Exception {
-        String empty = helper.getValue("test.empty", "");
+        String empty = helper.get("test.empty", "ax");
         assertEquals("", empty);
     }
 
     public void testNotExists() throws Exception {
-        String notExists = helper.getValue("test.null", "");
-        assertEquals("", notExists);
+        String notExists = helper.get("test.null", "no");
+        assertEquals("no", notExists);
     }
 }

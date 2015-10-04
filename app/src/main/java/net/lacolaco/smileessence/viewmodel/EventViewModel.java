@@ -90,6 +90,14 @@ public class EventViewModel implements IViewModel {
         return targetObject != null;
     }
 
+    public Tweet getTargetObject() {
+        return targetObject;
+    }
+
+    public User getSource() {
+        return source;
+    }
+
     // ------------------------ INTERFACE METHODS ------------------------
 
 

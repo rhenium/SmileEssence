@@ -34,19 +34,19 @@ public class UserPreferenceHelperTest extends AndroidTestCase {
 
     @Override
     public void setUp() throws Exception {
-        pref = new UserPreferenceHelper(getContext());
+        pref = UserPreferenceHelper.getInstance();
     }
 
     public void testNotFound() throws Exception {
-        assertEquals("", pref.getValue(0, ""));
+        assertEquals("", pref.get(0, ""));
     }
 
     public void testUseDefault() throws Exception {
-        assertNotSame(0, pref.getValue(R.string.key_setting_text_size, 10));
+        assertNotSame(0, pref.get(R.string.key_setting_text_size, 10));
     }
 
     public void testPutAndGet() throws Exception {
-        assertEquals(true, pref.putValue(R.string.key_test_preference, 10));
-        assertEquals(10, pref.getValue(R.string.key_test_preference, 0));
+        assertEquals(true, pref.set(R.string.key_test_preference, 10));
+        assertEquals(10, pref.get(R.string.key_test_preference, 0));
     }
 }

@@ -25,24 +25,19 @@
 package net.lacolaco.smileessence.twitter;
 
 import android.test.ActivityInstrumentationTestCase2;
-
 import net.lacolaco.smileessence.activity.MainActivity;
-import net.lacolaco.smileessence.entity.Account;
+import net.lacolaco.smileessence.entity.Tweet;
+import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.util.TwitterMock;
-import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
-
-import net.lacolaco.smileessence.entity.DirectMessage;
+import net.lacolaco.smileessence.viewmodel.EventViewModel;
+import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
-import net.lacolaco.smileessence.entity.User;
 
 public class UserStreamListenerTest extends ActivityInstrumentationTestCase2<MainActivity> {
 
     TwitterMock mock;
     UserStreamListener listener;
-    private String token;
-    private User user;
-    private String secret;
 
     public UserStreamListenerTest() {
         super(MainActivity.class);
@@ -51,28 +46,18 @@ public class UserStreamListenerTest extends ActivityInstrumentationTestCase2<Mai
     @Override
     public void setUp() throws Exception {
         mock = new TwitterMock(getInstrumentation().getContext());
-        listener = new UserStreamListener(getActivity());
-        token = mock.getAccessToken();
-        secret = mock.getAccessTokenSecret();
-        user = mock.getUserMock();
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Account account = new Account(token, secret, user.getId(), user.getScreenName());
-                getActivity().setCurrentAccount(account);
-                getActivity().initializeView();
-            }
-        });
-        Thread.sleep(500);
+        listener = new UserStreamListener(mock.getAccount());
     }
 
     public void testOnStatus() throws Exception {
-        final Status status = mock.getStatusMock();
-        CustomListAdapter<?> home = getActivity().getListAdapter(MainActivity.AdapterID.Home);
+        Status status = mock.getTweetRawMock();
+        Container<StatusViewModel> a = new Container<>();
+        Container<Long> b = new Container<>();
+        StatusFilter.getInstance().register(this, StatusViewModel.class,
+                gotVm -> a.object = gotVm,
+                gotId -> b.object = gotId);
         listener.onStatus(status);
-        home.updateForce();
-        Thread.sleep(500);
-        assertEquals(1, home.getCount());
+        assertEquals(Tweet.fromTwitter(status, 0), a.object.getTweet());
         listener.onDeletionNotice(new StatusDeletionNotice() {
             @Override
             public long getStatusId() {
@@ -89,77 +74,29 @@ public class UserStreamListenerTest extends ActivityInstrumentationTestCase2<Mai
                 return 0;
             }
         });
-        home.updateForce();
-        Thread.sleep(500);
-        assertEquals(0, home.getCount());
-    }
-
-    public void testOnMention() throws Exception {
-        final Status status = mock.getReplyMock();
-        CustomListAdapter<?> mentions = getActivity().getListAdapter(MainActivity.AdapterID.Mentions);
-        listener.onStatus(status);
-        mentions.updateForce();
-        Thread.sleep(500);
-        assertEquals(1, mentions.getCount());
-    }
-
-    public void testOnRetweeted() throws Exception {
-        final Status status = mock.getRetweetMock();
-        listener.onStatus(status);
-        CustomListAdapter<?> home = getActivity().getListAdapter(MainActivity.AdapterID.Home);
-        home.updateForce();
-        Thread.sleep(500);
-        assertEquals(1, home.getCount());
+        assertEquals(status.getId(), (long) b.object);
+        StatusFilter.getInstance().unregister(this);
     }
 
     public void testOnFavorited() throws Exception {
-        final Status status = mock.getReplyMock();
-        final User source = status.getUser();
-        CustomListAdapter<?> history = getActivity().getListAdapter(MainActivity.AdapterID.History);
-        listener.onFavorite(source, user, status);
-        history.updateForce();
-        Thread.sleep(500);
-        assertEquals(1, history.getCount());
-        listener.onUnfavorite(source, user, status);
-        history.updateForce();
-        Thread.sleep(500);
-        assertEquals(2, history.getCount());
-    }
-
-    public void testOnFollow() throws Exception {
-        final User source = mock.getUserMock();
-        CustomListAdapter<?> history = getActivity().getListAdapter(MainActivity.AdapterID.History);
-        listener.onFollow(source, user);
-        history.updateForce();
-        Thread.sleep(500);
-        assertEquals(1, history.getCount());
-    }
-
-    public void testOnBlock() throws Exception {
-        final User source = mock.getUserMock();
-        CustomListAdapter<?> history = getActivity().getListAdapter(MainActivity.AdapterID.History);
-        listener.onBlock(source, user);
-        listener.onUnblock(source, user);
-        history.updateForce();
-        Thread.sleep(500);
-        assertEquals(2, history.getCount());
-    }
-
-    public void testOnDirectMessage() throws Exception {
-        final DirectMessage message = mock.getDirectMessageMock();
-        CustomListAdapter<?> messages = getActivity().getListAdapter(MainActivity.AdapterID.Messages);
-        listener.onDirectMessage(message);
-        messages.updateForce();
-        Thread.sleep(500);
-        assertEquals(1, messages.getCount());
-        listener.onDeletionNotice(message.getId(), message.getSenderId());
-        messages.updateForce();
-        Thread.sleep(500);
-        assertEquals(0, messages.getCount());
+        final Status status = mock.getReplyRawMock();
+        final twitter4j.User source = mock.getUserRawMock();
+        Container<EventViewModel> a = new Container<>();
+        StatusFilter.getInstance().register(this, EventViewModel.class,
+                gotVm -> a.object = gotVm,
+                null);
+        listener.onFavorite(source, source, status);
+        assertNotNull(a.object);
+        assertSame(User.fromTwitter(source), a.object.getSource());
+        assertSame(Tweet.fromTwitter(status, mock.getUserMock().getId()), a.object.getTargetObject());
     }
 
     @Override
     protected void tearDown() throws Exception {
         getActivity().forceFinish();
+    }
+
+    static class Container<T> {
+        public T object;
     }
 }

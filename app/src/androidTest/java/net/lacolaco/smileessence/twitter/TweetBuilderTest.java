@@ -25,11 +25,9 @@
 package net.lacolaco.smileessence.twitter;
 
 import android.test.InstrumentationTestCase;
-
-import net.lacolaco.smileessence.util.TwitterMock;
-
-import twitter4j.Status;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.entity.User;
+import net.lacolaco.smileessence.util.TwitterMock;
 
 public class TweetBuilderTest extends InstrumentationTestCase {
 
@@ -42,7 +40,7 @@ public class TweetBuilderTest extends InstrumentationTestCase {
 
     public void testBuilder() throws Exception {
         User user = mock.getUserMock();
-        Status status = mock.getReplyMock();
+        Tweet status = mock.getReplyMock();
         TweetBuilder builder = new TweetBuilder();
         assertEquals("", builder.buildText());
         builder.addScreenName(user.getScreenName());
@@ -50,8 +48,8 @@ public class TweetBuilderTest extends InstrumentationTestCase {
         assertEquals("@laco0416 test", builder.buildText());
         builder.appendText(" #test");
         assertEquals("@laco0416 test #test", builder.buildText());
-        builder.setInReplyToStatusID(status.getInReplyToStatusId());
-        assertEquals(status.getInReplyToStatusId(), builder.build().getInReplyToStatusId());
+        builder.setInReplyToStatusID(status.getInReplyTo());
+        assertEquals(status.getInReplyTo(), builder.build().getInReplyToStatusId());
         builder.setMediaPath("");
         assertNotNull(builder.build());
     }

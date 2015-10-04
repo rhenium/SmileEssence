@@ -30,6 +30,7 @@ import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.util.Themes;
+import net.lacolaco.smileessence.util.UIHandler;
 
 import java.util.Collections;
 import java.util.Set;
@@ -90,7 +91,7 @@ public class Application extends com.activeandroid.app.Application {
     public void setCurrentAccount(Account val) {
         currentAccount = val;
         for (OnCurrentAccountChangedListener listener : currentAccountChangedListeners) {
-            listener.onCurrentAccountChanged(val);
+            new UIHandler().post(() -> listener.onCurrentAccountChanged(val));
         }
     }
 
