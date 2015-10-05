@@ -2,7 +2,7 @@
   "created_at":"Thu May 29 13:02:18 +0000 2014",
   "id":471999978789806080,
   "id_str":"471999978789806080",
-  "text":"テスト",
+  "text":"最近はGAE\/Goに夢中です。\n\nhttps:\/\/t.co\/HaZ2B8rGTH\n",
   "source":"<a href=\"http:\/\/youjo.manaita.info\/\" rel=\"nofollow\">Meltykiss<\/a>",
   "truncated":false,
   "in_reply_to_status_id":null,
@@ -102,13 +102,21 @@
 
     ],
     "urls":[
-
+      {
+        "url":"https:\/\/t.co\/HaZ2B8rGTH",
+        "expanded_url":"https:\/\/twitter.com\/laco0416\/status\/441249190841032704",
+        "display_url":"twitter.com\/laco0416\/statu…",
+        "indices":[
+          17,
+          40
+        ]
+      }
     ],
     "user_mentions":[
 
     ]
   },
-  "favorited":false,
+  "favorited":true,
   "retweeted":false,
   "lang":"ja"
 }

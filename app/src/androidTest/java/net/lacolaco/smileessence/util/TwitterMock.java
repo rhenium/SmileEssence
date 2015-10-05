@@ -83,11 +83,15 @@ public class TwitterMock {
         }
     }
 
-    public Status getTweetRawMock() throws IOException, TwitterException {
-        return TwitterObjectFactory.createStatus(getJson("status.json"));
+    public String getTweetJSONMock() throws IOException, TwitterException {
+        return getJson("status.json");
     }
 
-    public Tweet getTweetMock() throws IOException, TwitterException {
+    public Status getTweetRawMock() throws IOException, TwitterException, JSONException {
+        return TwitterObjectFactory.createStatus(getTweetJSONMock());
+    }
+
+    public Tweet getTweetMock() throws IOException, TwitterException, JSONException {
         return Tweet.fromTwitter(getTweetRawMock(), getUserMock().getId());
     }
 
