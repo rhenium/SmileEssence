@@ -44,7 +44,7 @@ public class StatusListAdapter extends CustomListAdapter<StatusViewModel> {
         if (getCount() > 0) {
             return getItem(getCount() - 1).getTweet().getId();
         } else {
-            return Long.MAX_VALUE;
+            return -1;
         }
     }
 

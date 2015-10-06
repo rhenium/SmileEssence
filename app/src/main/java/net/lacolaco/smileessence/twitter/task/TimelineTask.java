@@ -43,11 +43,15 @@ public abstract class TimelineTask<T> extends BackgroundTask<List<T>, Void> {
     }
 
     public TimelineTask<T> setMaxId(long maxId) {
-        paging.setMaxId(maxId);
+        if (maxId > 0) {
+            paging.setMaxId(maxId);
+        }
         return this;
     }
     public TimelineTask<T> setSinceId(long sinceId) {
-        paging.setSinceId(sinceId);
+        if (sinceId > 0) {
+            paging.setSinceId(sinceId);
+        }
         return this;
     }
 
