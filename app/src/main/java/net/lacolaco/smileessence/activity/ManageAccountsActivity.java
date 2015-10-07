@@ -73,11 +73,11 @@ public class ManageAccountsActivity extends Activity implements AdapterView.OnIt
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        // switch current application to this account
         Account account = adapter.getItem(i);
-        setCurrentAccount(account);
-        adapter.notifyDataSetChanged();
-        // safeFinish(); // どうする？
+        if (account != Application.getInstance().getCurrentAccount()) {
+            setCurrentAccount(account);
+            adapter.notifyDataSetChanged();
+        }
     }
 
     @Override
