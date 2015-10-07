@@ -24,6 +24,7 @@
 
 package net.lacolaco.smileessence;
 
+import com.activeandroid.ActiveAndroid;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 import net.lacolaco.smileessence.entity.Account;
@@ -41,7 +42,7 @@ import java.util.WeakHashMap;
  * 現在のテーマのリソース ID と現在のアカウント（およびアカウント変更イベントリスナー）を保持します
  * MainActivity の onCreate で resetState を呼び、保持しているデータを破棄すること
  */
-public class Application extends com.activeandroid.app.Application {
+public class Application extends android.app.Application {
     private static Application instance;
     private Account currentAccount;
     private Set<OnCurrentAccountChangedListener> currentAccountChangedListeners;
@@ -51,9 +52,16 @@ public class Application extends com.activeandroid.app.Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        ActiveAndroid.initialize(this, true);
         instance = this; // プロセスの寿命の間 1 度しか呼ばれないので安全
         refWatcher = LeakCanary.install(this);
         Logger.debug("onCreate");
+    }
+
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+        ActiveAndroid.dispose();
     }
 
     // --------------------- reset ---------------------

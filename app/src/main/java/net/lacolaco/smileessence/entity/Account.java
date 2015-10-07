@@ -28,6 +28,7 @@ import android.os.Handler;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.twitter.task.BlockIDsTask;
 import net.lacolaco.smileessence.twitter.task.GetUserListsTask;
 import net.lacolaco.smileessence.twitter.task.MutesIDsTask;
@@ -71,6 +72,7 @@ public class Account {
         List<Model> all = new Select().from(Model.class).execute();
         for (Model model : all) {
             cache.put(model.getId(), new Account(model));
+            Logger.info("lod" + model.userID);
         }
     }
 
@@ -87,12 +89,14 @@ public class Account {
             model.save();
             account = new Account(model);
             cache.put(model.getId(), account);
+            Logger.error("new" + model.getId());
         } else {
             Model model = account.model;
             model.accessToken = token;
             model.accessSecret = tokenSecret;
             model.screenName = screenName;
             model.save();
+            Logger.error("upd" + model.getId());
         }
         return account;
     }
@@ -206,7 +210,7 @@ public class Account {
     }
 
     @Table(name = "Accounts")
-    private static class Model extends com.activeandroid.Model {
+    public static class Model extends com.activeandroid.Model {
         @Column(name = "Token", notNull = true)
         private String accessToken;
         @Column(name = "Secret", notNull = true)

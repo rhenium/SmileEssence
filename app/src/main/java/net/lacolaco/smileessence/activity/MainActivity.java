@@ -27,11 +27,15 @@ package net.lacolaco.smileessence.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -67,6 +71,7 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
     public static final int REQUEST_GET_PICTURE_FROM_GALLERY = 11;
     public static final int REQUEST_GET_PICTURE_FROM_CAMERA = 12;
     private static final int REQUEST_MANAGE_ACCOUNT = 13;
+    private static final int REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION = 14;
     private ViewPager viewPager;
     private ImageView currentAccountIconImageView;
     private PageListAdapter pagerAdapter;
@@ -207,7 +212,33 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
         initializePages();
         app.addOnCurrentAccountChangedListener(this);
 
-        startMainLogic();
+        int wextPermission = ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (wextPermission == PackageManager.PERMISSION_GRANTED) {
+            startMainLogic();
+        } else {
+            requestPermission();
+        }
+    }
+
+    private void requestPermission() {
+        ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission granted; start main logic
+                    startMainLogic();
+                } else {
+                    // permission denied; どうする？
+                    Notificator.getInstance().alert(R.string.notice_error_storage_permission);
+                    forceFinish();
+                }
+                break;
+            }
+        }
     }
 
     private void startMainLogic() {

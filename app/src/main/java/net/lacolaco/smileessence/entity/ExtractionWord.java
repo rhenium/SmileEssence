@@ -104,7 +104,7 @@ public class ExtractionWord {
     }
 
     @Table(name = "Extraction")
-    private static class Model extends com.activeandroid.Model {
+    public static class Model extends com.activeandroid.Model {
         @Column(name = "Text", notNull = true)
         public String text;
 

@@ -68,7 +68,7 @@ public class CommandSetting {
     }
 
     @Table(name = "Commands")
-    private static class Model extends com.activeandroid.Model {
+    public static class Model extends com.activeandroid.Model {
         // ------------------------------ FIELDS ------------------------------
         @Column(name = "CommandKey")
         public int commandKey; // R.id はいってるらしいけどいいのこれ？（しらない）

@@ -240,4 +240,5 @@
     <string name="notice_no_account_selected">アカウントが選択されていません</string>
     <string name="notice_cant_remove_last_account">最後のアカウントは削除できません</string>
     <string name="notices_of_files">Notices of files:</string>
+    <string name="notice_error_storage_permission">外部ストレージへの書き込み権限が必要です</string>
 </resources>
