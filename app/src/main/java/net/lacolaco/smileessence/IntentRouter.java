@@ -87,12 +87,12 @@ public class IntentRouter {
             }
             Matcher statusMatcher = TWITTER_STATUS_PATTERN.matcher(uri.getPath());
             if (statusMatcher.find()) {
-                showStatusDialog(activity, Long.getLong(statusMatcher.group(1)));
+                showStatusDialog(activity, Long.parseLong(statusMatcher.group(1)));
                 return;
             }
             Matcher userMatcher = TWITTER_USER_PATTERN.matcher(uri.getPath());
             if (userMatcher.find()) {
-                showUserDialog(activity, statusMatcher.group(1));
+                showUserDialog(activity, userMatcher.group(1));
             }
         }
     }
