@@ -47,7 +47,7 @@ public class StatusCommandOpenTalkView extends StatusCommand {
 
     @Override
     public boolean isEnabled() {
-        return getOriginalStatus().getInReplyTo() >= 0;
+        return getOriginalStatus().getInReplyToStatusId() >= 0;
     }
 
     // -------------------------- OTHER METHODS --------------------------

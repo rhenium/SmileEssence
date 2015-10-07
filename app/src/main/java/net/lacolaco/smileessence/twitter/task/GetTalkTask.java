@@ -34,7 +34,7 @@ public class GetTalkTask extends BackgroundTask<List<Tweet>, Tweet> {
             } else {
                 list.add(tweet);
                 progress(tweet);
-                id = tweet.getInReplyTo();
+                id = tweet.getInReplyToStatusId();
             }
         }
         return list;

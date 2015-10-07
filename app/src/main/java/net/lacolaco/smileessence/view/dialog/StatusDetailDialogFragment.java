@@ -129,14 +129,20 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         final StatusListAdapter adapter = new StatusListAdapter(getActivity());
         listView.setAdapter(adapter);
 
-        if (tweet.getInReplyTo() != -1) {
+        if (tweet.getInReplyToStatusId() != -1) {
             listView.setVisibility(View.VISIBLE);
-            new ShowStatusTask(account, tweet.getInReplyTo())
-                    .onDoneUI(replyTo -> {
-                        adapter.addToTop(new StatusViewModel(replyTo));
-                        adapter.updateForce();
-                    })
-                    .execute();
+            Tweet replyToIfPresent = tweet.getInReplyToIfPresent();
+            if (replyToIfPresent != null) {
+                adapter.addToTop(new StatusViewModel(replyToIfPresent));
+                adapter.updateForce();
+            } else {
+                new ShowStatusTask(account, tweet.getInReplyToStatusId())
+                        .onDoneUI(replyTo -> {
+                            adapter.addToTop(new StatusViewModel(replyTo));
+                            adapter.updateForce();
+                        })
+                        .execute();
+            }
         } else {
             listView.setVisibility(View.GONE);
         }

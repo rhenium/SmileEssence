@@ -48,8 +48,8 @@ public class TweetBuilderTest extends InstrumentationTestCase {
         assertEquals("@laco0416 test", builder.buildText());
         builder.appendText(" #test");
         assertEquals("@laco0416 test #test", builder.buildText());
-        builder.setInReplyToStatusID(status.getInReplyTo());
-        assertEquals(status.getInReplyTo(), builder.build().getInReplyToStatusId());
+        builder.setInReplyToStatusID(status.getInReplyToStatusId());
+        assertEquals(status.getInReplyToStatusId(), builder.build().getInReplyToStatusId());
         builder.setMediaPath("");
         assertNotNull(builder.build());
     }

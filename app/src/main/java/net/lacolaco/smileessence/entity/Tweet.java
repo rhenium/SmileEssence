@@ -43,7 +43,7 @@ public class Tweet extends EntitySupport {
     private String source;
     private boolean isRetweet;
     private Tweet retweetedTweet;
-    private long inReplyTo;
+    private long inReplyToStatusId;
     private int favoriteCount;
     private int retweetCount;
     private Set<Long> favoriters;
@@ -73,7 +73,7 @@ public class Tweet extends EntitySupport {
 
         if (!isRetweet) {
             text = extractText(status, false);
-            inReplyTo = status.getInReplyToStatusId();
+            inReplyToStatusId = status.getInReplyToStatusId();
             updateEntities(status);
             if (favoriters == null) favoriters = Collections.newSetFromMap(new ConcurrentHashMap<>());
             if (retweets == null) retweets = new ConcurrentHashMap<>();
@@ -153,8 +153,12 @@ public class Tweet extends EntitySupport {
         return getOriginalTweet().retweetCount;
     }
 
-    public long getInReplyTo() {
-        return getOriginalTweet().inReplyTo;
+    public long getInReplyToStatusId() {
+        return getOriginalTweet().inReplyToStatusId;
+    }
+
+    public Tweet getInReplyToIfPresent() {
+        return Tweet.fetch(getInReplyToStatusId());
     }
 
     public boolean isFavoritedBy(long id) {
