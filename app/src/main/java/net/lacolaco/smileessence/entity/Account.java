@@ -75,7 +75,13 @@ public class Account {
     }
 
     public static synchronized Account register(String token, String tokenSecret, long userID, String screenName) {
-        Account account = Account.get(userID);
+        Account account = null;
+        for (Account a : all()) {
+            if (a.getUserId() == userID) {
+                account = a;
+                break;
+            }
+        }
         if (account == null) {
             Model model = new Model(token, tokenSecret, userID, screenName);
             model.save();
@@ -216,7 +222,7 @@ public class Account {
         }
 
         public Model(String token, String tokenSecret, long userID, String screenName) {
-            super();
+            this();
             this.accessToken = token;
             this.accessSecret = tokenSecret;
             this.userID = userID;

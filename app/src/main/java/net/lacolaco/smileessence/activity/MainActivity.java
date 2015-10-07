@@ -198,7 +198,7 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         pagerAdapter = new PageListAdapter(this, viewPager);
         currentAccountIconImageView = (ImageView) findViewById(android.R.id.home);
-        currentAccountIconImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        currentAccountIconImageView.setScaleType(ImageView.ScaleType.FIT_XY);
 
         Notificator.getInstance().setDefault(this);
         CommandSetting.initialize();
@@ -207,9 +207,13 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
         initializePages();
         app.addOnCurrentAccountChangedListener(this);
 
+        startMainLogic();
+    }
+
+    private void startMainLogic() {
         Account account = getLastUsedAccount();
         if (account != null) {
-            app.setCurrentAccount(account);
+            ((Application) getApplication()).setCurrentAccount(account);
             IntentRouter.onNewIntent(this, getIntent());
         } else {
             startActivityForResult(new Intent(this, ManageAccountsActivity.class), REQUEST_MANAGE_ACCOUNT);
