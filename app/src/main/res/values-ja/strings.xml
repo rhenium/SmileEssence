@@ -237,7 +237,7 @@
     <string name="notice_error_get_list">リストタイムラインの取得に失敗しました</string>
     <string name="activity_manage_accounts">アカウント管理</string>
     <string name="actionbar_accounts">アカウントの管理</string>
-    <string name="notice_no_account_selected">アカウントが選択されていません</string>
+    <string name="notice_no_account_selected">アカウントが選択されていません。アプリケーションを終了しますか？</string>
     <string name="notice_cant_remove_last_account">最後のアカウントは削除できません</string>
     <string name="notices_of_files">Notices of files:</string>
     <string name="notice_error_storage_permission">外部ストレージへの書き込み権限が必要です</string>

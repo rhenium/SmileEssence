@@ -239,6 +239,6 @@
     <string name="activity_manage_accounts">Accounts</string>
     <string name="actionbar_accounts">Accounts</string>
     <string name="notice_cant_remove_last_account">You can\'t remove last account</string>
-    <string name="notice_no_account_selected">No account selected</string>
+    <string name="notice_no_account_selected">No account selected. Do you want to quit?</string>
     <string name="notice_error_storage_permission">Write access to external storage is required.</string>
 </resources>
