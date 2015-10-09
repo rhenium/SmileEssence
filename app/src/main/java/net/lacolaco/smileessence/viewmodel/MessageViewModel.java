@@ -97,7 +97,7 @@ public class MessageViewModel implements IViewModel {
         }
 
         int theme = Application.getInstance().getThemeResId();
-        int colorBgMessage = Themes.getStyledColor(activity, theme, R.attr.color_message_bg_normal, 0);
+        int colorBgMessage = Themes.getStyledColor(activity, R.attr.color_message_bg_normal, 0);
         convertedView.setBackgroundColor(colorBgMessage);
         convertedView.setOnClickListener(new ListItemClickListener(activity, () -> {
             MessageDetailDialogFragment dialogFragment = new MessageDetailDialogFragment();
@@ -126,7 +126,6 @@ public class MessageViewModel implements IViewModel {
     private void updateViewSender(Activity activity, View convertedView) {
         int textSize = UserPreferenceHelper.getInstance().getTextSize();
         int nameStyle = UserPreferenceHelper.getInstance().getNameStyle();
-        int theme = Application.getInstance().getThemeResId();
 
         NetworkImageView icon = (NetworkImageView) convertedView.findViewById(R.id.imageview_status_icon);
         ImageCache.getInstance().setImageToView(directMessage.getSender().getProfileImageUrl(), icon);
@@ -138,23 +137,22 @@ public class MessageViewModel implements IViewModel {
 
         TextView header = (TextView) convertedView.findViewById(R.id.textview_status_header);
         header.setTextSize(textSize);
-        int colorHeader = Themes.getStyledColor(activity, theme, R.attr.color_message_text_header, 0);
+        int colorHeader = Themes.getStyledColor(activity, R.attr.color_message_text_header, 0);
         header.setTextColor(colorHeader);
         header.setText(NameStyles.getNameString(nameStyle, directMessage.getSender()));
     }
 
     private void updateViewBody(Activity activity, View convertedView) {
         int textSize = UserPreferenceHelper.getInstance().getTextSize();
-        int theme = Application.getInstance().getThemeResId();
 
         TextView content = (TextView) convertedView.findViewById(R.id.textview_status_text);
         content.setTextSize(textSize);
-        int colorNormal = Themes.getStyledColor(activity, theme, R.attr.color_status_text_normal, 0);
+        int colorNormal = Themes.getStyledColor(activity, R.attr.color_status_text_normal, 0);
         content.setTextColor(colorNormal);
         content.setText(directMessage.getText());
         TextView footer = (TextView) convertedView.findViewById(R.id.textview_status_footer);
         footer.setTextSize(textSize - 2);
-        int colorFooter = Themes.getStyledColor(activity, theme, R.attr.color_status_text_footer, 0);
+        int colorFooter = Themes.getStyledColor(activity, R.attr.color_status_text_footer, 0);
         footer.setTextColor(colorFooter);
         footer.setText(getFooterText(Application.getInstance().getCurrentAccount()));
     }

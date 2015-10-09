@@ -345,9 +345,8 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
 
     private void setFollowButtonState(boolean isFollowing) {
         MainActivity mainActivity = (MainActivity) getActivity();
-        int theme = Application.getInstance().getThemeResId();
-        final Drawable unfollowColor = Themes.getStyledDrawable(mainActivity, theme, R.attr.button_round_red);
-        final Drawable followColor = Themes.getStyledDrawable(mainActivity, theme, R.attr.button_round_blue);
+        final Drawable unfollowColor = Themes.getStyledDrawable(mainActivity, R.attr.button_round_red);
+        final Drawable followColor = Themes.getStyledDrawable(mainActivity, R.attr.button_round_blue);
         buttonFollow.setText(isFollowing ? R.string.user_detail_unfollow : R.string.user_detail_follow);
         buttonFollow.setBackground(isFollowing ? unfollowColor : followColor);
         buttonFollow.setTag(isFollowing);

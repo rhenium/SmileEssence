@@ -132,7 +132,6 @@ public class StatusViewModel implements IViewModel {
     private void updateViewUser(MainActivity activity, View convertedView) {
         int textSize = UserPreferenceHelper.getInstance().getTextSize();
         int nameStyle = UserPreferenceHelper.getInstance().getNameStyle();
-        int theme = Application.getInstance().getThemeResId();
 
         NetworkImageView icon = (NetworkImageView) convertedView.findViewById(R.id.imageview_status_icon);
         ImageCache.getInstance().setImageToView(tweet.getOriginalTweet().getUser().getProfileImageUrl(), icon);
@@ -140,19 +139,18 @@ public class StatusViewModel implements IViewModel {
 
         TextView header = (TextView) convertedView.findViewById(R.id.textview_status_header);
         header.setTextSize(textSize);
-        int colorHeader = Themes.getStyledColor(activity, theme, R.attr.color_status_text_header, 0);
-        int colorMineHeader = Themes.getStyledColor(activity, theme, R.attr.color_status_text_mine, 0);
+        int colorHeader = Themes.getStyledColor(activity, R.attr.color_status_text_header, 0);
+        int colorMineHeader = Themes.getStyledColor(activity, R.attr.color_status_text_mine, 0);
         header.setTextColor(tweet.getUser() == Application.getInstance().getCurrentAccount().getUser() ? colorMineHeader : colorHeader);
         header.setText(NameStyles.getNameString(nameStyle, tweet.getOriginalTweet().getUser()));
     }
 
     private void updateViewBody(MainActivity activity, View convertedView) {
         int textSize = UserPreferenceHelper.getInstance().getTextSize();
-        int theme = Application.getInstance().getThemeResId();
 
         TextView content = (TextView) convertedView.findViewById(R.id.textview_status_text);
         content.setTextSize(textSize);
-        int colorNormal = Themes.getStyledColor(activity, theme, R.attr.color_status_text_normal, 0);
+        int colorNormal = Themes.getStyledColor(activity, R.attr.color_status_text_normal, 0);
         content.setTextColor(colorNormal);
         String rawText = tweet.getOriginalTweet().getText();
         if (isReadMorseEnabled() && Morse.isMorse(rawText)) {
@@ -162,19 +160,19 @@ public class StatusViewModel implements IViewModel {
         }
         TextView footer = (TextView) convertedView.findViewById(R.id.textview_status_footer);
         footer.setTextSize(textSize - 2);
-        int colorFooter = Themes.getStyledColor(activity, theme, R.attr.color_status_text_footer, 0);
+        int colorFooter = Themes.getStyledColor(activity, R.attr.color_status_text_footer, 0);
         footer.setTextColor(colorFooter);
         footer.setText(getFooterText());
 
 
         if (tweet.isRetweet()) {
-            int colorBgRetweet = Themes.getStyledColor(activity, theme, R.attr.color_status_bg_retweet, 0);
+            int colorBgRetweet = Themes.getStyledColor(activity, R.attr.color_status_bg_retweet, 0);
             convertedView.setBackgroundColor(colorBgRetweet);
         } else if (tweet.getOriginalTweet().getMentions().contains(Application.getInstance().getCurrentAccount().getUser().getScreenName())) {
-            int colorBgMention = Themes.getStyledColor(activity, theme, R.attr.color_status_bg_mention, 0);
+            int colorBgMention = Themes.getStyledColor(activity, R.attr.color_status_bg_mention, 0);
             convertedView.setBackgroundColor(colorBgMention);
         } else {
-            int colorBgNormal = Themes.getStyledColor(activity, theme, R.attr.color_status_bg_normal, 0);
+            int colorBgNormal = Themes.getStyledColor(activity, R.attr.color_status_bg_normal, 0);
             convertedView.setBackgroundColor(colorBgNormal);
         }
     }

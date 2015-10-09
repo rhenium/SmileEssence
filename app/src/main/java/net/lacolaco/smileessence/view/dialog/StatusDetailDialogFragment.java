@@ -205,7 +205,6 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
     }
 
     private void updateViewButtons(View view) {
-        int themeResId = Application.getInstance().getThemeResId();
         Account account = Application.getInstance().getCurrentAccount();
 
         //--- buttons
@@ -222,7 +221,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
             if (tweet.isRetweetedBy(account.getUserId())) {
                 retweet.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.icon_retweet_on));
             } else {
-                retweet.setImageDrawable(Themes.getStyledDrawable(getActivity(), themeResId, R.attr.icon_retweet_off));
+                retweet.setImageDrawable(Themes.getStyledDrawable(getActivity(), R.attr.icon_retweet_off));
             }
         }
 
@@ -231,7 +230,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         if (tweet.isFavoritedBy(account.getUserId())) {
             favorite.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.icon_favorite_on));
         } else {
-            favorite.setImageDrawable(Themes.getStyledDrawable(getActivity(), themeResId, R.attr.icon_favorite_off));
+            favorite.setImageDrawable(Themes.getStyledDrawable(getActivity(), R.attr.icon_favorite_off));
         }
 
         ImageButton delete = (ImageButton) view.findViewById(R.id.button_status_detail_delete);

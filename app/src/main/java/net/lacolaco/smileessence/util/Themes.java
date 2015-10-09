@@ -27,6 +27,7 @@ package net.lacolaco.smileessence.util;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 
 public class Themes {
@@ -52,15 +53,15 @@ public class Themes {
         }
     }
 
-    public static int getStyledColor(Context context, int themeResId, int attribute, int defaultColor) {
-        TypedArray array = context.obtainStyledAttributes(themeResId, new int[]{attribute});
+    public static int getStyledColor(Context context, int attribute, int defaultColor) {
+        TypedArray array = context.obtainStyledAttributes(Application.getInstance().getThemeResId(), new int[]{attribute});
         int color = array.getColor(0, defaultColor);
         array.recycle();
         return color;
     }
 
-    public static Drawable getStyledDrawable(Context context, int themeResId, int attribute) {
-        TypedArray array = context.obtainStyledAttributes(themeResId, new int[]{attribute});
+    public static Drawable getStyledDrawable(Context context, int attribute) {
+        TypedArray array = context.obtainStyledAttributes(Application.getInstance().getThemeResId(), new int[]{attribute});
         Drawable drawable = array.getDrawable(0);
         array.recycle();
         return drawable;
