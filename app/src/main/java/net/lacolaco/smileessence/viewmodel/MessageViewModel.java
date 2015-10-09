@@ -97,7 +97,7 @@ public class MessageViewModel implements IViewModel {
         }
 
         int theme = Application.getInstance().getThemeResId();
-        int colorBgMessage = Themes.getStyledColor(activity, R.attr.color_message_bg_normal, 0);
+        int colorBgMessage = Themes.getStyledColor(activity, R.attr.color_message_bg_normal);
         convertedView.setBackgroundColor(colorBgMessage);
         convertedView.setOnClickListener(new ListItemClickListener(activity, () -> {
             MessageDetailDialogFragment dialogFragment = new MessageDetailDialogFragment();
@@ -137,7 +137,7 @@ public class MessageViewModel implements IViewModel {
 
         TextView header = (TextView) convertedView.findViewById(R.id.textview_status_header);
         header.setTextSize(textSize);
-        int colorHeader = Themes.getStyledColor(activity, R.attr.color_message_text_header, 0);
+        int colorHeader = Themes.getStyledColor(activity, R.attr.color_message_text_header);
         header.setTextColor(colorHeader);
         header.setText(NameStyles.getNameString(nameStyle, directMessage.getSender()));
     }
@@ -147,12 +147,12 @@ public class MessageViewModel implements IViewModel {
 
         TextView content = (TextView) convertedView.findViewById(R.id.textview_status_text);
         content.setTextSize(textSize);
-        int colorNormal = Themes.getStyledColor(activity, R.attr.color_status_text_normal, 0);
+        int colorNormal = Themes.getStyledColor(activity, R.attr.color_status_text_normal);
         content.setTextColor(colorNormal);
         content.setText(directMessage.getText());
         TextView footer = (TextView) convertedView.findViewById(R.id.textview_status_footer);
         footer.setTextSize(textSize - 2);
-        int colorFooter = Themes.getStyledColor(activity, R.attr.color_status_text_footer, 0);
+        int colorFooter = Themes.getStyledColor(activity, R.attr.color_status_text_footer);
         footer.setTextColor(colorFooter);
         footer.setText(getFooterText(Application.getInstance().getCurrentAccount()));
     }

@@ -53,11 +53,15 @@ public class Themes {
         }
     }
 
-    public static int getStyledColor(Context context, int attribute, int defaultColor) {
+    public static int getStyledColor(Context context, int attribute) {
         TypedArray array = context.obtainStyledAttributes(Application.getInstance().getThemeResId(), new int[]{attribute});
-        int color = array.getColor(0, defaultColor);
+        int color = array.getColor(0, 0);
         array.recycle();
-        return color;
+        if (color == 0) {
+            throw new RuntimeException("[BUG] can't get styled color from attr ID: " + attribute);
+        } else {
+            return color;
+        }
     }
 
     public static Drawable getStyledDrawable(Context context, int attribute) {

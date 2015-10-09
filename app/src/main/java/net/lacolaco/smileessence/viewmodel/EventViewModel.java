@@ -128,24 +128,24 @@ public class EventViewModel implements IViewModel {
 
         TextView header = (TextView) convertedView.findViewById(R.id.textview_status_header);
         header.setTextSize(textSize);
-        int colorHeader = Themes.getStyledColor(activity, R.attr.color_status_text_mine, 0);
+        int colorHeader = Themes.getStyledColor(activity, R.attr.color_status_text_mine);
         header.setTextColor(colorHeader);
 
         updateViewUser(convertedView);
 
         TextView content = (TextView) convertedView.findViewById(R.id.textview_status_text);
         content.setTextSize(textSize);
-        int colorNormal = Themes.getStyledColor(activity, R.attr.color_status_text_normal, 0);
+        int colorNormal = Themes.getStyledColor(activity, R.attr.color_status_text_normal);
         content.setTextColor(colorNormal);
         content.setText(isStatusEvent() ? targetObject.getText() : "");
         TextView footer = (TextView) convertedView.findViewById(R.id.textview_status_footer);
         footer.setTextSize(textSize - 2);
-        int colorFooter = Themes.getStyledColor(activity, R.attr.color_status_text_footer, 0);
+        int colorFooter = Themes.getStyledColor(activity, R.attr.color_status_text_footer);
         footer.setTextColor(colorFooter);
         footer.setText(StringUtils.dateToString(getCreatedAt()));
         ImageView favorited = (ImageView) convertedView.findViewById(R.id.imageview_status_favorited);
         favorited.setVisibility(View.GONE);
-        int colorBgNormal = Themes.getStyledColor(activity, R.attr.color_status_bg_normal, 0);
+        int colorBgNormal = Themes.getStyledColor(activity, R.attr.color_status_bg_normal);
         convertedView.setBackgroundColor(colorBgNormal);
         convertedView.setOnClickListener(new ListItemClickListener(activity, () -> {
             UserDetailDialogFragment fragment = new UserDetailDialogFragment();
