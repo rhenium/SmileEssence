@@ -54,19 +54,27 @@ public class UnorderedCustomListAdapter<T extends IViewModel> extends CustomList
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public void addItemToTop(T... items) {
+    public void addItemToTop(T item) {
         synchronized (LOCK) {
-            for (T item : items) {
-                linkedList.add(item);
-            }
+            linkedList.add(item);
         }
     }
 
-    public void addItemToBottom(T... items) {
+    public void addItemsToTop(List<T> items) {
         synchronized (LOCK) {
-            for (T item : items) {
-                linkedList.add(0, item);
-            }
+            linkedList.addAll(items);
+        }
+    }
+
+    public void addItemToBottom(T item) {
+        synchronized (LOCK) {
+            linkedList.add(0, item);
+        }
+    }
+
+    public void addItemsToBottom(List<T> items) {
+        synchronized (LOCK) {
+            linkedList.addAll(0, items);
         }
     }
 

@@ -52,7 +52,7 @@ public class EditCommandActivity extends Activity {
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 
-    private CheckBoxModel[] getCheckBoxItems() {
+    private List<CheckBoxModel> getCheckBoxItems() {
         editedCommands = new ArrayList<>();
         List<CheckBoxModel> checkBoxModels = new ArrayList<>();
         List<Command> commands = Command.getAllCommands(this);
@@ -72,7 +72,7 @@ public class EditCommandActivity extends Activity {
             CheckBoxModel checkBoxModel = new CheckBoxModel(text, CommandSetting.isVisible(command.getKey()));
             checkBoxModels.add(checkBoxModel);
         }
-        return checkBoxModels.toArray(new CheckBoxModel[checkBoxModels.size()]);
+        return checkBoxModels;
     }
 
     private ListView getListView() {
@@ -139,7 +139,7 @@ public class EditCommandActivity extends Activity {
         ListView listView = getListView();
         adapter = new UnorderedCustomListAdapter<>(this);
         listView.setAdapter(adapter);
-        adapter.addItemToTop(getCheckBoxItems());
+        adapter.addItemsToTop(getCheckBoxItems());
         adapter.update();
     }
 

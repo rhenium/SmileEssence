@@ -49,7 +49,7 @@ public class EditTabActivity extends Activity {
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 
-    private EditableCheckBoxModel[] getCheckBoxItems() {
+    private List<EditableCheckBoxModel> getCheckBoxItems() {
         List<EditableCheckBoxModel> models = new ArrayList<>();
 
         EditableCheckBoxModel post = new EditableCheckBoxModel(0, getString(R.string.page_name_post));
@@ -77,7 +77,7 @@ public class EditTabActivity extends Activity {
         list.setChecked(getVisibility(R.string.key_page_list_visibility))
                 .setInputText(String.valueOf(getPosition(R.string.key_page_list_position, 6)));
         models.add(list);
-        return models.toArray(new EditableCheckBoxModel[models.size()]);
+        return models;
     }
 
     private ListView getListView() {
@@ -134,7 +134,7 @@ public class EditTabActivity extends Activity {
         ListView listView = getListView();
         adapter = new OrderedCustomListAdapter<>(this, Collections.reverseOrder());
         listView.setAdapter(adapter);
-        adapter.addItem(getCheckBoxItems());
+        adapter.addItems(getCheckBoxItems());
         adapter.update();
     }
 

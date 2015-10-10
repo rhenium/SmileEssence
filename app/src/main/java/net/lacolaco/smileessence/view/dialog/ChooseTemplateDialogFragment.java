@@ -38,10 +38,7 @@ public class ChooseTemplateDialogFragment extends MenuDialogFragment {
 
     @Override
     protected void setMenuItems(final UnorderedCustomListAdapter<Command> adapter) {
-        List<Command> commands = getCommands();
-        for (Command command : commands) {
-            adapter.addItemToBottom(command);
-        }
+        adapter.addItemsToBottom(getCommands());
         adapter.update();
     }
 

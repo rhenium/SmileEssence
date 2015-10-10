@@ -56,7 +56,13 @@ public class OrderedCustomListAdapter<T extends IViewModel & IdObject> extends C
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public void addItem(T... items) {
+    public void addItem(T item) {
+        synchronized (LOCK) {
+            treeMap.put(item.getId(), item);
+        }
+    }
+
+    public void addItems(List<T> items) {
         synchronized (LOCK) {
             for (T item : items) {
                 treeMap.put(item.getId(), item);

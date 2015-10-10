@@ -25,11 +25,12 @@
 package net.lacolaco.smileessence.view.adapter;
 
 import android.test.ActivityInstrumentationTestCase2;
-
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.util.TwitterMock;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
+
+import java.util.Arrays;
 
 public class OrderedCustomListAdapterTest extends ActivityInstrumentationTestCase2<MainActivity> {
 
@@ -64,7 +65,7 @@ public class OrderedCustomListAdapterTest extends ActivityInstrumentationTestCas
     public void testAddItems() throws Exception {
         StatusViewModel viewModel1 = new StatusViewModel(mock.getReplyMock());
         StatusViewModel viewModel2 = new StatusViewModel(mock.getReplyMock());
-        adapter.addItem(viewModel1, viewModel2);
+        adapter.addItems(Arrays.asList(viewModel1, viewModel2));
         adapter.notifyDataSetChanged();
         assertEquals(2, adapter.getCount());
     }
@@ -72,7 +73,7 @@ public class OrderedCustomListAdapterTest extends ActivityInstrumentationTestCas
     public void testRemoveItem() throws Exception {
         StatusViewModel viewModel1 = new StatusViewModel(mock.getReplyMock());
         StatusViewModel viewModel2 = new StatusViewModel(mock.getReplyMock());
-        adapter.addItem(viewModel1, viewModel2);
+        adapter.addItems(Arrays.asList(viewModel1, viewModel2));
         adapter.notifyDataSetChanged();
         assertEquals(2, adapter.getCount());
         adapter.removeItem(viewModel1);

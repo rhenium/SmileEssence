@@ -66,9 +66,7 @@ public class UserMenuDialogFragment extends MenuDialogFragment {
         if (user != null) {
             List<Command> commands = getCommands();
             Command.filter(commands);
-            for (Command command : commands) {
-                adapter.addItemToBottom(command);
-            }
+            adapter.addItemsToBottom(commands);
             adapter.update();
         } else {
             dismiss(); // BUG

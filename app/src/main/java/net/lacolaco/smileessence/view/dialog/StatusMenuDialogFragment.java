@@ -66,9 +66,7 @@ public class StatusMenuDialogFragment extends MenuDialogFragment {
         if (tweet != null) {
             List<Command> commands = getCommands();
             Command.filter(commands);
-            for (Command command : commands) {
-                adapter.addItemToBottom(command);
-            }
+            adapter.addItemsToBottom(commands);
             adapter.update();
         } else {
             dismiss();

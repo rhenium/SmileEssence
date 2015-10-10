@@ -56,9 +56,8 @@ public class EditTemplateActivity extends Activity implements AdapterView.OnItem
         return (ListView) findViewById(R.id.listview_edit_list);
     }
 
-    private Template[] getTemplates() {
-        List<Template> all = Template.getAll();
-        return all.toArray(new Template[all.size()]);
+    private List<Template> getTemplates() {
+        return Template.getAll();
     }
 
     // ------------------------ INTERFACE METHODS ------------------------
@@ -200,7 +199,7 @@ public class EditTemplateActivity extends Activity implements AdapterView.OnItem
         ListView listView = getListView();
         adapter = new UnorderedCustomListAdapter<>(this);
         listView.setAdapter(adapter);
-        adapter.addItemToBottom(getTemplates());
+        adapter.addItemsToBottom(getTemplates());
         adapter.update();
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         listView.setOnItemClickListener(this);

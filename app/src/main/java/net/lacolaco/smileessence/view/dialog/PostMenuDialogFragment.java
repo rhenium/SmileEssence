@@ -49,9 +49,7 @@ public class PostMenuDialogFragment extends MenuDialogFragment {
             Notificator.getInstance().alert(R.string.notice_no_commands_available);
             dismiss();
         }
-        for (Command command : commands) {
-            adapter.addItemToBottom(command);
-        }
+        adapter.addItemsToBottom(commands);
         adapter.update();
     }
 

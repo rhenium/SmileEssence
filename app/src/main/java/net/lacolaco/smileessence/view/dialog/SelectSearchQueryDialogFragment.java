@@ -68,9 +68,7 @@ public class SelectSearchQueryDialogFragment extends MenuDialogFragment implemen
     protected void setMenuItems(final UnorderedCustomListAdapter<Command> adapter) {
         List<Command> commands = getCommands();
         Command.filter(commands);
-        for (Command command : commands) {
-            adapter.addItemToBottom(command);
-        }
+        adapter.addItemsToBottom(commands);
         adapter.update();
     }
 

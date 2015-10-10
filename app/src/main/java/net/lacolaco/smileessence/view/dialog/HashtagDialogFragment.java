@@ -61,9 +61,7 @@ public class HashtagDialogFragment extends MenuDialogFragment {
         String text = getHashtagText();
         List<Command> commands = getCommands(text);
         Command.filter(commands);
-        for (Command command : commands) {
-            adapter.addItemToBottom(command);
-        }
+        adapter.addItemsToBottom(commands);
         adapter.update();
     }
 
