@@ -27,66 +27,71 @@ package net.lacolaco.smileessence.view.adapter;
 import android.app.Activity;
 import net.lacolaco.smileessence.viewmodel.IViewModel;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class UnorderedCustomListAdapter<T extends IViewModel> extends CustomListAdapter<T> {
 
     // ------------------------------ FIELDS ------------------------------
 
-    protected final List<T> linkedList;
+    private final List<T> list = new ArrayList<>();
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
     public UnorderedCustomListAdapter(Activity activity) {
         super(activity);
-        this.linkedList = new LinkedList<>();
     }
 
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
     protected List<T> getFrozenList() {
-        return Collections.unmodifiableList(new ArrayList<>(linkedList));
+        return Collections.unmodifiableList(new ArrayList<>(list));
     }
 
     // -------------------------- OTHER METHODS --------------------------
 
     public void addItemToTop(T item) {
         synchronized (LOCK) {
-            linkedList.add(item);
+            if (list.contains(item)) {
+                list.add(0, item);
+            }
         }
     }
 
     public void addItemsToTop(List<T> items) {
         synchronized (LOCK) {
-            linkedList.addAll(items);
+            ListIterator<T> iterator = items.listIterator(items.size());
+            while (iterator.hasPrevious()) {
+                addItemToTop(iterator.previous());
+            }
         }
     }
 
     public void addItemToBottom(T item) {
         synchronized (LOCK) {
-            linkedList.add(0, item);
+            if (list.contains(item)) {
+                list.add(item);
+            }
         }
     }
 
     public void addItemsToBottom(List<T> items) {
         synchronized (LOCK) {
-            linkedList.addAll(0, items);
+            for (T item : items) {
+                addItemToBottom(item);
+            }
         }
     }
 
     public void clear() {
         synchronized (LOCK) {
-            linkedList.clear();
+            list.clear();
         }
     }
 
     public boolean removeItem(T item) {
         synchronized (LOCK) {
-            return linkedList.remove(item);
+            return list.remove(item);
         }
     }
 }
