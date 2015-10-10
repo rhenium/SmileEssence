@@ -64,7 +64,7 @@ public class TalkChainDialogFragment extends StackableDialogFragment {
 
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_talk_list, null);
         ListView listView = (ListView) view.findViewById(R.id.listview_dialog_talk_list);
-        final UnorderedCustomListAdapter<StatusViewModel> adapter = new UnorderedCustomListAdapter<StatusViewModel>(getActivity());
+        final UnorderedCustomListAdapter<StatusViewModel> adapter = new UnorderedCustomListAdapter<>(getActivity());
         listView.setAdapter(adapter);
 
         new GetTalkTask(account, getStatusID()).onProgressUI(tweet -> {

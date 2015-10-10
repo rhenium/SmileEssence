@@ -102,7 +102,6 @@ public class MessageViewModel implements IViewModel, IdObject {
             convertedView.setTag(bundle);
         }
 
-        int theme = Application.getInstance().getThemeResId();
         int colorBgMessage = Themes.getStyledColor(activity, R.attr.color_message_bg_normal);
         convertedView.setBackgroundColor(colorBgMessage);
         convertedView.setOnClickListener(new ListItemClickListener(activity, () -> {
