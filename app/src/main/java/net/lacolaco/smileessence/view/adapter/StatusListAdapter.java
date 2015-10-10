@@ -25,12 +25,10 @@
 package net.lacolaco.smileessence.view.adapter;
 
 import android.app.Activity;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 
-import java.util.Collections;
-import java.util.Iterator;
-
-public class StatusListAdapter extends CustomListAdapter<StatusViewModel> {
+public class StatusListAdapter extends OrderedCustomListAdapter<StatusViewModel> {
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
@@ -56,29 +54,20 @@ public class StatusListAdapter extends CustomListAdapter<StatusViewModel> {
         }
     }
 
-    // ------------------------ OVERRIDE METHODS ------------------------
-
-    /**
-     * Sort list by Status ID
-     */
-    @Override
-    protected void sort() {
-        synchronized (LOCK) {
-            Collections.sort(list, (lhs, rhs) -> Long.valueOf(rhs.getTweet().getId()).compareTo(lhs.getTweet().getId()));
-        }
-    }
-
     // -------------------------- OTHER METHODS --------------------------
 
-    public void removeByStatusID(long statusID) {
-        synchronized (this.LOCK) {
-            Iterator<StatusViewModel> iterator = this.list.iterator();
-            while (iterator.hasNext()) {
-                StatusViewModel statusViewModel = iterator.next();
-                if (statusViewModel.getTweet().getOriginalTweet().getId() == statusID) {
-                    iterator.remove();
+    @Override
+    public int removeItemById(long statusID) {
+        synchronized (LOCK) {
+            int count = 0;
+            count += super.removeItemById(statusID);
+            Tweet t = Tweet.fetch(statusID);
+            if (t != null) {
+                for (long retweetId : t.getRetweets().values()) {
+                    count += super.removeItemById(retweetId);
                 }
             }
+            return count;
         }
     }
 }

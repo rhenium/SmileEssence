@@ -37,7 +37,7 @@ import net.lacolaco.smileessence.command.status.StatusCommand;
 import net.lacolaco.smileessence.command.user.UserCommand;
 import net.lacolaco.smileessence.entity.CommandSetting;
 import net.lacolaco.smileessence.logging.Logger;
-import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
+import net.lacolaco.smileessence.view.adapter.UnorderedCustomListAdapter;
 import net.lacolaco.smileessence.viewmodel.CheckBoxModel;
 
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ public class EditCommandActivity extends Activity {
 
     // ------------------------------ FIELDS ------------------------------
 
-    private CustomListAdapter<CheckBoxModel> adapter;
+    private UnorderedCustomListAdapter<CheckBoxModel> adapter;
     private List<Command> editedCommands;
 
     // --------------------- GETTER / SETTER METHODS ---------------------
@@ -137,9 +137,9 @@ public class EditCommandActivity extends Activity {
 
     private void initializeViews() {
         ListView listView = getListView();
-        adapter = new CustomListAdapter<>(this);
+        adapter = new UnorderedCustomListAdapter<>(this);
         listView.setAdapter(adapter);
-        adapter.addToTop(getCheckBoxItems());
+        adapter.addItemToTop(getCheckBoxItems());
         adapter.update();
     }
 

@@ -34,7 +34,7 @@ import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.twitter.task.GetTalkTask;
-import net.lacolaco.smileessence.view.adapter.StatusListAdapter;
+import net.lacolaco.smileessence.view.adapter.UnorderedCustomListAdapter;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 
 public class TalkChainDialogFragment extends StackableDialogFragment {
@@ -64,11 +64,11 @@ public class TalkChainDialogFragment extends StackableDialogFragment {
 
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_talk_list, null);
         ListView listView = (ListView) view.findViewById(R.id.listview_dialog_talk_list);
-        final StatusListAdapter adapter = new StatusListAdapter(getActivity());
+        final UnorderedCustomListAdapter<StatusViewModel> adapter = new UnorderedCustomListAdapter<StatusViewModel>(getActivity());
         listView.setAdapter(adapter);
 
         new GetTalkTask(account, getStatusID()).onProgressUI(tweet -> {
-            adapter.addToBottom(new StatusViewModel(tweet));
+            adapter.addItemToBottom(new StatusViewModel(tweet));
             adapter.updateForce();
         }).execute();
 

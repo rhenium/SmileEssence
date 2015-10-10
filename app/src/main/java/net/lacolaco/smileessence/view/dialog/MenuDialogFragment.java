@@ -34,7 +34,7 @@ import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.IConfirmable;
-import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
+import net.lacolaco.smileessence.view.adapter.UnorderedCustomListAdapter;
 
 public abstract class MenuDialogFragment extends StackableDialogFragment implements AdapterView.OnItemClickListener {
     @Override
@@ -42,7 +42,7 @@ public abstract class MenuDialogFragment extends StackableDialogFragment impleme
         final MainActivity activity = (MainActivity) getActivity();
         View body = activity.getLayoutInflater().inflate(R.layout.dialog_menu_list, null);
         ListView listView = (ListView) body.findViewById(R.id.listview_dialog_menu_list);
-        final CustomListAdapter<Command> adapter = new CustomListAdapter<>(activity);
+        final UnorderedCustomListAdapter<Command> adapter = new UnorderedCustomListAdapter<>(activity);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
 
@@ -51,7 +51,7 @@ public abstract class MenuDialogFragment extends StackableDialogFragment impleme
         return new AlertDialog.Builder(activity).setView(body).create();
     }
 
-    protected abstract void setMenuItems(final CustomListAdapter<Command> adapter);
+    protected abstract void setMenuItems(final UnorderedCustomListAdapter<Command> adapter);
 
     protected void executeCommand(Command command) {
         dismiss();

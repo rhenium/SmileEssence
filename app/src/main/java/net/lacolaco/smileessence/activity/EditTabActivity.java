@@ -34,45 +34,46 @@ import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
-import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
+import net.lacolaco.smileessence.view.adapter.OrderedCustomListAdapter;
 import net.lacolaco.smileessence.viewmodel.EditableCheckBoxModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class EditTabActivity extends Activity {
 
     // ------------------------------ FIELDS ------------------------------
 
-    private CustomListAdapter<EditableCheckBoxModel> adapter;
+    private OrderedCustomListAdapter<EditableCheckBoxModel> adapter;
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 
     private EditableCheckBoxModel[] getCheckBoxItems() {
         List<EditableCheckBoxModel> models = new ArrayList<>();
 
-        EditableCheckBoxModel post = new EditableCheckBoxModel(getString(R.string.page_name_post));
+        EditableCheckBoxModel post = new EditableCheckBoxModel(0, getString(R.string.page_name_post));
         post.setChecked(true).setInputText(String.valueOf(0)).setFreezing(true);
         models.add(post);
-        EditableCheckBoxModel home = new EditableCheckBoxModel(getString(R.string.page_name_home));
+        EditableCheckBoxModel home = new EditableCheckBoxModel(1, getString(R.string.page_name_home));
         home.setChecked(true).setInputText(String.valueOf(1)).setFreezing(true);
         models.add(home);
-        EditableCheckBoxModel mentions = new EditableCheckBoxModel(getString(R.string.page_name_mentions));
+        EditableCheckBoxModel mentions = new EditableCheckBoxModel(2, getString(R.string.page_name_mentions));
         mentions.setChecked(true).setInputText(String.valueOf(2)).setFreezing(true);
         models.add(mentions);
-        EditableCheckBoxModel messages = new EditableCheckBoxModel(getString(R.string.page_name_messages));
+        EditableCheckBoxModel messages = new EditableCheckBoxModel(3, getString(R.string.page_name_messages));
         messages.setChecked(getVisibility(R.string.key_page_messages_visibility))
                 .setInputText(String.valueOf(getPosition(R.string.key_page_messages_position, 3)));
         models.add(messages);
-        EditableCheckBoxModel history = new EditableCheckBoxModel(getString(R.string.page_name_history));
+        EditableCheckBoxModel history = new EditableCheckBoxModel(4, getString(R.string.page_name_history));
         history.setChecked(getVisibility(R.string.key_page_history_visibility))
                 .setInputText(String.valueOf(getPosition(R.string.key_page_history_position, 4)));
         models.add(history);
-        EditableCheckBoxModel search = new EditableCheckBoxModel(getString(R.string.page_name_search));
+        EditableCheckBoxModel search = new EditableCheckBoxModel(5, getString(R.string.page_name_search));
         search.setChecked(getVisibility(R.string.key_page_search_visibility))
                 .setInputText(String.valueOf(getPosition(R.string.key_page_search_position, 5)));
         models.add(search);
-        EditableCheckBoxModel list = new EditableCheckBoxModel(getString(R.string.page_name_list));
+        EditableCheckBoxModel list = new EditableCheckBoxModel(6, getString(R.string.page_name_list));
         list.setChecked(getVisibility(R.string.key_page_list_visibility))
                 .setInputText(String.valueOf(getPosition(R.string.key_page_list_position, 6)));
         models.add(list);
@@ -131,9 +132,9 @@ public class EditTabActivity extends Activity {
 
     private void initializeViews() {
         ListView listView = getListView();
-        adapter = new CustomListAdapter<>(this);
+        adapter = new OrderedCustomListAdapter<>(this, Collections.reverseOrder());
         listView.setAdapter(adapter);
-        adapter.addToTop(getCheckBoxItems());
+        adapter.addItem(getCheckBoxItems());
         adapter.update();
     }
 

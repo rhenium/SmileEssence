@@ -25,59 +25,65 @@
 package net.lacolaco.smileessence.view.adapter;
 
 import android.app.Activity;
+import net.lacolaco.smileessence.entity.IdObject;
+import net.lacolaco.smileessence.viewmodel.IViewModel;
 
-public class SearchListAdapter extends StatusListAdapter {
+import java.util.*;
+
+public class OrderedCustomListAdapter<T extends IViewModel & IdObject> extends CustomListAdapter<T> {
 
     // ------------------------------ FIELDS ------------------------------
 
-    //private long topID;
-    private String query;
-    private OnQueryChangeListener listener;
+    protected final Map<Long, T> treeMap;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public SearchListAdapter(Activity activity) {
+    public OrderedCustomListAdapter(Activity activity) {
+        this(activity, Long::compare);
+    }
+
+    public OrderedCustomListAdapter(Activity activity, Comparator<Long> comparator) {
         super(activity);
+        this.treeMap = new TreeMap<>(Collections.reverseOrder(comparator)); // 降順
     }
 
-    // --------------------- GETTER / SETTER METHODS ---------------------
+    // ------------------------ OVERRIDE METHODS ------------------------
 
-    public OnQueryChangeListener getListener() {
-        return listener;
-    }
-
-    public String getQuery() {
-        return query;
-    }
-
-    //@Override
-    //public long getTopID() {
-    //    return topID;
-    //}
-
-    //public void setTopID(long topID) {
-    //    this.topID = topID;
-    //}
-
-    public void setOnQueryChangeListener(OnQueryChangeListener listener) {
-        this.listener = listener;
+    @Override
+    protected List<T> getFrozenList() {
+        return Collections.unmodifiableList(new ArrayList<>(treeMap.values()));
     }
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public void initSearch(String query) {
-        this.query = query;
-        clear();
-    //    topID = 0;
-        if (listener != null) {
-            listener.onQueryChange(query);
+    public void addItem(T... items) {
+        synchronized (LOCK) {
+            for (T item : items) {
+                treeMap.put(item.getId(), item);
+            }
         }
     }
 
-    // -------------------------- INNER CLASSES --------------------------
+    public void clear() {
+        synchronized (LOCK) {
+            treeMap.clear();
+        }
+    }
 
-    public interface OnQueryChangeListener {
+    public T removeItem(T item) {
+        synchronized (LOCK) {
+            return treeMap.remove(item.getId());
+        }
+    }
 
-        void onQueryChange(String newQuery);
+    public int removeItemById(long id) {
+        synchronized (LOCK) {
+            T item = treeMap.remove(id);
+            if (item == null) {
+                return 0;
+            } else {
+                return 1;
+            }
+        }
     }
 }

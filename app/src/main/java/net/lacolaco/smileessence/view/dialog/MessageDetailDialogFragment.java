@@ -125,7 +125,7 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
         }
         if (replyTo != null) {
             listView.setVisibility(View.VISIBLE);
-            adapter.addToTop(new MessageViewModel(replyTo));
+            adapter.addItem(new MessageViewModel(replyTo));
             adapter.updateForce();
         } else {
             listView.setVisibility(View.GONE);

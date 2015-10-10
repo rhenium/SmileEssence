@@ -31,31 +31,31 @@ import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.util.TwitterMock;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 
-public class CustomListAdapterTest extends ActivityInstrumentationTestCase2<MainActivity> {
+public class OrderedCustomListAdapterTest extends ActivityInstrumentationTestCase2<MainActivity> {
 
     TwitterMock mock;
-    CustomListAdapter<StatusViewModel> adapter;
+    OrderedCustomListAdapter<StatusViewModel> adapter;
     Account account;
 
-    public CustomListAdapterTest() {
+    public OrderedCustomListAdapterTest() {
         super(MainActivity.class);
     }
 
     @Override
     public void setUp() throws Exception {
         mock = new TwitterMock(getInstrumentation().getContext());
-        adapter = new CustomListAdapter<>(getActivity());
+        adapter = new OrderedCustomListAdapter<>(getActivity());
         account = mock.getAccount();
     }
 
     public void testAddItem() throws Exception {
-        adapter.addToBottom(new StatusViewModel(mock.getReplyMock()));
+        adapter.addItem(new StatusViewModel(mock.getReplyMock()));
         adapter.notifyDataSetChanged();
         assertEquals(1, adapter.getCount());
     }
 
     public void testUpdate() throws Exception {
-        adapter.addToBottom(new StatusViewModel(mock.getReplyMock()));
+        adapter.addItem(new StatusViewModel(mock.getReplyMock()));
         assertEquals(0, adapter.getCount());
         adapter.notifyDataSetChanged();
         assertEquals(1, adapter.getCount());
@@ -64,28 +64,20 @@ public class CustomListAdapterTest extends ActivityInstrumentationTestCase2<Main
     public void testAddItems() throws Exception {
         StatusViewModel viewModel1 = new StatusViewModel(mock.getReplyMock());
         StatusViewModel viewModel2 = new StatusViewModel(mock.getReplyMock());
-        adapter.addToBottom(viewModel1, viewModel2);
+        adapter.addItem(viewModel1, viewModel2);
         adapter.notifyDataSetChanged();
         assertEquals(2, adapter.getCount());
     }
 
     public void testRemoveItem() throws Exception {
-        StatusViewModel viewModel = new StatusViewModel(mock.getReplyMock());
-        adapter.addToBottom(viewModel, viewModel);
+        StatusViewModel viewModel1 = new StatusViewModel(mock.getReplyMock());
+        StatusViewModel viewModel2 = new StatusViewModel(mock.getReplyMock());
+        adapter.addItem(viewModel1, viewModel2);
+        adapter.notifyDataSetChanged();
+        assertEquals(2, adapter.getCount());
+        adapter.removeItem(viewModel1);
         adapter.notifyDataSetChanged();
         assertEquals(1, adapter.getCount());
-        adapter.removeItem(0);
-        adapter.notifyDataSetChanged();
-        assertEquals(0, adapter.getCount());
-    }
-
-    public void testAddPosition() throws Exception {
-        StatusViewModel status1 = new StatusViewModel(mock.getReplyMock());
-        StatusViewModel status2 = new StatusViewModel(mock.getReplyMock());
-        adapter.addToBottom(status1);
-        adapter.addToTop(status2);
-        adapter.notifyDataSetChanged();
-        assertEquals(status2, adapter.getItem(0));
     }
 
     @Override

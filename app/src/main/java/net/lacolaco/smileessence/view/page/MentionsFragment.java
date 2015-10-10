@@ -57,19 +57,19 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
 
         StatusFilter.getInstance().register(this, StatusViewModel.class, (StatusViewModel tweet) -> {
             if (tweet.getTweet().getMentions().contains(Application.getInstance().getCurrentAccount().getUser().getScreenName())) {
-                adapter.addToTop(tweet);
+                adapter.addItem(tweet);
                 adapter.update();
             } else {
                 for (ExtractionWord word : ExtractionWord.all()) {
                     if (word.getPattern().matcher(tweet.getTweet().getOriginalTweet().getText()).find()) {
-                        adapter.addToTop(tweet);
+                        adapter.addItem(tweet);
                         adapter.update();
                         return;
                     }
                 }
             }
         }, id -> {
-            adapter.removeByStatusID(id);
+            adapter.removeItemById(id);
             adapter.updateForce();
         });
 

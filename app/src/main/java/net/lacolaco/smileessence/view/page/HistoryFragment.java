@@ -51,7 +51,7 @@ public class HistoryFragment extends CustomListFragment<EventListAdapter> {
         setAdapter(adapter);
 
         StatusFilter.getInstance().register(this, EventViewModel.class, (EventViewModel vm) -> {
-            adapter.addToTop(vm);
+            adapter.addItemToTop(vm);
             adapter.update();
         }, null);
     }

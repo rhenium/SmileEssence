@@ -28,7 +28,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import net.lacolaco.smileessence.command.*;
 import net.lacolaco.smileessence.entity.DirectMessage;
-import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
+import net.lacolaco.smileessence.view.adapter.UnorderedCustomListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,12 +61,12 @@ public class MessageMenuDialogFragment extends MenuDialogFragment {
     }
 
     @Override
-    protected void setMenuItems(final CustomListAdapter<Command> adapter) {
+    protected void setMenuItems(final UnorderedCustomListAdapter<Command> adapter) {
         if (message != null) {
             List<Command> commands = getCommands();
             Command.filter(commands);
             for (Command command : commands) {
-                adapter.addToBottom(command);
+                adapter.addItemToBottom(command);
             }
             adapter.update();
         } else {

@@ -32,7 +32,7 @@ import net.lacolaco.smileessence.command.post.PostCommandMakeAnonymous;
 import net.lacolaco.smileessence.command.post.PostCommandMorse;
 import net.lacolaco.smileessence.command.post.PostCommandZekamashi;
 import net.lacolaco.smileessence.notification.Notificator;
-import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
+import net.lacolaco.smileessence.view.adapter.UnorderedCustomListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +42,7 @@ public class PostMenuDialogFragment extends MenuDialogFragment {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected void setMenuItems(final CustomListAdapter<Command> adapter) {
+    protected void setMenuItems(final UnorderedCustomListAdapter<Command> adapter) {
         List<Command> commands = getCommands();
         Command.filter(commands);
         if (commands.isEmpty()) {
@@ -50,7 +50,7 @@ public class PostMenuDialogFragment extends MenuDialogFragment {
             dismiss();
         }
         for (Command command : commands) {
-            adapter.addToBottom(command);
+            adapter.addItemToBottom(command);
         }
         adapter.update();
     }

@@ -25,7 +25,6 @@
 package net.lacolaco.smileessence.view.adapter;
 
 import android.app.Activity;
-import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 
 public class UserListListAdapter extends StatusListAdapter {
 
@@ -47,17 +46,5 @@ public class UserListListAdapter extends StatusListAdapter {
 
     public void setListFullName(String listFullName) {
         this.listFullName = listFullName;
-    }
-
-    // ------------------------ OVERRIDE METHODS ------------------------
-
-    @Override
-    public void addToBottom(StatusViewModel... items) {
-        super.addToBottom(items);
-    }
-
-    @Override
-    public void addToTop(StatusViewModel... items) {
-        super.addToTop(items);
     }
 }

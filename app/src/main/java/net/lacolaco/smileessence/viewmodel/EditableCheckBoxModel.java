@@ -32,11 +32,13 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import net.lacolaco.smileessence.R;
+import net.lacolaco.smileessence.entity.IdObject;
 
-public class EditableCheckBoxModel implements IViewModel {
+public class EditableCheckBoxModel implements IViewModel, IdObject {
 
     // ------------------------------ FIELDS ------------------------------
 
+    private final long id;
     private final String text;
     private boolean freezing;
     private String inputText;
@@ -44,7 +46,8 @@ public class EditableCheckBoxModel implements IViewModel {
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public EditableCheckBoxModel(String text) {
+    public EditableCheckBoxModel(long id, String text) {
+        this.id = id;
         this.text = text;
     }
 
@@ -75,6 +78,11 @@ public class EditableCheckBoxModel implements IViewModel {
     public EditableCheckBoxModel setFreezing(boolean freezing) {
         this.freezing = freezing;
         return this;
+    }
+
+    @Override
+    public long getId() {
+        return id;
     }
 
     // ------------------------ INTERFACE METHODS ------------------------

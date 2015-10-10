@@ -37,7 +37,7 @@ import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.CommandOpenSearch;
 import net.lacolaco.smileessence.entity.SearchQuery;
 import net.lacolaco.smileessence.notification.Notificator;
-import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
+import net.lacolaco.smileessence.view.adapter.UnorderedCustomListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +49,7 @@ public class SelectSearchQueryDialogFragment extends MenuDialogFragment implemen
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         final CommandOpenSearch command = (CommandOpenSearch) parent.getItemAtPosition(position);
-        @SuppressWarnings("unchecked") final CustomListAdapter<Command> adapter = (CustomListAdapter<Command>) parent.getAdapter();
+        @SuppressWarnings("unchecked") final UnorderedCustomListAdapter<Command> adapter = (UnorderedCustomListAdapter<Command>) parent.getAdapter();
 
         ConfirmDialogFragment.show(getActivity(), getString(R.string.dialog_confirm_delete_query), () -> {
             adapter.removeItem(command);
@@ -65,11 +65,11 @@ public class SelectSearchQueryDialogFragment extends MenuDialogFragment implemen
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected void setMenuItems(final CustomListAdapter<Command> adapter) {
+    protected void setMenuItems(final UnorderedCustomListAdapter<Command> adapter) {
         List<Command> commands = getCommands();
         Command.filter(commands);
         for (Command command : commands) {
-            adapter.addToBottom(command);
+            adapter.addItemToBottom(command);
         }
         adapter.update();
     }
@@ -79,7 +79,7 @@ public class SelectSearchQueryDialogFragment extends MenuDialogFragment implemen
         final MainActivity activity = (MainActivity) getActivity();
         View body = activity.getLayoutInflater().inflate(R.layout.dialog_menu_list, null);
         ListView listView = (ListView) body.findViewById(R.id.listview_dialog_menu_list);
-        final CustomListAdapter<Command> adapter = new CustomListAdapter<>(activity);
+        final UnorderedCustomListAdapter<Command> adapter = new UnorderedCustomListAdapter<>(activity);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
 

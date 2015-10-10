@@ -31,7 +31,7 @@ import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.CommandPasteToPost;
 import net.lacolaco.smileessence.command.CommandSaveAsTemplate;
 import net.lacolaco.smileessence.command.CommandSearchOnTwitter;
-import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
+import net.lacolaco.smileessence.view.adapter.UnorderedCustomListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,12 +57,12 @@ public class HashtagDialogFragment extends MenuDialogFragment {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected void setMenuItems(final CustomListAdapter<Command> adapter) {
+    protected void setMenuItems(final UnorderedCustomListAdapter<Command> adapter) {
         String text = getHashtagText();
         List<Command> commands = getCommands(text);
         Command.filter(commands);
         for (Command command : commands) {
-            adapter.addToBottom(command);
+            adapter.addItemToBottom(command);
         }
         adapter.update();
     }

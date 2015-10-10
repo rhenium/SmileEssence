@@ -30,7 +30,7 @@ import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.status.StatusCommandTextQuote;
 import net.lacolaco.smileessence.command.status.StatusCommandURLQuote;
 import net.lacolaco.smileessence.entity.Tweet;
-import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
+import net.lacolaco.smileessence.view.adapter.UnorderedCustomListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,14 +56,14 @@ public class QuoteDialogFragment extends MenuDialogFragment {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected void setMenuItems(final CustomListAdapter<Command> adapter) {
+    protected void setMenuItems(final UnorderedCustomListAdapter<Command> adapter) {
         Tweet tweet = Tweet.fetch(getStatusID());
 
         if (tweet != null) {
             List<Command> commands = getCommands(tweet);
             Command.filter(commands);
             for (Command command : commands) {
-                adapter.addToBottom(command);
+                adapter.addItemToBottom(command);
             }
             adapter.update();
         } else {

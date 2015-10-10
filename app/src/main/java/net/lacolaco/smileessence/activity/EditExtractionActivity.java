@@ -37,9 +37,10 @@ import android.widget.TextView;
 import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.entity.ExtractionWord;
+import net.lacolaco.smileessence.entity.IdObject;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.view.DialogHelper;
-import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
+import net.lacolaco.smileessence.view.adapter.OrderedCustomListAdapter;
 import net.lacolaco.smileessence.view.dialog.EditTextDialogFragment;
 import net.lacolaco.smileessence.viewmodel.IViewModel;
 
@@ -47,7 +48,7 @@ public class EditExtractionActivity extends Activity implements AdapterView.OnIt
 
     // ------------------------------ FIELDS ------------------------------
 
-    private CustomListAdapter<ExtractionWordViewModel> adapter;
+    private OrderedCustomListAdapter<ExtractionWordViewModel> adapter;
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 
@@ -143,8 +144,9 @@ public class EditExtractionActivity extends Activity implements AdapterView.OnIt
         adapter.setNotifiable(false);
         for (int i = adapter.getCount() - 1; i > -1; i--) {
             if (checkedItems.get(i)) {
-                ExtractionWordViewModel vm = adapter.removeItem(i);
+                ExtractionWordViewModel vm = adapter.getItem(i);
                 vm.getExtractionWord().remove();
+                adapter.removeItem(vm);
             }
         }
         adapter.setNotifiable(true);
@@ -177,7 +179,7 @@ public class EditExtractionActivity extends Activity implements AdapterView.OnIt
                     return;
                 }
                 ExtractionWord extractionWord = ExtractionWord.add(text);
-                adapter.addToBottom(new ExtractionWordViewModel(extractionWord));
+                adapter.addItem(new ExtractionWordViewModel(extractionWord));
                 adapter.notifyDataSetChanged();
                 updateListView();
             }
@@ -188,9 +190,9 @@ public class EditExtractionActivity extends Activity implements AdapterView.OnIt
 
     private void initializeViews() {
         ListView listView = getListView();
-        adapter = new CustomListAdapter<>(this);
+        adapter = new OrderedCustomListAdapter<>(this);
         for (ExtractionWord ew : ExtractionWord.all()) {
-            adapter.addToBottom(new ExtractionWordViewModel(ew));
+            adapter.addItem(new ExtractionWordViewModel(ew));
         }
         adapter.update();
         listView.setAdapter(adapter);
@@ -207,7 +209,7 @@ public class EditExtractionActivity extends Activity implements AdapterView.OnIt
     // --------------------- Interface IViewModel ---------------------
 
 
-    private static class ExtractionWordViewModel implements IViewModel {
+    private static class ExtractionWordViewModel implements IViewModel, IdObject {
         private final ExtractionWord ew;
 
         public ExtractionWordViewModel(ExtractionWord ew) {
@@ -226,6 +228,11 @@ public class EditExtractionActivity extends Activity implements AdapterView.OnIt
             TextView textView = (TextView) convertedView.findViewById(R.id.textView_menuItem_simple);
             textView.setText(ew.getPatternString());
             return convertedView;
+        }
+
+        @Override
+        public long getId() {
+            return ew.getModelId();
         }
     }
 }

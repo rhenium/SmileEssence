@@ -29,7 +29,7 @@ import android.os.Bundle;
 import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.CommandSearchOnTwitter;
 import net.lacolaco.smileessence.entity.User;
-import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
+import net.lacolaco.smileessence.view.adapter.UnorderedCustomListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,12 +62,12 @@ public class UserMenuDialogFragment extends MenuDialogFragment {
     }
 
     @Override
-    protected void setMenuItems(final CustomListAdapter<Command> adapter) {
+    protected void setMenuItems(final UnorderedCustomListAdapter<Command> adapter) {
         if (user != null) {
             List<Command> commands = getCommands();
             Command.filter(commands);
             for (Command command : commands) {
-                adapter.addToBottom(command);
+                adapter.addItemToBottom(command);
             }
             adapter.update();
         } else {

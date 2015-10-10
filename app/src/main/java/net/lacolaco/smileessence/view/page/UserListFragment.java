@@ -209,7 +209,7 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
                     for (Tweet tweet : tweets) {
                         StatusViewModel statusViewModel = new StatusViewModel(tweet);
                         StatusFilter.getInstance().filter(statusViewModel);
-                        adapter.addToBottom(statusViewModel);
+                        adapter.addItem(statusViewModel);
                     }
                 })
                 .onFinishUI(onFinish)

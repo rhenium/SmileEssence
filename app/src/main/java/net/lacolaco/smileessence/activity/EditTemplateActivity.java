@@ -38,7 +38,7 @@ import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.entity.Template;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.view.DialogHelper;
-import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
+import net.lacolaco.smileessence.view.adapter.UnorderedCustomListAdapter;
 import net.lacolaco.smileessence.view.dialog.EditTextDialogFragment;
 
 import java.util.List;
@@ -48,7 +48,7 @@ public class EditTemplateActivity extends Activity implements AdapterView.OnItem
 
     // ------------------------------ FIELDS ------------------------------
 
-    private CustomListAdapter<Template> adapter;
+    private UnorderedCustomListAdapter<Template> adapter;
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 
@@ -149,8 +149,9 @@ public class EditTemplateActivity extends Activity implements AdapterView.OnItem
         adapter.setNotifiable(false);
         for (int i = adapter.getCount() - 1; i > -1; i--) {
             if (checkedItems.get(i)) {
-                Template template = adapter.removeItem(i);
+                Template template = adapter.getItem(i);
                 template.delete();
+                adapter.removeItem(template);
             }
         }
         adapter.setNotifiable(true);
@@ -186,7 +187,7 @@ public class EditTemplateActivity extends Activity implements AdapterView.OnItem
                 }
                 template.text = text;
                 template.save();
-                adapter.addToBottom(template);
+                adapter.addItemToBottom(template);
                 adapter.notifyDataSetChanged();
                 updateListView();
             }
@@ -197,9 +198,9 @@ public class EditTemplateActivity extends Activity implements AdapterView.OnItem
 
     private void initializeViews() {
         ListView listView = getListView();
-        adapter = new CustomListAdapter<>(this);
+        adapter = new UnorderedCustomListAdapter<>(this);
         listView.setAdapter(adapter);
-        adapter.addToTop(getTemplates());
+        adapter.addItemToBottom(getTemplates());
         adapter.update();
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         listView.setOnItemClickListener(this);

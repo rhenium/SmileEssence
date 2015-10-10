@@ -36,6 +36,7 @@ import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.data.ImageCache;
+import net.lacolaco.smileessence.entity.IdObject;
 import net.lacolaco.smileessence.entity.RBinding;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
@@ -49,7 +50,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StatusViewModel implements IViewModel {
+public class StatusViewModel implements IViewModel, IdObject {
     private Tweet tweet;
 
     private ArrayList<BackgroundTask> lastTasks = new ArrayList<>(); // internal
@@ -64,6 +65,11 @@ public class StatusViewModel implements IViewModel {
 
     public Tweet getTweet() {
         return tweet;
+    }
+
+    @Override
+    public long getId() {
+        return tweet.getId();
     }
 
     private String getFooterText() {

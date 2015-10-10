@@ -25,23 +25,60 @@
 package net.lacolaco.smileessence.view.adapter;
 
 import android.app.Activity;
-import net.lacolaco.smileessence.viewmodel.MessageViewModel;
+import net.lacolaco.smileessence.viewmodel.IViewModel;
 
-public class MessageListAdapter extends OrderedCustomListAdapter<MessageViewModel> {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
+public class UnorderedCustomListAdapter<T extends IViewModel> extends CustomListAdapter<T> {
+
+    // ------------------------------ FIELDS ------------------------------
+
+    protected final List<T> linkedList;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public MessageListAdapter(Activity activity) {
+    public UnorderedCustomListAdapter(Activity activity) {
         super(activity);
+        this.linkedList = new LinkedList<>();
     }
 
-    // --------------------- GETTER / SETTER METHODS ---------------------
+    // ------------------------ OVERRIDE METHODS ------------------------
 
-    public long getLastID() {
-        return getItem(getCount() - 1).getDirectMessage().getId();
+    @Override
+    protected List<T> getFrozenList() {
+        return Collections.unmodifiableList(new ArrayList<>(linkedList));
     }
 
-    public long getTopID() {
-        return getItem(0).getDirectMessage().getId();
+    // -------------------------- OTHER METHODS --------------------------
+
+    public void addItemToTop(T... items) {
+        synchronized (LOCK) {
+            for (T item : items) {
+                linkedList.add(item);
+            }
+        }
+    }
+
+    public void addItemToBottom(T... items) {
+        synchronized (LOCK) {
+            for (T item : items) {
+                linkedList.add(0, item);
+            }
+        }
+    }
+
+    public void clear() {
+        synchronized (LOCK) {
+            linkedList.clear();
+        }
+    }
+
+    public boolean removeItem(T item) {
+        synchronized (LOCK) {
+            return linkedList.remove(item);
+        }
     }
 }

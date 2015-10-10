@@ -59,10 +59,10 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
         setAdapter(adapter);
 
         StatusFilter.getInstance().register(this, StatusViewModel.class, (StatusViewModel tweet) -> {
-            adapter.addToTop(tweet);
+            adapter.addItem(tweet);
             adapter.update();
         }, id -> {
-            adapter.removeByStatusID(id);
+            adapter.removeItemById(id);
             adapter.updateForce();
         });
 

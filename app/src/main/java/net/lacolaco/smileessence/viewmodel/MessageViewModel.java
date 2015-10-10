@@ -36,6 +36,7 @@ import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.data.ImageCache;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.DirectMessage;
+import net.lacolaco.smileessence.entity.IdObject;
 import net.lacolaco.smileessence.entity.RBinding;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.util.NameStyles;
@@ -49,7 +50,7 @@ import net.lacolaco.smileessence.view.listener.ListItemClickListener;
 
 import java.lang.ref.WeakReference;
 
-public class MessageViewModel implements IViewModel {
+public class MessageViewModel implements IViewModel, IdObject {
 
     // ------------------------------ FIELDS ------------------------------
 
@@ -68,6 +69,11 @@ public class MessageViewModel implements IViewModel {
 
     public DirectMessage getDirectMessage() {
         return directMessage;
+    }
+
+    @Override
+    public long getId() {
+        return directMessage.getId();
     }
 
     private String getFooterText(Account account) {

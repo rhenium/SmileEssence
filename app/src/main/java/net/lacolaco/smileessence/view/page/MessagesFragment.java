@@ -60,10 +60,10 @@ public class MessagesFragment extends CustomListFragment<MessageListAdapter> {
         setAdapter(adapter);
 
         StatusFilter.getInstance().register(this, MessageViewModel.class, (MessageViewModel message) -> {
-            adapter.addToTop(message);
+            adapter.addItem(message);
             adapter.update();
         }, id -> {
-            adapter.removeByMessageID(id);
+            adapter.removeItemById(id);
             adapter.updateForce();
         });
 

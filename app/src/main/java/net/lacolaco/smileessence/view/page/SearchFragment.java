@@ -335,7 +335,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
                             if (!tweet.isRetweet()) {
                                 StatusViewModel viewModel = new StatusViewModel(tweet);
                                 StatusFilter.getInstance().filter(viewModel);
-                                adapter.addToTop(viewModel);
+                                adapter.addItem(viewModel);
                             }
                         }
                     }

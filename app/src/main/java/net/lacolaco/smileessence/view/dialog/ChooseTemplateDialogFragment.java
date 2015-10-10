@@ -27,7 +27,7 @@ package net.lacolaco.smileessence.view.dialog;
 import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.post.PostCommandUseTemplate;
 import net.lacolaco.smileessence.entity.Template;
-import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
+import net.lacolaco.smileessence.view.adapter.UnorderedCustomListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,10 +37,10 @@ public class ChooseTemplateDialogFragment extends MenuDialogFragment {
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected void setMenuItems(final CustomListAdapter<Command> adapter) {
+    protected void setMenuItems(final UnorderedCustomListAdapter<Command> adapter) {
         List<Command> commands = getCommands();
         for (Command command : commands) {
-            adapter.addToBottom(command);
+            adapter.addItemToBottom(command);
         }
         adapter.update();
     }

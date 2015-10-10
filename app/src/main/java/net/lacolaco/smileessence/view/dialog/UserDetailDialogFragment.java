@@ -57,7 +57,7 @@ import net.lacolaco.smileessence.util.Themes;
 import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.util.UIObserverBundle;
 import net.lacolaco.smileessence.view.DialogHelper;
-import net.lacolaco.smileessence.view.adapter.CustomListAdapter;
+import net.lacolaco.smileessence.view.adapter.OrderedCustomListAdapter;
 import net.lacolaco.smileessence.view.adapter.StatusListAdapter;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 
@@ -150,7 +150,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
                 .onFail(x -> Notificator.getInstance().alert(R.string.notice_error_get_user_timeline))
                 .onDoneUI(tweets -> {
                     for (int i = tweets.size() - 1; i >= 0; i--) {
-                        adapter.addToTop(new StatusViewModel(tweets.get(i)));
+                        adapter.addItem(new StatusViewModel(tweets.get(i)));
                     }
                     updateListView(refreshView.getRefreshableView(), adapter, true);
                     refreshView.onRefreshComplete();
@@ -167,7 +167,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
                 .onFail(x -> Notificator.getInstance().alert(R.string.notice_error_get_user_timeline))
                 .onDoneUI(tweets -> {
                     for (Tweet tweet : tweets) {
-                        adapter.addToBottom(new StatusViewModel(tweet));
+                        adapter.addItem(new StatusViewModel(tweet));
                     }
                     updateListView(refreshView.getRefreshableView(), adapter, false);
                     refreshView.onRefreshComplete();
@@ -250,7 +250,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
                 .onFail(x -> Notificator.getInstance().alert(R.string.notice_error_get_user_timeline))
                 .onDoneUI(tweets -> {
                     for (Tweet tweet : tweets) {
-                        adapter.addToBottom(new StatusViewModel(tweet));
+                        adapter.addItem(new StatusViewModel(tweet));
                     }
                     adapter.updateForce();
                     tabHost.getTabWidget().getChildTabViewAt(1).setVisibility(View.VISIBLE);
@@ -379,7 +379,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         }
     }
 
-    protected void updateListView(AbsListView absListView, CustomListAdapter<?> adapter, boolean addedToTop) {
+    protected void updateListView(AbsListView absListView, OrderedCustomListAdapter<?> adapter, boolean addedToTop) {
         int before = adapter.getCount();
         adapter.notifyDataSetChanged(); // synchronized call (not adapter#updateForce())
         int after = adapter.getCount();
