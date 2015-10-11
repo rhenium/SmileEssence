@@ -13,7 +13,6 @@ public abstract class CustomListAdapter<T extends IViewModel> extends BaseAdapte
 
     // ------------------------------ FIELDS ------------------------------
 
-    protected final Object LOCK = new Object();
     private boolean isNotifiable = true;
     private List<T> frozenList = new ArrayList<>();
     private Activity activity;
@@ -27,15 +26,11 @@ public abstract class CustomListAdapter<T extends IViewModel> extends BaseAdapte
     // --------------------- GETTER / SETTER METHODS ---------------------
 
     public final boolean isNotifiable() {
-        synchronized (LOCK) {
-            return isNotifiable;
-        }
+        return isNotifiable;
     }
 
     public final void setNotifiable(boolean notifiable) {
-        synchronized (LOCK) {
-            isNotifiable = notifiable;
-        }
+        isNotifiable = notifiable;
     }
 
     // --------------------- Interface BaseAdapter ---------------------

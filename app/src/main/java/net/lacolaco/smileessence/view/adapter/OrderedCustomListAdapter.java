@@ -56,40 +56,30 @@ public class OrderedCustomListAdapter<T extends IViewModel & IdObject> extends C
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public void addItem(T item) {
-        synchronized (LOCK) {
+    public synchronized void addItem(T item) {
+        treeMap.put(item.getId(), item);
+    }
+
+    public synchronized void addItems(List<T> items) {
+        for (T item : items) {
             treeMap.put(item.getId(), item);
         }
     }
 
-    public void addItems(List<T> items) {
-        synchronized (LOCK) {
-            for (T item : items) {
-                treeMap.put(item.getId(), item);
-            }
-        }
+    public synchronized void clear() {
+        treeMap.clear();
     }
 
-    public void clear() {
-        synchronized (LOCK) {
-            treeMap.clear();
-        }
+    public synchronized T removeItem(T item) {
+        return treeMap.remove(item.getId());
     }
 
-    public T removeItem(T item) {
-        synchronized (LOCK) {
-            return treeMap.remove(item.getId());
-        }
-    }
-
-    public int removeItemById(long id) {
-        synchronized (LOCK) {
-            T item = treeMap.remove(id);
-            if (item == null) {
-                return 0;
-            } else {
-                return 1;
-            }
+    public synchronized int removeItemById(long id) {
+        T item = treeMap.remove(id);
+        if (item == null) {
+            return 0;
+        } else {
+            return 1;
         }
     }
 }

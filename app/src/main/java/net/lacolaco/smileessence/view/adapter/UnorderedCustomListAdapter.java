@@ -50,48 +50,36 @@ public class UnorderedCustomListAdapter<T extends IViewModel> extends CustomList
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public void addItemToTop(T item) {
-        synchronized (LOCK) {
-            if (list.contains(item)) {
-                list.add(0, item);
-            }
+    public synchronized void addItemToTop(T item) {
+        if (!list.contains(item)) {
+            list.add(0, item);
         }
     }
 
-    public void addItemsToTop(List<T> items) {
-        synchronized (LOCK) {
-            ListIterator<T> iterator = items.listIterator(items.size());
-            while (iterator.hasPrevious()) {
-                addItemToTop(iterator.previous());
-            }
+    public synchronized void addItemsToTop(List<T> items) {
+        ListIterator<T> iterator = items.listIterator(items.size());
+        while (iterator.hasPrevious()) {
+            addItemToTop(iterator.previous());
         }
     }
 
-    public void addItemToBottom(T item) {
-        synchronized (LOCK) {
-            if (list.contains(item)) {
-                list.add(item);
-            }
+    public synchronized void addItemToBottom(T item) {
+        if (!list.contains(item)) {
+            list.add(item);
         }
     }
 
-    public void addItemsToBottom(List<T> items) {
-        synchronized (LOCK) {
-            for (T item : items) {
-                addItemToBottom(item);
-            }
+    public synchronized void addItemsToBottom(List<T> items) {
+        for (T item : items) {
+            addItemToBottom(item);
         }
     }
 
-    public void clear() {
-        synchronized (LOCK) {
-            list.clear();
-        }
+    public synchronized void clear() {
+        list.clear();
     }
 
-    public boolean removeItem(T item) {
-        synchronized (LOCK) {
-            return list.remove(item);
-        }
+    public synchronized boolean removeItem(T item) {
+        return list.remove(item);
     }
 }

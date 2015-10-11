@@ -57,17 +57,15 @@ public class StatusListAdapter extends OrderedCustomListAdapter<StatusViewModel>
     // -------------------------- OTHER METHODS --------------------------
 
     @Override
-    public int removeItemById(long statusID) {
-        synchronized (LOCK) {
-            int count = 0;
-            count += super.removeItemById(statusID);
-            Tweet t = Tweet.fetch(statusID);
-            if (t != null) {
-                for (long retweetId : t.getRetweets().values()) {
-                    count += super.removeItemById(retweetId);
-                }
+    public synchronized int removeItemById(long statusID) {
+        int count = 0;
+        count += super.removeItemById(statusID);
+        Tweet t = Tweet.fetch(statusID);
+        if (t != null) {
+            for (long retweetId : t.getRetweets().values()) {
+                count += super.removeItemById(retweetId);
             }
-            return count;
         }
+        return count;
     }
 }
