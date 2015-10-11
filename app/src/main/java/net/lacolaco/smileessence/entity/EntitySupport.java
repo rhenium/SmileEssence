@@ -74,7 +74,11 @@ public abstract class EntitySupport extends UIObservable {
         List<String> names = new ArrayList<>();
         if (entities != null) {
             for (MediaEntity entity : entities) {
-                names.add(entity.getMediaURLHttps());
+                if ("photo".equals(entity.getType())) {
+                    names.add(entity.getMediaURLHttps());
+                } else {
+                    names.add(entity.getExpandedURL());
+                }
             }
         }
         return names;
