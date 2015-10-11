@@ -73,9 +73,9 @@ public class Template extends Model implements IViewModel {
     @Override
     public View getView(Activity activity, LayoutInflater inflater, View convertedView) {
         if (convertedView == null) {
-            convertedView = inflater.inflate(R.layout.menu_item_simple_text, null);
+            convertedView = inflater.inflate(R.layout.list_item_simple_text, null);
         }
-        TextView textView = (TextView) convertedView.findViewById(R.id.textView_menuItem_simple);
+        TextView textView = (TextView) convertedView.findViewById(R.id.list_item_textview);
         textView.setText(this.text);
         return convertedView;
     }

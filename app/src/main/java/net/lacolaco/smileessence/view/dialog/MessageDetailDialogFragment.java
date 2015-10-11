@@ -28,25 +28,26 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.CommandOpenURL;
+import net.lacolaco.smileessence.command.CommandOpenUserDetail;
+import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.DirectMessage;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.task.DeleteMessageTask;
 import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.adapter.MessageListAdapter;
-import net.lacolaco.smileessence.view.listener.ListItemClickListener;
+import net.lacolaco.smileessence.view.adapter.UnorderedCustomListAdapter;
 import net.lacolaco.smileessence.viewmodel.MessageViewModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MessageDetailDialogFragment extends StackableDialogFragment implements View.OnClickListener {
 
@@ -152,8 +153,75 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
         DialogHelper.showDialog(getActivity(), dialogFragment);
     }
 
-    private ArrayList<Command> getCommands() {
-        ArrayList<Command> commands = new ArrayList<>();
+    private View getTitleView() {
+        MainActivity activity = (MainActivity) getActivity();
+
+        View view = activity.getLayoutInflater().inflate(R.layout.dialog_status_detail, null);
+
+        MessageViewModel statusViewModel = new MessageViewModel(message);
+        View messageHeader = statusViewModel.getView(activity, activity.getLayoutInflater(), view.findViewById(R.id.layout_status_header));
+        messageHeader.setClickable(false);
+
+        view.setBackgroundColor(((ColorDrawable) messageHeader.getBackground()).getColor());
+        updateViewButtons(view);
+        updateViewMenu(view);
+
+        // status only parts
+        view.findViewById(R.id.detail_dialog_divider_top).setVisibility(View.GONE);
+        view.findViewById(R.id.button_status_detail_retweet).setVisibility(View.GONE);
+        view.findViewById(R.id.button_status_detail_favorite).setVisibility(View.GONE);
+        view.findViewById(R.id.image_status_detail_fav_count).setVisibility(View.GONE);
+        view.findViewById(R.id.image_status_detail_rt_count).setVisibility(View.GONE);
+
+        return view;
+    }
+
+    private void updateViewButtons(View view) {
+        Account account = Application.getInstance().getCurrentAccount();
+
+        //--- buttons
+        ImageButton reply = (ImageButton) view.findViewById(R.id.button_status_detail_reply);
+        reply.setOnClickListener(this);
+
+        ImageButton delete = (ImageButton) view.findViewById(R.id.button_status_detail_delete);
+        delete.setOnClickListener(this);
+        delete.setVisibility(account.canDelete(message) ? View.VISIBLE : View.GONE);
+    }
+
+    private void updateViewMenu(View view) {
+        MainActivity activity = ((MainActivity) getActivity());
+        // -- menu dialog
+        ImageButton menu = (ImageButton) view.findViewById(R.id.button_status_detail_menu);
+        menu.setOnClickListener(this);
+
+        // -- menu embedded in dialog
+        View divider = view.findViewById(R.id.detail_dialog_divider_bottom);
+        ListView listView = (ListView) view.findViewById(R.id.listview_status_detail_menu);
+        List<Command> commands = getCommands();
+        Command.filter(commands);
+        if (commands.size() > 0) {
+            divider.setVisibility(View.VISIBLE);
+            listView.setVisibility(View.VISIBLE);
+            final UnorderedCustomListAdapter<Command> adapter = new UnorderedCustomListAdapter<>(activity);
+            adapter.addItemsToBottom(commands);
+            adapter.updateForce();
+            listView.setAdapter(adapter);
+            listView.setOnItemClickListener((parent, view1, position, id) -> {
+                Command command = (Command) parent.getItemAtPosition(position);
+                command.execute();
+            });
+        } else {
+            divider.setVisibility(View.GONE);
+            listView.setVisibility(View.GONE);
+        }
+    }
+
+    private List<Command> getCommands() {
+        List<Command> commands = new ArrayList<>();
+        // Mentions
+        for (String screenName : message.getMentions()) {
+            commands.add(new CommandOpenUserDetail(getActivity(), screenName));
+        }
         // URL
         for (String url : message.getUrlsExpanded()) {
             commands.add(new CommandOpenURL(getActivity(), url));
@@ -162,41 +230,6 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
             commands.add(new CommandOpenURL(getActivity(), url));
         }
         return commands;
-    }
-
-    private View getTitleView() {
-        MainActivity activity = (MainActivity) getActivity();
-        View view = activity.getLayoutInflater().inflate(R.layout.dialog_status_detail, null);
-        View messageHeader = view.findViewById(R.id.layout_status_header);
-        MessageViewModel statusViewModel = new MessageViewModel(message);
-        messageHeader = statusViewModel.getView(activity, activity.getLayoutInflater(), messageHeader);
-        messageHeader.setClickable(false);
-        int background = ((ColorDrawable) messageHeader.getBackground()).getColor();
-        view.setBackgroundColor(background);
-        ImageButton reply = (ImageButton) view.findViewById(R.id.button_status_detail_reply);
-        reply.setOnClickListener(this);
-        ImageButton delete = (ImageButton) view.findViewById(R.id.button_status_detail_delete);
-        delete.setVisibility(Application.getInstance().getCurrentAccount().canDelete(message) ? View.VISIBLE : View.GONE);
-        delete.setOnClickListener(this);
-        ImageButton menuButton = (ImageButton) view.findViewById(R.id.button_status_detail_menu);
-        menuButton.setOnClickListener(this);
-        LinearLayout commandsLayout = (LinearLayout) view.findViewById(R.id.linearlayout_status_detail_menu);
-        commandsLayout.setClickable(true);
-        // commands
-        ArrayList<Command> commands = getCommands();
-        Command.filter(commands);
-        for (final Command command : commands) {
-            View commandView = command.getView(activity, activity.getLayoutInflater(), null);
-            commandView.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.transparent));
-            commandView.setOnClickListener(new ListItemClickListener(activity, command::execute));
-            commandsLayout.addView(commandView);
-        }
-        // status only parts
-        view.findViewById(R.id.button_status_detail_retweet).setVisibility(View.GONE);
-        view.findViewById(R.id.button_status_detail_favorite).setVisibility(View.GONE);
-        view.findViewById(R.id.image_status_detail_fav_count).setVisibility(View.GONE);
-        view.findViewById(R.id.image_status_detail_rt_count).setVisibility(View.GONE);
-        return view;
     }
 
     private void openMenu() {

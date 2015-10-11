@@ -39,6 +39,7 @@ import net.lacolaco.smileessence.entity.CommandSetting;
 import net.lacolaco.smileessence.entity.DirectMessage;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.entity.User;
+import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.viewmodel.IViewModel;
 
 import java.util.ArrayList;
@@ -142,11 +143,12 @@ public abstract class Command implements IViewModel {
     // --------------------- Interface IViewModel ---------------------
 
     @Override
-    public View getView(Activity activity, LayoutInflater inflater, View convertedView) {
+    public final View getView(Activity activity, LayoutInflater inflater, View convertedView) {
         if (convertedView == null) {
             convertedView = inflater.inflate(R.layout.menu_item_simple_text, null);
         }
-        TextView textView = (TextView) convertedView.findViewById(R.id.textView_menuItem_simple);
+        TextView textView = (TextView) convertedView.findViewById(R.id.list_item_textview);
+        textView.setTextSize(UserPreferenceHelper.getInstance().getTextSize());
         textView.setText(getText());
         return convertedView;
     }

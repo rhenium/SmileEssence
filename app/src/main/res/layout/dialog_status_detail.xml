@@ -24,7 +24,6 @@
   ~ SOFTWARE.
   -->
 
-
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -42,9 +41,10 @@
             android:minHeight="100dp" />
 
         <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:background="?attr/color_list_divider" />
+                android:id="@+id/detail_dialog_divider_top"
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="?attr/color_list_divider" />
 
         <include
             android:id="@+id/layout_status_header"
@@ -162,16 +162,16 @@
         </LinearLayout>
 
         <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:background="?attr/color_list_divider" />
+                android:id="@+id/detail_dialog_divider_bottom"
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="?attr/color_list_divider" />
 
-        <LinearLayout
-            android:id="@+id/linearlayout_status_detail_menu"
-            style="?attr/custom_button_transparent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/page_background"
-            android:orientation="vertical" />
+        <net.lacolaco.smileessence.view.ExpandedListView
+                android:id="@+id/listview_status_detail_menu"
+                style="?attr/custom_button_transparent"
+                android:background="?attr/page_background"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
     </LinearLayout>
 </ScrollView>

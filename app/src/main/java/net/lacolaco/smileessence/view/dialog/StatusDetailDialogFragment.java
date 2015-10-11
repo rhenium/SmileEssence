@@ -30,12 +30,16 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
-import android.widget.*;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
 import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.Command;
 import net.lacolaco.smileessence.command.CommandOpenURL;
+import net.lacolaco.smileessence.command.CommandOpenUserDetail;
 import net.lacolaco.smileessence.data.PostState;
 import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.RBinding;
@@ -47,11 +51,12 @@ import net.lacolaco.smileessence.util.Themes;
 import net.lacolaco.smileessence.util.UIObserverBundle;
 import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.adapter.StatusListAdapter;
-import net.lacolaco.smileessence.view.listener.ListItemClickListener;
+import net.lacolaco.smileessence.view.adapter.UnorderedCustomListAdapter;
 import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.List;
 
 public class StatusDetailDialogFragment extends StackableDialogFragment implements View.OnClickListener {
 
@@ -129,7 +134,10 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         final StatusListAdapter adapter = new StatusListAdapter(getActivity());
         listView.setAdapter(adapter);
 
+        View replyDivider = header.findViewById(R.id.detail_dialog_divider_top);
+
         if (tweet.getInReplyToStatusId() != -1) {
+            replyDivider.setVisibility(View.VISIBLE);
             listView.setVisibility(View.VISIBLE);
             Tweet replyToIfPresent = tweet.getInReplyToIfPresent();
             if (replyToIfPresent != null) {
@@ -144,6 +152,7 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
                         .execute();
             }
         } else {
+            replyDivider.setVisibility(View.GONE);
             listView.setVisibility(View.GONE);
         }
 
@@ -208,8 +217,8 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         Account account = Application.getInstance().getCurrentAccount();
 
         //--- buttons
-        ImageButton message = (ImageButton) view.findViewById(R.id.button_status_detail_reply);
-        message.setOnClickListener(this);
+        ImageButton reply = (ImageButton) view.findViewById(R.id.button_status_detail_reply);
+        reply.setOnClickListener(this);
 
         ImageButton retweet = (ImageButton) view.findViewById(R.id.button_status_detail_retweet);
         retweet.setOnClickListener(this);
@@ -240,18 +249,29 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
 
     private void updateViewMenu(View view) {
         MainActivity activity = ((MainActivity) getActivity());
-        //--- menu
+        // -- menu dialog
         ImageButton menu = (ImageButton) view.findViewById(R.id.button_status_detail_menu);
         menu.setOnClickListener(this);
-        LinearLayout commandsLayout = (LinearLayout) view.findViewById(R.id.linearlayout_status_detail_menu);
-        commandsLayout.setClickable(true);
-        ArrayList<Command> commands = getCommands();
+
+        // -- menu embedded in dialog
+        View divider = view.findViewById(R.id.detail_dialog_divider_bottom);
+        ListView listView = (ListView) view.findViewById(R.id.listview_status_detail_menu);
+        List<Command> commands = getCommands();
         Command.filter(commands);
-        for (final Command command : commands) {
-            View commandView = command.getView(activity, activity.getLayoutInflater(), null);
-            commandView.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.transparent));
-            commandView.setOnClickListener(new ListItemClickListener(activity, command::execute));
-            commandsLayout.addView(commandView);
+        if (commands.size() > 0) {
+            divider.setVisibility(View.VISIBLE);
+            listView.setVisibility(View.VISIBLE);
+            final UnorderedCustomListAdapter<Command> adapter = new UnorderedCustomListAdapter<>(activity);
+            adapter.addItemsToBottom(commands);
+            adapter.updateForce();
+            listView.setAdapter(adapter);
+            listView.setOnItemClickListener((parent, view1, position, id) -> {
+                Command command = (Command) parent.getItemAtPosition(position);
+                command.execute();
+            });
+        } else {
+            divider.setVisibility(View.GONE);
+            listView.setVisibility(View.GONE);
         }
     }
 
@@ -271,8 +291,12 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         });
     }
 
-    private ArrayList<Command> getCommands() {
+    private List<Command> getCommands() {
         ArrayList<Command> commands = new ArrayList<>();
+        // Mentions
+        for (String screenName : tweet.getMentions()) {
+            commands.add(new CommandOpenUserDetail(getActivity(), screenName));
+        }
         // URL
         for (String url : tweet.getUrlsExpanded()) {
             commands.add(new CommandOpenURL(getActivity(), url));
