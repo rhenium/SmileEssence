@@ -61,7 +61,7 @@ public class SelectImageDialogFragment extends MenuDialogFragment {
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public List<Command> getCommands() {
+    private List<Command> getCommands() {
         Activity activity = getActivity();
         ArrayList<Command> commands = new ArrayList<>();
         commands.add(new Command(-1, activity) {

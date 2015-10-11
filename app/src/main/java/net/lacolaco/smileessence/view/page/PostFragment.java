@@ -172,7 +172,7 @@ public class PostFragment extends PageFragment implements TextWatcher, View.OnFo
         updateTextCount(s);
     }
 
-    public void updateTextCount(CharSequence s) {
+    private void updateTextCount(CharSequence s) {
         Validator validator = new Validator();
         int remainingCount = 140 - validator.getTweetLength(s.toString());
         if (!TextUtils.isEmpty(PostState.getState().getMediaFilePath())) {

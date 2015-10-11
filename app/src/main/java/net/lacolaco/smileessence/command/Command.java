@@ -128,7 +128,7 @@ public abstract class Command implements IViewModel {
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 
-    public Activity getActivity() {
+    protected Activity getActivity() {
         return activity;
     }
 

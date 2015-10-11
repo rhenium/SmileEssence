@@ -34,7 +34,7 @@ public class OrderedCustomListAdapter<T extends IViewModel & IdObject> extends C
 
     // ------------------------------ FIELDS ------------------------------
 
-    protected final Map<Long, T> treeMap;
+    private final Map<Long, T> treeMap;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 

@@ -5,7 +5,7 @@ import net.lacolaco.smileessence.entity.RBinding;
 import java.util.*;
 
 public abstract class UIObservable {
-    Map<Object, UIObserver> observers = new WeakHashMap<>();
+    private Map<Object, UIObserver> observers = new WeakHashMap<>();
 
     public void addObserver(Object weakKey, UIObserver observer) {
         synchronized(this) {
@@ -19,11 +19,11 @@ public abstract class UIObservable {
         }
     }
 
-    public void notifyChange(RBinding flag) {
+    protected void notifyChange(RBinding flag) {
         notifyChange(EnumSet.of(flag));
     }
 
-    public void notifyChange(EnumSet<RBinding> flags) {
+    protected void notifyChange(EnumSet<RBinding> flags) {
             List<UIObserver> obs = new ArrayList<>();
         synchronized(this) {
             obs.addAll(observers.values());

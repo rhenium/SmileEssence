@@ -71,7 +71,7 @@ public class QuoteDialogFragment extends MenuDialogFragment {
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public List<Command> getCommands(Tweet tweet) {
+    private List<Command> getCommands(Tweet tweet) {
         Activity activity = getActivity();
         ArrayList<Command> commands = new ArrayList<>();
         commands.add(new StatusCommandTextQuote(activity, tweet));

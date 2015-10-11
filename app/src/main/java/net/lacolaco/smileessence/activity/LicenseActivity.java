@@ -52,10 +52,6 @@ public class LicenseActivity extends Activity {
         return apacheFiles;
     }
 
-    private String getMarkerString() {
-        return "-";
-    }
-
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
@@ -81,10 +77,9 @@ public class LicenseActivity extends Activity {
     private void setFiles() {
         LinearLayout files = (LinearLayout) findViewById(R.id.linear_license_files);
         List<String> apacheFiles = getFileNames();
-        String marker = getMarkerString();
         for (String apacheFile : apacheFiles) {
             TextView name = new TextView(this);
-            name.setText(String.format("%s %s", marker, apacheFile));
+            name.setText(String.format("- %s", apacheFile));
             files.addView(name);
         }
     }

@@ -74,7 +74,7 @@ public class HashtagDialogFragment extends MenuDialogFragment {
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public List<Command> getCommands(String text) {
+    private List<Command> getCommands(String text) {
         Activity activity = getActivity();
         ArrayList<Command> commands = new ArrayList<>();
         commands.add(new CommandSaveAsTemplate(activity, text));

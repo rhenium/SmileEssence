@@ -58,7 +58,7 @@ public class StatusCommandNanigaja extends StatusCommand implements IConfirmable
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public String build() {
+    private String build() {
         User user = Application.getInstance().getCurrentAccount().getUser();
         String str = getOriginalStatus().getText();
         String header = "";

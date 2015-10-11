@@ -47,7 +47,7 @@ public class StatusCommandMakeAnonymous extends StatusCommand implements IConfir
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public static String build(Activity activity, Tweet tweet, Account account) {
+    private static String build(Activity activity, Tweet tweet, Account account) {
         User user = account.getUser();
         String str = tweet.getText();
         if (str.startsWith(".")) {

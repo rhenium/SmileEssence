@@ -95,7 +95,7 @@ public class SelectSearchQueryDialogFragment extends MenuDialogFragment implemen
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public List<Command> getCommands() {
+    private List<Command> getCommands() {
         Activity activity = getActivity();
         ArrayList<Command> commands = new ArrayList<>();
         final List<SearchQuery> queries = SearchQuery.getAll();

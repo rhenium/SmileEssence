@@ -136,7 +136,7 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public void deleteMessage() {
+    private void deleteMessage() {
         ConfirmDialogFragment.show(getActivity(), getString(R.string.dialog_confirm_commands), () -> {
             new DeleteMessageTask(Application.getInstance().getCurrentAccount(), message.getId())
                     .onDone(x -> Notificator.getInstance().publish(R.string.notice_message_delete_succeeded))
@@ -146,7 +146,7 @@ public class MessageDetailDialogFragment extends StackableDialogFragment impleme
         });
     }
 
-    public void openSendMessageDialog() {
+    private void openSendMessageDialog() {
         SendMessageDialogFragment dialogFragment = new SendMessageDialogFragment();
         dialogFragment.setScreenName(message.getSender().getScreenName());
         DialogHelper.showDialog(getActivity(), dialogFragment);

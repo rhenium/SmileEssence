@@ -57,13 +57,12 @@ public class SelectUserListDialogFragment extends MenuDialogFragment {
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public List<Command> getCommands() {
+    private List<Command> getCommands() {
         MainActivity activity = (MainActivity) getActivity();
         ArrayList<Command> commands = new ArrayList<>();
         for (String fullName : Application.getInstance().getCurrentAccount().getListSubscriptions()) {
             commands.add(new CommandOpenUserList(activity, fullName));
         }
-
         return commands;
     }
 }

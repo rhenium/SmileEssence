@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class CommandSetting {
-    public static ConcurrentHashMap<Integer, Boolean> cache;
+    private static ConcurrentHashMap<Integer, Boolean> cache;
 
     public static boolean isVisible(int key) {
         if (cache == null) {

@@ -75,7 +75,7 @@ public class StatusMenuDialogFragment extends MenuDialogFragment {
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public void addBottomCommands(ArrayList<Command> commands) {
+    private void addBottomCommands(ArrayList<Command> commands) {
         Activity activity = getActivity();
 
         commands.add(new CommandSaveAsTemplate(activity, tweet.getOriginalTweet().getText()));
@@ -96,12 +96,12 @@ public class StatusMenuDialogFragment extends MenuDialogFragment {
         }
     }
 
-    public boolean addMainCommands(ArrayList<Command> commands) {
+    private boolean addMainCommands(ArrayList<Command> commands) {
         Activity activity = getActivity();
         return commands.addAll(Command.getStatusCommands(activity, tweet));
     }
 
-    public List<Command> getCommands() {
+    private List<Command> getCommands() {
         ArrayList<Command> commands = new ArrayList<>();
         addMainCommands(commands);
         addBottomCommands(commands);

@@ -78,5 +78,4 @@ public abstract class EditTextDialogFragment extends StackableDialogFragment {
         args.putString(textKey, text);
         setArguments(args);
     }
-
 }

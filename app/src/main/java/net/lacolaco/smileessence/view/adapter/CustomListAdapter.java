@@ -19,7 +19,7 @@ public abstract class CustomListAdapter<T extends IViewModel> extends BaseAdapte
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
-    public CustomListAdapter(Activity activity) {
+    CustomListAdapter(Activity activity) {
         this.activity = activity;
     }
 

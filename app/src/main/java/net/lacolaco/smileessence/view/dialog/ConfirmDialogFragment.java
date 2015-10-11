@@ -115,5 +115,5 @@ public abstract class ConfirmDialogFragment extends StackableDialogFragment {
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public abstract void onButtonClick(int which);
+    protected abstract void onButtonClick(int which);
 }

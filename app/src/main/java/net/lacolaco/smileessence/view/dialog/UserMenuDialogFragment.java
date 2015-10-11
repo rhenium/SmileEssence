@@ -75,17 +75,17 @@ public class UserMenuDialogFragment extends MenuDialogFragment {
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public boolean addBottomCommands(ArrayList<Command> commands) {
+    private boolean addBottomCommands(ArrayList<Command> commands) {
         Activity activity = getActivity();
         return commands.add(new CommandSearchOnTwitter(activity, user.getScreenName()));
     }
 
-    public boolean addMainCommands(ArrayList<Command> commands) {
+    private boolean addMainCommands(ArrayList<Command> commands) {
         Activity activity = getActivity();
         return commands.addAll(Command.getUserCommands(activity, user));
     }
 
-    public List<Command> getCommands() {
+    private List<Command> getCommands() {
         ArrayList<Command> commands = new ArrayList<>();
         addMainCommands(commands);
         addBottomCommands(commands);

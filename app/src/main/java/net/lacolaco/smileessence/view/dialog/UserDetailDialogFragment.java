@@ -381,7 +381,7 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         }
     }
 
-    protected void updateListView(AbsListView absListView, OrderedCustomListAdapter<?> adapter, boolean addedToTop) {
+    private void updateListView(AbsListView absListView, OrderedCustomListAdapter<?> adapter, boolean addedToTop) {
         int before = adapter.getCount();
         adapter.notifyDataSetChanged(); // synchronized call (not adapter#updateForce())
         int after = adapter.getCount();

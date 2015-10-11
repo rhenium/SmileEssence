@@ -44,7 +44,7 @@ public class ChooseTemplateDialogFragment extends MenuDialogFragment {
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public List<Command> getCommands() {
+    private List<Command> getCommands() {
         ArrayList<Command> list = new ArrayList<>();
         List<Template> templates = Template.getAll();
         for (Template template : templates) {

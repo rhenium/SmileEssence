@@ -67,7 +67,7 @@ public class TweetTask extends BackgroundTask<Tweet, Void> {
 
     // --------------------- GETTER / SETTER METHODS ---------------------
 
-    public File getMediaFile() {
+    private File getMediaFile() {
         File file = new File(mediaPath);
         if (file.length() >= MEDIA_SIZE_LIMIT && resizeFlag) {
             BitmapFactory.Options opt = new BitmapFactory.Options();

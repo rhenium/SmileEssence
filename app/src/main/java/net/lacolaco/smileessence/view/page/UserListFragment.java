@@ -37,7 +37,6 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.preference.InternalPreferenceHelper;
@@ -58,10 +57,6 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
     private TextView textListName;
 
     // --------------------- GETTER / SETTER METHODS ---------------------
-
-    private MainActivity getMainActivity() {
-        return (MainActivity) getActivity();
-    }
 
     @Override
     protected PullToRefreshBase.Mode getRefreshMode() {

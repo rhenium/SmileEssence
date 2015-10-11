@@ -99,7 +99,7 @@ public class StatusViewModel implements IViewModel, IdObject {
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public View getView(final Activity activity, final LayoutInflater inflater, View convertedView, boolean extendStatusURL) {
+    private View getView(final Activity activity, final LayoutInflater inflater, View convertedView, boolean extendStatusURL) {
         if (convertedView == null) {
             convertedView = inflater.inflate(R.layout.list_item_status, null);
         }

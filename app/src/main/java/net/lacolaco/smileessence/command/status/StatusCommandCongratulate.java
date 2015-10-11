@@ -59,7 +59,7 @@ public class StatusCommandCongratulate extends StatusCommand implements IConfirm
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public String build() {
+    private String build() {
         int favCount;
         Random rand = new Random();
         int r = rand.nextInt(100);

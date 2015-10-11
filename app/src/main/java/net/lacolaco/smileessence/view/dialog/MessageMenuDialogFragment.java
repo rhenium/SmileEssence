@@ -74,7 +74,7 @@ public class MessageMenuDialogFragment extends MenuDialogFragment {
 
     // -------------------------- OTHER METHODS --------------------------
 
-    public void addBottomCommands(ArrayList<Command> commands) {
+    private void addBottomCommands(ArrayList<Command> commands) {
         Activity activity = getActivity();
         commands.add(new CommandSaveAsTemplate(activity, message.getText()));
         //User
@@ -96,12 +96,12 @@ public class MessageMenuDialogFragment extends MenuDialogFragment {
         }
     }
 
-    public boolean addMainCommands(ArrayList<Command> commands) {
+    private boolean addMainCommands(ArrayList<Command> commands) {
         Activity activity = getActivity();
         return commands.addAll(Command.getMessageCommands(activity, message));
     }
 
-    public List<Command> getCommands() {
+    private List<Command> getCommands() {
         ArrayList<Command> commands = new ArrayList<>();
         addMainCommands(commands);
         addBottomCommands(commands);
@@ -111,10 +111,8 @@ public class MessageMenuDialogFragment extends MenuDialogFragment {
     private ArrayList<Command> getHashtagCommands() {
         Activity activity = getActivity();
         ArrayList<Command> commands = new ArrayList<>();
-        if (message.getHashtags() != null) {
-            for (String hashtag : message.getHashtags()) {
-                commands.add(new CommandOpenHashtagDialog(activity, hashtag));
-            }
+        for (String hashtag : message.getHashtags()) {
+            commands.add(new CommandOpenHashtagDialog(activity, hashtag));
         }
         return commands;
     }

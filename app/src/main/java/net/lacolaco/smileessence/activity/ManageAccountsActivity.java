@@ -45,7 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ManageAccountsActivity extends Activity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
-    public static final int REQUEST_OAUTH = 10;
+    private static final int REQUEST_OAUTH = 10;
     private EditAccountsAdapter adapter;
 
     @Override
