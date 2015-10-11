@@ -25,11 +25,10 @@
 package net.lacolaco.smileessence.command.status;
 
 import android.app.Activity;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.notification.Notificator;
+import net.lacolaco.smileessence.util.SystemServiceHelper;
 
 public class StatusCommandCopyTextToClipboard extends StatusCommand {
 
@@ -55,8 +54,7 @@ public class StatusCommandCopyTextToClipboard extends StatusCommand {
 
     @Override
     public boolean execute() {
-        ClipboardManager manager = (ClipboardManager) getActivity().getSystemService(Activity.CLIPBOARD_SERVICE);
-        manager.setPrimaryClip(ClipData.newPlainText("tweet text", getOriginalStatus().getText()));
+        SystemServiceHelper.copyToClipboard(getActivity(), "tweet text", getOriginalStatus().getText());
         Notificator.getInstance().publish(R.string.notice_copy_clipboard);
         return true;
     }

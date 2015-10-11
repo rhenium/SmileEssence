@@ -26,14 +26,12 @@ package net.lacolaco.smileessence.view.dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -44,6 +42,7 @@ import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.data.PostState;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.twitter.task.SendMessageTask;
+import net.lacolaco.smileessence.util.SystemServiceHelper;
 
 public class SendMessageDialogFragment extends StackableDialogFragment implements TextWatcher, View.OnClickListener {
 
@@ -142,13 +141,8 @@ public class SendMessageDialogFragment extends StackableDialogFragment implement
         editText.setText("");
     }
 
-    private void hideIME() {
-        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
-    }
-
     private void sendMessage() {
-        hideIME();
+        SystemServiceHelper.hideIM(getActivity(), editText);
         String text = editText.getText().toString();
         new SendMessageTask(Application.getInstance().getCurrentAccount(), screenName, text)
                 .onDone(x -> Notificator.getInstance().publish(R.string.notice_message_send_succeeded))

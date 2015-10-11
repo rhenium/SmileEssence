@@ -27,17 +27,16 @@ package net.lacolaco.smileessence.view.dialog;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import net.lacolaco.smileessence.R;
+import net.lacolaco.smileessence.util.SystemServiceHelper;
 import net.lacolaco.smileessence.view.DialogHelper;
 
 public class SearchOnGoogleDialogFragment extends StackableDialogFragment implements TextWatcher, View.OnClickListener {
@@ -116,13 +115,8 @@ public class SearchOnGoogleDialogFragment extends StackableDialogFragment implem
                 .create();
     }
 
-    private void hideIME() {
-        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
-    }
-
     private void execute() {
-        hideIME();
+        SystemServiceHelper.hideIM(getActivity(), editText);
         Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
         intent.putExtra(SearchManager.QUERY, editText.getText().toString());
         getActivity().startActivity(intent);

@@ -33,8 +33,9 @@ public class Morse {
 
     // ------------------------------ FIELDS ------------------------------
 
-    private static HashMap<String, String> jaMc;
-    private static HashMap<String, String> mcJa;
+    private static final HashMap<String, String> jaMc;
+    private static final HashMap<String, String> mcJa;
+    private static final Pattern morsePattern = Pattern.compile("[－・]+");
 
     // -------------------------- STATIC METHODS --------------------------
 
@@ -45,8 +46,7 @@ public class Morse {
      * @return モールスを含むならtrue, そうでなければfalse
      */
     public static boolean isMorse(String mc) {
-        Pattern pattern = Pattern.compile("[－・]+");
-        Matcher matcher = pattern.matcher(mc);
+        Matcher matcher = morsePattern.matcher(mc);
         ArrayList<String> list = new ArrayList<>();
         while (matcher.find()) {
             list.add(matcher.group());
@@ -132,5 +132,4 @@ public class Morse {
         for (String[] to : ja1)
             jaMc.put(to[0], to[1]);
     }
-
 }

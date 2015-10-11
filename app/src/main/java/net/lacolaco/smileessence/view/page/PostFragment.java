@@ -24,7 +24,6 @@
 
 package net.lacolaco.smileessence.view.page;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -36,7 +35,6 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.ArrowKeyMovementMethod;
 import android.view.*;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import com.twitter.Validator;
 import net.lacolaco.smileessence.Application;
@@ -49,6 +47,7 @@ import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.twitter.task.TweetTask;
 import net.lacolaco.smileessence.util.BitmapThumbnailTask;
 import net.lacolaco.smileessence.util.IntentUtils;
+import net.lacolaco.smileessence.util.SystemServiceHelper;
 import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.dialog.PostMenuDialogFragment;
@@ -112,9 +111,9 @@ public class PostFragment extends PageFragment implements TextWatcher, View.OnFo
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
         if (hasFocus) {
-            showIME();
+            SystemServiceHelper.showIM(getActivity(), editText);
         } else {
-            hideIME();
+            SystemServiceHelper.hideIM(getActivity(), editText);
         }
     }
 
@@ -206,7 +205,7 @@ public class PostFragment extends PageFragment implements TextWatcher, View.OnFo
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.removeItem(R.id.actionbar_post);
-        showIME();
+        SystemServiceHelper.showIM(getActivity(), editText);
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -303,20 +302,15 @@ public class PostFragment extends PageFragment implements TextWatcher, View.OnFo
         return (Button) v.findViewById(R.id.button_post_tweet);
     }
 
-    private void hideIME() {
-        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
-    }
-
     private void openPostMenu() {
         setStateFromView();
-        hideIME();
+        SystemServiceHelper.hideIM(getActivity(), editText);
         PostMenuDialogFragment menuDialogFragment = new PostMenuDialogFragment();
         DialogHelper.showDialog(getActivity(), menuDialogFragment);
     }
 
     private void removeImage() {
-        hideIME();
+        SystemServiceHelper.hideIM(getActivity(), editText);
         viewGroupMedia.setVisibility(View.GONE);
         ((ImageView) viewGroupMedia.findViewById(R.id.image_post_media)).setImageBitmap(null);
         PostState.getState().beginTransaction().setMediaFilePath("").commit();
@@ -324,7 +318,7 @@ public class PostFragment extends PageFragment implements TextWatcher, View.OnFo
 
     private void setImage() {
         setStateFromView();
-        hideIME();
+        SystemServiceHelper.hideIM(getActivity(), editText);
         SelectImageDialogFragment selectImageDialogFragment = new SelectImageDialogFragment();
         DialogHelper.showDialog(getActivity(), selectImageDialogFragment);
     }
@@ -339,17 +333,8 @@ public class PostFragment extends PageFragment implements TextWatcher, View.OnFo
         state.setListener(this);
     }
 
-    private void showIME() {
-        if (editText != null) {
-            new UIHandler().postDelayed(() -> {
-                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.showSoftInput(editText, InputMethodManager.RESULT_UNCHANGED_SHOWN);
-            }, 100);
-        }
-    }
-
     private void submitPost() {
-        hideIME();
+        SystemServiceHelper.hideIM(getActivity(), editText);
         setStateFromView();
         PostState state = PostState.getState();
         MainActivity mainActivity = (MainActivity) getActivity();

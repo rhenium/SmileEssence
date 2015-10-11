@@ -25,10 +25,12 @@
 package net.lacolaco.smileessence.activity;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.*;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.*;
 import com.android.volley.toolbox.NetworkImageView;
 import net.lacolaco.smileessence.Application;
@@ -190,8 +192,7 @@ public class ManageAccountsActivity extends Activity implements AdapterView.OnIt
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
-                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = inflater.inflate(R.layout.list_item_account, null);
+                convertView = getLayoutInflater().inflate(R.layout.list_item_account, null);
             }
             Account account = getItem(position);
             NetworkImageView iconView = (NetworkImageView) convertView.findViewById(R.id.account_icon);

@@ -24,7 +24,6 @@
 
 package net.lacolaco.smileessence.view.page;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.Spannable;
@@ -32,7 +31,6 @@ import android.text.TextUtils;
 import android.text.method.ArrowKeyMovementMethod;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -51,6 +49,7 @@ import net.lacolaco.smileessence.preference.InternalPreferenceHelper;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.twitter.StatusFilter;
 import net.lacolaco.smileessence.twitter.task.SearchTask;
+import net.lacolaco.smileessence.util.SystemServiceHelper;
 import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.adapter.SearchListAdapter;
@@ -120,7 +119,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
         if (!hasFocus) {
-            hideIME();
+            SystemServiceHelper.hideIM(getActivity(), editText);
         }
     }
 
@@ -260,11 +259,6 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
         return (ImageButton) page.findViewById(R.id.button_search_save);
     }
 
-    private void hideIME() {
-        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
-    }
-
     private void notifyTextEmpty() {
         Notificator.getInstance().alert(R.string.notice_search_text_empty);
     }
@@ -280,7 +274,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
                 super.executeCommand(command);
                 SearchQuery query = ((CommandOpenSearch) command).getQuery();
                 editText.setText(query.query);
-                hideIME();
+                SystemServiceHelper.hideIM(SearchFragment.this.getActivity(), editText);
             }
         });
     }
@@ -302,7 +296,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
                 Notificator.getInstance().alert(R.string.notice_query_is_empty);
             } else {
                 startSearch(text);
-                hideIME();
+                SystemServiceHelper.hideIM(getActivity(), editText);
             }
         }
     }

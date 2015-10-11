@@ -26,16 +26,15 @@ package net.lacolaco.smileessence.view.dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.RatingBar;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.data.PostState;
 import net.lacolaco.smileessence.entity.Tweet;
+import net.lacolaco.smileessence.util.SystemServiceHelper;
 
 public class ReviewDialogFragment extends StackableDialogFragment implements View.OnClickListener {
 
@@ -89,13 +88,8 @@ public class ReviewDialogFragment extends StackableDialogFragment implements Vie
                 .create();
     }
 
-    private void hideIME() {
-        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(ratingBar.getWindowToken(), 0);
-    }
-
     private void execute() {
-        hideIME();
+        SystemServiceHelper.hideIM(getActivity(), ratingBar);
         Tweet tweet = Tweet.fetch(statusID).getOriginalTweet();
         int star = (int) ratingBar.getRating();
         StringBuilder builder = new StringBuilder();

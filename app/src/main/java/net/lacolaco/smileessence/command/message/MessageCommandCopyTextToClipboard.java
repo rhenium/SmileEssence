@@ -25,11 +25,10 @@
 package net.lacolaco.smileessence.command.message;
 
 import android.app.Activity;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.entity.DirectMessage;
 import net.lacolaco.smileessence.notification.Notificator;
+import net.lacolaco.smileessence.util.SystemServiceHelper;
 
 public class MessageCommandCopyTextToClipboard extends MessageCommand {
 
@@ -55,8 +54,7 @@ public class MessageCommandCopyTextToClipboard extends MessageCommand {
 
     @Override
     public boolean execute() {
-        ClipboardManager manager = (ClipboardManager) getActivity().getSystemService(Activity.CLIPBOARD_SERVICE);
-        manager.setPrimaryClip(ClipData.newPlainText("message text", getMessage().getText()));
+        SystemServiceHelper.copyToClipboard(getActivity(), "message text", getMessage().getText());
         Notificator.getInstance().publish(R.string.notice_copy_clipboard);
         return true;
     }
