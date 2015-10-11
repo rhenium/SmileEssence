@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "jp.rhe.smileessence"
-        minSdkVersion 17
+        minSdkVersion 16
         targetSdkVersion 23
         versionCode 26
         versionName "1.0.11.1"
