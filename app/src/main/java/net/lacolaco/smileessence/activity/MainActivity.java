@@ -24,6 +24,7 @@
 
 package net.lacolaco.smileessence.activity;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -65,7 +66,7 @@ import twitter4j.TwitterStream;
 
 import java.lang.reflect.Field;
 
-public class MainActivity extends Activity implements Application.OnCurrentAccountChangedListener {
+public class MainActivity extends Activity implements Application.OnCurrentAccountChangedListener, ViewPager.OnPageChangeListener {
     // ------------------------------ FIELDS ------------------------------
 
     public static final int REQUEST_GET_PICTURE_FROM_GALLERY = 11;
@@ -201,7 +202,8 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
         setContentView(R.layout.layout_main);
 
         viewPager = (ViewPager) findViewById(R.id.viewPager);
-        pagerAdapter = new PageListAdapter(this, viewPager);
+        pagerAdapter = new PageListAdapter(this);
+        viewPager.addOnPageChangeListener(this);
         currentAccountIconImageView = (ImageView) findViewById(android.R.id.home);
         currentAccountIconImageView.setScaleType(ImageView.ScaleType.FIT_XY);
 
@@ -384,6 +386,22 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
         Notificator.getInstance().onForeground();
     }
 
+    // --------------------- Interface OnPageChangeListener ---------------------
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        Logger.debug(String.format("Page selected: %d", position));
+        updateActionBarTitle();
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+    }
+
     // -------------------------- OTHER METHODS --------------------------
 
     private void getImageUri(int requestCode, int resultCode, Intent data) {
@@ -414,7 +432,6 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
         return true;
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Override
     public void onCurrentAccountChanged(Account account) {
         Logger.debug(String.format("onCurrentAccountChanged: %s", account.getUser().getScreenName()));
@@ -427,7 +444,7 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
 
         // update actionbar
         Runnable update = () -> {
-            getActionBar().setTitle(user.getScreenName());
+            updateActionBarTitle();
             String newUrl = user.getProfileImageUrl();
             if (newUrl != null) {
                 new BitmapURLTask(newUrl, currentAccountIconImageView).execute();
@@ -451,6 +468,16 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
 
         // start user stream
         startStream();
+    }
+
+    private void updateActionBarTitle() {
+        ActionBar actionBar = getActionBar();
+        Account currentAccount = Application.getInstance().getCurrentAccount();
+        if (actionBar != null && currentAccount != null) {
+            String screenName = currentAccount.getUser().getScreenName();
+            String pageTitle = pagerAdapter.getName(viewPager.getCurrentItem());
+            setTitle(String.format("%s / %s", screenName, pageTitle));
+        }
     }
 
     // TODO: tab order?

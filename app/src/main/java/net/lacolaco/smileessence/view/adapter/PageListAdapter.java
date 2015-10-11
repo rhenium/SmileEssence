@@ -26,7 +26,6 @@ package net.lacolaco.smileessence.view.adapter;
 
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.view.page.PageFragment;
@@ -37,7 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PageListAdapter extends FragmentPagerAdapter implements ViewPager.OnPageChangeListener {
+public class PageListAdapter extends FragmentPagerAdapter {
 
     // ------------------------------ FIELDS ------------------------------
 
@@ -46,9 +45,8 @@ public class PageListAdapter extends FragmentPagerAdapter implements ViewPager.O
 
     // --------------------------- FragmentPagerAdapter ---------------------------
 
-    public PageListAdapter(MainActivity _activity, ViewPager _viewPager) {
+    public PageListAdapter(MainActivity _activity) {
         super(_activity.getFragmentManager());
-        _viewPager.addOnPageChangeListener(this);
     }
 
     @Override
@@ -83,23 +81,6 @@ public class PageListAdapter extends FragmentPagerAdapter implements ViewPager.O
 
     // ------------------------ INTERFACE METHODS ------------------------
 
-    // --------------------- Interface OnPageChangeListener ---------------------
-
-    @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-    }
-
-    @Override
-    public synchronized void onPageSelected(int position) {
-        //Synchronize pager and navigation.
-        Logger.debug(String.format("Page selected: %d", position));
-        //actionBar.setSelectedNavigationItem(position);
-    }
-
-    @Override
-    public void onPageScrollStateChanged(int state) {
-    }
-
     // -------------------------- OTHER METHODS --------------------------
 
     public void addPage(Class<? extends PageFragment> klass, String name, Bundle args) {
@@ -119,15 +100,8 @@ public class PageListAdapter extends FragmentPagerAdapter implements ViewPager.O
         return pages.remove(position) != null; // TODO
     }
 
-    @Override
-    public void notifyDataSetChanged() {
-        ArrayList<String> itemList = new ArrayList<>();
-        for (PageInfo f : pages) {
-            itemList.add(f.getName());
-        }
-        //ArrayAdapter<String> adapter = new ArrayAdapter<>(context, R.layout.navigation_list_item, R.id.navigation_list_item_text, itemList);
-        //actionBar.setListNavigationCallbacks(adapter, this);
-        super.notifyDataSetChanged();
+    public String getName(int pos) {
+        return pages.get(pos).getName();
     }
 
     @Deprecated
