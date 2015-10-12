@@ -84,8 +84,7 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
     @Override
     public void onStatus(Status status) {
         Tweet tweet = Tweet.fromTwitter(status, account.getUserId());
-        StatusViewModel vm = new StatusViewModel(tweet);
-        StatusFilter.getInstance().filter(vm);
+        StatusFilter.getInstance().filter(tweet);
         if (tweet.isRetweet()) {
             if (tweet.getOriginalTweet().getUser().getId() == account.getUserId()) {
                 addToHistory(new EventViewModel(EventViewModel.EnumEvent.RETWEETED, tweet.getUser(), tweet));
@@ -166,11 +165,10 @@ public class UserStreamListener implements twitter4j.UserStreamListener, Connect
     @Override
     public void onDirectMessage(twitter4j.DirectMessage directMessage) {
         DirectMessage message = DirectMessage.fromTwitter(directMessage);
+        StatusFilter.getInstance().filter(message);
         if (message.getRecipient() == account.getUser()) {
             addToHistory(new EventViewModel(EventViewModel.EnumEvent.RECEIVE_MESSAGE, User.fromTwitter(directMessage.getSender())));
         }
-        MessageViewModel vm = new MessageViewModel(message);
-        StatusFilter.getInstance().filter(vm);
     }
 
     @Override

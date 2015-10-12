@@ -58,8 +58,8 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
         StatusListAdapter adapter = new StatusListAdapter(getActivity());
         setAdapter(adapter);
 
-        StatusFilter.getInstance().register(this, StatusViewModel.class, (StatusViewModel tweet) -> {
-            adapter.addItem(tweet);
+        StatusFilter.getInstance().register(this, Tweet.class, (Tweet tweet) -> {
+            adapter.addItem(new StatusViewModel(tweet));
             adapter.update();
         }, id -> {
             adapter.removeItemById(id);
@@ -121,7 +121,7 @@ public class HomeFragment extends CustomListFragment<StatusListAdapter> {
                 .onFail(e -> Notificator.getInstance().alert(R.string.notice_error_get_home))
                 .onDoneUI(tweets -> {
                     for (Tweet tweet : tweets) {
-                        StatusFilter.getInstance().filter(new StatusViewModel(tweet));
+                        StatusFilter.getInstance().filter(tweet);
                     }
                 })
                 .onFinishUI(onFinish)

@@ -202,9 +202,8 @@ public class UserListFragment extends CustomListFragment<UserListListAdapter> im
                 .onFail(x -> Notificator.getInstance().alert(R.string.notice_error_get_list))
                 .onDoneUI(tweets -> {
                     for (Tweet tweet : tweets) {
-                        StatusViewModel statusViewModel = new StatusViewModel(tweet);
-                        StatusFilter.getInstance().filter(statusViewModel);
-                        adapter.addItem(statusViewModel);
+                        StatusFilter.getInstance().filter(tweet);
+                        adapter.addItem(new StatusViewModel(tweet));
                     }
                 })
                 .onFinishUI(onFinish)

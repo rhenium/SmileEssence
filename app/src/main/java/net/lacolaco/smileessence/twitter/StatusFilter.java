@@ -25,11 +25,10 @@
 package net.lacolaco.smileessence.twitter;
 
 import net.lacolaco.smileessence.Application;
+import net.lacolaco.smileessence.entity.DirectMessage;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.util.Consumer;
 import net.lacolaco.smileessence.viewmodel.EventViewModel;
-import net.lacolaco.smileessence.viewmodel.IViewModel;
-import net.lacolaco.smileessence.viewmodel.MessageViewModel;
-import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -73,22 +72,21 @@ public class StatusFilter {
 
     // -------------------------- STATIC METHODS --------------------------
 
-    public void filter(StatusViewModel tweet) {
-        if (!Application.getInstance().getCurrentAccount().isMutedUserListContains(tweet.getTweet().getOriginalTweet().getUser().getId())) {
-            filter(StatusViewModel.class, tweet);
+    public void filter(Tweet tweet) {
+        if (!Application.getInstance().getCurrentAccount().isMutedUserListContains(tweet.getOriginalTweet().getUser().getId())) {
+            filter(Tweet.class, tweet);
         }
     }
 
-    public void filter(MessageViewModel message) {
-        filter(MessageViewModel.class, message);
+    public void filter(DirectMessage message) {
+        filter(DirectMessage.class, message);
     }
 
     public void filter(EventViewModel event) {
         filter(EventViewModel.class, event);
     }
 
-    @SuppressWarnings("unchecked")
-    public <T extends IViewModel> void filter(Class<T> klass, T status) {
+    public <T> void filter(Class<T> klass, T status) {
         Map<Object, Consumer<?>> map = addHandlers.get(klass);
         if (map != null) {
             for(Consumer f_ : map.values()) {
@@ -97,7 +95,7 @@ public class StatusFilter {
         }
     }
 
-    public void remove(Class<? extends IViewModel> klass, long id) {
+    public void remove(Class klass, long id) {
         Map<Object, Consumer<Long>> map = removeHandlers.get(klass);
         if (map != null) {
             for(Consumer<Long> f : map.values()) {

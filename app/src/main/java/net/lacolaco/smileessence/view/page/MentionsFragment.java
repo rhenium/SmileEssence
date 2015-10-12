@@ -55,14 +55,15 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
         StatusListAdapter adapter = new StatusListAdapter(getActivity());
         setAdapter(adapter);
 
-        StatusFilter.getInstance().register(this, StatusViewModel.class, (StatusViewModel tweet) -> {
-            if (tweet.getTweet().getMentions().contains(Application.getInstance().getCurrentAccount().getUser().getScreenName())) {
-                adapter.addItem(tweet);
+        StatusFilter.getInstance().register(this, Tweet.class, (Tweet tweet) -> {
+            StatusViewModel vm = new StatusViewModel(tweet);
+            if (tweet.getMentions().contains(Application.getInstance().getCurrentAccount().getUser().getScreenName())) {
+                adapter.addItem(vm);
                 adapter.update();
             } else {
                 for (ExtractionWord word : ExtractionWord.all()) {
-                    if (word.getPattern().matcher(tweet.getTweet().getOriginalTweet().getText()).find()) {
-                        adapter.addItem(tweet);
+                    if (word.getPattern().matcher(tweet.getOriginalTweet().getText()).find()) {
+                        adapter.addItem(vm);
                         adapter.update();
                         return;
                     }
@@ -119,7 +120,7 @@ public class MentionsFragment extends CustomListFragment<StatusListAdapter> {
                 .onFail(x -> Notificator.getInstance().alert(R.string.notice_error_get_mentions))
                 .onDoneUI(tweets -> {
                     for (Tweet tweet : tweets) {
-                        StatusFilter.getInstance().filter(new StatusViewModel(tweet));
+                        StatusFilter.getInstance().filter(tweet);
                     }
                 })
                 .onFinishUI(onFinish)

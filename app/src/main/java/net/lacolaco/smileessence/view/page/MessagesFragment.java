@@ -59,8 +59,8 @@ public class MessagesFragment extends CustomListFragment<MessageListAdapter> {
         MessageListAdapter adapter = new MessageListAdapter(getActivity());
         setAdapter(adapter);
 
-        StatusFilter.getInstance().register(this, MessageViewModel.class, (MessageViewModel message) -> {
-            adapter.addItem(message);
+        StatusFilter.getInstance().register(this, DirectMessage.class, (DirectMessage message) -> {
+            adapter.addItem(new MessageViewModel(message));
             adapter.update();
         }, id -> {
             adapter.removeItemById(id);
@@ -114,7 +114,7 @@ public class MessagesFragment extends CustomListFragment<MessageListAdapter> {
                 .onFail(x -> Notificator.getInstance().alert(R.string.notice_error_get_messages))
                 .onDoneUI(messages -> {
                     for (DirectMessage message : messages) {
-                        StatusFilter.getInstance().filter(new MessageViewModel(message));
+                        StatusFilter.getInstance().filter(message);
                     }
                 })
                 .onFinishUI(onFinish)

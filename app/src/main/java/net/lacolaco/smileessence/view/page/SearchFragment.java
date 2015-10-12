@@ -47,7 +47,6 @@ import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.notification.Notificator;
 import net.lacolaco.smileessence.preference.InternalPreferenceHelper;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
-import net.lacolaco.smileessence.twitter.StatusFilter;
 import net.lacolaco.smileessence.twitter.task.SearchTask;
 import net.lacolaco.smileessence.util.SystemServiceHelper;
 import net.lacolaco.smileessence.util.UIHandler;
@@ -327,9 +326,7 @@ public class SearchFragment extends CustomListFragment<SearchListAdapter> implem
                         List<Tweet> tweets = Tweet.fromTwitter(queryResult.getTweets(), account.getUserId());
                         for (Tweet tweet : tweets) {
                             if (!tweet.isRetweet()) {
-                                StatusViewModel viewModel = new StatusViewModel(tweet);
-                                StatusFilter.getInstance().filter(viewModel);
-                                adapter.addItem(viewModel);
+                                adapter.addItem(new StatusViewModel(tweet));
                             }
                         }
                     }

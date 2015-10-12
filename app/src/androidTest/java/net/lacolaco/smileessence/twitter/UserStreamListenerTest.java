@@ -30,7 +30,6 @@ import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.entity.User;
 import net.lacolaco.smileessence.util.TwitterMock;
 import net.lacolaco.smileessence.viewmodel.EventViewModel;
-import net.lacolaco.smileessence.viewmodel.StatusViewModel;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
 
@@ -51,13 +50,13 @@ public class UserStreamListenerTest extends ActivityInstrumentationTestCase2<Mai
 
     public void testOnStatus() throws Exception {
         Status status = mock.getTweetRawMock();
-        Container<StatusViewModel> a = new Container<>();
+        Container<Tweet> a = new Container<>();
         Container<Long> b = new Container<>();
-        StatusFilter.getInstance().register(this, StatusViewModel.class,
+        StatusFilter.getInstance().register(this, Tweet.class,
                 gotVm -> a.object = gotVm,
                 gotId -> b.object = gotId);
         listener.onStatus(status);
-        assertEquals(Tweet.fromTwitter(status, 0), a.object.getTweet());
+        assertEquals(Tweet.fromTwitter(status, 0), a.object);
         listener.onDeletionNotice(new StatusDeletionNotice() {
             @Override
             public long getStatusId() {
