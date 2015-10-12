@@ -165,8 +165,7 @@ public class Account {
     }
 
     public boolean canDelete(Tweet tweet) {
-        return tweet.getUser() == getUser() ||
-                tweet.getOriginalTweet().getUser() == getUser();
+        return tweet.getOriginalTweet().getUser() == getUser();
     }
 
     public boolean canDelete(DirectMessage message) {
