@@ -45,7 +45,7 @@ import java.util.WeakHashMap;
 public class Application extends android.app.Application {
     private static Application instance;
     private Account currentAccount;
-    private Set<OnCurrentAccountChangedListener> currentAccountChangedListeners;
+    private final Set<OnCurrentAccountChangedListener> currentAccountChangedListeners = Collections.newSetFromMap(new WeakHashMap<>());
     private int resId;
     private RefWatcher refWatcher;
 
@@ -67,7 +67,7 @@ public class Application extends android.app.Application {
     // --------------------- reset ---------------------
     public void resetState() {
         currentAccount = null;
-        currentAccountChangedListeners = Collections.newSetFromMap(new WeakHashMap<>());
+        currentAccountChangedListeners.clear();
         resId = -1;
     }
 
@@ -97,6 +97,7 @@ public class Application extends android.app.Application {
     }
 
     public void setCurrentAccount(Account val) {
+        Logger.debug(String.format("setCurrentAccount: %s", val.getUser().getScreenName()));
         currentAccount = val;
         for (OnCurrentAccountChangedListener listener : currentAccountChangedListeners) {
             new UIHandler().post(() -> listener.onCurrentAccountChanged(val));

@@ -434,18 +434,17 @@ public class MainActivity extends Activity implements Application.OnCurrentAccou
 
     @Override
     public void onCurrentAccountChanged(Account account) {
-        Logger.debug(String.format("onCurrentAccountChanged: %s", account.getUser().getScreenName()));
-        User user = account.getUser();
-
         // update cache
         account.refreshListSubscriptions();
         account.refreshUserMuteList();
         new ShowUserTask(account, account.getUserId()).execute();
 
+        User user = account.getUser();
+
         // update actionbar
         Runnable update = () -> {
             updateActionBarTitle();
-            String newUrl = user.getProfileImageUrl();
+            String newUrl = user.getProfileImageUrlOriginal();
             if (newUrl != null) {
                 new BitmapURLTask(newUrl, currentAccountIconImageView).execute();
             }
