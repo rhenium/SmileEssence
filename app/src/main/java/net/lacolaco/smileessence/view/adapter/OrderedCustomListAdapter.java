@@ -50,7 +50,7 @@ public class OrderedCustomListAdapter<T extends IViewModel & IdObject> extends C
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected List<T> getFrozenList() {
+    protected synchronized List<T> getFrozenList() {
         return Collections.unmodifiableList(new ArrayList<>(treeMap.values()));
     }
 

@@ -44,7 +44,7 @@ public class UnorderedCustomListAdapter<T extends IViewModel> extends CustomList
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    protected List<T> getFrozenList() {
+    protected synchronized List<T> getFrozenList() {
         return Collections.unmodifiableList(new ArrayList<>(list));
     }
 
