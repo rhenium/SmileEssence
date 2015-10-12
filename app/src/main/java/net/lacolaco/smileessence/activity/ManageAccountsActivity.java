@@ -49,12 +49,15 @@ import java.util.List;
 public class ManageAccountsActivity extends Activity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
     private static final int REQUEST_OAUTH = 10;
     private EditAccountsAdapter adapter;
+    private Account newAccount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(Application.getInstance().getThemeResId());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_edit_list);
+
+        newAccount = Application.getInstance().getCurrentAccount();
 
         adapter = new EditAccountsAdapter();
         ListView listView = (ListView) findViewById(R.id.listview_edit_list);
@@ -76,8 +79,8 @@ public class ManageAccountsActivity extends Activity implements AdapterView.OnIt
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         Account account = adapter.getItem(i);
-        if (account != Application.getInstance().getCurrentAccount()) {
-            setCurrentAccount(account);
+        if (account != newAccount) {
+            newAccount = account;
             adapter.notifyDataSetChanged();
         }
     }
@@ -90,8 +93,9 @@ public class ManageAccountsActivity extends Activity implements AdapterView.OnIt
             ConfirmDialogFragment.show(this, getString(R.string.dialog_confirm_clear_account, account.getUser().getScreenName()), () -> {
                 adapter.removeAt(i);
                 Account.unregister(account.getModelId());
-                if (account == Application.getInstance().getCurrentAccount()) {
-                    setCurrentAccount(adapter.getItem(0));
+                if (account == newAccount) {
+                    newAccount = adapter.getItem(0);
+                    adapter.notifyDataSetChanged();
                 }
             }, false);
             return true;
@@ -121,7 +125,11 @@ public class ManageAccountsActivity extends Activity implements AdapterView.OnIt
     }
 
     private void safeFinish() {
-        if (Application.getInstance().getCurrentAccount() != null) {
+        if (newAccount != null) {
+            if (newAccount != Application.getInstance().getCurrentAccount()) {
+                Application.getInstance().setCurrentAccount(newAccount);
+                InternalPreferenceHelper.getInstance().set(R.string.key_last_used_account_id, newAccount.getModelId());
+            }
             setResult(RESULT_OK);
             finish();
         } else {
@@ -152,19 +160,14 @@ public class ManageAccountsActivity extends Activity implements AdapterView.OnIt
                     data.getStringExtra(OAuthSession.KEY_TOKEN_SECRET),
                     data.getLongExtra(OAuthSession.KEY_USER_ID, -1L),
                     data.getStringExtra(OAuthSession.KEY_SCREEN_NAME));
-            adapter.add(account);
-            if (Application.getInstance().getCurrentAccount() == null) {
-                setCurrentAccount(account);
+            if (newAccount == null) {
+                newAccount = account;
             }
+            adapter.add(account);
         } else {
             Logger.error(requestCode);
             Notificator.getInstance().alert(R.string.notice_error_authenticate);
         }
-    }
-
-    private void setCurrentAccount(Account account) {
-        Application.getInstance().setCurrentAccount(account);
-        InternalPreferenceHelper.getInstance().set(R.string.key_last_used_account_id, account.getModelId());
     }
 
     private class EditAccountsAdapter extends BaseAdapter {
@@ -203,20 +206,26 @@ public class ManageAccountsActivity extends Activity implements AdapterView.OnIt
             textView.setText(text);
 
             RadioButton radioButton = (RadioButton) convertView.findViewById(R.id.account_radio_button);
-            radioButton.setChecked(account == Application.getInstance().getCurrentAccount());
+            radioButton.setChecked(account == newAccount);
 
             return convertView;
         }
 
         public int add(Account account) {
-            accounts.add(account);
-            notifyDataSetChanged();
-            return accounts.size() - 1;
+            if (!accounts.contains(account)) {
+                accounts.add(account);
+                notifyDataSetChanged();
+                return accounts.size() - 1;
+            } else {
+                return accounts.indexOf(account);
+            }
         }
 
         public Account removeAt(int position) {
             Account account = accounts.remove(position);
-            notifyDataSetChanged();
+            if (account != null) {
+                notifyDataSetChanged();
+            }
             return account;
         }
     }
