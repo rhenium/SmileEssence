@@ -125,12 +125,10 @@ public class EditCommandActivity extends Activity {
     }
 
     private void enableAll() {
-        adapter.setNotifiable(false);
         for (int i = 0; i < adapter.getCount(); i++) {
             CheckBoxModel item = adapter.getItem(i);
             item.setChecked(true);
         }
-        adapter.setNotifiable(true);
         adapter.notifyDataSetChanged();
         updateListView();
     }
@@ -138,9 +136,9 @@ public class EditCommandActivity extends Activity {
     private void initializeViews() {
         ListView listView = getListView();
         adapter = new UnorderedCustomListAdapter<>(this);
-        listView.setAdapter(adapter);
         adapter.addItemsToTop(getCheckBoxItems());
         adapter.update();
+        listView.setAdapter(adapter);
     }
 
     private void updateListView() {

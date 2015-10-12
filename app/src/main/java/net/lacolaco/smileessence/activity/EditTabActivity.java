@@ -133,9 +133,9 @@ public class EditTabActivity extends Activity {
     private void initializeViews() {
         ListView listView = getListView();
         adapter = new OrderedCustomListAdapter<>(this, Collections.reverseOrder());
-        listView.setAdapter(adapter);
         adapter.addItems(getCheckBoxItems());
         adapter.update();
+        listView.setAdapter(adapter);
     }
 
     private void putVisibility(int key, boolean value) {

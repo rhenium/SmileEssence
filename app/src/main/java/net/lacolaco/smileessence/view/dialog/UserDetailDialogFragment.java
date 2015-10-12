@@ -387,7 +387,6 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
         int after = adapter.getCount();
         int increments = after - before;
         if (increments > 0) {
-            adapter.setNotifiable(false);
             if (addedToTop) {
                 absListView.setSelection(increments + 1);
                 absListView.smoothScrollToPositionFromTop(increments, 0);
@@ -395,12 +394,6 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
             } else {
                 absListView.smoothScrollToPositionFromTop(before, 0);
             }
-
-            if (increments == 1) {
-                adapter.setNotifiable(true);
-            }
-        } else {
-            adapter.setNotifiable(true);
         }
     }
 

@@ -145,7 +145,6 @@ public class EditTemplateActivity extends Activity implements AdapterView.OnItem
 
     public void deleteSelectedItems() {
         SparseBooleanArray checkedItems = getListView().getCheckedItemPositions();
-        adapter.setNotifiable(false);
         for (int i = adapter.getCount() - 1; i > -1; i--) {
             if (checkedItems.get(i)) {
                 Template template = adapter.getItem(i);
@@ -153,7 +152,6 @@ public class EditTemplateActivity extends Activity implements AdapterView.OnItem
                 adapter.removeItem(template);
             }
         }
-        adapter.setNotifiable(true);
         adapter.notifyDataSetChanged();
         updateListView();
     }
@@ -198,9 +196,9 @@ public class EditTemplateActivity extends Activity implements AdapterView.OnItem
     private void initializeViews() {
         ListView listView = getListView();
         adapter = new UnorderedCustomListAdapter<>(this);
-        listView.setAdapter(adapter);
         adapter.addItemsToBottom(getTemplates());
         adapter.update();
+        listView.setAdapter(adapter);
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         listView.setOnItemClickListener(this);
         listView.setMultiChoiceModeListener(this);

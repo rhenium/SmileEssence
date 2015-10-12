@@ -66,12 +66,12 @@ public abstract class CustomListFragment<T extends CustomListAdapter> extends Pa
     @Override
     public void onScrollStateChanged(AbsListView absListView, int scrollState) {
         T adapter = getAdapter();
-        adapter.setNotifiable(false);
-
-        if (absListView.getFirstVisiblePosition() == 0 && absListView.getChildAt(0) != null && absListView.getChildAt(0).getTop() == 0) {
-            if (scrollState == SCROLL_STATE_IDLE) {
-                updateListViewWithNotice(absListView, true);
-            }
+        if (scrollState != SCROLL_STATE_TOUCH_SCROLL &&
+                absListView.getFirstVisiblePosition() == 0 && (absListView.getChildAt(0) == null || absListView.getChildAt(0).getTop() == 0)) {
+            adapter.setNotifiable(true);
+            updateListViewWithNotice(absListView, true);
+        } else {
+            adapter.setNotifiable(false);
         }
     }
 
@@ -103,7 +103,6 @@ public abstract class CustomListFragment<T extends CustomListAdapter> extends Pa
         int after = adapter.getCount();
         int increments = after - before;
         if (increments > 0) {
-            adapter.setNotifiable(false);
             Notificator.getInstance().publish(R.string.notice_timeline_new, increments);
             if (addedToTop) {
                 absListView.setSelection(increments + 1);
@@ -113,11 +112,9 @@ public abstract class CustomListFragment<T extends CustomListAdapter> extends Pa
                 absListView.smoothScrollToPositionFromTop(before, 0);
             }
 
-            if (increments == 1) {
-                adapter.setNotifiable(true);
+            if (increments > 1) {
+                adapter.setNotifiable(false);
             }
-        } else {
-            adapter.setNotifiable(true);
         }
     }
 }

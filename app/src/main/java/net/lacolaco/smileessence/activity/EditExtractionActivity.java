@@ -141,7 +141,6 @@ public class EditExtractionActivity extends Activity implements AdapterView.OnIt
 
     public void deleteSelectedItems() {
         SparseBooleanArray checkedItems = getListView().getCheckedItemPositions();
-        adapter.setNotifiable(false);
         for (int i = adapter.getCount() - 1; i > -1; i--) {
             if (checkedItems.get(i)) {
                 ExtractionWordViewModel vm = adapter.getItem(i);
@@ -149,7 +148,6 @@ public class EditExtractionActivity extends Activity implements AdapterView.OnIt
                 adapter.removeItem(vm);
             }
         }
-        adapter.setNotifiable(true);
         adapter.notifyDataSetChanged();
         updateListView();
     }
