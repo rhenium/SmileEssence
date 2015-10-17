@@ -10,8 +10,13 @@ android {
         applicationId "jp.rhe.smileessence"
         minSdkVersion 16
         targetSdkVersion 23
-        versionCode 26
-        versionName "1.0.11.1"
+
+        versionName "git -C ${rootDir} describe --tags --long --dirty".execute().text.trim()
+        versionCode "git -C ${rootDir} rev-list HEAD --count".execute().text.trim().toInteger()
+        println "-----------VERSION----------"
+        println "- CODE: " + getVersionCode()
+        println "- NAME: " + getVersionName()
+        println "----------------------------"
     }
     buildTypes {
         debug {

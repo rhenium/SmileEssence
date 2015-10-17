@@ -33,11 +33,12 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.text.TextUtils;
 import net.lacolaco.smileessence.Application;
+import net.lacolaco.smileessence.BuildConfig;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.activity.LicenseActivity;
 import net.lacolaco.smileessence.activity.ManageAccountsActivity;
 import net.lacolaco.smileessence.notification.Notificator;
-import net.lacolaco.smileessence.view.dialog.SimpleDialogFragment;
+import net.lacolaco.smileessence.view.dialog.AppInfoDialogFragment;
 
 import static android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 
@@ -90,10 +91,7 @@ public class SettingFragment extends PreferenceFragment implements OnSharedPrefe
     public boolean onPreferenceClick(Preference preference) {
         String key = preference.getKey();
         if (key.contentEquals(getString(R.string.key_setting_application_information))) {
-            SimpleDialogFragment informationDialog = SimpleDialogFragment.newInstance(
-                    R.layout.dialog_app_info,
-                    getString(R.string.dialog_title_about));
-            DialogHelper.showDialog(getActivity(), informationDialog);
+            openAppInfoDialog();
         } else if (key.contentEquals(getString(R.string.key_setting_accounts))) {
             openManageAccountsActivity();
         } else if (key.contentEquals(getString(R.string.key_setting_licenses))) {
@@ -130,6 +128,7 @@ public class SettingFragment extends PreferenceFragment implements OnSharedPrefe
         timelinesPreference.setOnPreferenceChangeListener(this);
         Preference appInfoPreference = findPreference(R.string.key_setting_application_information);
         appInfoPreference.setOnPreferenceClickListener(this);
+        appInfoPreference.setSummary(BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")");
         Preference license = findPreference(R.string.key_setting_licenses);
         license.setOnPreferenceClickListener(this);
     }
@@ -168,6 +167,11 @@ public class SettingFragment extends PreferenceFragment implements OnSharedPrefe
     private void openManageAccountsActivity() {
         Intent intent = new Intent(getActivity(), ManageAccountsActivity.class);
         getActivity().startActivity(intent);
+    }
+
+    private void openAppInfoDialog() {
+        AppInfoDialogFragment dialog = new AppInfoDialogFragment();
+        DialogHelper.showDialog(getActivity(), dialog);
     }
 
     private void setSummaryCurrentValue() {

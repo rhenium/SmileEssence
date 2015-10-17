@@ -29,49 +29,25 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.TextView;
+import net.lacolaco.smileessence.BuildConfig;
 import net.lacolaco.smileessence.R;
 
-public class SimpleDialogFragment extends StackableDialogFragment {
-
-    // ------------------------------ FIELDS ------------------------------
-
-    private static final String ARG_LAYOUT = "layout";
-    private static final String ARG_TITLE = "title";
-    private int layoutResourceID;
-    private String title;
-
-    // -------------------------- STATIC METHODS --------------------------
-
-    public static SimpleDialogFragment newInstance(int layoutResourceID, String title) {
-        SimpleDialogFragment fragment = new SimpleDialogFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_LAYOUT, layoutResourceID);
-        args.putString(ARG_TITLE, title);
-        fragment.setArguments(args);
-        return fragment;
-    }
+public class AppInfoDialogFragment extends StackableDialogFragment {
 
     // ------------------------ OVERRIDE METHODS ------------------------
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Bundle args = getArguments();
-        layoutResourceID = args.getInt(ARG_LAYOUT);
-        title = args.getString(ARG_TITLE);
-    }
-
-    @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View contentView = inflater.inflate(layoutResourceID, null);
+        View contentView = inflater.inflate(R.layout.dialog_app_info, null);
+        TextView versionTextView = (TextView) contentView.findViewById(R.id.versionTextView);
+        versionTextView.setText(BuildConfig.VERSION_NAME + " (rev: " + BuildConfig.VERSION_CODE + "; upstream: " + getString(R.string.app_version_full) + ")");
 
         return new AlertDialog.Builder(getActivity())
-                .setTitle(title)
+                .setTitle(R.string.dialog_title_about)
                 .setView(contentView)
-                .setPositiveButton(R.string.alert_dialog_ok, (dialog, which) -> {
-                    dialog.dismiss();
-                })
+                .setPositiveButton(R.string.alert_dialog_ok, (dialog, which) -> dialog.dismiss())
                 .create();
     }
 }
