@@ -332,10 +332,9 @@ public class UserDetailDialogFragment extends StackableDialogFragment implements
             protected void executeCommand(Command command) {
                 super.executeCommand(command);
                 new UIHandler().postDelayed(() -> {
-                    if (UserDetailDialogFragment.this.isDetached()) {
-                        return;
+                    if (UserDetailDialogFragment.this.isAdded()) {
+                        updateRelationship();
                     }
-                    updateRelationship();
                 }, 1000);
             }
         };
