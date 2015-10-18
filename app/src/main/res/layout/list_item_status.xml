@@ -74,7 +74,7 @@
         android:contentDescription=""
         android:src="?attr/icon_status_favorite_on" />
 
-    <ListView
+    <net.lacolaco.smileessence.view.ExpandedListView
             android:id="@+id/listview_status_embedded_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
