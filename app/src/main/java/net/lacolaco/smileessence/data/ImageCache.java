@@ -26,66 +26,59 @@ package net.lacolaco.smileessence.data;
 
 import android.graphics.Bitmap;
 import android.util.LruCache;
+import com.android.volley.Cache;
 import com.android.volley.RequestQueue;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.*;
+import net.lacolaco.smileessence.Application;
 
-public class ImageCache implements ImageLoader.ImageCache {
+public class ImageCache {
 
     // ------------------------------ FIELDS ------------------------------
 
     private static ImageCache instance = new ImageCache();
-    private LruCache<String, Bitmap> cache;
     private RequestQueue requestQueue;
     private ImageLoader imageLoader;
 
     // -------------------------- STATIC METHODS --------------------------
 
     private ImageCache() {
-        int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-        int cacheSize = maxMemory / 8;
-        cache = new LruCache<>(cacheSize);
-        requestQueue = new RequestQueue(new NoCache(), new BasicNetwork(new HurlStack()));
-        imageLoader = new ImageLoader(requestQueue, this);
+        int cacheSizeInBytes = 64 * 1024 * 1024; // 64MB
+        Cache diskCache = new DiskBasedCache(Application.getInstance().getCacheDir(), cacheSizeInBytes);
+        requestQueue = new RequestQueue(diskCache, new BasicNetwork(new HurlStack()));
+        imageLoader = new ImageLoader(requestQueue, new ImageLruCache());
         requestQueue.start();
     }
-
-    // --------------------------- CONSTRUCTORS ---------------------------
 
     public static ImageCache getInstance() {
         return instance;
     }
 
-    // ------------------------ INTERFACE METHODS ------------------------
-
-
-    // --------------------- Interface ImageCache ---------------------
-
-    @Override
-    public Bitmap getBitmap(String url) {
-        return cache.get(url);
-    }
-
-    @Override
-    public void putBitmap(String url, Bitmap bitmap) {
-        cache.put(url, bitmap);
-    }
-
     // -------------------------- OTHER METHODS --------------------------
-
-    public ImageLoader.ImageContainer requestBitmap(String imageURL) {
-        return imageLoader.get(imageURL, new ImageLoader.ImageListener() {
-            @Override
-            public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
-            }
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-            }
-        });
-    }
 
     public void setImageToView(String imageURL, NetworkImageView view) {
         view.setImageUrl(imageURL, imageLoader);
+    }
+
+    private static class ImageLruCache implements ImageLoader.ImageCache {
+        private LruCache<String, Bitmap> cache;
+
+        // -------------------------- STATIC METHODS --------------------------
+
+        private ImageLruCache() {
+            long memoryBytes = Runtime.getRuntime().maxMemory();
+            int maxCount = (int) (memoryBytes / (8 * 1024));
+            cache = new LruCache<>(maxCount);
+        }
+        // --------------------- Interface ImageCache ---------------------
+
+        @Override
+        public Bitmap getBitmap(String url) {
+            return cache.get(url);
+        }
+
+        @Override
+        public void putBitmap(String url, Bitmap bitmap) {
+            cache.put(url, bitmap);
+        }
     }
 }
