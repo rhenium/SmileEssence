@@ -35,6 +35,7 @@ import com.android.volley.toolbox.NetworkImageView;
 import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
 import net.lacolaco.smileessence.data.ImageCache;
+import net.lacolaco.smileessence.entity.Account;
 import net.lacolaco.smileessence.entity.IdObject;
 import net.lacolaco.smileessence.entity.RBinding;
 import net.lacolaco.smileessence.entity.Tweet;
@@ -190,14 +191,13 @@ public class StatusViewModel implements IViewModel, IdObject {
         }
         embeddedTweetsAdapter = new StatusListAdapter(activity);
 
+        Account account = Application.getInstance().getCurrentAccount();
         for (long id : tweet.getEmbeddedStatusIDs()) {
-            Application.getInstance().getCurrentAccount().fetchTweet(id, embeddedTweet -> {
-                if (embeddedTweet != null) {
-                    StatusViewModel viewModel = new StatusViewModel(embeddedTweet, false);
-                    embeddedTweetsAdapter.addItem(viewModel);
-                    embeddedTweetsAdapter.update();
-                }
-            });
+            Tweet.fetchTask(id, account).onDone(t -> {
+                StatusViewModel viewModel = new StatusViewModel(t, false);
+                embeddedTweetsAdapter.addItem(viewModel);
+                embeddedTweetsAdapter.update();
+            }).execute();
         }
     }
 

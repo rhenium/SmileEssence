@@ -139,18 +139,12 @@ public class StatusDetailDialogFragment extends StackableDialogFragment implemen
         if (tweet.getInReplyToStatusId() != -1) {
             replyDivider.setVisibility(View.VISIBLE);
             listView.setVisibility(View.VISIBLE);
-            Tweet replyToIfPresent = tweet.getInReplyToIfPresent();
-            if (replyToIfPresent != null) {
-                adapter.addItem(new StatusViewModel(replyToIfPresent));
-                adapter.updateForce();
-            } else {
-                new ShowStatusTask(account, tweet.getInReplyToStatusId())
-                        .onDoneUI(replyTo -> {
-                            adapter.addItem(new StatusViewModel(replyTo));
-                            adapter.updateForce();
-                        })
-                        .execute();
-            }
+            Tweet.fetchTask(tweet.getInReplyToStatusId(), account)
+                    .onDoneUI(replyTo -> {
+                        adapter.addItem(new StatusViewModel(replyTo));
+                        adapter.update();
+                    })
+                    .execute();
         } else {
             replyDivider.setVisibility(View.GONE);
             listView.setVisibility(View.GONE);

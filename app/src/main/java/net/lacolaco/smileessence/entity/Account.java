@@ -24,7 +24,6 @@
 
 package net.lacolaco.smileessence.entity;
 
-import android.os.Handler;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
@@ -32,9 +31,7 @@ import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.twitter.task.BlockIDsTask;
 import net.lacolaco.smileessence.twitter.task.GetUserListsTask;
 import net.lacolaco.smileessence.twitter.task.MutesIDsTask;
-import net.lacolaco.smileessence.twitter.task.ShowStatusTask;
 import net.lacolaco.smileessence.util.BackgroundTask;
-import net.lacolaco.smileessence.util.Consumer;
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
 import twitter4j.TwitterStream;
@@ -151,18 +148,6 @@ public class Account {
         return user;
     }
     // --------------------- Helper methods ---------------------
-
-    @Deprecated
-    public BackgroundTask<Tweet, Void> fetchTweet(long statusId, Consumer<Tweet> callback) {
-        Tweet tweet = Tweet.fetch(statusId);
-        if (tweet == null) {
-            Handler handler = new Handler(); // get current Looper
-            return new ShowStatusTask(this, statusId).onDone(t -> handler.post(() -> callback.accept(t))).execute();
-        } else {
-            callback.accept(tweet);
-            return null;
-        }
-    }
 
     public boolean canDelete(Tweet tweet) {
         return tweet.getOriginalTweet().getUser() == getUser();

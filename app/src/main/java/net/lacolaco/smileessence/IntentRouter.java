@@ -24,6 +24,7 @@
 
 package net.lacolaco.smileessence;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -31,9 +32,9 @@ import android.text.TextUtils;
 import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.command.CommandOpenUserDetail;
 import net.lacolaco.smileessence.data.PostState;
+import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.logging.Logger;
 import net.lacolaco.smileessence.notification.Notificator;
-import net.lacolaco.smileessence.twitter.task.ShowStatusTask;
 import net.lacolaco.smileessence.util.UIHandler;
 import net.lacolaco.smileessence.view.DialogHelper;
 import net.lacolaco.smileessence.view.dialog.StatusDetailDialogFragment;
@@ -121,14 +122,15 @@ public class IntentRouter {
         return result;
     }
 
-    private static void showStatusDialog(final MainActivity activity, long id) {
-        new ShowStatusTask(Application.getInstance().getCurrentAccount(), id)
+    private static void showStatusDialog(Activity activity, long id) {
+        Tweet.fetchTask(id, Application.getInstance().getCurrentAccount())
                 .onDoneUI(tweet -> {
                     StatusDetailDialogFragment fragment = new StatusDetailDialogFragment();
                     fragment.setStatusID(tweet.getId());
                     DialogHelper.showDialog(activity, fragment);
                 })
-                .onFail(x -> Notificator.getInstance().alert(R.string.error_intent_status_cannot_load));
+                .onFail(x -> Notificator.getInstance().alert(R.string.error_intent_status_cannot_load))
+                .execute();
     }
 
     private static void showUserDialog(MainActivity activity, String screenName) {

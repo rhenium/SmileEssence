@@ -3,6 +3,8 @@ package net.lacolaco.smileessence.entity;
 import android.net.Uri;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import net.lacolaco.smileessence.twitter.task.ShowStatusTask;
+import net.lacolaco.smileessence.util.BackgroundTask;
 import net.lacolaco.smileessence.util.ListUtils;
 import twitter4j.Status;
 
@@ -14,6 +16,20 @@ public class Tweet extends EntitySupport {
 
     public synchronized static Tweet fetch(long statusId) {
         return storage.getIfPresent(statusId);
+    }
+
+    public synchronized static BackgroundTask<Tweet, Void> fetchTask(long statusId, Account account) {
+        Tweet tweet = fetch(statusId);
+        if (tweet != null) {
+            return new BackgroundTask<Tweet, Void>() {
+                @Override
+                protected Tweet doInBackground() throws Exception {
+                    return tweet;
+                }
+            };
+        } else {
+            return new ShowStatusTask(account, statusId);
+        }
     }
 
     public synchronized static void remove(long statusId) {
