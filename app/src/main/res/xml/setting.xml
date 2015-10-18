@@ -62,10 +62,15 @@
             android:key="@string/key_setting_read_morse"
             android:title="@string/setting_read_morse" />
         <SwitchPreference
-            android:defaultValue="true"
-            android:key="@string/key_setting_extend_status_url"
-            android:summary="@string/setting_extend_status_url_summary"
-            android:title="@string/setting_extend_status_url" />
+                android:defaultValue="true"
+                android:key="@string/key_setting_extend_status_url"
+                android:summary="@string/setting_extend_status_url_summary"
+                android:title="@string/setting_extend_status_url" />
+        <SwitchPreference
+                android:defaultValue="false"
+                android:key="@string/key_setting_original_icon"
+                android:summary="@string/setting_original_icon_summary"
+                android:title="@string/setting_original_icon" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/setting_category_system_title">
         <SwitchPreference

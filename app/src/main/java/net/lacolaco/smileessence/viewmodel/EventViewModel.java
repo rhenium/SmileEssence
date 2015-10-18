@@ -105,7 +105,13 @@ public class EventViewModel implements IViewModel {
 
     private void updateViewUser(View convertedView) {
         NetworkImageView icon = (NetworkImageView) convertedView.findViewById(R.id.imageview_status_icon);
-        ImageCache.getInstance().setImageToView(source.getProfileImageUrl(), icon);
+        String iconUrl;
+        if (UserPreferenceHelper.getInstance().get(R.string.key_setting_original_icon, false)) {
+            iconUrl = source.getProfileImageUrlOriginal();
+        } else {
+            iconUrl = source.getProfileImageUrl();
+        }
+        ImageCache.getInstance().setImageToView(iconUrl, icon);
 
         TextView header = (TextView) convertedView.findViewById(R.id.textview_status_header);
         header.setText(getFormattedString());

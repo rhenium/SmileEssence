@@ -199,7 +199,7 @@ public class ManageAccountsActivity extends Activity implements AdapterView.OnIt
             }
             Account account = getItem(position);
             NetworkImageView iconView = (NetworkImageView) convertView.findViewById(R.id.account_icon);
-            ImageCache.getInstance().setImageToView(account.getUser().getProfileImageUrl(), iconView);
+            ImageCache.getInstance().setImageToView(account.getUser().getProfileImageUrlOriginal(), iconView);
 
             TextView textView = (TextView) convertView.findViewById(R.id.account_text_view);
             String text = "@" + account.getUser().getScreenName();

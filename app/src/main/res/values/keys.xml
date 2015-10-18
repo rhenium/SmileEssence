@@ -48,6 +48,7 @@
     <string name="key_page_list_visibility">pageListVisibility</string>
     <string name="key_page_list_position">pageListPosition</string>
     <string name="key_setting_extend_status_url">extendStatusURL</string>
+    <string name="key_setting_original_icon">useOriginalIcon</string>
     <string name="key_setting_resize_post_image">resizePostImage</string>
     <string name="key_last_used_search_query">lastUsedSearchQuery</string>
     <string name="key_last_used_account_id">lastUsedAccountId</string>

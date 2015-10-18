@@ -137,7 +137,13 @@ public class StatusViewModel implements IViewModel, IdObject {
         int nameStyle = UserPreferenceHelper.getInstance().getNameStyle();
 
         NetworkImageView icon = (NetworkImageView) convertedView.findViewById(R.id.imageview_status_icon);
-        ImageCache.getInstance().setImageToView(tweet.getOriginalTweet().getUser().getProfileImageUrl(), icon);
+        String iconUrl;
+        if (UserPreferenceHelper.getInstance().get(R.string.key_setting_original_icon, false)) {
+            iconUrl = tweet.getOriginalTweet().getUser().getProfileImageUrlOriginal();
+        } else {
+            iconUrl = tweet.getOriginalTweet().getUser().getProfileImageUrl();
+        }
+        ImageCache.getInstance().setImageToView(iconUrl, icon);
         icon.setOnClickListener(v -> onIconClick(activity));
 
         TextView header = (TextView) convertedView.findViewById(R.id.textview_status_header);

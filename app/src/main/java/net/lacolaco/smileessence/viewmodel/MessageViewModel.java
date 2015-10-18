@@ -133,7 +133,13 @@ public class MessageViewModel implements IViewModel, IdObject {
         int nameStyle = UserPreferenceHelper.getInstance().getNameStyle();
 
         NetworkImageView icon = (NetworkImageView) convertedView.findViewById(R.id.imageview_status_icon);
-        ImageCache.getInstance().setImageToView(directMessage.getSender().getProfileImageUrl(), icon);
+        String iconUrl;
+        if (UserPreferenceHelper.getInstance().get(R.string.key_setting_original_icon, false)) {
+            iconUrl = directMessage.getSender().getProfileImageUrlOriginal();
+        } else {
+            iconUrl = directMessage.getSender().getProfileImageUrl();
+        }
+        ImageCache.getInstance().setImageToView(iconUrl, icon);
         icon.setOnClickListener(v -> {
             UserDetailDialogFragment dialogFragment = new UserDetailDialogFragment();
             dialogFragment.setUserID(directMessage.getSender().getId());

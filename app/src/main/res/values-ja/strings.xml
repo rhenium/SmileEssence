@@ -84,6 +84,8 @@
     <string name="setting_read_morse">モールスの解読</string>
     <string name="setting_extend_status_url">ツイートURLの展開</string>
     <string name="setting_extend_status_url_summary">開発中につき不安定</string>
+    <string name="setting_original_icon">オリジナルのアイコンを使用する</string>
+    <string name="setting_original_icon_summary">_normal サフィックスのつかない元画像を使用する</string>
     <string name="setting_category_system_title">システム設定</string>
     <string name="setting_safe_mode_title">セーフモード</string>
     <string name="setting_safe_mode_summary_on">確認ダイアログを表示する</string>
