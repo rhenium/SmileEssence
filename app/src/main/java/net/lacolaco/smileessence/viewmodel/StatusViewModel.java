@@ -28,13 +28,12 @@ import android.app.Activity;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import com.android.volley.toolbox.NetworkImageView;
 import net.lacolaco.smileessence.Application;
 import net.lacolaco.smileessence.R;
-import net.lacolaco.smileessence.activity.MainActivity;
 import net.lacolaco.smileessence.data.ImageCache;
 import net.lacolaco.smileessence.entity.IdObject;
 import net.lacolaco.smileessence.entity.RBinding;
@@ -42,23 +41,27 @@ import net.lacolaco.smileessence.entity.Tweet;
 import net.lacolaco.smileessence.preference.UserPreferenceHelper;
 import net.lacolaco.smileessence.util.*;
 import net.lacolaco.smileessence.view.DialogHelper;
+import net.lacolaco.smileessence.view.adapter.StatusListAdapter;
 import net.lacolaco.smileessence.view.dialog.StatusDetailDialogFragment;
 import net.lacolaco.smileessence.view.dialog.UserDetailDialogFragment;
 import net.lacolaco.smileessence.view.listener.ListItemClickListener;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
 
 public class StatusViewModel implements IViewModel, IdObject {
-    private Tweet tweet;
-
-    private ArrayList<BackgroundTask> lastTasks = new ArrayList<>(); // internal
+    private final Tweet tweet;
+    private StatusListAdapter embeddedTweetsAdapter = null; // load when first rendering
+    private final boolean expandEmbeddedTweets;
 
     // --------------------------- CONSTRUCTORS ---------------------------
 
     public StatusViewModel(Tweet tw) {
+        this(tw, UserPreferenceHelper.getInstance().get(R.string.key_setting_extend_status_url, true));
+    }
+
+    public StatusViewModel(Tweet tw, boolean expand) {
         tweet = tw;
+        expandEmbeddedTweets = expand;
     }
 
     // --------------------- GETTER / SETTER METHODS ---------------------
@@ -93,13 +96,6 @@ public class StatusViewModel implements IViewModel, IdObject {
 
     @Override
     public View getView(final Activity activity, final LayoutInflater inflater, View convertedView) {
-        boolean extendStatusURL = UserPreferenceHelper.getInstance().get(R.string.key_setting_extend_status_url, true);
-        return getView(activity, inflater, convertedView, extendStatusURL);
-    }
-
-    // -------------------------- OTHER METHODS --------------------------
-
-    private View getView(final Activity activity, final LayoutInflater inflater, View convertedView, boolean extendStatusURL) {
         if (convertedView == null) {
             convertedView = inflater.inflate(R.layout.list_item_status, null);
         }
@@ -113,13 +109,13 @@ public class StatusViewModel implements IViewModel, IdObject {
 
         convertedView.setOnClickListener(new ListItemClickListener(activity, () -> onClick(activity)));
 
-        updateViewUser(((MainActivity) activity), convertedView);
-        updateViewBody(((MainActivity) activity), convertedView);
+        updateViewUser(activity, convertedView);
+        updateViewBody(activity, convertedView);
         updateViewFavorited(convertedView);
-        updateViewEmbeddeds(((MainActivity) activity), convertedView, extendStatusURL);
+        updateViewEmbeddeds(activity, convertedView);
 
         final WeakReference<View> weakView = new WeakReference<>(convertedView);
-        final WeakReference<MainActivity> weakActivity = new WeakReference<>((MainActivity) activity);
+        final WeakReference<Activity> weakActivity = new WeakReference<>(activity);
         bundle.attach(tweet.getOriginalTweet(), changes -> {
             View strongView = weakView.get();
             if (strongView != null && changes.contains(RBinding.FAVORITERS))
@@ -127,7 +123,7 @@ public class StatusViewModel implements IViewModel, IdObject {
         });
         bundle.attach(tweet.getUser(), changes -> {
             View strongView = weakView.get();
-            MainActivity strongActivity = weakActivity.get();
+            Activity strongActivity = weakActivity.get();
             if (strongView != null && strongActivity != null && changes.contains(RBinding.BASIC))
                 updateViewUser(strongActivity, strongView);
         });
@@ -135,7 +131,7 @@ public class StatusViewModel implements IViewModel, IdObject {
         return convertedView;
     }
 
-    private void updateViewUser(MainActivity activity, View convertedView) {
+    private void updateViewUser(Activity activity, View convertedView) {
         int textSize = UserPreferenceHelper.getInstance().getTextSize();
         int nameStyle = UserPreferenceHelper.getInstance().getNameStyle();
 
@@ -151,7 +147,7 @@ public class StatusViewModel implements IViewModel, IdObject {
         header.setText(NameStyles.getNameString(nameStyle, tweet.getOriginalTweet().getUser()));
     }
 
-    private void updateViewBody(MainActivity activity, View convertedView) {
+    private void updateViewBody(Activity activity, View convertedView) {
         int textSize = UserPreferenceHelper.getInstance().getTextSize();
 
         TextView content = (TextView) convertedView.findViewById(R.id.textview_status_text);
@@ -188,33 +184,31 @@ public class StatusViewModel implements IViewModel, IdObject {
         favorited.setVisibility(tweet.isFavoritedBy(Application.getInstance().getCurrentAccount().getUserId()) ? View.VISIBLE : View.GONE);
     }
 
-    private void updateViewEmbeddeds(MainActivity activity, View convertedView, boolean extendStatusURL) {
-        for (BackgroundTask task : lastTasks) {
-            task.cancel();
+    private void prepareEmbeddedTweetsAdapter(Activity activity) {
+        if (embeddedTweetsAdapter != null) {
+            return;
         }
-        lastTasks.clear();
-        final ViewGroup embeddedStatus = (ViewGroup) convertedView.findViewById(R.id.view_status_embedded_status);
-        embeddedStatus.removeAllViews();
-        if (extendStatusURL) {
-            List<Long> embeddedStatusIDs = tweet.getEmbeddedStatusIDs();
-            if (embeddedStatusIDs.size() > 0) {
-                embeddedStatus.setVisibility(View.VISIBLE);
-                for (long id : embeddedStatusIDs) {
-                    BackgroundTask task = Application.getInstance().getCurrentAccount().fetchTweet(id, embeddedTweet -> {
-                        if (embeddedTweet != null) {
-                            StatusViewModel viewModel = new StatusViewModel(embeddedTweet);
-                            View embeddedHolder = viewModel.getView(activity, activity.getLayoutInflater(), null, false);
-                            embeddedStatus.addView(embeddedHolder);
-                            embeddedStatus.invalidate();
-                        }
-                    });
-                    if (task != null) {
-                        lastTasks.add(task);
-                    }
-                }
+        embeddedTweetsAdapter = new StatusListAdapter(activity);
 
-            }
+        for (long id : tweet.getEmbeddedStatusIDs()) {
+            Application.getInstance().getCurrentAccount().fetchTweet(id, embeddedTweet -> {
+                if (embeddedTweet != null) {
+                    StatusViewModel viewModel = new StatusViewModel(embeddedTweet, false);
+                    embeddedTweetsAdapter.addItem(viewModel);
+                    embeddedTweetsAdapter.update();
+                }
+            });
+        }
+    }
+
+    private void updateViewEmbeddeds(Activity activity, View convertedView) {
+        final ListView embeddedStatus = (ListView) convertedView.findViewById(R.id.listview_status_embedded_status);
+        if (expandEmbeddedTweets) {
+            prepareEmbeddedTweetsAdapter(activity);
+            embeddedStatus.setAdapter(embeddedTweetsAdapter);
+            embeddedStatus.setVisibility(View.VISIBLE);
         } else {
+            embeddedStatus.setAdapter(null); // view may be reused, set null explicitly
             embeddedStatus.setVisibility(View.GONE);
         }
     }

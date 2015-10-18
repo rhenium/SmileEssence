@@ -74,14 +74,12 @@
         android:contentDescription=""
         android:src="?attr/icon_status_favorite_on" />
 
-    <LinearLayout
-        android:id="@+id/view_status_embedded_status"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textview_status_text"
-        android:layout_below="@+id/textview_status_footer"
-        android:layout_marginRight="1dp"
-        android:layout_marginTop="3dp"
-        android:orientation="vertical"
-        android:visibility="gone" />
+    <ListView
+            android:id="@+id/listview_status_embedded_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/textview_status_text"
+            android:layout_below="@+id/textview_status_footer"
+            android:layout_marginRight="1dp"
+            android:layout_marginTop="3dp" />
 </RelativeLayout>
